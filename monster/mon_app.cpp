@@ -140,7 +140,7 @@ void App::run()
 		}
 
 	
-		platform->pollInput(newInput, oldInput);
+		platform->pollInput(newInput, oldInput);\
 
 		if (unlockFrameRate)
 		{
@@ -190,6 +190,12 @@ void App::run()
 			//}
 			game->update(fixedDeltaTime, newInput);
 
+			// Somehow get app state into game to check this and 
+			// just call that?
+			if (game->running == false)
+				running = false;
+
+
 			UpdateGui(platform->window, game);
 
 			glClearColor(0.126f, 0.113f, 0.165f, 1.0f);
@@ -212,5 +218,4 @@ void App::run()
 	SDL_GL_DeleteContext(platform->context);
 	SDL_DestroyWindow(platform->window);
 	SDL_Quit();
-	exit(EXIT_SUCCESS);
 }

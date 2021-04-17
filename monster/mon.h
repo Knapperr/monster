@@ -57,6 +57,7 @@ public:
 	glm::vec3 pos;
 	Shader shader;
 	Input input;
+	bool running;
 
 };				 
 
