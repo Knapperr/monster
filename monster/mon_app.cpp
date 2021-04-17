@@ -140,7 +140,12 @@ void App::run()
 		}
 
 	
-		platform->pollInput(newInput, oldInput);\
+		platform->pollInput(newInput, oldInput);
+
+		// platform checks for quit in the pollinput
+		if (platform->quit == true)
+			running = false;
+
 
 		if (unlockFrameRate)
 		{
@@ -192,8 +197,6 @@ void App::run()
 
 			// Somehow get app state into game to check this and 
 			// just call that?
-			if (game->running == false)
-				running = false;
 
 
 			UpdateGui(platform->window, game);

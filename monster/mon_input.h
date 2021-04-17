@@ -19,7 +19,6 @@ struct Input
 	float mouseYScreen;
 	float mouseXOffset;
 	float mouseYOffset;
-	ButtonState exit;
 
 	union
 	{

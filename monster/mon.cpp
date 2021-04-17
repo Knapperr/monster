@@ -62,7 +62,6 @@ void Game::init()
 
 	LoadShader(&shader, "res/shaders/vert_colors.glsl", "res/shaders/frag_colors.glsl", NULL);
 
-	running = true;
 
 	cam = Camera();
 	pos = glm::vec3(-0.5f, -0.5f, -0.5f);
@@ -78,8 +77,6 @@ void Game::update(double dt, Input* input)
 	// TODO(ck): Send through array or something of directions to the camera update 
 	// loop through our input?
 	// SEND THROUGH ARRAY OF DIRECTIONS then that way you can have cleaner movement
-	if (input->exit.endedDown)
-		running = false;
 		// app running = false
 
 

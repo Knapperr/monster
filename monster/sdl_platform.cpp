@@ -61,13 +61,10 @@ void SDLPlatform::pollInput(Input* newInput, Input* oldInput)
 	// TODO(ck): fix input polling
 	while (SDL_PollEvent(&e))
 	{
-		// TODO(ck): Quit the App
+
 		if (e.type == SDL_QUIT)
 		{
-			// TODO(ck): Don't process and use in game
-			// just exit the game why am I even checking this fix it
-
-			processKeyboard(&newInput->exit, true);
+			quit = true;
 		}
 
 		if (e.type == SDL_MOUSEBUTTONDOWN)

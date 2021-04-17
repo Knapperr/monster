@@ -28,6 +28,7 @@ public:
 	// gui layer to SDL_GUI or something pack it in with that
 	SDL_Window* window;
 	SDL_GLContext context;
+	bool quit;
 
 	virtual bool init(int SCREEN_WIDTH, int SCREEN_HEIGHT, int PORT_WIDTH, int PORT_HEIGHT) = 0;
 	bool cleanUp();
