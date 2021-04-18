@@ -173,7 +173,6 @@
     <ClCompile Include="sdl_platform.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="app.h" />
     <ClInclude Include="handmade_random.h" />
     <ClInclude Include="include\imgui\imconfig.h" />
     <ClInclude Include="include\imgui\imgui.h" />

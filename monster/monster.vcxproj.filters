@@ -134,9 +134,6 @@
     <ClInclude Include="mon_ortho_camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="app.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="mon_input.h">
       <Filter>Header Files</Filter>
     </ClInclude>

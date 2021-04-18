@@ -42,12 +42,7 @@ bool App::init()
 void App::run()
 {
 
-
-	// NOTE(ck): PLATFROM Layer has timing .. 
-	// 	   platform::Time() gets SDL_GetTicks()
-	//	   platform::PerformanceCounter(); 
-	// -------------------------------------------
-	uint32_t currTime = SDL_GetPerformanceCounter();
+	uint32_t currTime = platform->performanceCounter();
 	uint32_t last = 0;
 	double dt = 0;
 
@@ -57,10 +52,10 @@ void App::run()
 	bool unlockFrameRate = false;
 
 	double fixedDeltaTime = 1.0 / updateRate;
-	int64_t desiredFrameTime = SDL_GetPerformanceFrequency() / updateRate;
+	int64_t desiredFrameTime = platform->performanceFrequency() / updateRate;
 
-	int64_t vsyncMaxError = SDL_GetPerformanceFrequency() * 0.0002;
-	int64_t time60hz = SDL_GetPerformanceFrequency() / 60;
+	int64_t vsyncMaxError = platform->performanceFrequency() * 0.0002;
+	int64_t time60hz = platform->performanceFrequency() / 60;
 	int64_t snapFrequencies[] =
 	{
 		time60hz,
@@ -78,14 +73,14 @@ void App::run()
 	// TODO(ck):
 	// should be in an App class that uses the platform layer
 	bool resync = true;
-	int64_t prevFrameTime = SDL_GetPerformanceCounter();
+	int64_t prevFrameTime = platform->performanceCounter();
 	int64_t frameAccumulator = 0;
 	// ------------------------------------------------------------------------------------------------------------------------
 
 	while (running)
 	{
 		// TODO(ck): Platform::PerformanceCounter()
-		int64_t currentFrameTime = SDL_GetPerformanceCounter();
+		int64_t currentFrameTime = platform->performanceCounter();
 		int64_t deltaTime = currentFrameTime - prevFrameTime;
 		prevFrameTime = currentFrameTime;
 
@@ -218,7 +213,5 @@ void App::run()
 	}
 	game->cleanUp();
 	ShutdownGui();
-	SDL_GL_DeleteContext(platform->context);
-	SDL_DestroyWindow(platform->window);
-	SDL_Quit();
+	platform->cleanUp();
 }

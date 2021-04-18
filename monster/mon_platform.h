@@ -31,17 +31,11 @@ public:
 	bool quit;
 
 	virtual bool init(int SCREEN_WIDTH, int SCREEN_HEIGHT, int PORT_WIDTH, int PORT_HEIGHT) = 0;
-	bool cleanUp();
-	void setTitle(Config* config, const char* title);
-	uint64_t performanceFrequency();
-	uint64_t performanceCounter();
-	virtual void pollInput(Input* newInput, Input* oldInput)= 0;
-	//bool Init (sdl, win32)
-	//void PollInput();
-	// input 
-	// time
-	// PlatformWindow window;
-	// CleanUp
+	virtual void pollInput(Input* newInput, Input* oldInput )= 0;
+	virtual uint64_t performanceFrequency() = 0;
+	virtual uint64_t performanceCounter() = 0;
+	virtual void setTitle(Config* config, const char* title) = 0;
+	virtual void cleanUp() = 0;
 };
 
 #endif
