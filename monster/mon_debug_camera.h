@@ -9,6 +9,15 @@
 
 class Camera
 {
+public:
+	Camera();
+	void update(double dt, Input* input, bool constrainPitch = true);
+	void getKeyboardInput();
+	glm::mat4 viewMatrix();
+	glm::vec3 pos;
+	float speed;
+	float zoom;
+
 private:
 	glm::vec3 target;
 	glm::vec3 direction;
@@ -23,14 +32,6 @@ private:
 
 	void keyInput(double dt, Input* input);
 	void mouseInput(float xOffset, float yOffset, bool constrainPitch);
-public:
-	Camera();
-	void update(double dt, Input* input, bool constrainPitch = true);
-	void getKeyboardInput();
-	glm::mat4 viewMatrix();
-	glm::vec3 pos;
-	float speed;
-	float zoom;
 
 };
 

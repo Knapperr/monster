@@ -30,17 +30,28 @@
 
 #define ArrayCount(Array) (sizeof(Array) / sizeof((Array)[0]))
 
-struct CameraTwo
+struct Material 
 {
-	glm::vec2 pos;
-	glm::vec2 target;
-	float zoom;
+	glm::vec3 ambient;
+	glm::vec3 diffuse;
+	glm::vec3 specular;
+	float shininess;
 };
+
+struct Light 
+{
+	glm::vec3 pos;
+
+	glm::vec3 ambient;
+	glm::vec3 diffuse;
+	glm::vec3 specular;
+};
+
 
 class Game
 {
 public:
-	void init();
+	bool init();
 	void update(double dt, Input* input);
 	void render(double dt);
 	void cleanUp();
@@ -50,13 +61,14 @@ public:
 	World* world;
 	//Shader newShader;
 	Camera cam;
-	CameraTwo camera;
-
+	Input input;
 
 	unsigned int VBO, VAO = -1;
 	glm::vec3 pos;
 	Shader shader;
-	Input input;
+
+	Light light;
+	Material material;
 
 };				 
 

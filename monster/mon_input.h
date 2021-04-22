@@ -22,7 +22,7 @@ struct Input
 
 	union
 	{
-		ButtonState buttons[7];
+		ButtonState buttons[8];
 		struct
 		{
 			ButtonState up;
@@ -32,7 +32,7 @@ struct Input
 			ButtonState raise;
 			ButtonState lower;
 			ButtonState select;
-
+			ButtonState shift;
 		};
 	};
 };

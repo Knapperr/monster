@@ -54,9 +54,9 @@ bool SDLPlatform::init(int SCREEN_WIDTH, int SCREEN_HEIGHT, int PORT_WIDTH, int 
 	printf("View Port Size: %d, %d\n", PORT_WIDTH, PORT_HEIGHT);
 
 	//glEnable(GL_CULL_FACE);
-	//glEnable(GL_DEPTH_TEST);
 	//glDepthFunc(GL_LESS);
 	glEnable(GL_BLEND);
+	glEnable(GL_DEPTH_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
@@ -80,8 +80,8 @@ void SDLPlatform::processMouseMotion(Input* newInput, SDL_Event* e, int& lastX, 
 	SDL_GetWindowPosition(window, &winX, &winY);
 	SDL_GetRelativeMouseState(&x, &y);
 	//SDL_GetGlobalMouseState(&x, &y);
-	newInput->mouseXOffset = x;
-	newInput->mouseYOffset = -y;
+	newInput->mouseXOffset = (float)x;
+	newInput->mouseYOffset = (float)-y;
 
 	//float x = e->motion.x;
 	//float y = e->motion.y;
@@ -103,9 +103,6 @@ void SDLPlatform::pollInput(Input* newInput, Input* oldInput)
 		newInput->buttons[buttonIndex].endedDown = oldInput->buttons[buttonIndex].endedDown;
 	}
 
-	//if (oldInput->leftMouseButton.endedDown)
-		//std::cout << "oldinput ended down\n";
-
 	newInput->leftMouseButton.endedDown = oldInput->leftMouseButton.endedDown;
 	newInput->mouseXOffset = oldInput->mouseXOffset;
 	newInput->mouseYOffset = oldInput->mouseYOffset;
@@ -113,10 +110,10 @@ void SDLPlatform::pollInput(Input* newInput, Input* oldInput)
 
 	// TODO(ck): Idk if I need these MIGHT BE ABLE TO USE OLD INPUT..?
 	// TODO(ck): Then get mouse data
-	static int lastX = 0.0;
-	static int lastY = 0.0;
-	static int lastXAfterPress = 0.0f;
-	static int lastYAfterPress = 0.0f;
+	static int lastX = 0;
+	static int lastY = 0;
+	static int lastXAfterPress = 0;
+	static int lastYAfterPress = 0;
 	SDL_Event e;
 	// Update mouse every frame
 	processMouseMotion(newInput, &e, lastX, lastY);
@@ -178,6 +175,8 @@ void SDLPlatform::pollInput(Input* newInput, Input* oldInput)
 					processKeyboard(&newInput->raise, isDown);
 				if (keyCode == SDLK_q)
 					processKeyboard(&newInput->lower, isDown);
+				if (keyCode == SDLK_LSHIFT)
+					processKeyboard(&newInput->shift, isDown);
 			}
 		}
 		else if (e.type == SDL_JOYBUTTONDOWN || e.type == SDL_JOYBUTTONUP)

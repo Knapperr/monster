@@ -1,6 +1,13 @@
 #pragma once
 
 /*
+* struct CameraTwo
+{
+	glm::vec2 pos;
+	glm::vec2 target;
+	float zoom;
+};
+
 
 void Game::Init(int x)
 {

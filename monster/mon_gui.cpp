@@ -40,9 +40,20 @@ void UpdateGui(SDL_Window* window, Game* game)
 	ImGui::DragFloat("cam zoom", &game->cam.zoom, 0.01f, -1000.0f, 1000.0f, "%.02f");
 	ImGui::DragFloat("cam speed", &game->cam.speed, 0.01f, 1.0f, 200.0f, "%.02f");
 
-	ImGui::DragFloat("pos x ", &game->pos.x, 0.01f, -1000.0, 1000.0, "%.02f");
+	ImGui::DragFloat("pos x ", &game->pos.x, 0.01f, -1000.0, 1000.0,   "%.02f");
 	ImGui::DragFloat("pos y ", &game->pos.y, 0.01f, -1000.0f, 1000.0f, "%.02f");
 	ImGui::DragFloat("pos z ", &game->pos.z, 0.01f, -1000.0f, 1000.0f, "%.02f");
+
+	// TODO(ck): Button pops this little window
+	ImGui::DragFloat("L X", &game->light.pos.x, 0.01f, -1500.0f, 1500.0f,  "%.02f");
+	ImGui::DragFloat("L Y", &game->light.pos.y, 0.01f, -1500.0f, 1500.0f, "%.02f");
+	ImGui::DragFloat("L Z", &game->light.pos.z, 0.01f, -1500.0f, 1500.0f, "%.02f");
+	ImGui::DragFloat("L diffuse r", &game->light.diffuse.x, 0.01f, 0.0f, 1.0f, "%.02f");
+	ImGui::DragFloat("L diffuse g", &game->light.diffuse.y, 0.01f, 0.0f, 1.0f, "%.02f");
+	ImGui::DragFloat("L diffuse b", &game->light.diffuse.z, 0.01f, 0.0f, 1.0f, "%.02f");
+	// Materials ----
+	
+
 
 	// TODO(CK): put player at the 0th index for now
 	//ImGui::SliderFloat("Player Speed", &g_Game->world->player->speed, 0.0f, 500.0f);

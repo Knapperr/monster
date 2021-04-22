@@ -36,26 +36,30 @@ bool App::init()
 	//oldInput = &input[0];
 	//newInput = &input[1];
 	game = new Game();
-	game->init();
+
+	if (!game->init())
+		return false;
+
+
+	return true;
 }
 
 void App::run()
 {
 
-	uint32_t currTime = platform->performanceCounter();
+	uint32_t currTime = (uint32_t)platform->performanceCounter();
 	uint32_t last = 0;
 	double dt = 0;
 
-	Timer timer;
 	double updateRate = 60.00;
 	int updateMultiplicity = 1;
 	bool unlockFrameRate = false;
 
 	double fixedDeltaTime = 1.0 / updateRate;
-	int64_t desiredFrameTime = platform->performanceFrequency() / updateRate;
+	int64_t desiredFrameTime = (int64_t)platform->performanceFrequency() / updateRate;
 
-	int64_t vsyncMaxError = platform->performanceFrequency() * 0.0002;
-	int64_t time60hz = platform->performanceFrequency() / 60;
+	int64_t vsyncMaxError = (int64_t)platform->performanceFrequency() * 0.0002;
+	int64_t time60hz = (int64_t)platform->performanceFrequency() / 60;
 	int64_t snapFrequencies[] =
 	{
 		time60hz,

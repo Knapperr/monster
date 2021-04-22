@@ -61,22 +61,22 @@ void Camera::mouseInput(float xOffset, float yOffset, bool constrainPitch)
 }
 
 void Camera::keyInput(double dt, Input* input)
-{
-	float velocity = speed * dt;
-	if (input->up.endedDown)
-		pos += front * velocity;
-	if (input->down.endedDown)
-		pos -= front * velocity;
-	if (input->left.endedDown)
-		pos -= right * velocity;
-	if (input->right.endedDown)
-		pos += right * velocity;
-	if (input->raise.endedDown)
-		pos.y += 1.0f * velocity;
-	if (input->lower.endedDown)
-		pos.y -= 1.0f * velocity;
+{	
+	if (input->shift.endedDown)
+		speed *= 2.0f;
 
-	
+	float velocity = speed * dt;
+
+	if (input->up.endedDown)	pos += front * velocity;
+	if (input->down.endedDown)	pos -= front * velocity;
+	if (input->left.endedDown)	pos -= right * velocity;
+	if (input->right.endedDown)	pos += right * velocity;
+
+	if (input->raise.endedDown)	pos.y += 1.0f * velocity;
+	if (input->lower.endedDown)	pos.y -= 1.0f * velocity;
+
+	if (input->shift.endedDown)
+		speed /= 2.0f;
 	
 }
 
