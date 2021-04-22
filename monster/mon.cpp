@@ -149,9 +149,8 @@ void Game::cleanUp()
 /// 
 /// 2D CODE
 /// 
-
-/*
-void Game::Init(int x)
+ 
+bool Game::init(int x)
 {
 	world = new World();
 	LoadShader(&shader, "res/shaders/vert_sprite.glsl", "res/shaders/frag_sprite.glsl", NULL);
@@ -184,10 +183,12 @@ void Game::Init(int x)
 
 	int projLoc = glGetUniformLocation(shader.id, "projection");
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+	
 
+	return true;
 }
 
-void Game::Update(double dt, Input* input, int x)
+void Game::update(double dt, Input* input, int x)
 {
 	//if (state->deltaTime != dt)
 		//state->deltaTime = dt;
@@ -200,8 +201,8 @@ void Game::Update(double dt, Input* input, int x)
 	// TODO(ck): Update camera pos
 	// camera position = player position
 
-	real32 playerGroundPointX = screenCenterX + metersToPixels * diff.dX;
-	real32 playerGroundPointY = screenCenterY - metersToPixels * diff.dY;
+	//real32 playerGroundPointX = screenCenterX + metersToPixels * diff.dX;
+	//real32 playerGroundPointY = screenCenterY - metersToPixels * diff.dY;
 
 
 
@@ -210,7 +211,7 @@ void Game::Update(double dt, Input* input, int x)
 	camera.target = world->player->pos;
 }
 
-void Game::Render()
+void Game::render()
 {
 	// TODO(ck): Clean up --- camera
 	//float left = 0.0f;
@@ -253,5 +254,5 @@ void Game::Render()
 	//DrawCollider(960 / 2, 540 / 2, 0, 120, 360);
 
 }
-*/
+
 

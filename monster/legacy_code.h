@@ -1,7 +1,7 @@
 #pragma once
 
 /*
-* struct CameraTwo
+struct CameraTwo
 {
 	glm::vec2 pos;
 	glm::vec2 target;

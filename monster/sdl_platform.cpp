@@ -45,7 +45,7 @@ bool SDLPlatform::init(int SCREEN_WIDTH, int SCREEN_HEIGHT, int PORT_WIDTH, int 
 	printf("Version:  %s\n", glGetString(GL_VERSION));
 
 	// Use v-sync
-	//SDL_GL_SetSwapInterval(1);
+	SDL_GL_SetSwapInterval(1);
 
 	int xOffset = (SCREEN_WIDTH - PORT_WIDTH) / 2;
 	int yOffset = (SCREEN_HEIGHT - PORT_HEIGHT) / 2;
@@ -56,7 +56,7 @@ bool SDLPlatform::init(int SCREEN_WIDTH, int SCREEN_HEIGHT, int PORT_WIDTH, int 
 	//glEnable(GL_CULL_FACE);
 	//glDepthFunc(GL_LESS);
 	glEnable(GL_BLEND);
-	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_DEPTH_TEST); // NOTE(ck): OFF FOR 2D
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 

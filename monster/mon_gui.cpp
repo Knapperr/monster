@@ -56,10 +56,13 @@ void UpdateGui(SDL_Window* window, Game* game)
 
 
 	// TODO(CK): put player at the 0th index for now
-	//ImGui::SliderFloat("Player Speed", &g_Game->world->player->speed, 0.0f, 500.0f);
+	ImGui::SliderFloat("Player Speed", &game->world->player->speed, 0.0f, 500.0f);
 
-	//char buffer[64];
-	//snprintf(buffer, sizeof(buffer), "%f", g_GameState->world->player->pos.x);
+	char buffer[64];
+	snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.x);
+	ImGui::LabelText("player x", buffer);
+	snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.y);
+	ImGui::LabelText("player y", buffer);
 	
 	//char ybuffer[64];
 	//snprintf(ybuffer, sizeof(ybuffer), "%f", g_GameState->world->player->pos.y);
@@ -70,7 +73,7 @@ void UpdateGui(SDL_Window* window, Game* game)
 	//char dtbuf[64];
 	//snprintf(dtbuf, sizeof(dtbuf), "%f", g_GameState->deltaTime);
 
-	//ImGui::LabelText("player x", buffer);
+	
 	//ImGui::LabelText("player y", ybuffer);
 	//ImGui::LabelText("entities size", entitysizebuf);
 	//ImGui::LabelText("delta time: ", dtbuf);
