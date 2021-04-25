@@ -2,18 +2,11 @@
 #define MON_TERRAIN_H
 
 #include "mon_shader.h"
+#include "mon_gl_render.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
-struct Material
-{
-	glm::vec3 ambient;
-	glm::vec3 diffuse;
-	glm::vec3 specular;
-	float shininess;
-};
 
 struct MonVertex
 {
@@ -37,8 +30,8 @@ public:
 
 	MonVertex* vertices;
 	//Grass grass;
-	Shader shader;
-	Material material;
+	MonShader::Shader shader;
+	MonGL::Material material;
 	// Shader* grassShader;
 	int* textureIds;
 	float* heightMap;

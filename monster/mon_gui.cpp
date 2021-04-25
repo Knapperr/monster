@@ -22,7 +22,28 @@ void InitGui(SDL_Window* window, SDL_GLContext* context)
 	// Setup Platform/Renderer bindings
 	ImGui_ImplSDL2_InitForOpenGL(window, context);
 	ImGui_ImplOpenGL3_Init(glsl_version);
+
 }
+
+void TerrainWindow(bool* p_open, Game* game)
+{
+	ImGui::Begin("Terrain", p_open);
+
+	ImGui::Checkbox("Wireframe", &game->terrain->wireFrame);
+
+	ImGui::PushItemWidth(100.0f);
+		ImGui::DragFloat("Mat diffuse r", &game->terrain->material.diffuse.x, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("Mat diffuse g", &game->terrain->material.diffuse.y, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("Mat diffuse b", &game->terrain->material.diffuse.z, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::Separator();
+		ImGui::DragFloat("Mat ambient r", &game->terrain->material.ambient.x, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("Mat ambient g", &game->terrain->material.ambient.y, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("Mat ambient b", &game->terrain->material.ambient.z, 0.01f, 0.0f, 1.0f, "%.02f");
+	ImGui::PopItemWidth();
+
+	ImGui::End();
+}
+
 
 void UpdateGui(SDL_Window* window, Game* game)
 {
@@ -31,19 +52,26 @@ void UpdateGui(SDL_Window* window, Game* game)
 	ImGui::NewFrame();
 
 	static bool showDemoWindow = false;
+	static bool showTerrainWindow = false;
 	if (showDemoWindow)
 		ImGui::ShowDemoWindow(&showDemoWindow);
+	if (showTerrainWindow)
+		TerrainWindow(&showTerrainWindow, game);
 
 	ImGui::Begin("DEBUG MENU");
+
+	ImGui::Checkbox("Demo", &showDemoWindow);
+	ImGui::SameLine();
+	ImGui::Checkbox("Terrain", &showTerrainWindow);
 
 	ImGui::DragFloat("cam zoom", &game->cam.zoom, 0.01f, -1000.0f, 1000.0f, "%.02f");
 	ImGui::DragFloat("cam speed", &game->cam.speed, 0.01f, 1.0f, 200.0f, "%.02f");
 	ImGui::Checkbox("camera disabled", &game->cam.disabled);
 	ImGui::Checkbox("simulate", &game->simulate);
 	char buffer[64];
-	snprintf(buffer, sizeof(buffer), "%f", game->player.pos.x);
+	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.x);
 	ImGui::LabelText("player x", buffer);
-	snprintf(buffer, sizeof(buffer), "%f", game->player.pos.y);
+	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.y);
 	ImGui::LabelText("player y", buffer);
 
 	// TODO(ck): Button pops this little window
@@ -51,29 +79,31 @@ void UpdateGui(SDL_Window* window, Game* game)
 	ImGui::DragFloat("L X", &game->light.pos.x, 0.01f, -1500.0f, 1500.0f,  "%.02f");
 	ImGui::DragFloat("L Y", &game->light.pos.y, 0.01f, -1500.0f, 1500.0f, "%.02f");
 	ImGui::DragFloat("L Z", &game->light.pos.z, 0.01f, -1500.0f, 1500.0f, "%.02f");
-	ImGui::DragFloat("L diffuse r", &game->light.diffuse.x, 0.01f, 0.0f, 1.0f, "%.02f");
-	ImGui::DragFloat("L diffuse g", &game->light.diffuse.y, 0.01f, 0.0f, 1.0f, "%.02f");
-	ImGui::DragFloat("L diffuse b", &game->light.diffuse.z, 0.01f, 0.0f, 1.0f, "%.02f");
-	ImGui::DragFloat("L ambient r", &game->light.ambient.x, 0.01f, 0.0f, 1.0f, "%.02f");
-	ImGui::DragFloat("L ambient g", &game->light.ambient.y, 0.01f, 0.0f, 1.0f, "%.02f");
-	ImGui::DragFloat("L ambient b", &game->light.ambient.z, 0.01f, 0.0f, 1.0f, "%.02f");
+
+	ImGui::PushItemWidth(100.0f);
+		ImGui::DragFloat("L diffuse r", &game->light.diffuse.x, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("L diffuse g", &game->light.diffuse.y, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("L diffuse b", &game->light.diffuse.z, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("L ambient r", &game->light.ambient.x, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("L ambient g", &game->light.ambient.y, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("L ambient b", &game->light.ambient.z, 0.01f, 0.0f, 1.0f, "%.02f");
 	
-	// Material ----
-	ImGui::Separator();
-	ImGui::DragFloat("M diffuse r", &game->material.diffuse.x, 0.01f, 0.0f, 1.0f, "%.02f");
-	ImGui::DragFloat("M diffuse g", &game->material.diffuse.y, 0.01f, 0.0f, 1.0f, "%.02f");
-	ImGui::DragFloat("M diffuse b", &game->material.diffuse.z, 0.01f, 0.0f, 1.0f, "%.02f");
-	ImGui::DragFloat("M ambient r", &game->material.ambient.x, 0.01f, 0.0f, 1.0f, "%.02f");
-	ImGui::DragFloat("M ambient g", &game->material.ambient.y, 0.01f, 0.0f, 1.0f, "%.02f");
-	ImGui::DragFloat("M ambient b", &game->material.ambient.z, 0.01f, 0.0f, 1.0f, "%.02f");
+		// Material ----
+		ImGui::Separator();
+		if (ImGui::SmallButton("reset Y Pos"))
+		{
+			game->player.particle.pos.y = 1.0f;
+		}
+		ImGui::DragFloat("M diffuse r", &game->player.data.mat.diffuse.x, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("M diffuse g", &game->player.data.mat.diffuse.y, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("M diffuse b", &game->player.data.mat.diffuse.z, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("M ambient r", &game->player.data.mat.ambient.x, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("M ambient g", &game->player.data.mat.ambient.y, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("M ambient b", &game->player.data.mat.ambient.z, 0.01f, 0.0f, 1.0f, "%.02f");
+	ImGui::PopItemWidth();
 
 	ImGui::Separator();
-	ImGui::DragFloat("M Terrain diffuse r", &game->terrain->material.diffuse.x, 0.01f, 0.0f, 1.0f, "%.02f");
-	ImGui::DragFloat("M Terrain diffuse g", &game->terrain->material.diffuse.y, 0.01f, 0.0f, 1.0f, "%.02f");
-	ImGui::DragFloat("M Terrain diffuse b", &game->terrain->material.diffuse.z, 0.01f, 0.0f, 1.0f, "%.02f");
-	ImGui::DragFloat("M Terrain ambient r", &game->terrain->material.ambient.x, 0.01f, 0.0f, 1.0f, "%.02f");
-	ImGui::DragFloat("M Terrain ambient g", &game->terrain->material.ambient.y, 0.01f, 0.0f, 1.0f, "%.02f");
-	ImGui::DragFloat("M Terrain ambient b", &game->terrain->material.ambient.z, 0.01f, 0.0f, 1.0f, "%.02f");
+
 
 	
 	// TODO(CK): put player at the 0th index for now

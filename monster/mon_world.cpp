@@ -7,7 +7,7 @@ World::World()
 
 	// TODO(ck): Efficient tile map creation
 	map = new TileMap();
-	gl_InitRenderData(&map->sheet.sprite);
+	MonGL::gl_InitRenderData(&map->sheet.sprite);
 	LoadTextureFile(&map->sheet.sprite.texture, "res/textures/test_tile.png", true);
 	int width = 32;
 	int height = 32;

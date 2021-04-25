@@ -27,10 +27,10 @@ Terrain::Terrain(int gridX, int gridZ)
 	textureIds = new int[TEXTURE_ID_COUNT];
 	std::string textPath = "res/textures/terrain/";
 	std::string textDir = textPath.substr(0, textPath.find_last_of('/'));
-	textureIds[0] = LoadTextureFile("1024multi.png", textDir, false);
-	textureIds[1] = LoadTextureFile("rock.png", textDir, false);
-	textureIds[2] = LoadTextureFile("grass.jpg", textDir, false);
-	textureIds[3] = LoadTextureFile("snow.jpg", textDir, false);
+	textureIds[0] = MonGL::LoadTextureFile("1024multi.png", textDir, false);
+	textureIds[1] = MonGL::LoadTextureFile("rock.png", textDir, false);
+	textureIds[2] = MonGL::LoadTextureFile("grass.jpg", textDir, false);
+	textureIds[3] = MonGL::LoadTextureFile("snow.jpg", textDir, false);
 
 	selectedTextureId = textureIds[2];
 

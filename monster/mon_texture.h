@@ -3,26 +3,29 @@
 
 #include <string>
 
-struct Texture2D
+namespace MonGL
 {
-	// id of texture object
-	unsigned int id;
-	// dimensions in pixels
-	unsigned int width;
-	unsigned int height;
-	// format of the texture object and format of loaded image
-	unsigned int internalFormat;
-	unsigned int imageFormat;
-	// texture configurations
-	// t & s axis
-	unsigned int wrapS;
-	unsigned int wrapT;
-	unsigned int filterMin;
-	unsigned int filterMax;
-};
+	struct Texture
+	{
+		// id of texture object
+		unsigned int id;
+		// dimensions in pixels
+		unsigned int width;
+		unsigned int height;
+		// format of the texture object and format of loaded image
+		unsigned int internalFormat;
+		unsigned int imageFormat;
+		// texture configurations
+		// t & s axis
+		unsigned int wrapS;
+		unsigned int wrapT;
+		unsigned int filterMin;
+		unsigned int filterMax;
+	};
 
-void Generate2DTexture(Texture2D* texture, unsigned int width, unsigned int height, unsigned char* data);
-void LoadTextureFile(Texture2D* texture, const char* file, bool alpha);
-unsigned int LoadTextureFile(const char* path, const std::string& directory, bool gamma = false);
+	void GenerateTexture(Texture* texture, unsigned int width, unsigned int height, unsigned char* data);
+	void LoadTextureFile(Texture* texture, const char* file, bool alpha);
+	unsigned int LoadTextureFile(const char* path, const std::string& directory, bool gamma = false);
 
+}
 #endif

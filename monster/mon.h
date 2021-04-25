@@ -53,11 +53,10 @@ struct Particle
 	void clearAccumulator();
 };
 
-struct CameraTwo
+struct Player
 {
-	glm::vec2 pos;
-	glm::vec2 target;
-	float zoom;
+	Particle particle;
+	MonGL::RenderData data;
 };
 
 class Game
@@ -68,28 +67,20 @@ public:
 	void render(double dt);
 	void cleanUp();
 
-	bool init(int x);
-	void update(double dt, Input* input, int x);
-	void render();
-
 	// TODO(ck):
 	// DO NOT KEEP the shaders in the game and renderer like you did last time...
 	// keep them in a structure that can be accessed globally instead keep it clean
 	World* world;
 	Terrain* terrain;
 
-	//Shader newShader;
 	Camera cam;
-	CameraTwo camera;
 	Input input;
 
-	unsigned int VBO, VAO = -1;
-	Particle player;
+	Player player;
 	bool simulate;
-	Shader shader;
+	MonShader::Shader shader;
 
 	Light light;
-	Material material;
 
 };				 
 
