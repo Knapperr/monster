@@ -13,8 +13,7 @@
 #include "mon_entity.h"
 #include "mon_world.h"
 
-#include "mon_debug_camera.h"
-#include "mon_terrain.h"
+#include "mon_input.h"
 
 // should not be in this layer either
 // the app just takes 
@@ -30,58 +29,31 @@
 
 #define ArrayCount(Array) (sizeof(Array) / sizeof((Array)[0]))
 
-struct Light 
+
+struct Camera
 {
-	glm::vec3 pos;
-
-	glm::vec3 ambient;
-	glm::vec3 diffuse;
-	glm::vec3 specular;
-};
-
-// Get to this starts pg49 Ian Millington
-struct Particle
-{
-	glm::vec3 pos;
-	glm::vec3 velocity;
-	glm::vec3 acceleration;
-
-	float damping;
-	float inverseMass;
-
-	void integrate(float duration);
-	void clearAccumulator();
-};
-
-struct Player
-{
-	Particle particle;
-	MonGL::RenderData data;
+	glm::vec2 pos;
+	glm::vec2 target;
+	float zoom;
 };
 
 class Game
 {
-public:
-	bool init();
-	void update(double dt, Input* input);
-	void render(double dt);
+public:	
+	bool init(int x);
+	void update(double dt, Input* input, int x);
+	void render();
+	
 	void cleanUp();
 
 	// TODO(ck):
 	// DO NOT KEEP the shaders in the game and renderer like you did last time...
 	// keep them in a structure that can be accessed globally instead keep it clean
 	World* world;
-	Terrain* terrain;
-
-	Camera cam;
-	Input input;
-
-	Player player;
-	bool simulate;
 	MonShader::Shader shader;
 
-	Light light;
-
+	Camera camera;
+	Input input;
 };				 
 
 #endif
