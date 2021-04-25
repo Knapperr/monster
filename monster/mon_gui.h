@@ -25,7 +25,7 @@ void UpdateGui();
 
 
 void RenderGui();
-bool GuiActive();
+bool GuiActive(bool leftPressed);
 void ShutdownGui();
 
 #endif

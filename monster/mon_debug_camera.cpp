@@ -3,7 +3,7 @@
 
 Camera::Camera()
 {
-	pos = glm::vec3(0.0f, 0.0f, 3.0f);
+	pos = glm::vec3(10.0f, 5.0f, 30.0f);
 	worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	target = glm::vec3(0.0f, 0.0f, 0.0f);
 	direction = glm::normalize(pos - target);
@@ -11,7 +11,8 @@ Camera::Camera()
 	up = glm::cross(direction, right);
 	front = glm::vec3(0.0f, 0.0f, -1.0f);
 
-	speed = 5.0f;
+	speed = 30.0f;
+	disabled = false;
 	yaw = -90.0f;
 	pitch = 0.0f;
 	zoom = 45.0f;
@@ -25,7 +26,10 @@ glm::mat4 Camera::viewMatrix()
 
 void Camera::update(double dt, Input* input, bool constrainPitch)
 {
-	keyInput(dt, input);
+	if (disabled == false)
+	{
+		keyInput(dt, input);
+	}
 	
 	if (input->leftMouseButton.endedDown)
 	{

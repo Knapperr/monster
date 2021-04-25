@@ -1,6 +1,8 @@
 #ifndef MON_TEXTURE_H
 #define MON_TEXTURE_H
 
+#include <string>
+
 struct Texture2D
 {
 	// id of texture object
@@ -21,6 +23,6 @@ struct Texture2D
 
 void Generate2DTexture(Texture2D* texture, unsigned int width, unsigned int height, unsigned char* data);
 void LoadTextureFile(Texture2D* texture, const char* file, bool alpha);
-
+unsigned int LoadTextureFile(const char* path, const std::string& directory, bool gamma = false);
 
 #endif

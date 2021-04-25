@@ -78,6 +78,9 @@
     <ClCompile Include="mon_app.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="mon_terrain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mon_gui.h">
@@ -147,6 +150,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="mon_app.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mon_terrain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

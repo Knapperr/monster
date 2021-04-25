@@ -21,6 +21,7 @@ struct Timer
 bool App::init()
 {
 
+	// TODO(ck): Memory Allocation
 	platform = new SDLPlatform();
 
 
@@ -31,17 +32,18 @@ bool App::init()
 	
 	//Platform->SetTitle(window, "Monster");
 
+	// TODO(ck): Memory Allocation
 	oldInput = new Input();
 	newInput = new Input();
 	//oldInput = &input[0];
 	//newInput = &input[1];
 	game = new Game();
 
-	//if (!game->init())
-	//	return false;
-
-	if (!game->init(1))
+	if (!game->init())
 		return false;
+
+	//if (!game->init(1))
+	//	return false;
 
 	return true;
 }
@@ -194,8 +196,8 @@ void App::run()
 			//		frameAccumulator -= desiredFrameTime;
 			//	}
 			//}
-			//game->update(fixedDeltaTime, newInput);
-			game->update(fixedDeltaTime, newInput, 1);
+			game->update(fixedDeltaTime, newInput);
+			//game->update(fixedDeltaTime, newInput, 1);
 
 			// Somehow get app state into game to check this and 
 			// just call that?
@@ -207,8 +209,8 @@ void App::run()
 			glClearColor(0.126f, 0.113f, 0.165f, 1.0f);
 			// TODO(ck): Platform->Renderer->clear
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			//game->render(1);
-			game->render(); // NOTE(ck): 2D
+			game->render(1);
+			//game->render(); // NOTE(ck): 2D
 
 
 			RenderGui();

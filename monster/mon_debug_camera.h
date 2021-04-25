@@ -17,6 +17,7 @@ public:
 	glm::vec3 pos;
 	float speed;
 	float zoom;
+	bool disabled;
 
 private:
 	glm::vec3 target;
@@ -29,6 +30,7 @@ private:
 	float yaw;
 	float pitch;
 	float mouseSensitivity;
+
 
 	void keyInput(double dt, Input* input);
 	void mouseInput(float xOffset, float yOffset, bool constrainPitch);

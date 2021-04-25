@@ -9,7 +9,11 @@ struct CameraTwo
 };
 
 
-void Game::Init(int x)
+///
+/// 2D CODE
+///
+
+bool Game::init(int x)
 {
 	world = new World();
 	LoadShader(&shader, "res/shaders/vert_sprite.glsl", "res/shaders/frag_sprite.glsl", NULL);
@@ -43,9 +47,11 @@ void Game::Init(int x)
 	int projLoc = glGetUniformLocation(shader.id, "projection");
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
+
+	return true;
 }
 
-void Game::Update(double dt, Input* input, int x)
+void Game::update(double dt, Input* input, int x)
 {
 	//if (state->deltaTime != dt)
 		//state->deltaTime = dt;
@@ -57,24 +63,24 @@ void Game::Update(double dt, Input* input, int x)
 
 	// TODO(ck): Update camera pos
 	// camera position = player position
-	
-		real32 playerGroundPointX = screenCenterX + metersToPixels*diff.dX;
-		real32 playerGroundPointY = screenCenterY - metersToPixels*diff.dY;
 
-	
+	//real32 playerGroundPointX = screenCenterX + metersToPixels * diff.dX;
+	//real32 playerGroundPointY = screenCenterY - metersToPixels * diff.dY;
+
+
 
 	//const unsigned int SCREEN_WIDTH = 1280;
 	//const unsigned int SCREEN_HEIGHT = 720;
 	camera.target = world->player->pos;
 }
 
-void Game::Render()
+void Game::render()
 {
 	// TODO(ck): Clean up --- camera
 	//float left = 0.0f;
 
-	// 640.0f = window.x 
-	// 360.0f = window.y 
+	// 640.0f = window.x
+	// 360.0f = window.y
 	glm::vec2 target = camera.target;
 	float width = 960.0f;
 	float height = 540.0f;
@@ -113,8 +119,6 @@ void Game::Render()
 }
 
 
-
-*/
 
 
 /* IMPORTANT(ck): OLD ENTRY POINT */

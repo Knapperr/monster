@@ -12,9 +12,9 @@
 
 #include "mon_entity.h"
 #include "mon_world.h"
-#include "mon_shader.h"
 
 #include "mon_debug_camera.h"
+#include "mon_terrain.h"
 
 // should not be in this layer either
 // the app just takes 
@@ -30,14 +30,6 @@
 
 #define ArrayCount(Array) (sizeof(Array) / sizeof((Array)[0]))
 
-struct Material 
-{
-	glm::vec3 ambient;
-	glm::vec3 diffuse;
-	glm::vec3 specular;
-	float shininess;
-};
-
 struct Light 
 {
 	glm::vec3 pos;
@@ -47,13 +39,26 @@ struct Light
 	glm::vec3 specular;
 };
 
+// Get to this starts pg49 Ian Millington
+struct Particle
+{
+	glm::vec3 pos;
+	glm::vec3 velocity;
+	glm::vec3 acceleration;
+
+	float damping;
+	float inverseMass;
+
+	void integrate(float duration);
+	void clearAccumulator();
+};
+
 struct CameraTwo
 {
 	glm::vec2 pos;
 	glm::vec2 target;
 	float zoom;
 };
-
 
 class Game
 {
@@ -71,13 +76,16 @@ public:
 	// DO NOT KEEP the shaders in the game and renderer like you did last time...
 	// keep them in a structure that can be accessed globally instead keep it clean
 	World* world;
+	Terrain* terrain;
+
 	//Shader newShader;
 	Camera cam;
 	CameraTwo camera;
 	Input input;
 
 	unsigned int VBO, VAO = -1;
-	glm::vec3 pos;
+	Particle player;
+	bool simulate;
 	Shader shader;
 
 	Light light;

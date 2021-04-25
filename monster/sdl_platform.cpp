@@ -54,9 +54,9 @@ bool SDLPlatform::init(int SCREEN_WIDTH, int SCREEN_HEIGHT, int PORT_WIDTH, int 
 	printf("View Port Size: %d, %d\n", PORT_WIDTH, PORT_HEIGHT);
 
 	//glEnable(GL_CULL_FACE);
-	//glDepthFunc(GL_LESS);
+	glDepthFunc(GL_LESS);
 	glEnable(GL_BLEND);
-	//glEnable(GL_DEPTH_TEST); // NOTE(ck): OFF FOR 2D
+	glEnable(GL_DEPTH_TEST); // NOTE(ck): OFF FOR 2D
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
@@ -130,7 +130,7 @@ void SDLPlatform::pollInput(Input* newInput, Input* oldInput)
 		if (e.type == SDL_MOUSEBUTTONDOWN)
 		{
 			// TODO(ck): Wrap cursor hiding in the input? and send to the camera 
-			if (e.button.button == SDL_BUTTON_LEFT && !GuiActive())
+			if (e.button.button == SDL_BUTTON_LEFT && GuiActive(oldInput->leftMouseButton.endedDown) == false)
 			{
 				processKeyboard(&newInput->leftMouseButton, true);
 				SDL_SetRelativeMouseMode(SDL_TRUE);
@@ -144,7 +144,7 @@ void SDLPlatform::pollInput(Input* newInput, Input* oldInput)
 		}
 		else if (e.type == SDL_MOUSEBUTTONUP)
 		{
-			if (e.button.button == SDL_BUTTON_LEFT && !GuiActive())
+			if (e.button.button == SDL_BUTTON_LEFT && GuiActive(oldInput->leftMouseButton.endedDown) == false)
 			{
 				processKeyboard(&newInput->leftMouseButton, false);
 				SDL_SetRelativeMouseMode(SDL_FALSE);

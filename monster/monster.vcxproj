@@ -168,6 +168,7 @@
     <ClCompile Include="mon_gui.cpp" />
     <ClCompile Include="mon_gl_render.cpp" />
     <ClCompile Include="mon_shader.cpp" />
+    <ClCompile Include="mon_terrain.cpp" />
     <ClCompile Include="mon_texture.cpp" />
     <ClCompile Include="mon_world.cpp" />
     <ClCompile Include="sdl_platform.cpp" />
@@ -193,6 +194,7 @@
     <ClInclude Include="mon_ortho_camera.h" />
     <ClInclude Include="mon_platform.h" />
     <ClInclude Include="mon_shader.h" />
+    <ClInclude Include="mon_terrain.h" />
     <ClInclude Include="mon_texture.h" />
     <ClInclude Include="mon_world.h" />
     <ClInclude Include="sdl_platform.h" />
