@@ -76,6 +76,7 @@ void UpdateGui(SDL_Window* window, Game* game)
 
 	// TODO(ck): Button pops this little window
 	ImGui::Separator();
+	ImGui::LabelText("", "Light");
 	ImGui::DragFloat("L X", &game->light.pos.x, 0.01f, -1500.0f, 1500.0f,  "%.02f");
 	ImGui::DragFloat("L Y", &game->light.pos.y, 0.01f, -1500.0f, 1500.0f, "%.02f");
 	ImGui::DragFloat("L Z", &game->light.pos.z, 0.01f, -1500.0f, 1500.0f, "%.02f");
@@ -90,6 +91,7 @@ void UpdateGui(SDL_Window* window, Game* game)
 	
 		// Material ----
 		ImGui::Separator();
+		ImGui::LabelText("", "Player");
 		if (ImGui::SmallButton("reset Y Pos"))
 		{
 			game->player.particle.pos.y = 1.0f;
