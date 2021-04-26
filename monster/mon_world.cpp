@@ -26,7 +26,7 @@ World::World()
 	}
 
 	player = new Entity("res/textures/p1.png", true,
-								glm::vec2(5, 5), glm::vec2(32, 42), glm::vec3(1.0f, 1.0f, 1.0f),
+								glm::vec2(5, 5), glm::vec2(32, 32), glm::vec3(1.0f, 1.0f, 1.0f),
 								200.0f, 0.0f, false);
 
 }

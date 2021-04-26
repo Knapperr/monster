@@ -60,6 +60,9 @@ void UpdateGui(SDL_Window* window, Game* game)
 
 	ImGui::Begin("DEBUG MENU");
 
+//#define _3D_
+
+#ifdef _3D_
 	ImGui::Checkbox("Demo", &showDemoWindow);
 	ImGui::SameLine();
 	ImGui::Checkbox("Terrain", &showTerrainWindow);
@@ -105,17 +108,17 @@ void UpdateGui(SDL_Window* window, Game* game)
 	ImGui::PopItemWidth();
 
 	ImGui::Separator();
-
+#else
 
 	
 	// TODO(CK): put player at the 0th index for now
-	//ImGui::SliderFloat("Player Speed", &game->world->player->speed, 0.0f, 500.0f);
+	ImGui::SliderFloat("Player Speed", &game->world->player->speed, 0.0f, 500.0f);
 
-	//char buffer[64];
-	//snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.x);
-	//ImGui::LabelText("player x", buffer);
-	//snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.y);
-	//ImGui::LabelText("player y", buffer);
+	char buffer[64];
+	snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.x);
+	ImGui::LabelText("player x", buffer);
+	snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.y);
+	ImGui::LabelText("player y", buffer);
 	
 	
 	//char entitysizebuf[64];
@@ -128,6 +131,7 @@ void UpdateGui(SDL_Window* window, Game* game)
 	//ImGui::LabelText("player y", ybuffer);
 	//ImGui::LabelText("entities size", entitysizebuf);
 	//ImGui::LabelText("delta time: ", dtbuf);
+#endif
 
 	ImGui::End();
 }

@@ -59,6 +59,13 @@ struct Player
 	MonGL::RenderData data;
 };
 
+struct CameraTwo
+{
+	glm::vec2 pos;
+	glm::vec2 target;
+	float zoom;
+};
+
 class Game
 {
 public:
@@ -67,6 +74,11 @@ public:
 	void render(double dt);
 	void cleanUp();
 
+	bool init(int x);
+	void update(double dt, Input* input, int x);
+	void render();
+
+
 	// TODO(ck):
 	// DO NOT KEEP the shaders in the game and renderer like you did last time...
 	// keep them in a structure that can be accessed globally instead keep it clean
@@ -74,6 +86,7 @@ public:
 	Terrain* terrain;
 
 	Camera cam;
+	CameraTwo camera;
 	Input input;
 
 	Player player;

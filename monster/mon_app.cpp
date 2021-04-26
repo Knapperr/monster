@@ -39,11 +39,13 @@ bool App::init()
 	//newInput = &input[1];
 	game = new Game();
 
+#ifdef _3D_
 	if (!game->init())
 		return false;
-
-	//if (!game->init(1))
-	//	return false;
+#else
+	if (!game->init(1))
+		return false;
+#endif
 
 	return true;
 }
@@ -196,8 +198,11 @@ void App::run()
 			//		frameAccumulator -= desiredFrameTime;
 			//	}
 			//}
+#ifdef _3D_
 			game->update(fixedDeltaTime, newInput);
-			//game->update(fixedDeltaTime, newInput, 1);
+#else
+			game->update(fixedDeltaTime, newInput, 1);
+#endif
 
 			// Somehow get app state into game to check this and 
 			// just call that?
@@ -209,8 +214,12 @@ void App::run()
 			glClearColor(0.126f, 0.113f, 0.165f, 1.0f);
 			// TODO(ck): Platform->Renderer->clear
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+#ifdef _3D_
 			game->render(1);
-			//game->render(); // NOTE(ck): 2D
+#else
+			game->render(); // NOTE(ck): 2D
+#endif
 
 
 			RenderGui();
