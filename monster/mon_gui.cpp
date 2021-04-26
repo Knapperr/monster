@@ -25,7 +25,6 @@ void InitGui(SDL_Window* window, SDL_GLContext* context)
 
 }
 
-/*
 void TerrainWindow(bool* p_open, Game* game)
 {
 	ImGui::Begin("Terrain", p_open);
@@ -44,7 +43,7 @@ void TerrainWindow(bool* p_open, Game* game)
 
 	ImGui::End();
 }
-*/
+
 
 void UpdateGui(SDL_Window* window, Game* game)
 {
@@ -53,21 +52,68 @@ void UpdateGui(SDL_Window* window, Game* game)
 	ImGui::NewFrame();
 
 	static bool showDemoWindow = false;
+	static bool showTerrainWindow = false;
 	if (showDemoWindow)
 		ImGui::ShowDemoWindow(&showDemoWindow);
+	if (showTerrainWindow)
+		TerrainWindow(&showTerrainWindow, game);
 
 	ImGui::Begin("DEBUG MENU");
 
 	ImGui::Checkbox("Demo", &showDemoWindow);
+	ImGui::SameLine();
+	ImGui::Checkbox("Terrain", &showTerrainWindow);
+
+	ImGui::DragFloat("cam zoom", &game->cam.zoom, 0.01f, -1000.0f, 1000.0f, "%.02f");
+	ImGui::DragFloat("cam speed", &game->cam.speed, 0.01f, 1.0f, 200.0f, "%.02f");
+	ImGui::Checkbox("camera disabled", &game->cam.disabled);
+	ImGui::Checkbox("simulate", &game->simulate);
+	char buffer[64];
+	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.x);
+	ImGui::LabelText("player x", buffer);
+	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.y);
+	ImGui::LabelText("player y", buffer);
+
+	// TODO(ck): Button pops this little window
+	ImGui::Separator();
+	ImGui::DragFloat("L X", &game->light.pos.x, 0.01f, -1500.0f, 1500.0f,  "%.02f");
+	ImGui::DragFloat("L Y", &game->light.pos.y, 0.01f, -1500.0f, 1500.0f, "%.02f");
+	ImGui::DragFloat("L Z", &game->light.pos.z, 0.01f, -1500.0f, 1500.0f, "%.02f");
+
+	ImGui::PushItemWidth(100.0f);
+		ImGui::DragFloat("L diffuse r", &game->light.diffuse.x, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("L diffuse g", &game->light.diffuse.y, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("L diffuse b", &game->light.diffuse.z, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("L ambient r", &game->light.ambient.x, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("L ambient g", &game->light.ambient.y, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("L ambient b", &game->light.ambient.z, 0.01f, 0.0f, 1.0f, "%.02f");
+	
+		// Material ----
+		ImGui::Separator();
+		if (ImGui::SmallButton("reset Y Pos"))
+		{
+			game->player.particle.pos.y = 1.0f;
+		}
+		ImGui::DragFloat("M diffuse r", &game->player.data.mat.diffuse.x, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("M diffuse g", &game->player.data.mat.diffuse.y, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("M diffuse b", &game->player.data.mat.diffuse.z, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("M ambient r", &game->player.data.mat.ambient.x, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("M ambient g", &game->player.data.mat.ambient.y, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("M ambient b", &game->player.data.mat.ambient.z, 0.01f, 0.0f, 1.0f, "%.02f");
+	ImGui::PopItemWidth();
+
+	ImGui::Separator();
+
+
 	
 	// TODO(CK): put player at the 0th index for now
-	ImGui::SliderFloat("Player Speed", &game->world->player->speed, 0.0f, 500.0f);
+	//ImGui::SliderFloat("Player Speed", &game->world->player->speed, 0.0f, 500.0f);
 
-	char buffer[64];
-	snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.x);
-	ImGui::LabelText("player x", buffer);
-	snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.y);
-	ImGui::LabelText("player y", buffer);
+	//char buffer[64];
+	//snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.x);
+	//ImGui::LabelText("player x", buffer);
+	//snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.y);
+	//ImGui::LabelText("player y", buffer);
 	
 	
 	//char entitysizebuf[64];
