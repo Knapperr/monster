@@ -17,7 +17,7 @@
 
 #ifdef USE_SDL
 void InitGui(SDL_Window* window, SDL_GLContext* context);
-void UpdateGui(SDL_Window* window, Game* game);
+void UpdateGui(SDL_Window* window, Mon::Game* game);
 #else
 void InitGui();
 void UpdateGui();

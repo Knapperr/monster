@@ -8,7 +8,7 @@ class App
 {
 public:
 	Platform* platform; /* SDLPlatform */
-	Game* game;
+	Mon::Game* game;
 	bool running = true;
 	Input* oldInput;
 	Input* newInput;

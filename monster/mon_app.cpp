@@ -37,7 +37,7 @@ bool App::init()
 	newInput = new Input();
 	//oldInput = &input[0];
 	//newInput = &input[1];
-	game = new Game();
+	game = new Mon::Game();
 
 #ifdef _3D_
 	if (!game->init())
@@ -197,7 +197,7 @@ void App::run()
 			//		// g_Game->VariableUpdate
 			//		frameAccumulator -= desiredFrameTime;
 			//	}
-			//}
+			//}v
 #ifdef _3D_
 			game->update(fixedDeltaTime, newInput);
 #else

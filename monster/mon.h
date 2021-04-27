@@ -2,6 +2,7 @@
 #define MON_H
 
 
+
 // TODO(ck): Glad and SDL should not be in the game layer
 #include <glad/glad.h>
 #include <SDL/SDL.h>
@@ -20,9 +21,11 @@
 // the app just takes 
 #include "mon_gl_render.h"
 
+namespace Mon
+{
 
 #if 1
-// TODO: Complete assertion macro
+	// TODO: Complete assertion macro
 #define Assert(expression) if(!(expression)) {*(int *)0 = 0;}
 #else
 #define Assert(expression)
@@ -30,72 +33,74 @@
 
 #define ArrayCount(Array) (sizeof(Array) / sizeof((Array)[0]))
 
-struct Light 
-{
-	glm::vec3 pos;
+	struct Light
+	{
+		glm::vec3 pos;
 
-	glm::vec3 ambient;
-	glm::vec3 diffuse;
-	glm::vec3 specular;
-};
+		glm::vec3 ambient;
+		glm::vec3 diffuse;
+		glm::vec3 specular;
+	};
 
-// Get to this starts pg49 Ian Millington
-struct Particle
-{
-	glm::vec3 pos;
-	glm::vec3 velocity;
-	glm::vec3 acceleration;
+	// Get to this starts pg49 Ian Millington
+	struct Particle
+	{
+		glm::vec3 pos;
+		glm::vec3 velocity;
+		glm::vec3 acceleration;
 
-	float damping;
-	float inverseMass;
+		float damping;
+		float inverseMass;
 
-	void integrate(float duration);
-	void clearAccumulator();
-};
+		void integrate(float duration);
+		void clearAccumulator();
+	};
 
-struct Player
-{
-	Particle particle;
-	MonGL::RenderData data;
-};
+	struct Player
+	{
+		Particle particle;
+		MonGL::RenderData data;
+	};
 
-struct CameraTwo
-{
-	glm::vec2 pos;
-	glm::vec2 target;
-	float zoom;
-};
+	struct CameraTwo
+	{
+		glm::vec2 pos;
+		glm::vec2 target;
+		float zoom;
+	};
 
-class Game
-{
-public:
-	bool init();
-	void update(double dt, Input* input);
-	void render(double dt);
-	void cleanUp();
+	class Game
+	{
+	public:
+		bool init();
+		void update(double dt, Input* input);
+		void render(double dt);
+		void cleanUp();
 
-	bool init(int x);
-	void update(double dt, Input* input, int x);
-	void render();
-
-
-	// TODO(ck):
-	// DO NOT KEEP the shaders in the game and renderer like you did last time...
-	// keep them in a structure that can be accessed globally instead keep it clean
-	World* world;
-	Terrain* terrain;
-
-	Camera cam;
-	CameraTwo camera;
-	Input input;
-
-	Player player;
-	bool simulate;
-	MonShader::Shader shader;
-
-	Light light;
+		bool init(int x);
+		void update(double dt, Input* input, int x);
+		void render();
 
 
-};				 
+		// TODO(ck):
+		// DO NOT KEEP the shaders in the game and renderer like you did last time...
+		// keep them in a structure that can be accessed globally instead keep it clean
+		World* world;
+		Terrain* terrain;
 
+		Camera cam;
+		CameraTwo camera;
+		Input input;
+
+		Player player;
+		bool simulate;
+		MonShader::Shader shader;
+
+
+		double deltaTime;
+		Light light;
+
+
+	};
+}
 #endif

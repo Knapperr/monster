@@ -25,7 +25,7 @@ void InitGui(SDL_Window* window, SDL_GLContext* context)
 
 }
 
-void TerrainWindow(bool* p_open, Game* game)
+void TerrainWindow(bool* p_open, Mon::Game* game)
 {
 	ImGui::Begin("Terrain", p_open);
 
@@ -44,8 +44,45 @@ void TerrainWindow(bool* p_open, Game* game)
 	ImGui::End();
 }
 
+void CameraWindow(bool* p_open, Mon::Game* game)
+{
+	ImGui::Begin("Cammy", p_open);
 
-void UpdateGui(SDL_Window* window, Game* game)
+	float velocity = game->cam.speed * game->deltaTime;
+	
+	ImGui::PushButtonRepeat(true);
+	ImGui::Indent(32);
+	if (ImGui::ArrowButton("##up", ImGuiDir_Up))
+		game->cam.pos += game->cam.front * velocity;	
+	ImGui::Unindent(32);
+
+	if (ImGui::ArrowButton("##left", ImGuiDir_Left))
+		game->cam.pos -= game->cam.right * velocity;
+	ImGui::SameLine(30, 40);
+	if (ImGui::ArrowButton("##right", ImGuiDir_Right))
+		game->cam.pos += game->cam.right * velocity;
+
+	ImGui::Indent(32);
+	if (ImGui::ArrowButton("##down", ImGuiDir_Down))
+		game->cam.pos -= game->cam.front * velocity;
+	ImGui::Unindent(32);
+	ImGui::PopButtonRepeat();
+
+	ImGui::Separator();
+	ImGui::Checkbox("camera disabled", &game->cam.disabled);
+
+	ImGui::DragFloat("cam zoom", &game->cam.zoom, 0.1f, -1000.0f, 1000.0f, "%.02f");
+	ImGui::DragFloat("cam speed", &game->cam.speed, 0.01f, 1.0f, 200.0f, "%.02f");
+	
+	ImGui::DragFloat("near plane", &game->cam.nearPlane, 0.01f, 0.1f, 100.0f, "%.02f");
+	ImGui::DragFloat("far plane", &game->cam.farPlane, 0.5f, 100.0f, 1000.0f, "%.02f");
+
+
+	ImGui::End();
+}
+
+
+void UpdateGui(SDL_Window* window, Mon::Game* game)
 {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame(window);
@@ -53,29 +90,32 @@ void UpdateGui(SDL_Window* window, Game* game)
 
 	static bool showDemoWindow = false;
 	static bool showTerrainWindow = false;
+	static bool showCameraWindow = false;
 	if (showDemoWindow)
 		ImGui::ShowDemoWindow(&showDemoWindow);
 	if (showTerrainWindow)
 		TerrainWindow(&showTerrainWindow, game);
+	if (showCameraWindow)
+		CameraWindow(&showCameraWindow, game);
 
 	ImGui::Begin("DEBUG MENU");
 
-//#define _3D_
 
-#ifdef _3D_
 	ImGui::Checkbox("Demo", &showDemoWindow);
 	ImGui::SameLine();
 	ImGui::Checkbox("Terrain", &showTerrainWindow);
+	ImGui::SameLine();
+	ImGui::Checkbox("Camera", &showCameraWindow);
 
-	ImGui::DragFloat("cam zoom", &game->cam.zoom, 0.01f, -1000.0f, 1000.0f, "%.02f");
-	ImGui::DragFloat("cam speed", &game->cam.speed, 0.01f, 1.0f, 200.0f, "%.02f");
-	ImGui::Checkbox("camera disabled", &game->cam.disabled);
+
 	ImGui::Checkbox("simulate", &game->simulate);
 	char buffer[64];
 	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.x);
-	ImGui::LabelText("player x", buffer);
+	ImGui::LabelText(buffer, "player x");
 	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.y);
-	ImGui::LabelText("player y", buffer);
+	ImGui::LabelText(buffer, "player y");
+	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.z);
+	ImGui::LabelText(buffer, "player z");
 
 	// TODO(ck): Button pops this little window
 	ImGui::Separator();
@@ -108,17 +148,17 @@ void UpdateGui(SDL_Window* window, Game* game)
 	ImGui::PopItemWidth();
 
 	ImGui::Separator();
-#else
 
-	
+	// 2D // 
+	// -------------
 	// TODO(CK): put player at the 0th index for now
-	ImGui::SliderFloat("Player Speed", &game->world->player->speed, 0.0f, 500.0f);
+	//ImGui::SliderFloat("Player Speed", &game->world->player->speed, 0.0f, 500.0f);
 
-	char buffer[64];
-	snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.x);
-	ImGui::LabelText("player x", buffer);
-	snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.y);
-	ImGui::LabelText("player y", buffer);
+	//char buffer[64];
+	//snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.x);
+	//ImGui::LabelText("player x", buffer);
+	//snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.y);
+	//ImGui::LabelText("player y", buffer);
 	
 	
 	//char entitysizebuf[64];
@@ -131,10 +171,10 @@ void UpdateGui(SDL_Window* window, Game* game)
 	//ImGui::LabelText("player y", ybuffer);
 	//ImGui::LabelText("entities size", entitysizebuf);
 	//ImGui::LabelText("delta time: ", dtbuf);
-#endif
 
 	ImGui::End();
 }
+
 #endif
 
 void RenderGui()
