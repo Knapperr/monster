@@ -196,6 +196,7 @@ namespace Mon
 
 	bool Game::init(int x)
 	{
+		// TODO(ck): Memory management
 		world = new World();
 		LoadShader(&shader, "res/shaders/vert_sprite.glsl", "res/shaders/frag_sprite.glsl", NULL);
 
@@ -236,11 +237,15 @@ namespace Mon
 	{
 		//if (state->deltaTime != dt)
 			//state->deltaTime = dt;
+		float newSpeed = world->player->speed;
+		if (input->shift.endedDown)
+			newSpeed *= 2;
 
-		if (input->up.endedDown)    world->player->pos.y -= (int)(world->player->speed * dt);
-		if (input->down.endedDown)  world->player->pos.y += (int)(world->player->speed * dt);
-		if (input->left.endedDown)  world->player->pos.x -= (int)(world->player->speed * dt);
-		if (input->right.endedDown) world->player->pos.x += (int)(world->player->speed * dt);
+
+		if (input->up.endedDown)    world->player->pos.y -= (int)(newSpeed * dt);
+		if (input->down.endedDown)  world->player->pos.y += (int)(newSpeed * dt);
+		if (input->left.endedDown)  world->player->pos.x -= (int)(newSpeed * dt);
+		if (input->right.endedDown) world->player->pos.x += (int)(newSpeed * dt);
 
 		// TODO(ck): Update camera pos
 		// camera position = player position
@@ -282,7 +287,8 @@ namespace Mon
 		//// TODO(ck): Draw tilemap function that we pass the tilemap into
 		for (unsigned int i = 0; i < world->map->tiles.size(); ++i)
 		{
-			MonGL::gl_DrawTile(&shader, &world->map->tiles[i], &world->map->sheet.sprite);
+			int tileId = world->map->tiles[i].tileId;
+			MonGL::gl_DrawTile(&shader, &world->map->tiles[i], &world->map->sheet.sprites[tileId]);
 		}
 
 		for (unsigned int i = 0; i < world->entities.size(); ++i)

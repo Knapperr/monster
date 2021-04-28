@@ -16,11 +16,11 @@ struct Tile
 	int tileId; // this links to the sprite
 	//Sprite sprite;
 
-	Tile(float x, float y) : x(x), y(y)
+	Tile(int id, float x, float y) : x(x), y(y)
 	{
 		height = 32;
 		width = 32;
-		tileId = 1;
+		tileId = id;
 		//sprite = {};
 	}
 };
@@ -28,7 +28,7 @@ struct Tile
 // TODO(ck): tileId needs to map to the tilesheet
 struct TileSheet
 {
-	Sprite sprite;
+	std::vector<Sprite> sprites;
 };
 
 struct TileMap
