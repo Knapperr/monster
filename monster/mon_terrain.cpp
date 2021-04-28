@@ -173,8 +173,8 @@ void Terrain::generate()
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(MonVertex), (void*)offsetof(MonVertex, normal));
 	// tex coords
-	//glEnableVertexAttribArray(2);
-	//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(MonVertex), (void*)offsetof(MonVertex, texCoords));
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(MonVertex), (void*)offsetof(MonVertex, texCoords));
 
 	// TODO(CK) & STUDY(CK): I forgot 3 * sizeof(float) in the last parameter 
 	// I need to make sure that I study glBufferData and glVertexAttribPointer I think because 

@@ -86,6 +86,8 @@ namespace MonGL
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
+		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), false);
+
 		// world transform
 		glm::mat4 model = glm::mat4(1.0f);
 

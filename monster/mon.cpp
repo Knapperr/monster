@@ -154,6 +154,10 @@ namespace Mon
 		matModel = matModel * matScale;
 
 
+		glUniform1i(glGetUniformLocation(shader.id, "useTexture"), true);
+
+		glBindTexture(GL_TEXTURE_2D, terrain->selectedTextureId);
+
 		glUniformMatrix4fv(glGetUniformLocation(shader.id, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
 		glBindVertexArray(terrain->VAO);
 
@@ -164,8 +168,8 @@ namespace Mon
 		glBindVertexArray(0);
 		// Always good practice to set everything back to defaults once configured
 		// NOTE(CK): bind texture must be AFTER glActiveTexture or it will not unbind properly
-		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_2D, 0);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	// ------------------------------------------
 
 
@@ -299,9 +303,10 @@ namespace Mon
 			MonGL::gl_DrawObject(&shader, world->entities[i]);
 		}
 		MonGL::gl_DrawObject(&shader, world->player);
-		//gl_DrawObject(&shader, &newBall);
+		
+		// gui
 
-		//DrawCollider(960 / 2, 540 / 2, 0, 120, 360);
+		
 
 	}
 }
