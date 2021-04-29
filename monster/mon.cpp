@@ -44,7 +44,9 @@ namespace Mon
 		cam = Camera();
 
 		player = {};
+		// 
 		MonGL::gl_InitRenderDataCube(&player.data);
+		MonGL::gl_InitRenderDataCube(&player.colliderData);
 		player.particle.pos = glm::vec3(10.0f, 10.0f, 20.0f);
 		player.particle.inverseMass = 10.0f;
 		player.particle.velocity = glm::vec3(20.0f, 30.0f, 20.0f); // 35m/s
@@ -183,7 +185,8 @@ namespace Mon
 		glUniform3fv(glGetUniformLocation(shader.id, "light.diffuse"), 1, &light.diffuse[0]);
 		glUniform3fv(glGetUniformLocation(shader.id, "light.specular"), 1, &light.specular[0]);
 
-		MonGL::gl_DrawCube(&player.data, player.particle.pos, cam.pos, projection, view, shader.id);
+		//MonGL::gl_DrawCube(&player.data, player.particle.pos, cam.pos, projection, view, shader.id);
+		MonGL::gl_DrawCube(&player.colliderData, player.particle.pos, cam.pos, projection, view, shader.id);
 		// ------------------------------------------
 
 

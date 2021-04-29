@@ -60,6 +60,8 @@ namespace Mon
 	{
 		Particle particle;
 		MonGL::RenderData data;
+		MonGL::RenderData colliderData;
+		
 	};
 
 	struct CameraTwo

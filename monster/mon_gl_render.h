@@ -20,7 +20,10 @@ namespace MonGL
 	{
 		unsigned int VAO;
 		unsigned int VBO;
+		unsigned int IBO;
+		int elementLength;
 		Material mat;
+
 
 		//float pos;
 		// view 
@@ -28,7 +31,9 @@ namespace MonGL
 		// shader data?
 	};
 
+	// TODO(ck): gl_InitBoundingBox
 	void gl_InitRenderDataCube(RenderData* data);
+	// TODO(ck): gl_DrawBoundingBox
 	void gl_DrawCube(RenderData* data, 
 					 glm::vec3 playerPos, glm::vec3 camPos,
 					 glm::mat4 projection, glm::mat4 view,
