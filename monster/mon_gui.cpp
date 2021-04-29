@@ -29,6 +29,17 @@ void TerrainWindow(bool* p_open, Mon::Game* game)
 {
 	ImGui::Begin("Terrain", p_open);
 
+	ImGui::Text("Texture");
+	ImGui::Separator();
+	if (ImGui::Button("UV")) { game->terrain->selectedTextureId = game->terrain->textureIds[0]; }
+	ImGui::SameLine();
+	if (ImGui::Button("Rock")) { game->terrain->selectedTextureId = game->terrain->textureIds[1]; }
+	ImGui::SameLine();
+	if (ImGui::Button("Grass")) { game->terrain->selectedTextureId = game->terrain->textureIds[2]; }
+	ImGui::SameLine();
+	if (ImGui::Button("Snow")) { game->terrain->selectedTextureId = game->terrain->textureIds[3]; }
+	ImGui::Separator();
+
 	ImGui::Checkbox("Wireframe", &game->terrain->wireFrame);
 
 	ImGui::PushItemWidth(100.0f);
@@ -69,7 +80,6 @@ void CameraWindow(bool* p_open, Mon::Game* game)
 	ImGui::PopButtonRepeat();
 
 	ImGui::Separator();
-	ImGui::Checkbox("camera disabled", &game->cam.disabled);
 
 	ImGui::DragFloat("cam zoom", &game->cam.zoom, 0.1f, -1000.0f, 1000.0f, "%.02f");
 	ImGui::DragFloat("cam speed", &game->cam.speed, 0.01f, 1.0f, 200.0f, "%.02f");
@@ -100,13 +110,26 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 
 	ImGui::Begin("DEBUG MENU");
 
-
 	ImGui::Checkbox("Demo", &showDemoWindow);
 	ImGui::SameLine();
 	ImGui::Checkbox("Terrain", &showTerrainWindow);
 	ImGui::SameLine();
 	ImGui::Checkbox("Camera", &showCameraWindow);
 
+	ImGui::Checkbox("camera disabled", &game->cam.disabled);
+
+	// 
+	// Player 
+	//
+	ImGui::LabelText("", "Player");
+	if (ImGui::SmallButton("reset Pos"))
+	{
+		game->player.particle.pos.y = 1.0f;
+		game->player.particle.pos.x = 10.0f;
+		game->player.particle.pos.z = 10.0f;
+	}
+
+	ImGui::SliderInt("Collider Width", &game->player.colliderData.lineWidth, 1, 10, NULL);
 
 	ImGui::Checkbox("simulate", &game->simulate);
 	char buffer[64];
@@ -134,11 +157,6 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 	
 		// Material ----
 		ImGui::Separator();
-		ImGui::LabelText("", "Player");
-		if (ImGui::SmallButton("reset Y Pos"))
-		{
-			game->player.particle.pos.y = 1.0f;
-		}
 		ImGui::DragFloat("M diffuse r", &game->player.data.mat.diffuse.x, 0.01f, 0.0f, 1.0f, "%.02f");
 		ImGui::DragFloat("M diffuse g", &game->player.data.mat.diffuse.y, 0.01f, 0.0f, 1.0f, "%.02f");
 		ImGui::DragFloat("M diffuse b", &game->player.data.mat.diffuse.z, 0.01f, 0.0f, 1.0f, "%.02f");

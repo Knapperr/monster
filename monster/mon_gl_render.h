@@ -23,7 +23,7 @@ namespace MonGL
 		unsigned int IBO;
 		int elementLength;
 		Material mat;
-
+		int lineWidth;
 
 		//float pos;
 		// view 
@@ -32,16 +32,17 @@ namespace MonGL
 	};
 
 	// TODO(ck): gl_InitBoundingBox
-	void gl_InitRenderDataCube(RenderData* data);
+	void gl_InitBoundingBox(RenderData* data);
 	// TODO(ck): gl_DrawBoundingBox
-	void gl_DrawCube(RenderData* data, 
+	void gl_DrawBoundingBox(RenderData* data, 
 					 glm::vec3 playerPos, glm::vec3 camPos,
 					 glm::mat4 projection, glm::mat4 view,
 					 unsigned int shaderID);
 
+
+
 	void gl_InitRenderData(Sprite* sprite);
 	void gl_DrawObject(MonShader::Shader* shader, Entity* obj);
-	void gl_DrawModel(MonShader::Shader* shader);
 	void gl_DrawTile(MonShader::Shader* shader, Tile* obj, Sprite* sprite);
 	void gl_DrawTile(MonShader::Shader* shader, float minX, float minY, float maxX, float maxY);
 	void gl_CleanUp(Sprite* sprite);
