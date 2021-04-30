@@ -27,6 +27,7 @@ uniform Light light;
 uniform sampler2D texture_diffuse1;
 uniform bool useTexture;
 uniform bool collider;
+uniform vec3 colliderColor;
 
 void main()
 {
@@ -38,7 +39,6 @@ void main()
 
     if (collider)
     {
-        vec3 colliderColor = vec3(0.2, 0.7, 0.3);
         FragColor = vec4(colliderColor, 1.0);
         return;
     }

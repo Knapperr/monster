@@ -24,6 +24,7 @@ namespace MonGL
 		int elementLength;
 		Material mat;
 		int lineWidth;
+		glm::vec3 color;
 
 		//float pos;
 		// view 

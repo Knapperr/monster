@@ -56,7 +56,7 @@ namespace Mon
 		void clearAccumulator();
 	};
 
-	struct Player
+	struct Entity2
 	{
 		Particle particle;
 		MonGL::RenderData data;
@@ -93,8 +93,9 @@ namespace Mon
 		Camera cam;
 		CameraTwo camera;
 		Input input;
-
-		Player player;
+		
+		Entity2 player;
+		Entity2 enemy;
 		bool simulate;
 		MonShader::Shader shader;
 

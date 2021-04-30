@@ -129,6 +129,7 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 		game->player.particle.pos.z = 10.0f;
 	}
 
+	ImGui::SliderFloat3("color", &game->player.colliderData.color[0], 0.0f, 1.0f);
 	ImGui::SliderInt("Collider Width", &game->player.colliderData.lineWidth, 1, 10, NULL);
 
 	ImGui::Checkbox("simulate", &game->simulate);

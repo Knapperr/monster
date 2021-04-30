@@ -10,6 +10,7 @@ namespace MonGL
 	void gl_InitBoundingBox(RenderData* data)
 	{
 		data->lineWidth = 2;
+		data->color = glm::vec3(0.2, 0.7, 0.4);
 
 		float vertices[] = {
 			-0.5, -0.5, -0.5, 1.0,
@@ -75,6 +76,8 @@ namespace MonGL
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
 		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), false);
+
+		glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
 		glUniform1i(glGetUniformLocation(shaderID, "collider"), true);
 		// ==============================================================================
 
