@@ -131,6 +131,10 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 
 	ImGui::SliderFloat3("color", &game->player.colliderData.color[0], 0.0f, 1.0f);
 	ImGui::SliderInt("Collider Width", &game->player.colliderData.lineWidth, 1, 10, NULL);
+	ImGui::SliderFloat2("X", &game->player.colliderData.size.x[0], 1.0f, 50.0f);
+	ImGui::SliderFloat2("Y", &game->player.colliderData.size.y[0], 1.0f, 50.0f);
+	ImGui::SliderFloat2("Z", &game->player.colliderData.size.z[0], 1.0f, 50.0f);
+
 
 	ImGui::Checkbox("simulate", &game->simulate);
 	char buffer[64];

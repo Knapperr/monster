@@ -2,6 +2,10 @@
 
 #include "handmade_random.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+
+
+
 namespace Mon
 {
 
@@ -44,6 +48,7 @@ namespace Mon
 		cam = Camera();
 
 		player = {};
+		enemy = {};
 		// 
 		MonGL::gl_InitBoundingBox(&player.data);
 		MonGL::gl_InitBoundingBox(&player.colliderData);
@@ -57,6 +62,11 @@ namespace Mon
 		player.data.mat.diffuse = glm::vec3(1.0f, 0.5f, 0.31f);
 		player.data.mat.specular = glm::vec3(0.5f, 0.5f, 0.5f);
 		player.data.mat.shininess = 32.0f;
+
+		MonGL::gl_InitBoundingBox(&enemy.colliderData);
+		enemy.particle.pos = glm::vec3(10.0f, 1.0f, 10.0f);
+		glm::mat4 model = glm::mat4(1.0f);
+		enemy.colliderData.worldMatrix = glm::translate(model, enemy.particle.pos);;
 
 		light = {};
 		glm::vec3 lightColor = glm::vec3(0.2f, 0.3f, 0.6f);
@@ -96,6 +106,9 @@ namespace Mon
 
 		if (simulate == true)
 			player.particle.integrate(deltaTime);
+
+		glm::mat4 model = glm::mat4(1.0f);
+		player.colliderData.worldMatrix = glm::translate(model, player.particle.pos);;
 	}
 
 	void Game::render(double dt)
@@ -187,6 +200,7 @@ namespace Mon
 
 		//MonGL::gl_DrawCube(&player.data, player.particle.pos, cam.pos, projection, view, shader.id);
 		MonGL::gl_DrawBoundingBox(&player.colliderData, player.particle.pos, cam.pos, projection, view, shader.id);
+		MonGL::gl_DrawBoundingBox(&enemy.colliderData, enemy.particle.pos, cam.pos, projection, view, shader.id);
 		// ------------------------------------------
 
 
@@ -246,7 +260,7 @@ namespace Mon
 			//state->deltaTime = dt;
 		float newSpeed = world->player->speed;
 		if (input->shift.endedDown)
-			newSpeed *= 2;
+			newSpeed *= 1.7;
 
 
 		if (input->up.endedDown)    world->player->pos.y -= (int)(newSpeed * dt);

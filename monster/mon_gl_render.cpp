@@ -1,11 +1,24 @@
 #include "mon_gl_render.h"
 
 #include <glad/glad.h>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 namespace MonGL
 {
+	glm::vec3 GetSize(ColliderSize* size)
+	{
+		return glm::vec3(size->maxX() - size->minX(), size->maxY() - size->minY(), size->maxZ() - size->minZ());
+	}
+
+	glm::vec3 GetCenter(ColliderSize* size)
+	{
+		return glm::vec3((size->minX() + size->maxX()) / 2, (size->minY() + size->maxY()) / 2, (size->minZ() + size->maxZ()) / 2);
+	}
+
+	glm::mat4 GetTransform(ColliderSize* size)
+	{
+		return glm::translate(glm::mat4(1), GetCenter(size)) * glm::scale(glm::mat4(1), GetSize(size));
+	}
+
 	// TODO(ck): gl_InitBoundingBox
 	void gl_InitBoundingBox(RenderData* data)
 	{
@@ -47,6 +60,48 @@ namespace MonGL
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 
+		// these are set in gui
+		data->size = {};
+		data->size.X(5.0f, 10.0f);
+		data->size.Y(10.0f, 50.0f);
+		data->size.Z(5.0f, 20.0f);
+
+		// Set world matrix to be the same size as the bounding box
+		//data->worldMatrix = GetTransform(&data->size);
+
+		/*
+		* 
+		* TODO this is how we get the size of it 
+		  GLfloat
+		min_x, max_x,
+		min_y, max_y,
+		min_z, max_z;
+	  min_x = max_x = mesh->vertices[0].x;
+	  min_y = max_y = mesh->vertices[0].y;
+	  min_z = max_z = mesh->vertices[0].z;
+	  for (int i = 0; i < mesh->vertices.size(); i++) {
+		if (mesh->vertices[i].x < min_x) min_x = mesh->vertices[i].x;
+		if (mesh->vertices[i].x > max_x) max_x = mesh->vertices[i].x;
+		if (mesh->vertices[i].y < min_y) min_y = mesh->vertices[i].y;
+		if (mesh->vertices[i].y > max_y) max_y = mesh->vertices[i].y;
+		if (mesh->vertices[i].z < min_z) min_z = mesh->vertices[i].z;
+		if (mesh->vertices[i].z > max_z) max_z = mesh->vertices[i].z;
+	  }
+	  glm::vec3 size = glm::vec3(max_x-min_x, max_y-min_y, max_z-min_z);
+	  glm::vec3 center = glm::vec3((min_x+max_x)/2, (min_y+max_y)/2, (min_z+max_z)/2);
+	  glm::mat4 transform = glm::translate(glm::mat4(1), center) * glm::scale(glm::mat4(1), size);
+		
+		
+		i see here you are multiplying above with the models model matrix so that
+		you can that might be a vec3? but i dont think so?
+
+		/* Apply object's transformation matrix this is the world transform 
+		* thats why its called object2world i guess cause its what gets called when drawing happens??
+		* same as position?
+
+		
+		*/
+
 		// TODO(ck): Add back for cubes
 		// Normals
 		//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
@@ -82,13 +137,8 @@ namespace MonGL
 		// ==============================================================================
 
 
-		// Get bounding box size
-		// world transform
-		glm::mat4 model = glm::mat4(1.0f);
 
-		glm::mat4 translate = glm::translate(glm::mat4(1.0f),
-											 glm::vec3(playerPos.x, playerPos.y, playerPos.z));
-		model = model * translate;
+		glm::mat4 model = data->worldMatrix * GetTransform(&data->size);
 
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 
