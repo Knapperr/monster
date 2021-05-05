@@ -1,5 +1,8 @@
 #include "mon_gui.h"
 
+// TODO(ck): remove
+#include <string>
+
 #ifdef USE_SDL
 void InitGui(SDL_Window* window, SDL_GLContext* context)
 {
@@ -110,6 +113,8 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 
 	ImGui::Begin("DEBUG MENU");
 
+	ImGui::LabelText(std::to_string(game->deltaTime).c_str(), "dt:");
+
 	ImGui::Checkbox("Demo", &showDemoWindow);
 	ImGui::SameLine();
 	ImGui::Checkbox("Terrain", &showTerrainWindow);
@@ -118,9 +123,9 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 
 	ImGui::Checkbox("camera disabled", &game->cam.disabled);
 
-	// 
-	// Player 
-	//
+	//// 
+	//// Player 
+	////
 	ImGui::LabelText("", "Player");
 	if (ImGui::SmallButton("reset Pos"))
 	{
@@ -130,7 +135,7 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 	}
 
 	ImGui::SliderFloat3("color", &game->player.colliderData.color[0], 0.0f, 1.0f);
-	ImGui::SliderInt("Collider Width", &game->player.colliderData.lineWidth, 1, 10, NULL);
+	ImGui::SliderInt("Collider Width", &game->player.colliderData.lineWidth, 1, 100, NULL);
 	ImGui::SliderFloat2("X", &game->player.colliderData.size.x[0], 1.0f, 50.0f);
 	ImGui::SliderFloat2("Y", &game->player.colliderData.size.y[0], 1.0f, 50.0f);
 	ImGui::SliderFloat2("Z", &game->player.colliderData.size.z[0], 1.0f, 50.0f);
@@ -138,6 +143,17 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 
 	ImGui::Checkbox("simulate", &game->simulate);
 	char buffer[64];
+
+	//printf("%b\n", game->input.leftMouseButton.endedDown);
+	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseXOffset);
+	ImGui::LabelText(buffer, "mouse x");
+	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseYOffset);
+	ImGui::LabelText(buffer, "mouse y");
+
+	snprintf(buffer, sizeof(buffer), "%d", game->input.leftMouseButton.endedDown);
+	ImGui::LabelText(buffer, "left mouse down");
+
+
 	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.x);
 	ImGui::LabelText(buffer, "player x");
 	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.y);
@@ -145,7 +161,7 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.z);
 	ImGui::LabelText(buffer, "player z");
 
-	//// TODO(ck): Button pops this little window
+	////// TODO(ck): Button pops this little window
 	ImGui::Separator();
 	ImGui::LabelText("", "Light");
 	ImGui::DragFloat("L X", &game->light.pos.x, 0.01f, -1500.0f, 1500.0f,  "%.02f");
@@ -160,7 +176,7 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 		ImGui::DragFloat("L ambient g", &game->light.ambient.y, 0.01f, 0.0f, 1.0f, "%.02f");
 		ImGui::DragFloat("L ambient b", &game->light.ambient.z, 0.01f, 0.0f, 1.0f, "%.02f");
 	
-		// Material ----
+	//	// Material ----
 		ImGui::Separator();
 		ImGui::DragFloat("M diffuse r", &game->player.data.mat.diffuse.x, 0.01f, 0.0f, 1.0f, "%.02f");
 		ImGui::DragFloat("M diffuse g", &game->player.data.mat.diffuse.y, 0.01f, 0.0f, 1.0f, "%.02f");

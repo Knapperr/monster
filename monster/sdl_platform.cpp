@@ -84,6 +84,8 @@ void SDLPlatform::processMouseMotion(Input* newInput, SDL_Event* e, int& lastX, 
 	//SDL_GetGlobalMouseState(&x, &y);
 	newInput->mouseXOffset = (float)x;
 	newInput->mouseYOffset = (float)-y;
+	newInput->mouseXScreen = (float)winX;
+	newInput->mouseYScreen = (float)winY;
 
 	//float x = e->motion.x;
 	//float y = e->motion.y;
@@ -108,6 +110,8 @@ void SDLPlatform::pollInput(Input* newInput, Input* oldInput)
 	newInput->leftMouseButton.endedDown = oldInput->leftMouseButton.endedDown;
 	newInput->mouseXOffset = oldInput->mouseXOffset;
 	newInput->mouseYOffset = oldInput->mouseYOffset;
+	newInput->mouseXScreen = oldInput->mouseXScreen;
+	newInput->mouseYScreen = oldInput->mouseYScreen;
 
 
 	// TODO(ck): Idk if I need these MIGHT BE ABLE TO USE OLD INPUT..?
@@ -192,6 +196,22 @@ void SDLPlatform::pollInput(Input* newInput, Input* oldInput)
 		}
 	}
 }
+
+void SDLPlatform::sleep(int milliseconds)
+{
+	if (milliseconds > 0)
+		Sleep(milliseconds);
+}
+
+uint64_t SDLPlatform::ticks()
+{
+	uint64_t counter = SDL_GetPerformanceCounter();
+	double per_second = (double)SDL_GetPerformanceFrequency();
+	// static constexpr u64 ticks_per_second = 1000000;
+	return (uint64_t)(counter * (1000000 / per_second));
+}
+
+
 
 uint64_t SDLPlatform::performanceFrequency()
 {

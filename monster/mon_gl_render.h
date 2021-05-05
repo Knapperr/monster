@@ -88,7 +88,7 @@ namespace MonGL
 					 unsigned int shaderID);
 
 
-
+	// 2d
 	void gl_InitRenderData(Sprite* sprite);
 	void gl_DrawObject(MonShader::Shader* shader, Entity* obj);
 	void gl_DrawTile(MonShader::Shader* shader, Tile* obj, Sprite* sprite);

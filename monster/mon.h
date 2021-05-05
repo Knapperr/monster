@@ -75,7 +75,7 @@ namespace Mon
 	{
 	public:
 		bool init();
-		void update(double dt, Input* input);
+		void update(double dt, Input* newInput);
 		void render(double dt);
 		void cleanUp();
 
@@ -98,6 +98,7 @@ namespace Mon
 		Entity2 enemy;
 		bool simulate;
 		MonShader::Shader shader;
+
 
 
 		double deltaTime;

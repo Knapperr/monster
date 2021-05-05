@@ -52,186 +52,127 @@ bool App::init()
 
 void App::run()
 {
+	
 
-	uint32_t currTime = (uint32_t)platform->performanceCounter();
-	uint32_t last = 0;
-	double dt = 0;
+	// startup
+	//if (app_config.on_startup != nullptr)
+		//app_config.on_startup();
 
-	double updateRate = 60.00;
-	int updateMultiplicity = 1;
-	bool unlockFrameRate = false;
-
-	double fixedDeltaTime = 1.0 / updateRate;
-	int64_t desiredFrameTime = (int64_t)platform->performanceFrequency() / updateRate;
-
-	int64_t vsyncMaxError = (int64_t)platform->performanceFrequency() * 0.0002;
-	int64_t time60hz = (int64_t)platform->performanceFrequency() / 60;
-	int64_t snapFrequencies[] =
-	{
-		time60hz,
-		time60hz * 2,		// 30fps
-		time60hz * 3,		// 20fps
-		time60hz * 4,		// 15fps
-		(time60hz + 1) / 2, // 120fps
-	};
-
-	// TODO(ck):
-	// Should use a ring buffer for this
-	const int TIME_HISTORY_COUNT = 4;
-	int64_t timeAverager[TIME_HISTORY_COUNT] = { desiredFrameTime, desiredFrameTime, desiredFrameTime, desiredFrameTime };
-
-	// TODO(ck):
-	// should be in an App class that uses the platform layer
-	bool resync = true;
-	int64_t prevFrameTime = platform->performanceCounter();
-	int64_t frameAccumulator = 0;
+	uint64_t time_last = platform->ticks();
+	uint64_t time_accumulator = 0;
+	
+	// time struct
+	/*
+	u64 Time::ticks = 0;
+	u64 Time::previous_ticks = 0;
+	double Time::seconds = 0;
+	double Time::previous_seconds = 0;
+	float Time::delta = 0;
+	float Time::pause_timer = 0;
+	*/
+	uint64_t ticks = 0;
+	uint64_t previousTicks = 0;
+	double seconds = 0;
+	double previousSeconds = 0;
+	float delta = 0;
+	float pauseTimer = 0;
 	// ------------------------------------------------------------------------------------------------------------------------
+
+	int target_framerate = 60;
+	uint64_t ticks_per_second = 1000000;
+	int max_updates = 5;
 
 	while (running)
 	{
-		// TODO(ck): Platform::PerformanceCounter()
-		int64_t currentFrameTime = platform->performanceCounter();
-		int64_t deltaTime = currentFrameTime - prevFrameTime;
-		prevFrameTime = currentFrameTime;
 
-		// handle unexpected timer anomolies (overflow, extra slow frames, etc)
-		if (deltaTime > desiredFrameTime * 8) // ignore extra slow frames
-		{
-			deltaTime = desiredFrameTime;
-		}
-		if (deltaTime < 0)
-		{
-			deltaTime = 0;
-		}
-
-		// vsync time snapping
-		for (int64_t snap : snapFrequencies)
-		{
-			if (std::abs(deltaTime - snap) < vsyncMaxError)
-			{
-				deltaTime = snap;
-				break;
-			}
-		}
-
-		// delta time averaging 
-		for (int i = 0; i < TIME_HISTORY_COUNT - 1; ++i)
-		{
-			timeAverager[i] = timeAverager[i + 1];
-		}
-		timeAverager[TIME_HISTORY_COUNT - 1] = deltaTime;
-		deltaTime = 0;
-		for (int i = 0; i < TIME_HISTORY_COUNT; ++i)
-		{
-			deltaTime = timeAverager[i];
-		}
-		deltaTime /= TIME_HISTORY_COUNT;
-
-		// add to the accumulator 
-		frameAccumulator += deltaTime;
-
-		// spriral of death protection
-		if (frameAccumulator > desiredFrameTime * 8)
-		{
-			resync = true;
-		}
-
-		// timer resync if requested
-		if (resync)
-		{
-			frameAccumulator = 0;
-			deltaTime = desiredFrameTime;
-			resync = false;
-		}
-
-	
 		platform->pollInput(newInput, oldInput);
-
 		// platform checks for quit in the pollinput
 		if (platform->quit == true)
 			running = false;
 
 
-		if (unlockFrameRate)
+		// fixed time framerate
+		uint64_t time_target = (uint64_t)((1.0 / target_framerate) * ticks_per_second);
+		uint64_t time_curr = platform->ticks();
+		uint64_t time_diff = time_curr - time_last;
+		time_last = time_curr;
+		time_accumulator += time_diff;
+
+		// do not run too fast
+		while (time_accumulator < time_target)
 		{
-			int64_t consumedDeltaTime = deltaTime;
+			int milliseconds = (int)(time_target - time_accumulator) / (ticks_per_second / 1000);
+			platform->sleep(milliseconds);
 
-			while (frameAccumulator >= desiredFrameTime) {
-				//game->Update(fixedDeltaTime, newInput);
+			time_curr = platform->ticks();
+			time_diff = time_curr - time_last;
+			time_last = time_curr;
+			time_accumulator += time_diff;
+		}
 
-				if (consumedDeltaTime > desiredFrameTime)
-				{
-					// whatever this means
-					// g_Game->VariableUpdate()
-					//game->Update(fixedDeltaTime, newInput);
-					consumedDeltaTime -= desiredFrameTime;
-				}
-				frameAccumulator -= desiredFrameTime;
+		// Do not allow us to fall behind too many updates
+		// (otherwise we'll get spiral of death)
+		
+		uint64_t time_maximum = max_updates * time_target;
+		if (time_accumulator > time_maximum)
+			time_accumulator = time_maximum;
+
+		// do as many updates as we can
+		while (time_accumulator >= time_target)
+		{
+			time_accumulator -= time_target;
+
+			delta = (1.0f / target_framerate); // 60
+
+			if (pauseTimer > 0)
+			{
+				pauseTimer -= delta;
+				if (pauseTimer <= -0.0001)
+					delta = -pauseTimer;
+				else
+					continue;
 			}
 
-			// g_Game->VariableUpdate();
-			//game->Update((double)consumedDeltaTime / SDL_GetPerformanceFrequency(), newInput);
-			//UpdateGui(window);
+			previousTicks = ticks;
+			ticks += time_target;
+			previousSeconds = seconds;
+			seconds += delta;
 
-			glClearColor(0.126f, 0.113f, 0.165f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT);
-			//game->Render(fixedDeltaTime);
-			RenderGui();
+			// input backend just resets the state of the input instead of doing it every frame at the top
+			//InputBackend::frame();
+			//GraphicsBackend::frame();
 
-			//SDL_GL_SwapWindow(window);
+			//if (app_config.on_update != nullptr)
+				//app_config.on_update();
 
-
-			// TODO(ck): Input manager deals with this
-			//Input* temp = newInput;
-			//newInput = oldInput;
-			//oldInput = temp;
-
-		}
-		else
-		{
-			//while (frameAccumulator >= desiredFrameTime * updateMultiplicity)
-			//{
-			//	for (int i = 0; i < updateMultiplicity; ++i)
-			//	{
-			//		g_Game->Update(fixedDeltaTime, newInput);
-			//		// g_Game->VariableUpdate
-			//		frameAccumulator -= desiredFrameTime;
-			//	}
-			//}v
 #ifdef _3D_
-			game->update(fixedDeltaTime, newInput);
+			game->update(delta, newInput);
 #else
 			game->update(fixedDeltaTime, newInput, 1);
 #endif
+		}
 
-			// Somehow get app state into game to check this and 
-			// just call that?
-
-
-			UpdateGui(platform->window, game);
-
-			// TODO(ck): Platform->Renderer->clearColor 
-			glClearColor(0.126f, 0.113f, 0.165f, 1.0f);
-			// TODO(ck): Platform->Renderer->clear
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		UpdateGui(platform->window, game);
+		// TODO(ck): Platform->Renderer->clearColor 
+		glClearColor(0.126f, 0.113f, 0.165f, 1.0f);
+		// TODO(ck): Platform->Renderer->clear
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 #ifdef _3D_
-			game->render(1);
+		game->render(1);
 #else
-			game->render(); // NOTE(ck): 2D
+		game->render(); // NOTE(ck): 2D
 #endif
 
+		RenderGui();
 
-			RenderGui();
 
+		// TODO(ck): Platform->swapWindow()
+		SDL_GL_SwapWindow(platform->window);
 
-			// TODO(ck): Platform->swapWindow()
-			SDL_GL_SwapWindow(platform->window);
-
-			Input* temp = newInput;
-			newInput = oldInput;
-			oldInput = temp;
-		}
+		Input* temp = newInput;
+		newInput = oldInput;
+		oldInput = temp;
 	}
 	game->cleanUp();
 	ShutdownGui();

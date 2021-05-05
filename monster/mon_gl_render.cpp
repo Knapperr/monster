@@ -60,11 +60,10 @@ namespace MonGL
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 
-		// these are set in gui
 		data->size = {};
-		data->size.X(5.0f, 10.0f);
-		data->size.Y(10.0f, 50.0f);
-		data->size.Z(5.0f, 20.0f);
+		data->size.X(1.0f, 2.0f);
+		data->size.Y(1.0f, 2.0f);
+		data->size.Z(1.0f, 2.0f);
 
 		// Set world matrix to be the same size as the bounding box
 		//data->worldMatrix = GetTransform(&data->size);
@@ -193,6 +192,10 @@ namespace MonGL
 	void gl_DrawObject(MonShader::Shader* shader, Entity* obj)
 	{
 		glUseProgram(shader->id);
+
+		// TODO(ck): We don't calculate the matrix here
+		// we calc it in the game and send the matrix to the
+		// renderer 
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(obj->pos, 0.0f));
 

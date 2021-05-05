@@ -85,24 +85,37 @@ namespace Mon
 		return true;
 	}
 
-	void Game::update(double dt, Input* input)
+	void Game::update(double dt, Input* newInput)
 	{
+		if (dt > deltaTime)
+			printf("HIGHER dt: %f\n", deltaTime);
+		if (dt < deltaTime)
+			printf("LOWER dt: %f\n", deltaTime);
+
+		//if (!newInput->leftMouseButton.endedDown)
+			//printf("MOUSE LET GO\n");
+
+
 		deltaTime = dt;
+
+		
+
+		input = *newInput;
 
 		if (cam.disabled == true)
 		{
-			if (input->up.endedDown)
+			if (input.up.endedDown)
 				player.particle.pos.z -= 6 * dt;
-			if (input->down.endedDown)
+			if (input.down.endedDown)
 				player.particle.pos.z += 6 * dt;
-			if (input->left.endedDown)
+			if (input.left.endedDown)
 				player.particle.pos.x -= 6 * dt;
-			if (input->right.endedDown)
+			if (input.right.endedDown)
 				player.particle.pos.x += 6 * dt;
 
 			//player.particle.integrate(dt);
 		}
-		cam.update(deltaTime, input, true);
+		cam.update(deltaTime, &input, true);
 
 		if (simulate == true)
 			player.particle.integrate(deltaTime);
@@ -256,6 +269,8 @@ namespace Mon
 
 	void Game::update(double dt, Input* input, int x)
 	{
+		deltaTime = dt;
+
 		//if (state->deltaTime != dt)
 			//state->deltaTime = dt;
 		float newSpeed = world->player->speed;
