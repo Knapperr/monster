@@ -16,23 +16,14 @@
     <Filter Include="imgui">
       <UniqueIdentifier>{480bc6e2-f664-4cfd-88fe-b4d24ce2a82c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine">
+      <UniqueIdentifier>{0284e5a5-47f7-4478-971f-e3ca6a5ace3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine">
+      <UniqueIdentifier>{3f72c8fa-b8d2-4945-8d93-ef3844425b82}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="include\glad\glad.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="include\stb_image\stb_image.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="mon_gui.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="mon_shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="mon_texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -42,13 +33,7 @@
     <ClCompile Include="mon_world.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mon_gl_render.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="mon.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="sdl_platform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="include\imgui\imgui.cpp">
@@ -75,20 +60,35 @@
     <ClCompile Include="mon_debug_camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mon_app.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="mon_terrain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="mon_app.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="mon_gl_render.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="mon_gui.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="mon_shader.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="sdl_platform.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="include\stb_image\stb_image.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="include\glad\glad.c">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="mon_gui.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="mon_shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="mon_texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -98,13 +98,7 @@
     <ClInclude Include="mon_entity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mon_gl_render.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="mon.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="handmade_random.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\imgui\imconfig.h">
@@ -137,23 +131,35 @@
     <ClInclude Include="mon_ortho_camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mon_input.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="legacy_code.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="sdl_platform.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="mon_platform.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="mon_app.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="mon_terrain.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="handmade_random.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="legacy_code.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="mon_app.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="mon_gl_render.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="mon_gui.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="mon_input.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="mon_platform.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="mon_shader.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="sdl_platform.h">
+      <Filter>Header Files\Engine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

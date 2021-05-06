@@ -6,7 +6,7 @@ namespace Mon
 
 	Camera::Camera()
 	{
-		pos = glm::vec3(10.0f, 5.0f, 30.0f);
+		pos = glm::vec3(0.0f, 50.0f, 0.0f);
 		worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 		target = glm::vec3(0.0f, 0.0f, 0.0f);
 		direction = glm::normalize(pos - target);
@@ -75,7 +75,7 @@ namespace Mon
 		if (input->shift.endedDown)
 			speed *= 2.0f;
 
-		float velocity = speed * dt;
+		float velocity = speed * (float)dt;
 
 		if (input->up.endedDown)	pos += front * velocity;
 		if (input->down.endedDown)	pos -= front * velocity;

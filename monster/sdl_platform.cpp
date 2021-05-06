@@ -45,7 +45,7 @@ bool SDLPlatform::init(int SCREEN_WIDTH, int SCREEN_HEIGHT, int PORT_WIDTH, int 
 	printf("Version:  %s\n", glGetString(GL_VERSION));
 
 	// Use v-sync
-	SDL_GL_SetSwapInterval(1);
+	//SDL_GL_SetSwapInterval(1);
 
 	int xOffset = (SCREEN_WIDTH - PORT_WIDTH) / 2;
 	int yOffset = (SCREEN_HEIGHT - PORT_HEIGHT) / 2;
@@ -79,19 +79,18 @@ void SDLPlatform::processMouseMotion(Input* newInput, SDL_Event* e, int& lastX, 
 {
 	int winX, winY, x, y;
 
-	SDL_GetWindowPosition(window, &winX, &winY);
+	//SDL_GetWindowPosition(window, &winX, &winY);
 	SDL_GetRelativeMouseState(&x, &y);
+	SDL_GetMouseState(&winX, &winY);
 	//SDL_GetGlobalMouseState(&x, &y);
 	newInput->mouseXOffset = (float)x;
 	newInput->mouseYOffset = (float)-y;
+	
 	newInput->mouseXScreen = (float)winX;
 	newInput->mouseYScreen = (float)winY;
 
-	//float x = e->motion.x;
-	//float y = e->motion.y;
-
-	lastX = x;
-	lastY = y;
+	lastX = newInput->mouseXOffset;
+	lastY = newInput->mouseYOffset;
 }
 
 void SDLPlatform::pollInput(Input* newInput, Input* oldInput)
@@ -135,17 +134,12 @@ void SDLPlatform::pollInput(Input* newInput, Input* oldInput)
 
 		if (e.type == SDL_MOUSEBUTTONDOWN)
 		{
-			// TODO(ck): Wrap cursor hiding in the input? and send to the camera 
 			if (e.button.button == SDL_BUTTON_LEFT && GuiActive(oldInput->leftMouseButton.endedDown) == false)
 			{
 				processKeyboard(&newInput->leftMouseButton, true);
 				SDL_SetRelativeMouseMode(SDL_TRUE);
-				SDL_ShowCursor(SDL_DISABLE);
-				lastXAfterPress = e.motion.x;
-				lastYAfterPress = e.motion.y;
-				//std::cout << "x after " << lastXAfterPress << "\n";
-				//std::cout << "x after " << lastYAfterPress << "\n";
-
+				lastXAfterPress = newInput->mouseXScreen;
+				lastYAfterPress = newInput->mouseYScreen;
 			}
 		}
 		else if (e.type == SDL_MOUSEBUTTONUP)
@@ -155,15 +149,10 @@ void SDLPlatform::pollInput(Input* newInput, Input* oldInput)
 				processKeyboard(&newInput->leftMouseButton, false);
 				SDL_SetRelativeMouseMode(SDL_FALSE);
 				SDL_WarpMouseInWindow(window, lastXAfterPress, lastYAfterPress);
-				SDL_ShowCursor(SDL_ENABLE);
 			}
 		}
 		else if (e.type == SDL_KEYDOWN || e.type == SDL_KEYUP)
 		{
-			// TODO(ck): 
-			// Check against SDL_KEYDOWN and SDL_KEYUP
-			// set the true for false to this   isDown = ? SDL_KEYDOWN : SDL_KEYUP
-
 			SDL_Keycode keyCode = e.key.keysym.sym;
 			bool isDown = e.type == SDL_KEYDOWN ? true : false;
 

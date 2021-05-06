@@ -148,7 +148,7 @@ void App::run()
 #ifdef _3D_
 			game->update(delta, newInput);
 #else
-			game->update(fixedDeltaTime, newInput, 1);
+			game->update(delta, newInput, 1);
 #endif
 		}
 

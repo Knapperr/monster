@@ -94,6 +94,42 @@ void CameraWindow(bool* p_open, Mon::Game* game)
 	ImGui::End();
 }
 
+void StatsWindow(bool* p_open, Mon::Game* game)
+{
+	ImGui::Begin("stats for me", p_open);
+
+	char buffer[64];
+	//printf("%b\n", game->input.leftMouseButton.endedDown);
+	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseXOffset);
+	ImGui::LabelText(buffer, "mouse x");
+	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseYOffset);
+	ImGui::LabelText(buffer, "mouse y");
+	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseXScreen);
+	ImGui::LabelText(buffer, "win x");
+	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseYScreen);
+	ImGui::LabelText(buffer, "win y");
+
+	snprintf(buffer, sizeof(buffer), "%d", game->input.leftMouseButton.endedDown);
+	ImGui::LabelText(buffer, "left mouse down");
+
+	snprintf(buffer, sizeof(buffer), "%d", GuiActive(game->input.leftMouseButton.endedDown));
+	ImGui::LabelText(buffer, "gui active");
+
+
+	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.x);
+	ImGui::LabelText(buffer, "player x");
+	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.y);
+	ImGui::LabelText(buffer, "player y");
+	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.z);
+	ImGui::LabelText(buffer, "player z");
+
+	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.velocity.x);
+	ImGui::LabelText(buffer, "player velocity");
+	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.acceleration.x);
+	ImGui::LabelText(buffer, "player acc");
+
+	ImGui::End();
+}
 
 void UpdateGui(SDL_Window* window, Mon::Game* game)
 {
@@ -104,12 +140,15 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 	static bool showDemoWindow = false;
 	static bool showTerrainWindow = false;
 	static bool showCameraWindow = false;
+	static bool showStatsWindow = false;
 	if (showDemoWindow)
 		ImGui::ShowDemoWindow(&showDemoWindow);
 	if (showTerrainWindow)
 		TerrainWindow(&showTerrainWindow, game);
 	if (showCameraWindow)
 		CameraWindow(&showCameraWindow, game);
+	if (showStatsWindow)
+		StatsWindow(&showStatsWindow, game);
 
 	ImGui::Begin("DEBUG MENU");
 
@@ -120,12 +159,14 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 	ImGui::Checkbox("Terrain", &showTerrainWindow);
 	ImGui::SameLine();
 	ImGui::Checkbox("Camera", &showCameraWindow);
+	ImGui::SameLine();
+	ImGui::Checkbox("stats", &showStatsWindow);
 
 	ImGui::Checkbox("camera disabled", &game->cam.disabled);
 
-	//// 
-	//// Player 
-	////
+	/// 
+	/// Player 
+	///
 	ImGui::LabelText("", "Player");
 	if (ImGui::SmallButton("reset Pos"))
 	{
@@ -142,24 +183,6 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 
 
 	ImGui::Checkbox("simulate", &game->simulate);
-	char buffer[64];
-
-	//printf("%b\n", game->input.leftMouseButton.endedDown);
-	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseXOffset);
-	ImGui::LabelText(buffer, "mouse x");
-	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseYOffset);
-	ImGui::LabelText(buffer, "mouse y");
-
-	snprintf(buffer, sizeof(buffer), "%d", game->input.leftMouseButton.endedDown);
-	ImGui::LabelText(buffer, "left mouse down");
-
-
-	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.x);
-	ImGui::LabelText(buffer, "player x");
-	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.y);
-	ImGui::LabelText(buffer, "player y");
-	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.z);
-	ImGui::LabelText(buffer, "player z");
 
 	////// TODO(ck): Button pops this little window
 	ImGui::Separator();

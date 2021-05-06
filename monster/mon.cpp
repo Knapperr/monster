@@ -32,6 +32,11 @@ namespace Mon
 		// impose drag
 		velocity *= real_pow(damping, duration);
 
+		// TODO(ck): TEMP FOR TESTING
+		if (velocity.x < -50.0)
+			velocity.x = -50.0f;
+
+
 		clearAccumulator();
 	}
 
@@ -54,8 +59,8 @@ namespace Mon
 		MonGL::gl_InitBoundingBox(&player.colliderData);
 		player.particle.pos = glm::vec3(10.0f, 10.0f, 20.0f);
 		player.particle.inverseMass = 10.0f;
-		player.particle.velocity = glm::vec3(20.0f, 30.0f, 20.0f); // 35m/s
-		player.particle.acceleration = glm::vec3(0.0f, -80.0f, 0.0f);
+		player.particle.velocity = glm::vec3(0.0f, 0.0f, 0.0f); // 35m/s
+		player.particle.acceleration = glm::vec3(-40.0f, 0.0f, 0.0f);
 		player.particle.damping = 0.99f;
 
 		player.data.mat.ambient = glm::vec3(1.0f, 0.5f, 0.6f);
@@ -80,9 +85,9 @@ namespace Mon
 		terrain = new Terrain(0, 0);
 		terrain->generate();
 
+		return true;
 		simulate = false;
 
-		return true;
 	}
 
 	void Game::update(double dt, Input* newInput)
@@ -112,6 +117,9 @@ namespace Mon
 				player.particle.pos.x -= 6 * dt;
 			if (input.right.endedDown)
 				player.particle.pos.x += 6 * dt;
+
+			if (input.shift.endedDown)
+				player.particle.integrate(dt);
 
 			//player.particle.integrate(dt);
 		}
