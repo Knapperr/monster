@@ -1,8 +1,6 @@
 #ifndef MON_PLATFORM_H
 #define MON_PLATFORM_H
 
-#define _3D_
-
 struct Context
 {
 

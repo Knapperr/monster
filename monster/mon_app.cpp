@@ -39,13 +39,8 @@ bool App::init()
 	//newInput = &input[1];
 	game = new Mon::Game();
 
-#ifdef _3D_
 	if (!game->init())
 		return false;
-#else
-	if (!game->init(1))
-		return false;
-#endif
 
 	return true;
 }
@@ -145,11 +140,7 @@ void App::run()
 			//if (app_config.on_update != nullptr)
 				//app_config.on_update();
 
-#ifdef _3D_
 			game->update(delta, newInput);
-#else
-			game->update(delta, newInput, 1);
-#endif
 		}
 
 		UpdateGui(platform->window, game);
@@ -158,11 +149,7 @@ void App::run()
 		// TODO(ck): Platform->Renderer->clear
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-#ifdef _3D_
 		game->render(1);
-#else
-		game->render(); // NOTE(ck): 2D
-#endif
 
 		RenderGui();
 

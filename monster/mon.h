@@ -11,9 +11,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "mon_entity.h"
-#include "mon_world.h"
-
 #include "mon_debug_camera.h"
 #include "mon_terrain.h"
 
@@ -42,12 +39,24 @@ namespace Mon
 		glm::vec3 specular;
 	};
 
+
+	// Use this for now
+	enum class Direction
+	{
+		LEFT,
+		RIGHT,
+		FORWARD,
+		BACKWARD
+	};
+
 	// Get to this starts pg49 Ian Millington
 	struct Particle
 	{
 		glm::vec3 pos;
 		glm::vec3 velocity;
 		glm::vec3 acceleration;
+
+		Direction dir = Direction::FORWARD;
 
 		float damping;
 		float inverseMass;
@@ -56,7 +65,7 @@ namespace Mon
 		void clearAccumulator();
 	};
 
-	struct Entity2
+	struct Entity
 	{
 		Particle particle;
 		MonGL::RenderData data;
@@ -79,23 +88,15 @@ namespace Mon
 		void render(double dt);
 		void cleanUp();
 
-		bool init(int x);
-		void update(double dt, Input* input, int x);
-		void render();
 
-
-		// TODO(ck):
-		// DO NOT KEEP the shaders in the game and renderer like you did last time...
-		// keep them in a structure that can be accessed globally instead keep it clean
-		World* world;
 		Terrain* terrain;
 
 		Camera cam;
 		CameraTwo camera;
 		Input input;
 		
-		Entity2 player;
-		Entity2 enemy;
+		Entity player;
+		Entity enemy;
 		bool simulate;
 		MonShader::Shader shader;
 

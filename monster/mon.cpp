@@ -33,8 +33,16 @@ namespace Mon
 		velocity *= real_pow(damping, duration);
 
 		// TODO(ck): TEMP FOR TESTING
-		if (velocity.x < -50.0)
-			velocity.x = -50.0f;
+		if (velocity.x < -30.0f)
+			velocity.x = -30.0f;
+		if (velocity.x > 30.0f)
+			velocity.x = 30.0f;
+
+		if (velocity.z < -30.0f)
+			velocity.z = -30.0f;
+		if (velocity.z > 30.0f)
+			velocity.z = 30.0f;
+
 
 
 		clearAccumulator();
@@ -85,9 +93,13 @@ namespace Mon
 		terrain = new Terrain(0, 0);
 		terrain->generate();
 
-		return true;
 		simulate = false;
 
+
+
+
+
+		return true;
 	}
 
 	void Game::update(double dt, Input* newInput)
@@ -107,19 +119,63 @@ namespace Mon
 
 		input = *newInput;
 
+		// TODO(ck): TEMP INPUT
 		if (cam.disabled == true)
 		{
 			if (input.up.endedDown)
-				player.particle.pos.z -= 6 * dt;
-			if (input.down.endedDown)
-				player.particle.pos.z += 6 * dt;
-			if (input.left.endedDown)
-				player.particle.pos.x -= 6 * dt;
-			if (input.right.endedDown)
-				player.particle.pos.x += 6 * dt;
+			{
+				if (player.particle.dir != Direction::FORWARD)
+				{
+					player.particle.dir = Direction::FORWARD;
+					player.particle.velocity.z = player.particle.velocity.z / 2;
+				}
 
-			if (input.shift.endedDown)
+
+				player.particle.velocity.x = 0.0f;
+				player.particle.acceleration = glm::vec3(0.0f, 0.0f, -30.0f);
 				player.particle.integrate(dt);
+			}
+			if (input.down.endedDown)
+			{
+				if (player.particle.dir != Direction::BACKWARD)
+				{
+					player.particle.dir = Direction::BACKWARD;
+					player.particle.velocity.z = player.particle.velocity.z / 2;
+				}
+
+
+				player.particle.velocity.x = 0.0f;
+				player.particle.acceleration = glm::vec3(0.0f, 0.0f, 30.0f);
+				player.particle.integrate(dt);
+			}
+			if (input.left.endedDown)
+			{
+				if (player.particle.dir != Direction::LEFT)
+				{
+					player.particle.dir = Direction::LEFT;
+					player.particle.velocity.x = player.particle.velocity.x / 2;
+				}
+
+
+				player.particle.velocity.z = 0.0f;
+				player.particle.acceleration = glm::vec3(-30.0f, 0.0f, 0.0f);
+				player.particle.integrate(dt);
+			}
+				
+			if (input.right.endedDown)
+			{
+				if (player.particle.dir != Direction::RIGHT)
+				{
+					player.particle.dir = Direction::RIGHT;
+					player.particle.velocity.x = player.particle.velocity.x / 2;
+				}
+
+				player.particle.velocity.z = 0.0f;
+				player.particle.acceleration = glm::vec3(30.0f, 0.0f, 0.0f);
+				player.particle.integrate(dt);
+			}
+			// The integate will be called here. Normally i suspect that you call the force and then it applies in the integrate and 
+			// clears it out so that if no input is being pressed it wont move the object 
 
 			//player.particle.integrate(dt);
 		}
@@ -234,119 +290,5 @@ namespace Mon
 		glDeleteBuffers(1, &player.data.VBO);
 
 		MonShader::DeleteShader(&shader);
-	}
-
-	bool Game::init(int x)
-	{
-		// TODO(ck): Memory management
-		world = new World();
-		LoadShader(&shader, "res/shaders/vert_sprite.glsl", "res/shaders/frag_sprite.glsl", NULL);
-
-		Entity* ball = new Entity("res/textures/awesomeface.png", true,
-								  glm::vec2(200, 200), glm::vec2(32, 32), glm::vec3(1.0f, 1.0f, 1.0f),
-								  200.0f, 0.0f, false);
-
-		world->entities.push_back(ball);
-
-
-		// Set up the shader locations for our objects
-		glUseProgram(shader.id);
-
-		// TODO(CK): CAMERA
-		// So let's say you want your pixel art scale 2:1
-		// Then your target 1080p. Just take the resolution and divide by 2. Examples
-		// This is for 1920x1080 I am using 1280x720 right now
-		// 2:1 960x540 -- 3:1 640x360 --- 4:! 480x240
-		float left = 0.0f;
-		float right = 640.0f;
-		float bottom = 360.0f;
-		float top = 0.0f;
-
-		glm::mat4 projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
-		// TODO(CK): We don't need to set the image in the shader im not sure why we
-		// are setting it to 0 just to enforce that it gets used maybe????
-		int imgLoc = glGetUniformLocation(shader.id, "image");
-		glUniform1i(imgLoc, 0);
-
-		int projLoc = glGetUniformLocation(shader.id, "projection");
-		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
-
-		return true;
-	}
-
-	void Game::update(double dt, Input* input, int x)
-	{
-		deltaTime = dt;
-
-		//if (state->deltaTime != dt)
-			//state->deltaTime = dt;
-		float newSpeed = world->player->speed;
-		if (input->shift.endedDown)
-			newSpeed *= 1.7;
-
-
-		if (input->up.endedDown)    world->player->pos.y -= (int)(newSpeed * dt);
-		if (input->down.endedDown)  world->player->pos.y += (int)(newSpeed * dt);
-		if (input->left.endedDown)  world->player->pos.x -= (int)(newSpeed * dt);
-		if (input->right.endedDown) world->player->pos.x += (int)(newSpeed * dt);
-
-		// TODO(ck): Update camera pos
-		// camera position = player position
-
-		//real32 playerGroundPointX = screenCenterX + metersToPixels * diff.dX;
-		//real32 playerGroundPointY = screenCenterY - metersToPixels * diff.dY;
-
-
-
-		//const unsigned int SCREEN_WIDTH = 1280;
-		//const unsigned int SCREEN_HEIGHT = 720;
-		camera.target = world->player->pos;
-	}
-
-	void Game::render()
-	{
-		// TODO(ck): Clean up --- camera
-		//float left = 0.0f;
-
-		// 640.0f = window.x
-		// 360.0f = window.y
-		glm::vec2 target = camera.target;
-		float width = 960.0f;
-		float height = 540.0f;
-		float half = 4.0f;
-		float left = target.x - width / half;
-		float right = target.x + width / half;
-		float top = target.y - height / half;
-		float bottom = target.y + height / half;
-		glm::mat4 projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
-		glm::mat4 zoom = glm::scale(glm::mat4(1.0f), glm::vec3(camera.zoom, camera.zoom, camera.zoom));
-		//projection *= zoom;
-
-		int projLoc = glGetUniformLocation(shader.id, "projection");
-		glUseProgram(shader.id);
-		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
-
-		//// TODO(ck): Draw tilemap function that we pass the tilemap into
-		for (unsigned int i = 0; i < world->map->tiles.size(); ++i)
-		{
-			int tileId = world->map->tiles[i].tileId;
-			MonGL::gl_DrawTile(&shader, &world->map->tiles[i], &world->map->sheet.sprites[tileId]);
-		}
-
-		for (unsigned int i = 0; i < world->entities.size(); ++i)
-		{
-			//state->world->entities[i]->pos.x *= time;
-			//state->world->entities[i]->pos.y *= time;
-
-			MonGL::gl_DrawObject(&shader, world->entities[i]);
-		}
-		MonGL::gl_DrawObject(&shader, world->player);
-		
-		// gui
-
-		
-
 	}
 }
