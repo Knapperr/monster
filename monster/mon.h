@@ -11,6 +11,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "mon_entity.h"
+#include "mon_world.h"
+
 #include "mon_debug_camera.h"
 #include "mon_terrain.h"
 
@@ -65,7 +68,7 @@ namespace Mon
 		void clearAccumulator();
 	};
 
-	struct Entity
+	struct EntityTwo
 	{
 		Particle particle;
 		MonGL::RenderData data;
@@ -88,15 +91,23 @@ namespace Mon
 		void render(double dt);
 		void cleanUp();
 
+		bool init(int x);
+		void update(double dt, Input* input, int x);
+		void render();
 
+
+		// TODO(ck):
+		// DO NOT KEEP the shaders in the game and renderer like you did last time...
+		// keep them in a structure that can be accessed globally instead keep it clean
+		World* world;
 		Terrain* terrain;
 
 		Camera cam;
 		CameraTwo camera;
 		Input input;
 		
-		Entity player;
-		Entity enemy;
+		EntityTwo player;
+		EntityTwo enemy;
 		bool simulate;
 		MonShader::Shader shader;
 

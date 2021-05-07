@@ -5,9 +5,10 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/glm.hpp>
 
+#include "mon_entity.h"
+#include "mon_world.h"
 #include "mon_texture.h"
 #include "mon_shader.h"
-
 
 
 
@@ -84,6 +85,13 @@ namespace MonGL
 					 glm::vec3 playerPos, glm::vec3 camPos,
 					 glm::mat4 projection, glm::mat4 view,
 					 unsigned int shaderID);
+
+	// 2d
+	void gl_InitRenderData(Sprite* sprite);
+	void gl_DrawObject(MonShader::Shader* shader, Entity* obj);
+	void gl_DrawTile(MonShader::Shader* shader, Tile* obj, Sprite* sprite);
+	void gl_DrawTile(MonShader::Shader* shader, float minX, float minY, float maxX, float maxY);
+	void gl_CleanUp(Sprite* sprite);
 
 }
 #endif

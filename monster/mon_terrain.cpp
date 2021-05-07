@@ -32,7 +32,7 @@ Terrain::Terrain(int gridX, int gridZ)
 	textureIds[2] = MonGL::LoadTextureFile("grass.jpg", textDir, false);
 	textureIds[3] = MonGL::LoadTextureFile("snow.jpg", textDir, false);
 
-	selectedTextureId = textureIds[2];
+	selectedTextureId = textureIds[0];
 
 	// TODO(ck): just use the model shader?
 	// base shader?

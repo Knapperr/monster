@@ -81,6 +81,12 @@
     <ClCompile Include="include\glad\glad.c">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
+    <ClCompile Include="mon_entity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mon_world.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mon_texture.h">
@@ -145,6 +151,12 @@
     </ClInclude>
     <ClInclude Include="sdl_platform.h">
       <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="mon_entity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mon_world.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
