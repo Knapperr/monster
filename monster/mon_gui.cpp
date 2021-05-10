@@ -128,6 +128,33 @@ void StatsWindow(bool* p_open, Mon::Game* game)
 	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.acceleration.x);
 	ImGui::LabelText(buffer, "player acc");
 
+	snprintf(buffer, sizeof(buffer), "%f", game->cam.pos.x);
+	ImGui::LabelText(buffer, "cam x");
+	snprintf(buffer, sizeof(buffer), "%f", game->cam.pos.y);
+	ImGui::LabelText(buffer, "cam y");
+	snprintf(buffer, sizeof(buffer), "%f", game->cam.pos.z);
+	ImGui::LabelText(buffer, "cam z");
+
+	snprintf(buffer, sizeof(buffer), "%f", game->cam.right.x);
+	ImGui::LabelText(buffer, "right x");
+	snprintf(buffer, sizeof(buffer), "%f", game->cam.right.y);
+	ImGui::LabelText(buffer, "right y");
+	snprintf(buffer, sizeof(buffer), "%f", game->cam.right.z);
+	ImGui::LabelText(buffer, "right z");
+
+
+	snprintf(buffer, sizeof(buffer), "%f", game->cam.front.x);
+	ImGui::LabelText(buffer, "front x");
+	snprintf(buffer, sizeof(buffer), "%f", game->cam.front.y);
+	ImGui::LabelText(buffer, "front y");
+	snprintf(buffer, sizeof(buffer), "%f", game->cam.front.z);
+	ImGui::LabelText(buffer, "front z");
+
+	snprintf(buffer, sizeof(buffer), "%f", game->cam.pitch);
+	ImGui::LabelText(buffer, "pitch");
+	snprintf(buffer, sizeof(buffer), "%f", game->cam.yaw);
+	ImGui::LabelText(buffer, "yaw");
+
 	ImGui::End();
 }
 

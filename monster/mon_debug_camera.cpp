@@ -6,23 +6,25 @@ namespace Mon
 
 	Camera::Camera()
 	{
-		pos = glm::vec3(0.0f, 50.0f, 0.0f);
 		worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
-		target = glm::vec3(0.0f, 0.0f, 0.0f);
-		direction = glm::normalize(pos - target);
-		right = glm::normalize(glm::cross(worldUp, direction));
-		up = glm::cross(direction, right);
+
+		pos = glm::vec3(-2.0f, 20.0f, 10.0f);
 		front = glm::vec3(0.0f, 0.0f, -1.0f);
 
+		//direction = glm::normalize(pos - target);
+		//right = glm::vec3(1.0f);
+		//up = glm::cross(direction, right);
 		speed = 30.0f;
 		disabled = false;
-		yaw = -90.0f;
-		pitch = 0.0f;
+		yaw = 75.0f;
+		pitch = -40.0f;
 		zoom = 45.0f;
 		mouseSensitivity = 0.1f;
 
 		nearPlane = 0.1f;
 		farPlane = 1000.0f;
+
+		calculateCameraVectors();
 	}
 
 	glm::mat4 Camera::viewMatrix()
@@ -40,16 +42,21 @@ namespace Mon
 		if (input->leftMouseButton.endedDown)
 		{
 			mouseInput(input->mouseXOffset, input->mouseYOffset, constrainPitch);
+			calculateCameraVectors();
 
-			glm::vec3 frontResult;
-			frontResult.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-			frontResult.y = sin(glm::radians(pitch));
-			frontResult.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-			front = glm::normalize(frontResult);
-
-			right = glm::normalize(glm::cross(front, worldUp));
-			up = glm::normalize(glm::cross(right, front));
 		}
+	}
+
+	void Camera::calculateCameraVectors()
+	{
+		glm::vec3 frontResult;
+		frontResult.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+		frontResult.y = sin(glm::radians(pitch));
+		frontResult.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+		front = glm::normalize(frontResult);
+
+		right = glm::normalize(glm::cross(front, worldUp));
+		up = glm::normalize(glm::cross(right, front));
 	}
 
 

@@ -131,7 +131,7 @@ namespace Mon
 				}
 
 
-				player.particle.velocity.x = 0.0f;
+				//player.particle.velocity.x = 0.0f;
 				player.particle.acceleration = glm::vec3(0.0f, 0.0f, -10.0f);
 				player.particle.integrate(dt);
 			}
@@ -144,7 +144,7 @@ namespace Mon
 				}
 
 
-				player.particle.velocity.x = 0.0f;
+				//player.particle.velocity.x = 0.0f;
 				player.particle.acceleration = glm::vec3(0.0f, 0.0f, 10.0f);
 				player.particle.integrate(dt);
 			}
@@ -157,7 +157,8 @@ namespace Mon
 				}
 
 
-				player.particle.velocity.z = 0.0f;
+				//player.particle.velocity.z = 0.0f;
+				
 				player.particle.acceleration = glm::vec3(-10.0f, 0.0f, 0.0f);
 				player.particle.integrate(dt);
 			}
@@ -170,7 +171,7 @@ namespace Mon
 					player.particle.velocity.x = player.particle.velocity.x / 2;
 				}
 
-				player.particle.velocity.z = 0.0f;
+				//player.particle.velocity.z = 0.0f;
 				player.particle.acceleration = glm::vec3(10.0f, 0.0f, 0.0f);
 				player.particle.integrate(dt);
 			}
@@ -350,6 +351,7 @@ namespace Mon
 		if (input->down.endedDown)  world->player->pos.y += (int)(newSpeed * dt);
 		if (input->left.endedDown)  world->player->pos.x -= (int)(newSpeed * dt);
 		if (input->right.endedDown) world->player->pos.x += (int)(newSpeed * dt);
+
 
 		// TODO(ck): Update camera pos
 		// camera position = player position

@@ -26,20 +26,21 @@ namespace Mon
 		float nearPlane;
 		float farPlane;
 
+		float yaw;
+		float pitch;
+
 	private:
 		glm::vec3 target;
 		glm::vec3 direction;
 		glm::vec3 worldUp;
 		glm::vec3 up;
 
-		float yaw;
-		float pitch;
 		float mouseSensitivity;
 
 
 		void keyInput(double dt, Input* input);
 		void mouseInput(float xOffset, float yOffset, bool constrainPitch);
-
+		void calculateCameraVectors();
 	};
 }
 
