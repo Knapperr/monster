@@ -126,15 +126,26 @@ void SDLPlatform::pollInput(Input* newInput, Input* oldInput)
 	// TODO(ck): fix input polling
 	while (SDL_PollEvent(&e))
 	{
+		// TODO(ck): wrap in gui layer
+		// without it you won't have keyboard input and other things
+		ImGui_ImplSDL2_ProcessEvent(&e);
+		bool isGuiActive = GuiActive();
+		
+		// you might also want to check io.WantCaptureMouse and io.WantCaptureKeyboard
+		// before processing events
+
 
 		if (e.type == SDL_QUIT)
 		{
 			quit = true;
 		}
 
+		// TODO(ck):
+		// COMBINE INTO ONE SDL_MOUSEBUTTONDOWN || SDL_MOUSEBUTTONUP
 		if (e.type == SDL_MOUSEBUTTONDOWN)
 		{
-			if (e.button.button == SDL_BUTTON_LEFT && GuiActive(oldInput->leftMouseButton.endedDown) == false)
+			//if (e.button.button == SDL_BUTTON_LEFT)
+			if (e.button.button == SDL_BUTTON_LEFT && isGuiActive == false)
 			{
 				processKeyboard(&newInput->leftMouseButton, true);
 				SDL_SetRelativeMouseMode(SDL_TRUE);
@@ -144,7 +155,8 @@ void SDLPlatform::pollInput(Input* newInput, Input* oldInput)
 		}
 		else if (e.type == SDL_MOUSEBUTTONUP)
 		{
-			if (e.button.button == SDL_BUTTON_LEFT && GuiActive(oldInput->leftMouseButton.endedDown) == false)
+			//if (e.button.button == SDL_BUTTON_LEFT)
+			if (e.button.button == SDL_BUTTON_LEFT && isGuiActive == false)
 			{
 				processKeyboard(&newInput->leftMouseButton, false);
 				SDL_SetRelativeMouseMode(SDL_FALSE);

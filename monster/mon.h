@@ -109,8 +109,10 @@ namespace Mon
 		EntityTwo player;
 		EntityTwo enemy;
 		bool simulate;
-		MonShader::Shader shader;
 
+		// TODO(ck): 
+		// Shader lives in the opengl renderer
+		MonShader::Shader shader;
 
 
 		double deltaTime;

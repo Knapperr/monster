@@ -28,8 +28,7 @@ void main()
 	//color = texture(image, TexCoords);
 
 
-	// Get the other method working.. don't like this
-	// this is meant to be paired with an FBO I think
+	// Get the other method working..
 	vec2 vres = textureSize(image, 0);
 	color = texture(image, vec2(
 		sharpen(TexCoords.x * vres.x) / vres.x,

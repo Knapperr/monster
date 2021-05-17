@@ -115,7 +115,6 @@ namespace Mon
 
 		deltaTime = dt;
 
-		
 
 		input = *newInput;
 

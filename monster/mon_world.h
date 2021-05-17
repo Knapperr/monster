@@ -13,15 +13,15 @@ struct Tile
 	//file there is a render call using the old sprite method 
 	// we will use the tile id in the renderer to decide which 
 	// tile from the tile sheet to use
+	// The tile should actully just have offsets to draw the right tile from the 
+	// texture atlas or tile texture atlas
 	int tileId; // this links to the sprite
-	//Sprite sprite;
 
 	Tile(int id, float x, float y) : x(x), y(y)
 	{
 		height = 32;
 		width = 32;
 		tileId = id;
-		//sprite = {};
 	}
 };
 

@@ -229,6 +229,7 @@ namespace MonGL
 		glBindTexture(GL_TEXTURE_2D, sprite->texture.id);
 
 		glBindVertexArray(sprite->VAO);
+		
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);
 	}
@@ -253,6 +254,7 @@ namespace MonGL
 		//glBindTexture(GL_TEXTURE_2D, obj->sprite.texture.id);
 
 		//glBindVertexArray(obj->sprite.VAO);
+
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);
 	}

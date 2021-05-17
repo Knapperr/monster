@@ -13,6 +13,11 @@ void InitGui(SDL_Window* window, SDL_GLContext* context)
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 
+
+	/*ImGui::GetStyle().WindowRounding = 0.0f;
+	ImGui::GetStyle().AntiAliasedFill = false;
+	ImGui::GetStyle().AntiAliasedLines = false;*/
+
 	ImGui::SetMouseCursor(ImGuiMouseCursor_None);
 	io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
 
@@ -112,10 +117,13 @@ void StatsWindow(bool* p_open, Mon::Game* game)
 	snprintf(buffer, sizeof(buffer), "%d", game->input.leftMouseButton.endedDown);
 	ImGui::LabelText(buffer, "left mouse down");
 
-	snprintf(buffer, sizeof(buffer), "%d", GuiActive(game->input.leftMouseButton.endedDown));
+	snprintf(buffer, sizeof(buffer), "%d", GuiActive());
 	ImGui::LabelText(buffer, "gui active");
 
-
+//
+// 3D STATS
+//
+/*
 	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.x);
 	ImGui::LabelText(buffer, "player x");
 	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.y);
@@ -154,7 +162,7 @@ void StatsWindow(bool* p_open, Mon::Game* game)
 	ImGui::LabelText(buffer, "pitch");
 	snprintf(buffer, sizeof(buffer), "%f", game->cam.yaw);
 	ImGui::LabelText(buffer, "yaw");
-
+*/
 	ImGui::End();
 }
 
@@ -182,6 +190,7 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 	ImGui::LabelText(std::to_string(game->deltaTime).c_str(), "dt:");
 
 	ImGui::Checkbox("Demo", &showDemoWindow);
+	/*
 	ImGui::SameLine();
 	ImGui::Checkbox("Terrain", &showTerrainWindow);
 	ImGui::SameLine();
@@ -211,7 +220,7 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 
 	ImGui::Checkbox("simulate", &game->simulate);
 
-	////// TODO(ck): Button pops this little window
+	// TODO(ck): Button pops this little window
 	ImGui::Separator();
 	ImGui::LabelText("", "Light");
 	ImGui::DragFloat("L X", &game->light.pos.x, 0.01f, -1500.0f, 1500.0f,  "%.02f");
@@ -226,7 +235,7 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 		ImGui::DragFloat("L ambient g", &game->light.ambient.y, 0.01f, 0.0f, 1.0f, "%.02f");
 		ImGui::DragFloat("L ambient b", &game->light.ambient.z, 0.01f, 0.0f, 1.0f, "%.02f");
 	
-	//	// Material ----
+	// Material ----
 		ImGui::Separator();
 		ImGui::DragFloat("M diffuse r", &game->player.data.mat.diffuse.x, 0.01f, 0.0f, 1.0f, "%.02f");
 		ImGui::DragFloat("M diffuse g", &game->player.data.mat.diffuse.y, 0.01f, 0.0f, 1.0f, "%.02f");
@@ -238,17 +247,20 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 
 	ImGui::Separator();
 
+	*/
+
 	// 2D // 
 	// -------------
 	// TODO(CK): put player at the 0th index for now
-	//ImGui::SliderFloat("Player Speed", &game->world->player->speed, 0.0f, 500.0f);
+	ImGui::SliderFloat("Player Speed", &game->world->player->speed, 0.0f, 500.0f);
 
-	//char buffer[64];
-	//snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.x);
-	//ImGui::LabelText("player x", buffer);
-	//snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.y);
-	//ImGui::LabelText("player y", buffer);
+	char buffer[64];
+	snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.x);
+	ImGui::LabelText("player x", buffer);
+	snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.y);
+	ImGui::LabelText("player y", buffer);
 	
+	ImGui::SliderInt("Tile 0 ID: ", &game->world->map->tiles[0].tileId, 0, 3, NULL);
 	
 	//char entitysizebuf[64];
 	//snprintf(entitysizebuf, sizeof(entitysizebuf), "%d", g_GameState->world->entities.size());
@@ -280,11 +292,8 @@ void RenderGui()
 			 and say that we aren't active if mouse button is already
 			 being held down.
 */ 
-bool GuiActive(bool leftPressed)
+bool GuiActive()
 {
-	if (leftPressed)
-		return false;
-
 	return ImGui::GetIO().WantCaptureMouse;
 }
 
