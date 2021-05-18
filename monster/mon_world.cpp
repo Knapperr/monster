@@ -22,6 +22,11 @@ World::World()
 
 	}
 
+	Sprite sheet = {};
+	MonGL::gl_InitRenderData(&sheet);
+	MonGL::LoadTextureFile(&sheet.texture, "res/textures/basic_tiles.png", true);
+	map->sheet.sprites.push_back(sheet);
+
 #define MAP_SIZE 20
 
 	int testmap[MAP_SIZE][MAP_SIZE] =

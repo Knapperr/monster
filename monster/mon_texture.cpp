@@ -59,6 +59,8 @@ namespace MonGL
 		}
 		else
 		{
+			// TODO(ck): Logging
+			printf("Failed to laod texture\n");
 			//std::cout << "Failed to load texture\n";
 		}
 

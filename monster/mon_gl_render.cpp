@@ -159,6 +159,8 @@ namespace MonGL
 
 	void gl_InitRenderData(Sprite* sprite)
 	{
+
+#if 1
 		GLfloat vertices[] =
 		{
 			// Pos          Tex
@@ -170,6 +172,26 @@ namespace MonGL
 			1.0f, 1.0f, 1.0f, 1.0f,
 			1.0f, 0.0f, 1.0f, 0.0f
 		};
+#endif
+#if 0
+		int sheetWidth = 256;
+		int sheetHeight = 256;
+		int spriteWidth = 32;
+		int spriteHeight = 32;
+		int x = 2;
+		int y = 3;
+		GLfloat vertices[] =
+		{
+			// Pos          Tex
+			0.0f, 1.0f, (x * spriteWidth) / sheetWidth, (y * spriteHeight) / sheetHeight,
+			1.0f, 0.0f, ((x + 1)* spriteWidth) / sheetWidth, (y * spriteHeight) / sheetHeight,
+			0.0f, 0.0f, ((x + 1)* spriteWidth) / sheetWidth, ((y + 1) * spriteHeight) / sheetHeight,
+
+			0.0f, 1.0f, (x * spriteWidth) / sheetWidth, ((y + 1) * spriteHeight) / sheetHeight,
+			1.0f, 1.0f, (x * spriteWidth) / sheetWidth, (y * spriteHeight) / sheetHeight,
+			1.0f, 0.0f, (x * spriteWidth) / sheetWidth, (y * spriteHeight) / sheetHeight
+		};
+#endif
 
 		glGenVertexArrays(1, &sprite->VAO);
 		glGenBuffers(1, &sprite->VBO);

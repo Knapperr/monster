@@ -107,6 +107,9 @@ void SDLPlatform::pollInput(Input* newInput, Input* oldInput)
 	}
 
 	newInput->leftMouseButton.endedDown = oldInput->leftMouseButton.endedDown;
+	
+	// TODO(ck):
+	// I think resetting these is unecessary they are being recomputed every frame
 	newInput->mouseXOffset = oldInput->mouseXOffset;
 	newInput->mouseYOffset = oldInput->mouseYOffset;
 	newInput->mouseXScreen = oldInput->mouseXScreen;
@@ -159,8 +162,8 @@ void SDLPlatform::pollInput(Input* newInput, Input* oldInput)
 			if (e.button.button == SDL_BUTTON_LEFT && isGuiActive == false)
 			{
 				processKeyboard(&newInput->leftMouseButton, false);
-				SDL_SetRelativeMouseMode(SDL_FALSE);
 				SDL_WarpMouseInWindow(window, lastXAfterPress, lastYAfterPress);
+				SDL_SetRelativeMouseMode(SDL_FALSE);
 			}
 		}
 		else if (e.type == SDL_KEYDOWN || e.type == SDL_KEYUP)

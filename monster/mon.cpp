@@ -396,6 +396,11 @@ namespace Mon
 			MonGL::gl_DrawTile(&shader, &world->map->tiles[i], &world->map->sheet.sprites[tileId]);
 		}
 
+		Tile tile = Tile(1, -100, -100);
+		tile.width = 256;
+		tile.height = 256;
+		MonGL::gl_DrawTile(&shader, &tile, &world->map->sheet.sprites[4]);
+
 		for (unsigned int i = 0; i < world->entities.size(); ++i)
 		{
 			//state->world->entities[i]->pos.x *= time;

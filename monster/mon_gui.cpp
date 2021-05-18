@@ -123,7 +123,7 @@ void StatsWindow(bool* p_open, Mon::Game* game)
 //
 // 3D STATS
 //
-/*
+
 	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.x);
 	ImGui::LabelText(buffer, "player x");
 	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.y);
@@ -162,7 +162,7 @@ void StatsWindow(bool* p_open, Mon::Game* game)
 	ImGui::LabelText(buffer, "pitch");
 	snprintf(buffer, sizeof(buffer), "%f", game->cam.yaw);
 	ImGui::LabelText(buffer, "yaw");
-*/
+
 	ImGui::End();
 }
 
@@ -190,13 +190,13 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 	ImGui::LabelText(std::to_string(game->deltaTime).c_str(), "dt:");
 
 	ImGui::Checkbox("Demo", &showDemoWindow);
-	/*
 	ImGui::SameLine();
+	ImGui::Checkbox("stats", &showStatsWindow);
+	
 	ImGui::Checkbox("Terrain", &showTerrainWindow);
 	ImGui::SameLine();
 	ImGui::Checkbox("Camera", &showCameraWindow);
 	ImGui::SameLine();
-	ImGui::Checkbox("stats", &showStatsWindow);
 
 	ImGui::Checkbox("camera disabled", &game->cam.disabled);
 
@@ -247,12 +247,12 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 
 	ImGui::Separator();
 
-	*/
+	
 
 	// 2D // 
 	// -------------
 	// TODO(CK): put player at the 0th index for now
-	ImGui::SliderFloat("Player Speed", &game->world->player->speed, 0.0f, 500.0f);
+	/*ImGui::SliderFloat("Player Speed", &game->world->player->speed, 0.0f, 500.0f);
 
 	char buffer[64];
 	snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.x);
@@ -260,7 +260,7 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 	snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.y);
 	ImGui::LabelText("player y", buffer);
 	
-	ImGui::SliderInt("Tile 0 ID: ", &game->world->map->tiles[0].tileId, 0, 3, NULL);
+	ImGui::SliderInt("Tile 0 ID: ", &game->world->map->tiles[0].tileId, 0, 3, NULL);*/
 	
 	//char entitysizebuf[64];
 	//snprintf(entitysizebuf, sizeof(entitysizebuf), "%d", g_GameState->world->entities.size());
