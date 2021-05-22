@@ -61,9 +61,9 @@ namespace MonGL
 		glBindVertexArray(0);
 
 		data->size = {};
-		data->size.X(1.0f, 2.0f);
-		data->size.Y(1.0f, 2.0f);
-		data->size.Z(1.0f, 2.0f);
+		data->size.X(0.0f, 2.0f);
+		data->size.Y(0.0f, 2.0f);
+		data->size.Z(0.0f, 2.0f);
 
 		// Set world matrix to be the same size as the bounding box
 		//data->worldMatrix = GetTransform(&data->size);

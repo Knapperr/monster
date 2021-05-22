@@ -25,7 +25,7 @@ void UpdateGui();
 
 
 void RenderGui();
-bool GuiActive();
+bool GuiActive(bool SDLRelativeMouseMode);
 void ShutdownGui();
 
 #endif

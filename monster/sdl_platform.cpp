@@ -49,7 +49,7 @@ bool SDLPlatform::init(int SCREEN_WIDTH, int SCREEN_HEIGHT, int PORT_WIDTH, int 
 
 	int xOffset = (SCREEN_WIDTH - PORT_WIDTH) / 2;
 	int yOffset = (SCREEN_HEIGHT - PORT_HEIGHT) / 2;
-	glViewport(10, yOffset, PORT_WIDTH, PORT_HEIGHT);
+	glViewport(5, yOffset, PORT_WIDTH, PORT_HEIGHT);
 	printf("Window Size: %d, %d\n", SCREEN_WIDTH, SCREEN_HEIGHT);
 	printf("View Port Size: %d, %d\n", PORT_WIDTH, PORT_HEIGHT);
 
@@ -122,6 +122,7 @@ void SDLPlatform::pollInput(Input* newInput, Input* oldInput)
 	static int lastY = 0;
 	static int lastXAfterPress = 0;
 	static int lastYAfterPress = 0;
+	static bool relativeMouseMode = false;
 	SDL_Event e;
 	// Update mouse every frame
 	processMouseMotion(newInput, &e, lastX, lastY);
@@ -132,7 +133,7 @@ void SDLPlatform::pollInput(Input* newInput, Input* oldInput)
 		// TODO(ck): wrap in gui layer
 		// without it you won't have keyboard input and other things
 		ImGui_ImplSDL2_ProcessEvent(&e);
-		bool isGuiActive = GuiActive();
+		bool isGuiActive = GuiActive(relativeMouseMode);
 		
 		// you might also want to check io.WantCaptureMouse and io.WantCaptureKeyboard
 		// before processing events
@@ -151,19 +152,26 @@ void SDLPlatform::pollInput(Input* newInput, Input* oldInput)
 			if (e.button.button == SDL_BUTTON_LEFT && isGuiActive == false)
 			{
 				processKeyboard(&newInput->leftMouseButton, true);
+				
 				SDL_SetRelativeMouseMode(SDL_TRUE);
+				relativeMouseMode = true;
 				lastXAfterPress = newInput->mouseXScreen;
 				lastYAfterPress = newInput->mouseYScreen;
+				
 			}
 		}
 		else if (e.type == SDL_MOUSEBUTTONUP)
 		{
-			//if (e.button.button == SDL_BUTTON_LEFT)
-			if (e.button.button == SDL_BUTTON_LEFT && isGuiActive == false)
+			if (e.button.button == SDL_BUTTON_LEFT)
 			{
 				processKeyboard(&newInput->leftMouseButton, false);
-				SDL_WarpMouseInWindow(window, lastXAfterPress, lastYAfterPress);
-				SDL_SetRelativeMouseMode(SDL_FALSE);
+
+				if (isGuiActive == false)
+				{
+					SDL_SetRelativeMouseMode(SDL_FALSE);
+					relativeMouseMode = false;
+					SDL_WarpMouseInWindow(window, lastXAfterPress, lastYAfterPress);
+				}
 			}
 		}
 		else if (e.type == SDL_KEYDOWN || e.type == SDL_KEYUP)

@@ -4,7 +4,7 @@
 #define ArrayCount(Array) (sizeof(Array) / sizeof((Array)[0]))
 
 const unsigned int SCREEN_WIDTH = 1440;
-const unsigned int SCREEN_HEIGHT = 720;
+const unsigned int SCREEN_HEIGHT = 900;
 const unsigned int PORT_WIDTH = 960;
 const unsigned int PORT_HEIGHT = 540;
 

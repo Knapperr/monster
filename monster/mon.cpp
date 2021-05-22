@@ -61,8 +61,6 @@ namespace Mon
 		cam = Camera();
 
 		player = {};
-		enemy = {};
-		// 
 		MonGL::gl_InitBoundingBox(&player.data);
 		MonGL::gl_InitBoundingBox(&player.colliderData);
 		player.particle.pos = glm::vec3(10.0f, 10.0f, 20.0f);
@@ -76,10 +74,16 @@ namespace Mon
 		player.data.mat.specular = glm::vec3(0.5f, 0.5f, 0.5f);
 		player.data.mat.shininess = 32.0f;
 
-		MonGL::gl_InitBoundingBox(&enemy.colliderData);
-		enemy.particle.pos = glm::vec3(10.0f, 1.0f, 10.0f);
-		glm::mat4 model = glm::mat4(1.0f);
-		enemy.colliderData.worldMatrix = glm::translate(model, enemy.particle.pos);;
+		for (int i = 0; i < 4; ++i)
+		{
+			EntityTwo entity = {};
+			MonGL::gl_InitBoundingBox(&entity.colliderData);
+			entity.particle.pos = glm::vec3(5.0f * i, 0.1f, 1.5f * i);
+			glm::mat4 model = glm::mat4(1.0f);
+			entity.colliderData.worldMatrix = glm::translate(model, entity.particle.pos);
+			entity.colliderData.color = glm::vec3(0.0f, 0.0f, 0.0f);
+			enemies.push_back(entity);
+		}
 
 		light = {};
 		glm::vec3 lightColor = glm::vec3(0.2f, 0.3f, 0.6f);
@@ -97,8 +101,6 @@ namespace Mon
 
 
 
-
-
 		return true;
 	}
 
@@ -111,8 +113,6 @@ namespace Mon
 
 		//if (!newInput->leftMouseButton.endedDown)
 			//printf("MOUSE LET GO\n");
-
-
 		deltaTime = dt;
 
 
@@ -185,7 +185,7 @@ namespace Mon
 			player.particle.integrate(deltaTime);
 
 		glm::mat4 model = glm::mat4(1.0f);
-		player.colliderData.worldMatrix = glm::translate(model, player.particle.pos);;
+		player.colliderData.worldMatrix = glm::translate(model, player.particle.pos);
 	}
 
 	void Game::render(double dt)
@@ -277,7 +277,11 @@ namespace Mon
 
 		//MonGL::gl_DrawCube(&player.data, player.particle.pos, cam.pos, projection, view, shader.id);
 		MonGL::gl_DrawBoundingBox(&player.colliderData, player.particle.pos, cam.pos, projection, view, shader.id);
-		MonGL::gl_DrawBoundingBox(&enemy.colliderData, enemy.particle.pos, cam.pos, projection, view, shader.id);
+
+		for (auto& e : enemies)
+		{
+			MonGL::gl_DrawBoundingBox(&e.colliderData, e.particle.pos, cam.pos, projection, view, shader.id);
+		}
 		// ------------------------------------------
 
 
@@ -291,6 +295,9 @@ namespace Mon
 
 		MonShader::DeleteShader(&shader);
 	}
+
+
+
 
 
 	///

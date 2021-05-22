@@ -107,7 +107,7 @@ namespace Mon
 		Input input;
 		
 		EntityTwo player;
-		EntityTwo enemy;
+		std::vector<EntityTwo> enemies;
 		bool simulate;
 
 		// TODO(ck): 

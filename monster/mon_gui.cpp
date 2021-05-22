@@ -18,7 +18,7 @@ void InitGui(SDL_Window* window, SDL_GLContext* context)
 	ImGui::GetStyle().AntiAliasedFill = false;
 	ImGui::GetStyle().AntiAliasedLines = false;*/
 
-	ImGui::SetMouseCursor(ImGuiMouseCursor_None);
+	//ImGui::SetMouseCursor(ImGuiMouseCursor_None);
 	io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
 
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
@@ -117,8 +117,8 @@ void StatsWindow(bool* p_open, Mon::Game* game)
 	snprintf(buffer, sizeof(buffer), "%d", game->input.leftMouseButton.endedDown);
 	ImGui::LabelText(buffer, "left mouse down");
 
-	snprintf(buffer, sizeof(buffer), "%d", GuiActive());
-	ImGui::LabelText(buffer, "gui active");
+	//snprintf(buffer, sizeof(buffer), "%d", GuiActive(false));
+	//ImGui::LabelText(buffer, "gui active");
 
 //
 // 3D STATS
@@ -163,6 +163,7 @@ void StatsWindow(bool* p_open, Mon::Game* game)
 	snprintf(buffer, sizeof(buffer), "%f", game->cam.yaw);
 	ImGui::LabelText(buffer, "yaw");
 
+
 	ImGui::End();
 }
 
@@ -206,17 +207,15 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 	ImGui::LabelText("", "Player");
 	if (ImGui::SmallButton("reset Pos"))
 	{
-		game->player.particle.pos.y = 1.0f;
+		game->player.particle.pos.y = 0.1f;
 		game->player.particle.pos.x = 10.0f;
 		game->player.particle.pos.z = 10.0f;
 	}
 
 	ImGui::SliderFloat3("color", &game->player.colliderData.color[0], 0.0f, 1.0f);
-	ImGui::SliderInt("Collider Width", &game->player.colliderData.lineWidth, 1, 100, NULL);
-	ImGui::SliderFloat2("X", &game->player.colliderData.size.x[0], 1.0f, 50.0f);
-	ImGui::SliderFloat2("Y", &game->player.colliderData.size.y[0], 1.0f, 50.0f);
-	ImGui::SliderFloat2("Z", &game->player.colliderData.size.z[0], 1.0f, 50.0f);
-
+	ImGui::SliderFloat2("X", &game->player.colliderData.size.x[0], 0.0f, 50.0f);
+	ImGui::SliderFloat2("Y", &game->player.colliderData.size.y[0], 0.0f, 50.0f);
+	ImGui::SliderFloat2("Z", &game->player.colliderData.size.z[0], 0.0f, 50.0f);
 
 	ImGui::Checkbox("simulate", &game->simulate);
 
@@ -252,15 +251,15 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 	// 2D // 
 	// -------------
 	// TODO(CK): put player at the 0th index for now
-	/*ImGui::SliderFloat("Player Speed", &game->world->player->speed, 0.0f, 500.0f);
+	//ImGui::SliderFloat("Player Speed", &game->world->player->speed, 0.0f, 500.0f);
 
-	char buffer[64];
-	snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.x);
-	ImGui::LabelText("player x", buffer);
-	snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.y);
-	ImGui::LabelText("player y", buffer);
-	
-	ImGui::SliderInt("Tile 0 ID: ", &game->world->map->tiles[0].tileId, 0, 3, NULL);*/
+	//char buffer[64];
+	//snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.x);
+	//ImGui::LabelText("player x", buffer);
+	//snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.y);
+	//ImGui::LabelText("player y", buffer);
+	//
+	//ImGui::SliderInt("Tile 0 ID: ", &game->world->map->tiles[0].tileId, 0, 3, NULL);
 	
 	//char entitysizebuf[64];
 	//snprintf(entitysizebuf, sizeof(entitysizebuf), "%d", g_GameState->world->entities.size());
@@ -285,15 +284,18 @@ void RenderGui()
 }
 
 /* 
-	NOTE(ck): WantCaptureMouse is returning true when the mouse 
-			 is close but not over the gui for some reason. This 
-			 could have something to do with SDL. The fix right 
-			 now is to check if the mouse button is being pressed
-			 and say that we aren't active if mouse button is already
-			 being held down.
+	NOTE(ck): SDL Relative Mouse Mode causes the mouse to get
+	stuck in the gui. There is a fix in this thread. Right now
+	I have a simple bandaid fix as it only happens when the gui
+	is near the center of the window and SDLSetRelativeMouseMode 
+	is set to true.
+	https://github.com/ocornut/imgui/issues/3650
 */ 
-bool GuiActive()
+bool GuiActive(bool SDLRelativeMouseMode)
 {
+	if (SDLRelativeMouseMode)
+		return false;
+
 	return ImGui::GetIO().WantCaptureMouse;
 }
 
