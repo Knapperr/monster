@@ -345,6 +345,7 @@ namespace Mon
 	void Game::update(double dt, Input* input, int x)
 	{
 		deltaTime = dt;
+		this->input = *input;
 
 		//if (state->deltaTime != dt)
 			//state->deltaTime = dt;
@@ -417,7 +418,7 @@ namespace Mon
 		}
 		MonGL::gl_DrawObject(&shader, world->player);
 
-		// gui
+
 
 	}
 }

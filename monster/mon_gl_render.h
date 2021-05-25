@@ -11,7 +11,6 @@
 #include "mon_shader.h"
 
 
-
 namespace MonGL
 {
 	struct Material
@@ -76,6 +75,48 @@ namespace MonGL
 		// view 
 		// projection
 		// shader data?
+	};
+
+	struct MonVertex
+	{
+		glm::vec2 position;
+		glm::vec4 color;
+		glm::vec2 texture;
+	};
+
+	struct BatchConfig
+	{
+		unsigned int renderType;
+		int priority;
+		unsigned int textureId;
+		glm::mat4 transformMatrix;
+	};
+
+	class Batch
+	{
+	public:
+		int maxVertices;
+		int usedVertices;
+		unsigned int VAO;
+		unsigned int VBO;
+
+		BatchConfig config;
+		MonVertex  lastVertex;
+
+		Batch(unsigned int maxNumVertices, BatchConfig batchConfig);
+		~Batch();
+		
+		// isBatchConfig ??
+		// isEmpty ??? 
+		// isEnoughRoom(numVertices);
+
+		Batch *getFullest(Batch* batch);
+		int getPriority() const;
+
+		void add(const std::vector<MonVertex>& vertices, const BatchConfig& config);
+		void add(const std::vector<MonVertex>& vertices);
+		void render();
+		void cleanUp();
 	};
 
 	// TODO(ck): gl_InitBoundingBox

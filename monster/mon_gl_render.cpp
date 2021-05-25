@@ -4,6 +4,154 @@
 
 namespace MonGL
 {
+	Batch::Batch(unsigned int maxNumVertices, BatchConfig batchConfig)
+	{
+		maxVertices = maxNumVertices;
+		config = batchConfig;
+
+		//optimal size for a batch is between 1-4MB in size. Number of elements that can be stored in a 
+		//batch is determined by calculating #bytes used by each vertex 
+		if (maxVertices < 1000)
+		{
+			// LOG ( TOO SMALL CHOOSE A NUMBER > 1000)
+		}
+
+		// clear error codes
+		glGetError();
+
+		// opengl >= 3
+		glGenVertexArrays(1, &VAO);
+		glBindVertexArray(VAO);
+
+		// create batch buffer
+		glGenBuffers(1, &VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, maxVertices * sizeof(MonVertex), nullptr, GL_STREAM_DRAW);
+
+		// opengl >= 3
+		unsigned int offset = 0;
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(MonVertex), (void*)0);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(MonVertex), (void*)offsetof(MonVertex, color));
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(MonVertex), (void*)offsetof(MonVertex, texture));
+
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		// if (GL_NO_ERROR != glGetError())
+		// cleanup();
+		// log error (failed to create)
+
+
+	}
+
+	Batch::~Batch()
+	{
+		cleanUp();
+	}
+
+	void Batch::cleanUp()
+	{
+		if (VBO != 0)
+		{
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glDeleteBuffers(1, &VBO);
+			VBO = 0;
+		}
+
+		if (VAO != 0)
+		{
+			glBindVertexArray(0);
+			glDeleteVertexArrays(1, &VAO);
+			VAO = 0;
+		}
+	}
+
+	Batch* Batch::getFullest(Batch* batch)
+	{
+		return (usedVertices > batch->usedVertices ? this : batch);
+	}
+
+	int Batch::getPriority() const
+	{
+		// adds vertices to batch and also sets the batch config options
+		return config.priority;
+	}
+
+
+	void Batch::add(const std::vector<MonVertex>& vertices)
+	{
+		// 2 extra vertices are needed for degenerate triangles between each strip
+		unsigned int extraVertices = (GL_TRIANGLE_STRIP == config.renderType && usedVertices > 0 ? 2 : 0);
+
+		// TODO(ck): Not sure about all of this error logging. 
+		// Only i am using this seems like a lot of extra work
+		if (extraVertices + vertices.size() > maxVertices - usedVertices)
+		{
+			// not enough room for {vertices.size} vertices in this batch. Maximum number of vertices allowed in a batch is maxNumVertices
+			// and usedVertices are already used
+			// LOG THIS
+		}
+
+		if (vertices.size() > maxVertices)
+		{
+			// LOG TOO MANY CANT ADD
+		}
+
+		if (vertices.empty())
+		{
+			// same thing can't do this
+		}
+
+		// opengl >= 3
+		glBindVertexArray(VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+		if (extraVertices > 0)
+		{
+			// need to add 2 vertex copies to create degenerate triangles between this strip 
+			// and the last strip that was stored in the batch 
+			glBufferSubData(GL_ARRAY_BUFFER, usedVertices * sizeof(MonVertex), sizeof(MonVertex), &lastVertex);
+			glBufferSubData(GL_ARRAY_BUFFER, (usedVertices + 1) * sizeof(MonVertex), sizeof(MonVertex), &vertices[0]);
+		}
+
+		// use glMapBuffer instead, if moving large chunks of data > 1MB
+		glBufferSubData(GL_ARRAY_BUFFER, (usedVertices + extraVertices) * sizeof(MonVertex), vertices.size() * sizeof(MonVertex), &vertices[0]);
+
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		usedVertices += vertices.size() + extraVertices;
+		lastVertex = vertices[vertices.size() - 1];
+
+	}
+	
+	void Batch::render()
+	{
+		if (usedVertices == 0)
+			return;
+
+		bool usingTexture = true;
+		int shaderId = 1;
+		if (usingTexture)
+		{
+			int textureId = 1;
+			glUniform1i(glGetUniformLocation(shaderId, "image"), 0);
+			glBindTexture(GL_TEXTURE_2D, textureId);
+		}
+
+		// opengl >= 3
+		glUniformMatrix4fv(glGetUniformLocation(shaderId, "model"), 1, GL_FALSE, glm::value_ptr(config.transformMatrix));
+		glBindVertexArray(VAO);
+		glDrawArrays(config.renderType, 0, usedVertices);
+		glBindVertexArray(0);
+
+		usedVertices = 0;
+		config.priority = 0;
+	}
+
 	glm::vec3 GetSize(ColliderSize* size)
 	{
 		return glm::vec3(size->maxX() - size->minX(), size->maxY() - size->minY(), size->maxZ() - size->minZ());
