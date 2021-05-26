@@ -4,8 +4,15 @@
 
 namespace MonGL
 {
+	Batch::Batch()
+	{
+		maxVertices = 0;
+		config = {};
+	}
+
 	Batch::Batch(unsigned int maxNumVertices, BatchConfig batchConfig)
 	{
+		usedVertices = 0;
 		maxVertices = maxNumVertices;
 		config = batchConfig;
 
@@ -94,6 +101,8 @@ namespace MonGL
 			// and usedVertices are already used
 			// LOG THIS
 		}
+
+		
 
 		if (vertices.size() > maxVertices)
 		{
@@ -427,52 +436,6 @@ namespace MonGL
 
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);
-	}
-
-#define PI 3.14159265358f
-	void DrawCollider(Sprite* sprite, float x, float y, float z, float radius, int numberOfSides)
-	{
-		// TODO(There has to be a way to just put vertices inside of the collider and then 
-		// reference those vertices and draw with our current shader the same way we 
-		// do with an actual sprite
-		float doublePi = 2.0f * PI;
-		int numberOfVertices = numberOfSides + 2;
-
-		// for now probably have to calculate this by collider size?
-		float* circleVerticesX = new float[numberOfVertices];
-		float* circleVerticesY = new float[numberOfVertices];
-		float* circleVerticesZ = new float[numberOfVertices];
-
-		circleVerticesX[0] = x;
-		circleVerticesY[0] = y;
-		circleVerticesZ[0] = z;
-
-		for (int i = 1; i < numberOfVertices; i++)
-		{
-			circleVerticesX[i] = x + (radius * cos(i * doublePi / numberOfSides));
-			circleVerticesY[i] = y + (radius * sin(i * doublePi / numberOfSides));
-			circleVerticesZ[i] = z;
-		}
-
-		float* allCircleVertices = new float[(numberOfVertices) * 3];
-
-		for (int i = 0; i < numberOfVertices; i++)
-		{
-			allCircleVertices[i * 3] = circleVerticesX[i];
-			allCircleVertices[(i * 3) + 1] = circleVerticesY[i];
-			allCircleVertices[(i * 3) + 2] = circleVerticesZ[i];
-		}
-
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glVertexPointer(3, GL_FLOAT, 0, allCircleVertices);
-		glDrawArrays(GL_TRIANGLE_FAN, 0, numberOfVertices);
-		glDisableClientState(GL_VERTEX_ARRAY);
-
-		// Cant see this being any good
-		delete[]circleVerticesX;
-		delete[]circleVerticesY;
-		delete[]circleVerticesZ;
-		delete[]allCircleVertices;
 	}
 
 

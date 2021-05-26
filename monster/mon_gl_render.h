@@ -102,7 +102,8 @@ namespace MonGL
 
 		BatchConfig config;
 		MonVertex  lastVertex;
-
+		
+		Batch();
 		Batch(unsigned int maxNumVertices, BatchConfig batchConfig);
 		~Batch();
 		
@@ -122,7 +123,7 @@ namespace MonGL
 	// TODO(ck): gl_InitBoundingBox
 	void gl_InitBoundingBox(RenderData* data);
 	// TODO(ck): gl_DrawBoundingBox
-	void gl_DrawBoundingBox(RenderData* data, 
+	void gl_DrawBoundingBox(RenderData* data,
 					 glm::vec3 playerPos, glm::vec3 camPos,
 					 glm::mat4 projection, glm::mat4 view,
 					 unsigned int shaderID);

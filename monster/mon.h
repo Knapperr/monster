@@ -114,10 +114,8 @@ namespace Mon
 		// Shader lives in the opengl renderer
 		MonShader::Shader shader;
 
-
 		double deltaTime;
 		Light light;
-
 
 	};
 }

@@ -234,7 +234,7 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 	//	ImGui::DragFloat("L ambient g", &game->light.ambient.y, 0.01f, 0.0f, 1.0f, "%.02f");
 	//	ImGui::DragFloat("L ambient b", &game->light.ambient.z, 0.01f, 0.0f, 1.0f, "%.02f");
 	//
-	//// Material ----
+	//	// Material ----
 	//	ImGui::Separator();
 	//	ImGui::DragFloat("M diffuse r", &game->player.data.mat.diffuse.x, 0.01f, 0.0f, 1.0f, "%.02f");
 	//	ImGui::DragFloat("M diffuse g", &game->player.data.mat.diffuse.y, 0.01f, 0.0f, 1.0f, "%.02f");
@@ -261,8 +261,8 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 	
 	ImGui::SliderInt("Tile 0 ID: ", &game->world->map->tiles[0].tileId, 0, 3, NULL);
 	
-	//char entitysizebuf[64];
-	//snprintf(entitysizebuf, sizeof(entitysizebuf), "%d", game->world->entities.size());
+	char entitysizebuf[64];
+	snprintf(entitysizebuf, sizeof(entitysizebuf), "%d", game->world->entities.size());
 
 	//char dtbuf[64];
 	//snprintf(dtbuf, sizeof(dtbuf), "%f", g_GameState->deltaTime);
