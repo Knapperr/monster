@@ -77,48 +77,22 @@ namespace MonGL
 		// shader data?
 	};
 
-	struct MonVertex
+	struct Vertex
 	{
-		glm::vec2 position;
-		glm::vec4 color;
-		glm::vec2 texture;
+		glm::vec3 position;
+		glm::vec3 color;
+		glm::vec2 texCoords;
 	};
 
-	struct BatchConfig
+	struct BatchData
 	{
-		unsigned int renderType;
-		int priority;
-		unsigned int textureId;
-		glm::mat4 transformMatrix;
-	};
-
-	class Batch
-	{
-	public:
-		int maxVertices;
-		int usedVertices;
 		unsigned int VAO;
 		unsigned int VBO;
-
-		BatchConfig config;
-		MonVertex  lastVertex;
-		
-		Batch();
-		Batch(unsigned int maxNumVertices, BatchConfig batchConfig);
-		~Batch();
-		
-		// isBatchConfig ??
-		// isEmpty ??? 
-		// isEnoughRoom(numVertices);
-
-		Batch *getFullest(Batch* batch);
-		int getPriority() const;
-
-		void add(const std::vector<MonVertex>& vertices, const BatchConfig& config);
-		void add(const std::vector<MonVertex>& vertices);
-		void render();
-		void cleanUp();
 	};
+
+
+	float* tileVertices;
+	float* tileIndices;
 
 	// TODO(ck): gl_InitBoundingBox
 	void gl_InitBoundingBox(RenderData* data);
@@ -129,11 +103,15 @@ namespace MonGL
 					 unsigned int shaderID);
 
 	// 2d
-	void gl_InitRenderData(Sprite* sprite);
-	void gl_DrawObject(MonShader::Shader* shader, Entity* obj);
-	void gl_DrawTile(MonShader::Shader* shader, Tile* obj, Sprite* sprite);
-	void gl_DrawTile(MonShader::Shader* shader, float minX, float minY, float maxX, float maxY);
-	void gl_CleanUp(Sprite* sprite);
+	void initRenderData(Sprite* sprite);
+	void initTile(Sprite* sprite, int x, int y);
+	void initTileSheet(BatchData* batch);
+	void drawObject(MonShader::Shader* shader, Entity* obj);
+	void drawTile(MonShader::Shader* shader, BatchData* batch, int tileOffsetX, int tileOffsetY);
+	void drawTile(MonShader::Shader* shader, float minX, float minY, float maxX, float maxY);
+	void cleanUp(Sprite* sprite);
+
+	void pushQuad();
 
 }
 #endif

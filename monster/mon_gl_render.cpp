@@ -4,162 +4,6 @@
 
 namespace MonGL
 {
-	Batch::Batch()
-	{
-		maxVertices = 0;
-		config = {};
-	}
-
-	Batch::Batch(unsigned int maxNumVertices, BatchConfig batchConfig)
-	{
-		usedVertices = 0;
-		maxVertices = maxNumVertices;
-		config = batchConfig;
-
-		//optimal size for a batch is between 1-4MB in size. Number of elements that can be stored in a 
-		//batch is determined by calculating #bytes used by each vertex 
-		if (maxVertices < 1000)
-		{
-			// LOG ( TOO SMALL CHOOSE A NUMBER > 1000)
-		}
-
-		// clear error codes
-		glGetError();
-
-		// opengl >= 3
-		glGenVertexArrays(1, &VAO);
-		glBindVertexArray(VAO);
-
-		// create batch buffer
-		glGenBuffers(1, &VBO);
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, maxVertices * sizeof(MonVertex), nullptr, GL_STREAM_DRAW);
-
-		// opengl >= 3
-		unsigned int offset = 0;
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(MonVertex), (void*)0);
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(MonVertex), (void*)offsetof(MonVertex, color));
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(MonVertex), (void*)offsetof(MonVertex, texture));
-
-		glBindVertexArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-		// if (GL_NO_ERROR != glGetError())
-		// cleanup();
-		// log error (failed to create)
-
-
-	}
-
-	Batch::~Batch()
-	{
-		cleanUp();
-	}
-
-	void Batch::cleanUp()
-	{
-		if (VBO != 0)
-		{
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			glDeleteBuffers(1, &VBO);
-			VBO = 0;
-		}
-
-		if (VAO != 0)
-		{
-			glBindVertexArray(0);
-			glDeleteVertexArrays(1, &VAO);
-			VAO = 0;
-		}
-	}
-
-	Batch* Batch::getFullest(Batch* batch)
-	{
-		return (usedVertices > batch->usedVertices ? this : batch);
-	}
-
-	int Batch::getPriority() const
-	{
-		// adds vertices to batch and also sets the batch config options
-		return config.priority;
-	}
-
-
-	void Batch::add(const std::vector<MonVertex>& vertices)
-	{
-		// 2 extra vertices are needed for degenerate triangles between each strip
-		unsigned int extraVertices = (GL_TRIANGLE_STRIP == config.renderType && usedVertices > 0 ? 2 : 0);
-
-		// TODO(ck): Not sure about all of this error logging. 
-		// Only i am using this seems like a lot of extra work
-		if (extraVertices + vertices.size() > maxVertices - usedVertices)
-		{
-			// not enough room for {vertices.size} vertices in this batch. Maximum number of vertices allowed in a batch is maxNumVertices
-			// and usedVertices are already used
-			// LOG THIS
-		}
-
-		
-
-		if (vertices.size() > maxVertices)
-		{
-			// LOG TOO MANY CANT ADD
-		}
-
-		if (vertices.empty())
-		{
-			// same thing can't do this
-		}
-
-		// opengl >= 3
-		glBindVertexArray(VAO);
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-		if (extraVertices > 0)
-		{
-			// need to add 2 vertex copies to create degenerate triangles between this strip 
-			// and the last strip that was stored in the batch 
-			glBufferSubData(GL_ARRAY_BUFFER, usedVertices * sizeof(MonVertex), sizeof(MonVertex), &lastVertex);
-			glBufferSubData(GL_ARRAY_BUFFER, (usedVertices + 1) * sizeof(MonVertex), sizeof(MonVertex), &vertices[0]);
-		}
-
-		// use glMapBuffer instead, if moving large chunks of data > 1MB
-		glBufferSubData(GL_ARRAY_BUFFER, (usedVertices + extraVertices) * sizeof(MonVertex), vertices.size() * sizeof(MonVertex), &vertices[0]);
-
-		glBindVertexArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-		usedVertices += vertices.size() + extraVertices;
-		lastVertex = vertices[vertices.size() - 1];
-
-	}
-	
-	void Batch::render()
-	{
-		if (usedVertices == 0)
-			return;
-
-		bool usingTexture = true;
-		int shaderId = 1;
-		if (usingTexture)
-		{
-			int textureId = 1;
-			glUniform1i(glGetUniformLocation(shaderId, "image"), 0);
-			glBindTexture(GL_TEXTURE_2D, textureId);
-		}
-
-		// opengl >= 3
-		glUniformMatrix4fv(glGetUniformLocation(shaderId, "model"), 1, GL_FALSE, glm::value_ptr(config.transformMatrix));
-		glBindVertexArray(VAO);
-		glDrawArrays(config.renderType, 0, usedVertices);
-		glBindVertexArray(0);
-
-		usedVertices = 0;
-		config.priority = 0;
-	}
 
 	glm::vec3 GetSize(ColliderSize* size)
 	{
@@ -225,39 +69,6 @@ namespace MonGL
 		// Set world matrix to be the same size as the bounding box
 		//data->worldMatrix = GetTransform(&data->size);
 
-		/*
-		* 
-		* TODO this is how we get the size of it 
-		  GLfloat
-		min_x, max_x,
-		min_y, max_y,
-		min_z, max_z;
-	  min_x = max_x = mesh->vertices[0].x;
-	  min_y = max_y = mesh->vertices[0].y;
-	  min_z = max_z = mesh->vertices[0].z;
-	  for (int i = 0; i < mesh->vertices.size(); i++) {
-		if (mesh->vertices[i].x < min_x) min_x = mesh->vertices[i].x;
-		if (mesh->vertices[i].x > max_x) max_x = mesh->vertices[i].x;
-		if (mesh->vertices[i].y < min_y) min_y = mesh->vertices[i].y;
-		if (mesh->vertices[i].y > max_y) max_y = mesh->vertices[i].y;
-		if (mesh->vertices[i].z < min_z) min_z = mesh->vertices[i].z;
-		if (mesh->vertices[i].z > max_z) max_z = mesh->vertices[i].z;
-	  }
-	  glm::vec3 size = glm::vec3(max_x-min_x, max_y-min_y, max_z-min_z);
-	  glm::vec3 center = glm::vec3((min_x+max_x)/2, (min_y+max_y)/2, (min_z+max_z)/2);
-	  glm::mat4 transform = glm::translate(glm::mat4(1), center) * glm::scale(glm::mat4(1), size);
-		
-		
-		i see here you are multiplying above with the models model matrix so that
-		you can that might be a vec3? but i dont think so?
-
-		/* Apply object's transformation matrix this is the world transform 
-		* thats why its called object2world i guess cause its what gets called when drawing happens??
-		* same as position?
-
-		
-		*/
-
 		// TODO(ck): Add back for cubes
 		// Normals
 		//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
@@ -312,9 +123,11 @@ namespace MonGL
 
 
 
+	/// 
+	/// 2D
+	/// 
 
-
-	void gl_InitRenderData(Sprite* sprite)
+	void initRenderData(Sprite* sprite)
 	{
 
 #if 1
@@ -330,26 +143,6 @@ namespace MonGL
 			1.0f, 0.0f, 1.0f, 0.0f
 		};
 #endif
-#if 0
-		int sheetWidth = 256;
-		int sheetHeight = 256;
-		int spriteWidth = 32;
-		int spriteHeight = 32;
-		int x = 2;
-		int y = 3;
-		GLfloat vertices[] =
-		{
-			// Pos          Tex
-			0.0f, 1.0f, (x * spriteWidth) / sheetWidth, (y * spriteHeight) / sheetHeight,
-			1.0f, 0.0f, ((x + 1)* spriteWidth) / sheetWidth, (y * spriteHeight) / sheetHeight,
-			0.0f, 0.0f, ((x + 1)* spriteWidth) / sheetWidth, ((y + 1) * spriteHeight) / sheetHeight,
-
-			0.0f, 1.0f, (x * spriteWidth) / sheetWidth, ((y + 1) * spriteHeight) / sheetHeight,
-			1.0f, 1.0f, (x * spriteWidth) / sheetWidth, (y * spriteHeight) / sheetHeight,
-			1.0f, 0.0f, (x * spriteWidth) / sheetWidth, (y * spriteHeight) / sheetHeight
-		};
-#endif
-
 		glGenVertexArrays(1, &sprite->VAO);
 		glGenBuffers(1, &sprite->VBO);
 
@@ -365,9 +158,113 @@ namespace MonGL
 
 		// For this 
 	}
+	
+	void initTile(Sprite* sprite, int x, int y)
+	{
+		float sheetWidth = 256.0f;
+		float sheetHeight = 256.0f;
+		int spriteWidth = 32;
+		int spriteHeight = 32;
+
+		float topRightX = (x * spriteWidth) / sheetWidth;
+		float topRightY = (y * spriteHeight) / sheetHeight;
+		float topLeftX = (x * spriteWidth) / sheetWidth;
+		float topLeftY = ((y + 1) * spriteHeight) / sheetHeight;
+		float bottomRightX = ((x + 1) * spriteWidth) / sheetWidth;
+		float bottomRightY = (y * spriteHeight) / sheetHeight;
+		float bottomLeftX = ((x + 1) * spriteWidth) / sheetWidth;
+		float bottomLeftY = ((y + 1) * spriteHeight) / sheetHeight;
+
+		float vertices[] = {
+			// positions          // colors           // texture coords
+			 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   bottomLeftX, bottomLeftY, // top right
+			 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   bottomRightX, bottomRightY, // bottom right
+			-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   topRightX, topRightY, // bottom left
+			-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   topLeftX, topLeftY // top left 
+		};
+
+		unsigned int indices[] = {
+			0, 1, 3, // first triangle
+			1, 2, 3  // second triangle
+		};
+
+		unsigned int EBO;
+		glGenVertexArrays(1, &sprite->VAO);
+		glGenBuffers(1, &sprite->VBO);
+		glGenBuffers(1, &EBO);
+		
+		glBindVertexArray(sprite->VAO);
+		
+		glBindBuffer(GL_ARRAY_BUFFER, sprite->VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+		// position attribute
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+		// color attribute
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(1);
+		// texture coord attribute
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+		glEnableVertexAttribArray(2);
+	}
+
+	void initTileSheet(BatchData* batch, int maxVertices, int usedVertices, int indicesLength)
+	{
+		/*
+			Need to get all of the vertices and indices of every tile
+			i guess I pass in the tiles or can i get tileAmount and Rect TileSize
+			then if its 32,32 i just loop through and do that many 
+			or just say it doesnt even need that i just need the vertices each tile
+			takes up it doesnt matter what size it is
+		
+
+
+			for ()
+			{
+				PushQuad()
+				fills array of tileVertices
+
+				
+			}
+		*/
+		glGenVertexArrays(1, &batch->VAO);
+		glBindVertexArray(batch->VAO);
+
+		// TODO(ck): Consider GL_DYNAMIC_DRAW OVER GL_STREAM_DRAW
+		glGenBuffers(1, &batch->VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, batch->VBO);
+		glBufferData(GL_ARRAY_BUFFER, maxVertices * sizeof(Vertex), nullptr, GL_STREAM_DRAW);
+
+		unsigned int EBO;
+		glGenBuffers(1, &EBO);
+		unsigned int offset = 0;
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesLength * sizeof(int), tileIndices, GL_STREAM_DRAW);
+
+
+		// these sizes wont work
+		// position attribute
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+		glEnableVertexAttribArray(0);
+		offset += sizeof(glm::vec2);
+		// color attribute
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
+		glEnableVertexAttribArray(1);
+		offset += sizeof(glm::vec4);
+
+		// texture coord attribute
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
+
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	};
 
 	// OpenGL
-	void gl_DrawObject(MonShader::Shader* shader, Entity* obj)
+	void drawObject(MonShader::Shader* shader, Entity* obj)
 	{
 		glUseProgram(shader->id);
 
@@ -394,12 +291,12 @@ namespace MonGL
 		glBindVertexArray(0);
 	}
 
-	void gl_DrawTile(MonShader::Shader* shader, Tile* obj, Sprite* sprite)
+	void drawTile(MonShader::Shader* shader, Tile* tile, Sprite* sprite)
 	{
 		glUseProgram(shader->id);
 		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(obj->x, obj->y, 0.0f));
-		model = glm::scale(model, glm::vec3(glm::vec2(obj->width, obj->height), 1.0f));
+		model = glm::translate(model, glm::vec3(tile->x, tile->y, 0.0f));
+		model = glm::scale(model, glm::vec3(glm::vec2(tile->width, tile->height), 1.0f));
 
 		glUniformMatrix4fv(glGetUniformLocation(shader->id, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		//glUniform3f(glGetUniformLocation(shader->id, "spriteColor"), obj->color.r, obj->color.g, obj->color.b);
@@ -409,11 +306,91 @@ namespace MonGL
 
 		glBindVertexArray(sprite->VAO);
 		
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
+	}
+	
+	void drawTile(MonShader::Shader* shader, Sprite sprite, int tileOffsetX, int tileOffsetY)
+	{
+		glUseProgram(shader->id);
+		
+		float sheetWidth = 256.0f;
+		float sheetHeight = 256.0f;
+		int spriteWidth = 32;
+		int spriteHeight = 32;
+
+		float topRightX = (tileOffsetX * spriteWidth) / sheetWidth;
+		float topRightY = (tileOffsetY * spriteHeight) / sheetHeight;
+		float topLeftX = (tileOffsetX * spriteWidth) / sheetWidth;
+		float topLeftY = ((tileOffsetY + 1) * spriteHeight) / sheetHeight;
+		float bottomRightX = ((tileOffsetX + 1) * spriteWidth) / sheetWidth;
+		float bottomRightY = (tileOffsetY * spriteHeight) / sheetHeight;
+		float bottomLeftX = ((tileOffsetX + 1) * spriteWidth) / sheetWidth;
+		float bottomLeftY = ((tileOffsetY + 1) * spriteHeight) / sheetHeight;
+
+		float textureCoords[] = {
+			 bottomLeftX, bottomLeftY, // top right
+			 bottomRightX, bottomRightY, // bottom right
+			 topRightX, topRightY, // bottom left
+			 topLeftX, topLeftY // top left 
+		};
+
+
+		// fill batch
+
+
+		//float vertices[] = {
+		//	// positions          // colors           // texture coords
+		//	 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   bottomLeftX, bottomLeftY, // top right
+		//	 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   bottomRightX, bottomRightY, // bottom right
+		//	-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   topRightX, topRightY, // bottom left
+		//	-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   topLeftX, topLeftY // top left 
+		//};
+
+		
+		
+		
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(tile->x, tile->y, 0.0f));
+		model = glm::scale(model, glm::vec3(glm::vec2(tile->width, tile->height), 1.0f));
+
+		glUniformMatrix4fv(glGetUniformLocation(shader->id, "model"), 1, GL_FALSE, glm::value_ptr(model));
+		//glUniform3f(glGetUniformLocation(shader->id, "spriteColor"), obj->color.r, obj->color.g, obj->color.b);
+
+
+		
+		glActiveTexture(GL_TEXTURE0);
+		glUniform1i(glGetUniformLocation(shader->id, "image"), 0);
+		glBindTexture(GL_TEXTURE_2D, tile->tileId);
+
+
+
+
+		glBindVertexArray(sprite.VAO);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 	}
 
-	void gl_DrawTile(MonShader::Shader* shader, float minX, float minY, float maxX, float maxY)
+	//void gl_DrawTile(MonShader::Shader* shader, Tile* tile)
+	//{
+	//	glUseProgram(shader->id);
+	//	glm::mat4 model = glm::mat4(1.0f);
+	//	model = glm::translate(model, glm::vec3(tile->x, tile->y, 0.0f));
+	//	model = glm::scale(model, glm::vec3(glm::vec2(tile->width, tile->height), 1.0f));
+
+	//	glUniformMatrix4fv(glGetUniformLocation(shader->id, "model"), 1, GL_FALSE, glm::value_ptr(model));
+	//	//glUniform3f(glGetUniformLocation(shader->id, "spriteColor"), obj->color.r, obj->color.g, obj->color.b);
+
+	//	glActiveTexture(GL_TEXTURE0);
+	//	glUniform1i(glGetUniformLocation(shader->id, "image"), 0);
+	//	glBindTexture(GL_TEXTURE_2D, tile->tileId);
+
+	//	glBindVertexArray(tile->sprite.VAO);
+	//	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	//	glBindVertexArray(0);
+	//}
+
+	void drawTile(MonShader::Shader* shader, float minX, float minY, float maxX, float maxY)
 	{
 		glUseProgram(shader->id);
 		glm::mat4 model = glm::mat4(1.0f);
@@ -438,8 +415,7 @@ namespace MonGL
 		glBindVertexArray(0);
 	}
 
-
-	void gl_CleanUp(Sprite* sprite)
+	void cleanUp(Sprite* sprite)
 	{
 		glDeleteVertexArrays(1, &sprite->VAO);
 		glDeleteBuffers(1, &sprite->VBO);

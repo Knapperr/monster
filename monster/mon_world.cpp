@@ -2,6 +2,14 @@
 #include "mon.h"
 #include "mon_gl_render.h"
 
+
+void TileMap::draw()
+{
+	MonGL::drawTile
+}
+
+
+
 World::World()
 {
 
@@ -26,6 +34,11 @@ World::World()
 	MonGL::gl_InitRenderData(&sheet);
 	MonGL::LoadTextureFile(&sheet.texture, "res/textures/basic_tiles.png", true);
 	map->sheet.sprites.push_back(sheet);
+
+	testTile = {};
+	MonGL::gl_InitTile(&testTile, 6, 2);
+	MonGL::LoadTextureFile(&testTile.texture, "res/textures/basic_tiles.png", true);
+
 
 #define MAP_SIZE 20
 
@@ -66,11 +79,36 @@ World::World()
 			// tileX 
 			// x = screenX * tilesPerWidth + tileX;
 			// y = screenY * tilesPerHeight + tileY;
-			Tile tile = Tile(testmap[y][x], x * width, y * height);
+			Tile tile = {0, 0, 0};
+			
+
+			if (testmap[y][x] == 3)
+			{
+				tile = Tile(testmap[y][x], x * width, y * height);
+				MonGL::gl_InitTile(&tile, 6, 2);
+			}
+			if (testmap[y][x] == 1)
+			{
+				tile = Tile(testmap[y][x], x * width, y * height);
+				MonGL::gl_InitTile(&tile.sprite, 7, 2);
+			}
+			if (testmap[y][x] == 2)
+			{
+				tile = Tile(testmap[y][x], x * width, y * height);
+				MonGL::gl_InitTile(&tile.sprite, 7, 2);
+			}
+			if (testmap[y][x] == 0)
+			{
+				tile = Tile(testmap[y][x], x * width, y * height);
+				MonGL::gl_InitTile(&tile.sprite, 7, 2);
+			}
+
+			tile.tileId = testTile.texture.id;
 			map->tiles.push_back(tile);
 		}
 	}
 
+	// TODO(ck): Memory management
 	player = new Entity("res/textures/p1.png", true,
 						glm::vec2(5, 5), glm::vec2(32, 32), glm::vec3(1.0f, 1.0f, 1.0f),
 						200.0f, 0.0f, false);

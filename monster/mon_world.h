@@ -4,10 +4,13 @@
 #include "mon_entity.h"
 #include <vector>
 
+
 struct Tile
 {
 	float x, y;
 	int height, width;
+	int offsetX, offsetY;
+
 	
 	// TODO(ck): TILE_PART_ONE - this is linked to mon_world.cpp 
 	//file there is a render call using the old sprite method 
@@ -22,19 +25,46 @@ struct Tile
 		height = 32;
 		width = 32;
 		tileId = id;
+		offsetX = 0;
+		offsetY = 0;
 	}
 };
 
-// TODO(ck): tileId needs to map to the tilesheet
+// tile sheet needs a batch for the renderer
+struct BatchData;
+
 struct TileSheet
 {
-	std::vector<Sprite> sprites;
+	Tile* tiles;
+	BatchData* batch;
+	MonGL::Texture texture;
+	int gridX = 32;
+	int gridY = 32;
+
+
+	void init(const char * fileName);
+	Tile* createTile();
+
+	// this is the tile and the ones that get created for
+	// everytthing else the tile sheet creates tiles for the
+	// map that way we can also manipulate the tile sheet
+	// 	in the gui for our loaded texture and info about the sheet like 
+	// 	   lengths of ids and 
+	// 
+	//Tile[] tiles;
+
+	//texture
+	//info
+	//	this is calculated by parsing the loaded texture
+	//	we get an id for each tile 
+	//	ids (1, 2, 3, 4 ,5 )
 };
 
 struct TileMap
 {
 	std::vector<Tile> tiles;
 	TileSheet sheet;
+	void draw();
 };
 
 
@@ -47,6 +77,7 @@ public:
 	Entity* player; // player needs its own class --- it needs to have an array of spells and stuff
 	std::vector<Entity*> entities;
 	TileMap* map;
+	Sprite testTile;
 
 	World();
 	~World();

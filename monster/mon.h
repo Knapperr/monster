@@ -113,9 +113,17 @@ namespace Mon
 		// TODO(ck): 
 		// Shader lives in the opengl renderer
 		MonShader::Shader shader;
+		MonShader::Shader tileShader;
 
 		double deltaTime;
 		Light light;
+
+
+		unsigned int testVAO;
+		unsigned int testVBO;
+		unsigned int testEBO;
+		unsigned int testTextureU;
+		
 
 	};
 }

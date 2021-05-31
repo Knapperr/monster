@@ -60,7 +60,7 @@ namespace MonGL
 		else
 		{
 			// TODO(ck): Logging
-			printf("Failed to laod texture\n");
+			printf("Failed to load texture\n");
 			//std::cout << "Failed to load texture\n";
 		}
 
@@ -77,6 +77,7 @@ namespace MonGL
 		glGenTextures(1, &textureID);
 
 		int width, height, nrComponents;
+		stbi_set_flip_vertically_on_load(false); // use stbi to flip a texture on y-axis
 		unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
 
 		if (data)
