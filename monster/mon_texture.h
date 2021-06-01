@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace MonGL
+namespace MonTexture
 {
 	struct Texture
 	{

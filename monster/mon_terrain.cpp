@@ -1,7 +1,6 @@
 #include "mon_terrain.h"
 #include <string>
 
-#include "mon_gl_render.h"
 #include <glad/glad.h>
 
 
@@ -27,10 +26,10 @@ Terrain::Terrain(int gridX, int gridZ)
 	textureIds = new int[TEXTURE_ID_COUNT];
 	std::string textPath = "res/textures/terrain/";
 	std::string textDir = textPath.substr(0, textPath.find_last_of('/'));
-	textureIds[0] = MonGL::LoadTextureFile("1024multi.png", textDir, false);
-	textureIds[1] = MonGL::LoadTextureFile("rock.png", textDir, false);
-	textureIds[2] = MonGL::LoadTextureFile("grass.jpg", textDir, false);
-	textureIds[3] = MonGL::LoadTextureFile("snow.jpg", textDir, false);
+	textureIds[0] = MonTexture::LoadTextureFile("1024multi.png", textDir, false);
+	textureIds[1] = MonTexture::LoadTextureFile("rock.png", textDir, false);
+	textureIds[2] = MonTexture::LoadTextureFile("grass.jpg", textDir, false);
+	textureIds[3] = MonTexture::LoadTextureFile("snow.jpg", textDir, false);
 
 	selectedTextureId = textureIds[0];
 

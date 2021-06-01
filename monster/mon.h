@@ -11,11 +11,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "mon_entity.h"
-#include "mon_world.h"
-
 #include "mon_debug_camera.h"
-#include "mon_terrain.h"
+//#include "mon_terrain.h"
 
 // should not be in this layer either
 // the app just takes 
@@ -100,7 +97,7 @@ namespace Mon
 		// DO NOT KEEP the shaders in the game and renderer like you did last time...
 		// keep them in a structure that can be accessed globally instead keep it clean
 		World* world;
-		Terrain* terrain;
+		//Terrain* terrain;
 
 		Camera cam;
 		CameraTwo camera;

@@ -212,7 +212,7 @@ namespace MonGL
 		glEnableVertexAttribArray(2);
 	}
 
-	void initTileSheet(BatchData* batch, int maxVertices, int usedVertices, int indicesLength)
+	void initTileMap(std::vector<Tile>& tiles)
 	{
 		/*
 			Need to get all of the vertices and indices of every tile
@@ -231,6 +231,16 @@ namespace MonGL
 				
 			}
 		*/
+		// These will be figured out after looping our tilemap and pushing quads
+		int maxVertices = 1;
+		int usedVertices = 1;
+		int indicesLength = 1;
+		 
+		// TEST
+		BatchData* batch = new BatchData();
+		int* tileIndices = new int[10];
+
+
 		glGenVertexArrays(1, &batch->VAO);
 		glBindVertexArray(batch->VAO);
 
@@ -291,29 +301,11 @@ namespace MonGL
 		glBindVertexArray(0);
 	}
 
-	void drawTile(MonShader::Shader* shader, Tile* tile, Sprite* sprite)
+
+	void drawTile(MonShader::Shader* shader, int tileOffsetX, int tileOffsetY)
 	{
 		glUseProgram(shader->id);
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(tile->x, tile->y, 0.0f));
-		model = glm::scale(model, glm::vec3(glm::vec2(tile->width, tile->height), 1.0f));
 
-		glUniformMatrix4fv(glGetUniformLocation(shader->id, "model"), 1, GL_FALSE, glm::value_ptr(model));
-		//glUniform3f(glGetUniformLocation(shader->id, "spriteColor"), obj->color.r, obj->color.g, obj->color.b);
-
-		//glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, sprite->texture.id);
-
-		glBindVertexArray(sprite->VAO);
-		
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
-	}
-	
-	void drawTile(MonShader::Shader* shader, Sprite sprite, int tileOffsetX, int tileOffsetY)
-	{
-		glUseProgram(shader->id);
-		
 		float sheetWidth = 256.0f;
 		float sheetHeight = 256.0f;
 		int spriteWidth = 32;
@@ -347,9 +339,95 @@ namespace MonGL
 		//	-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   topLeftX, topLeftY // top left 
 		//};
 
-		
-		
-		
+
+
+
+		glm::mat4 model = glm::mat4(1.0f);
+		//model = glm::translate(model, glm::vec3(tile->x, tile->y, 0.0f));
+		//model = glm::scale(model, glm::vec3(glm::vec2(tile->width, tile->height), 1.0f));
+
+		glUniformMatrix4fv(glGetUniformLocation(shader->id, "model"), 1, GL_FALSE, glm::value_ptr(model));
+		//glUniform3f(glGetUniformLocation(shader->id, "spriteColor"), obj->color.r, obj->color.g, obj->color.b);
+
+
+
+		glActiveTexture(GL_TEXTURE0);
+		glUniform1i(glGetUniformLocation(shader->id, "image"), 0);
+		//glBindTexture(GL_TEXTURE_2D, tile->tileId);
+
+		// TEST
+		BatchData* batch = new BatchData();
+
+		glBindVertexArray(batch->VAO);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
+	}
+
+
+	void drawTile(MonShader::Shader* shader, BatchData* batch, int tileOffsetX, int tileOffsetY)
+	{
+		glUseProgram(shader->id);
+
+		float sheetWidth = 256.0f;
+		float sheetHeight = 256.0f;
+		int spriteWidth = 32;
+		int spriteHeight = 32;
+
+		float topRightX = (tileOffsetX * spriteWidth) / sheetWidth;
+		float topRightY = (tileOffsetY * spriteHeight) / sheetHeight;
+		float topLeftX = (tileOffsetX * spriteWidth) / sheetWidth;
+		float topLeftY = ((tileOffsetY + 1) * spriteHeight) / sheetHeight;
+		float bottomRightX = ((tileOffsetX + 1) * spriteWidth) / sheetWidth;
+		float bottomRightY = (tileOffsetY * spriteHeight) / sheetHeight;
+		float bottomLeftX = ((tileOffsetX + 1) * spriteWidth) / sheetWidth;
+		float bottomLeftY = ((tileOffsetY + 1) * spriteHeight) / sheetHeight;
+
+		float textureCoords[] = {
+			 bottomLeftX, bottomLeftY, // top right
+			 bottomRightX, bottomRightY, // bottom right
+			 topRightX, topRightY, // bottom left
+			 topLeftX, topLeftY // top left 
+		};
+
+
+		// fill batch
+
+
+		//float vertices[] = {
+		//	// positions          // colors           // texture coords
+		//	 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   bottomLeftX, bottomLeftY, // top right
+		//	 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   bottomRightX, bottomRightY, // bottom right
+		//	-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   topRightX, topRightY, // bottom left
+		//	-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   topLeftX, topLeftY // top left 
+		//};
+
+
+
+
+		glm::mat4 model = glm::mat4(1.0f);
+		//model = glm::translate(model, glm::vec3(tile->x, tile->y, 0.0f));
+		//model = glm::scale(model, glm::vec3(glm::vec2(tile->width, tile->height), 1.0f));
+
+		glUniformMatrix4fv(glGetUniformLocation(shader->id, "model"), 1, GL_FALSE, glm::value_ptr(model));
+		//glUniform3f(glGetUniformLocation(shader->id, "spriteColor"), obj->color.r, obj->color.g, obj->color.b);
+
+
+
+		glActiveTexture(GL_TEXTURE0);
+		glUniform1i(glGetUniformLocation(shader->id, "image"), 0);
+		//glBindTexture(GL_TEXTURE_2D, tile->tileId);
+
+
+
+
+		glBindVertexArray(batch->VAO);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
+	}
+
+	void drawTile(MonShader::Shader* shader, Tile* tile, Sprite* sprite)
+	{
+		glUseProgram(shader->id);
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(tile->x, tile->y, 0.0f));
 		model = glm::scale(model, glm::vec3(glm::vec2(tile->width, tile->height), 1.0f));
@@ -357,20 +435,15 @@ namespace MonGL
 		glUniformMatrix4fv(glGetUniformLocation(shader->id, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		//glUniform3f(glGetUniformLocation(shader->id, "spriteColor"), obj->color.r, obj->color.g, obj->color.b);
 
+		//glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, sprite->texture.id);
 
+		glBindVertexArray(sprite->VAO);
 		
-		glActiveTexture(GL_TEXTURE0);
-		glUniform1i(glGetUniformLocation(shader->id, "image"), 0);
-		glBindTexture(GL_TEXTURE_2D, tile->tileId);
-
-
-
-
-		glBindVertexArray(sprite.VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 	}
-
+	
 	//void gl_DrawTile(MonShader::Shader* shader, Tile* tile)
 	//{
 	//	glUseProgram(shader->id);

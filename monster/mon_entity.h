@@ -9,7 +9,7 @@
 // TODO(CK): Figure out where to put this
 struct Sprite
 {
-	MonGL::Texture texture;
+	MonTexture::Texture texture;
 	unsigned int VAO;
 	unsigned int VBO;
 };

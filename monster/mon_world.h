@@ -2,7 +2,6 @@
 #define MON_WORLD_H
 
 #include "mon_entity.h"
-#include <vector>
 
 
 struct Tile
@@ -20,6 +19,17 @@ struct Tile
 	// texture atlas or tile texture atlas
 	int tileId; // this links to the sprite
 
+	Tile()
+	{
+		x = 0;
+		y = 0;
+		height = 32;
+		width = 32;
+		tileId = 0;
+		offsetX = 0;
+		offsetY = 0;
+	}
+
 	Tile(int id, float x, float y) : x(x), y(y)
 	{
 		height = 32;
@@ -30,20 +40,15 @@ struct Tile
 	}
 };
 
-// tile sheet needs a batch for the renderer
-struct BatchData;
-
 struct TileSheet
 {
 	Tile* tiles;
-	BatchData* batch;
-	MonGL::Texture texture;
+	int tileCount;
+	MonTexture::Texture texture;
 	int gridX = 32;
 	int gridY = 32;
 
-
-	void init(const char * fileName);
-	Tile* createTile();
+	Tile* createTile(int tileId, int x, int y);
 
 	// this is the tile and the ones that get created for
 	// everytthing else the tile sheet creates tiles for the
@@ -60,12 +65,16 @@ struct TileSheet
 	//	ids (1, 2, 3, 4 ,5 )
 };
 
+void initTileSheet(TileSheet* sheet, const char* fileName);
+
 struct TileMap
 {
+	//MonGL::BatchData* batch;
 	std::vector<Tile> tiles;
 	TileSheet sheet;
-	void draw();
 };
+
+void initTileMap(TileMap* map);
 
 
 class World

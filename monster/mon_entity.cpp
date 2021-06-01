@@ -1,7 +1,7 @@
 #include "mon_entity.h"
-#include "mon_gl_render.h"
 
 #include <glad\glad.h>
+#include "mon_gl_render.h"
 
 
 
@@ -17,8 +17,8 @@ Entity::Entity(const char* fileLocation,
 {
 	Sprite sprite = {};
 	// TODO(CK): Don't automatically make opengl data... figure out what renderer we are using
-	MonGL::gl_InitRenderData(&sprite);
-	MonGL::LoadTextureFile(&sprite.texture, fileLocation, isAlpha);
+	MonGL::initRenderData(&sprite);
+	MonTexture::LoadTextureFile(&sprite.texture, fileLocation, isAlpha);
 
 	this->pos = pos;
 	this->size = size;
@@ -33,7 +33,7 @@ Entity::Entity(const char* fileLocation,
 
 Entity::~Entity()
 {
-	MonGL::gl_CleanUp(&this->sprite);
+	MonGL::cleanUp(&this->sprite);
 }
 
 // This has to come from gl_render

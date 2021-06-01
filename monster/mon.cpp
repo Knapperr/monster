@@ -93,20 +93,8 @@ namespace Mon
 
 
 		// TODO(ck): Memory Allocation
-		terrain = new Terrain(0, 0);
-		terrain->generate();
-
-		float vertices[] = {
-			 0.5f,  0.5f, 0.0f,  // top right
-			 0.5f, -0.5f, 0.0f,  // bottom right
-			-0.5f, -0.5f, 0.0f,  // bottom left
-			-0.5f,  0.5f, 0.0f   // top left 
-		};
-		unsigned int indices[] = {
-			0, 1, 3,  // first Triangle
-			1, 2, 3   // second Triangle
-		};
-
+		//terrain = new Terrain(0, 0);
+		//terrain->generate();
 
 
 		simulate = false;
@@ -216,10 +204,10 @@ namespace Mon
 		glUniform3fv(glGetUniformLocation(shader.id, "light.diffuse"), 1, &light.diffuse[0]);
 		glUniform3fv(glGetUniformLocation(shader.id, "light.specular"), 1, &light.specular[0]);
 
-		glUniform3fv(glGetUniformLocation(shader.id, "material.ambient"), 1, &terrain->material.ambient[0]);
-		glUniform3fv(glGetUniformLocation(shader.id, "material.diffuse"), 1, &terrain->material.diffuse[0]);
-		glUniform3fv(glGetUniformLocation(shader.id, "material.specular"), 1, &terrain->material.specular[0]);
-		glUniform1f(glGetUniformLocation(shader.id, "material.shininess"), terrain->material.shininess);
+		//glUniform3fv(glGetUniformLocation(shader.id, "material.ambient"), 1, &terrain->material.ambient[0]);
+		//glUniform3fv(glGetUniformLocation(shader.id, "material.diffuse"), 1, &terrain->material.diffuse[0]);
+		//glUniform3fv(glGetUniformLocation(shader.id, "material.specular"), 1, &terrain->material.specular[0]);
+		//glUniform1f(glGetUniformLocation(shader.id, "material.shininess"), terrain->material.shininess);
 
 		glUniform3fv(glGetUniformLocation(shader.id, "viewPos"), 1, &cam.pos[0]);
 
@@ -234,9 +222,9 @@ namespace Mon
 
 		glm::mat4 matModel = glm::mat4(1.0f);
 
-		glm::mat4 matTranslate = glm::translate(glm::mat4(1.0f),
-												glm::vec3(terrain->x, 0.0f, terrain->z));
-		matModel = matModel * matTranslate;
+		//glm::mat4 matTranslate = glm::translate(glm::mat4(1.0f),
+		//										glm::vec3(terrain->x, 0.0f, terrain->z));
+		//matModel = matModel * matTranslate;
 		glm::mat4 rotateZ = glm::rotate(glm::mat4(1.0f),
 										0.0f,
 										glm::vec3(0.0f, 0.0f, 1.0f));
@@ -258,14 +246,14 @@ namespace Mon
 
 		glUniform1i(glGetUniformLocation(shader.id, "useTexture"), true);
 
-		glBindTexture(GL_TEXTURE_2D, terrain->selectedTextureId);
+		//glBindTexture(GL_TEXTURE_2D, terrain->selectedTextureId);
 
 		glUniformMatrix4fv(glGetUniformLocation(shader.id, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
-		glBindVertexArray(terrain->VAO);
+		//glBindVertexArray(terrain->VAO);
 
-		terrain->wireFrame ?
-			glDrawElements(GL_LINES, terrain->indicesLength, GL_UNSIGNED_INT, 0)
-			: glDrawElements(GL_TRIANGLES, terrain->indicesLength, GL_UNSIGNED_INT, 0);
+		//terrain->wireFrame ?
+		//	glDrawElements(GL_LINES, terrain->indicesLength, GL_UNSIGNED_INT, 0)
+		//	: glDrawElements(GL_TRIANGLES, terrain->indicesLength, GL_UNSIGNED_INT, 0);
 
 		glBindVertexArray(0);
 		// Always good practice to set everything back to defaults once configured
@@ -415,16 +403,9 @@ namespace Mon
 		//// TODO(ck): Draw tilemap function that we pass the tilemap into
 		for (unsigned int i = 0; i < world->map->tiles.size(); ++i)
 		{
-			MonGL::drawTile(&tileShader, &world->map->tiles[i]);
+			//MonGL::drawTile(&tileShader, world->map->tiles[i].offsetX, world->map->tiles[i].offsetY);
+			//void drawTile(MonShader::Shader * shader, BatchData * batch, int tileOffsetX, int tileOffsetY);
 		}
-
-		Tile tile = Tile(32, -32, -32);
-		tile.width = 32;
-		tile.height = 32;
-		//MonGL::gl_DrawTile(&tileShader, &tile, &world->map->sheet.sprites[4]);
-		
-		MonGL::drawTile(&tileShader, &tile, &world->testTile);
-
 
 
 		glUseProgram(shader.id);

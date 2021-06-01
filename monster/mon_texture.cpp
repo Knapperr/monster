@@ -5,7 +5,7 @@
 
 #include <string>
 
-namespace MonGL
+namespace MonTexture
 {
 
 	void Generate2DTexture(Texture* texture, unsigned int width, unsigned int height, unsigned char* data)

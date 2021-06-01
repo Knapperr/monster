@@ -37,28 +37,28 @@ void TerrainWindow(bool* p_open, Mon::Game* game)
 {
 	ImGui::Begin("Terrain", p_open);
 
-	ImGui::Text("Texture");
-	ImGui::Separator();
-	if (ImGui::Button("UV")) { game->terrain->selectedTextureId = game->terrain->textureIds[0]; }
-	ImGui::SameLine();
-	if (ImGui::Button("Rock")) { game->terrain->selectedTextureId = game->terrain->textureIds[1]; }
-	ImGui::SameLine();
-	if (ImGui::Button("Grass")) { game->terrain->selectedTextureId = game->terrain->textureIds[2]; }
-	ImGui::SameLine();
-	if (ImGui::Button("Snow")) { game->terrain->selectedTextureId = game->terrain->textureIds[3]; }
-	ImGui::Separator();
+	//ImGui::Text("Texture");
+	//ImGui::Separator();
+	//if (ImGui::Button("UV")) { game->terrain->selectedTextureId = game->terrain->textureIds[0]; }
+	//ImGui::SameLine();
+	//if (ImGui::Button("Rock")) { game->terrain->selectedTextureId = game->terrain->textureIds[1]; }
+	//ImGui::SameLine();
+	//if (ImGui::Button("Grass")) { game->terrain->selectedTextureId = game->terrain->textureIds[2]; }
+	//ImGui::SameLine();
+	//if (ImGui::Button("Snow")) { game->terrain->selectedTextureId = game->terrain->textureIds[3]; }
+	//ImGui::Separator();
 
-	ImGui::Checkbox("Wireframe", &game->terrain->wireFrame);
+	//ImGui::Checkbox("Wireframe", &game->terrain->wireFrame);
 
-	ImGui::PushItemWidth(100.0f);
-		ImGui::DragFloat("Mat diffuse r", &game->terrain->material.diffuse.x, 0.01f, 0.0f, 1.0f, "%.02f");
-		ImGui::DragFloat("Mat diffuse g", &game->terrain->material.diffuse.y, 0.01f, 0.0f, 1.0f, "%.02f");
-		ImGui::DragFloat("Mat diffuse b", &game->terrain->material.diffuse.z, 0.01f, 0.0f, 1.0f, "%.02f");
-		ImGui::Separator();
-		ImGui::DragFloat("Mat ambient r", &game->terrain->material.ambient.x, 0.01f, 0.0f, 1.0f, "%.02f");
-		ImGui::DragFloat("Mat ambient g", &game->terrain->material.ambient.y, 0.01f, 0.0f, 1.0f, "%.02f");
-		ImGui::DragFloat("Mat ambient b", &game->terrain->material.ambient.z, 0.01f, 0.0f, 1.0f, "%.02f");
-	ImGui::PopItemWidth();
+	//ImGui::PushItemWidth(100.0f);
+	//	ImGui::DragFloat("Mat diffuse r", &game->terrain->material.diffuse.x, 0.01f, 0.0f, 1.0f, "%.02f");
+	//	ImGui::DragFloat("Mat diffuse g", &game->terrain->material.diffuse.y, 0.01f, 0.0f, 1.0f, "%.02f");
+	//	ImGui::DragFloat("Mat diffuse b", &game->terrain->material.diffuse.z, 0.01f, 0.0f, 1.0f, "%.02f");
+	//	ImGui::Separator();
+	//	ImGui::DragFloat("Mat ambient r", &game->terrain->material.ambient.x, 0.01f, 0.0f, 1.0f, "%.02f");
+	//	ImGui::DragFloat("Mat ambient g", &game->terrain->material.ambient.y, 0.01f, 0.0f, 1.0f, "%.02f");
+	//	ImGui::DragFloat("Mat ambient b", &game->terrain->material.ambient.z, 0.01f, 0.0f, 1.0f, "%.02f");
+	//ImGui::PopItemWidth();
 
 	ImGui::End();
 }
@@ -124,45 +124,44 @@ void StatsWindow(bool* p_open, Mon::Game* game)
 // 3D STATS
 //
 
-	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.x);
-	ImGui::LabelText(buffer, "player x");
-	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.y);
-	ImGui::LabelText(buffer, "player y");
-	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.z);
-	ImGui::LabelText(buffer, "player z");
+	//snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.x);
+	//ImGui::LabelText(buffer, "player x");
+	//snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.y);
+	//ImGui::LabelText(buffer, "player y");
+	//snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.z);
+	//ImGui::LabelText(buffer, "player z");
 
-	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.velocity.x);
-	ImGui::LabelText(buffer, "player velocity");
-	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.acceleration.x);
-	ImGui::LabelText(buffer, "player acc");
+	//snprintf(buffer, sizeof(buffer), "%f", game->player.particle.velocity.x);
+	//ImGui::LabelText(buffer, "player velocity");
+	//snprintf(buffer, sizeof(buffer), "%f", game->player.particle.acceleration.x);
+	//ImGui::LabelText(buffer, "player acc");
 
-	snprintf(buffer, sizeof(buffer), "%f", game->cam.pos.x);
-	ImGui::LabelText(buffer, "cam x");
-	snprintf(buffer, sizeof(buffer), "%f", game->cam.pos.y);
-	ImGui::LabelText(buffer, "cam y");
-	snprintf(buffer, sizeof(buffer), "%f", game->cam.pos.z);
-	ImGui::LabelText(buffer, "cam z");
+	//snprintf(buffer, sizeof(buffer), "%f", game->cam.pos.x);
+	//ImGui::LabelText(buffer, "cam x");
+	//snprintf(buffer, sizeof(buffer), "%f", game->cam.pos.y);
+	//ImGui::LabelText(buffer, "cam y");
+	//snprintf(buffer, sizeof(buffer), "%f", game->cam.pos.z);
+	//ImGui::LabelText(buffer, "cam z");
 
-	snprintf(buffer, sizeof(buffer), "%f", game->cam.right.x);
-	ImGui::LabelText(buffer, "right x");
-	snprintf(buffer, sizeof(buffer), "%f", game->cam.right.y);
-	ImGui::LabelText(buffer, "right y");
-	snprintf(buffer, sizeof(buffer), "%f", game->cam.right.z);
-	ImGui::LabelText(buffer, "right z");
+	//snprintf(buffer, sizeof(buffer), "%f", game->cam.right.x);
+	//ImGui::LabelText(buffer, "right x");
+	//snprintf(buffer, sizeof(buffer), "%f", game->cam.right.y);
+	//ImGui::LabelText(buffer, "right y");
+	//snprintf(buffer, sizeof(buffer), "%f", game->cam.right.z);
+	//ImGui::LabelText(buffer, "right z");
 
 
-	snprintf(buffer, sizeof(buffer), "%f", game->cam.front.x);
-	ImGui::LabelText(buffer, "front x");
-	snprintf(buffer, sizeof(buffer), "%f", game->cam.front.y);
-	ImGui::LabelText(buffer, "front y");
-	snprintf(buffer, sizeof(buffer), "%f", game->cam.front.z);
-	ImGui::LabelText(buffer, "front z");
+	//snprintf(buffer, sizeof(buffer), "%f", game->cam.front.x);
+	//ImGui::LabelText(buffer, "front x");
+	//snprintf(buffer, sizeof(buffer), "%f", game->cam.front.y);
+	//ImGui::LabelText(buffer, "front y");
+	//snprintf(buffer, sizeof(buffer), "%f", game->cam.front.z);
+	//ImGui::LabelText(buffer, "front z");
 
-	snprintf(buffer, sizeof(buffer), "%f", game->cam.pitch);
-	ImGui::LabelText(buffer, "pitch");
-	snprintf(buffer, sizeof(buffer), "%f", game->cam.yaw);
-	ImGui::LabelText(buffer, "yaw");
-
+	//snprintf(buffer, sizeof(buffer), "%f", game->cam.pitch);
+	//ImGui::LabelText(buffer, "pitch");
+	//snprintf(buffer, sizeof(buffer), "%f", game->cam.yaw);
+	//ImGui::LabelText(buffer, "yaw");
 
 	ImGui::End();
 }
@@ -194,50 +193,50 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 	ImGui::SameLine();
 	ImGui::Checkbox("stats", &showStatsWindow);
 	
-	ImGui::Checkbox("Terrain", &showTerrainWindow);
-	ImGui::SameLine();
-	ImGui::Checkbox("Camera", &showCameraWindow);
-	ImGui::SameLine();
+	//ImGui::Checkbox("Terrain", &showTerrainWindow);
+	//ImGui::SameLine();
+	//ImGui::Checkbox("Camera", &showCameraWindow);
+	//ImGui::SameLine();
 
-	ImGui::Checkbox("camera disabled", &game->cam.disabled);
+	//ImGui::Checkbox("camera disabled", &game->cam.disabled);
 
-	/// 
-	/// Player 
-	///
-	ImGui::LabelText("", "Player");
-	if (ImGui::SmallButton("reset Pos"))
-	{
-		game->player.particle.pos.y = 0.1f;
-		game->player.particle.pos.x = 10.0f;
-		game->player.particle.pos.z = 10.0f;
-	}
+	///// 
+	///// Player 
+	/////
+	//ImGui::LabelText("", "Player");
+	//if (ImGui::SmallButton("reset Pos"))
+	//{
+	//	game->player.particle.pos.y = 0.1f;
+	//	game->player.particle.pos.x = 10.0f;
+	//	game->player.particle.pos.z = 10.0f;
+	//}
 
-	ImGui::SliderFloat3("color", &game->player.colliderData.color[0], 0.0f, 1.0f);
-	ImGui::SliderFloat2("X", &game->player.colliderData.size.x[0], 0.0f, 50.0f);
-	ImGui::SliderFloat2("Y", &game->player.colliderData.size.y[0], 0.0f, 50.0f);
-	ImGui::SliderFloat2("Z", &game->player.colliderData.size.z[0], 0.0f, 50.0f);
+	//ImGui::SliderFloat3("color", &game->player.colliderData.color[0], 0.0f, 1.0f);
+	//ImGui::SliderFloat2("X", &game->player.colliderData.size.x[0], 0.0f, 50.0f);
+	//ImGui::SliderFloat2("Y", &game->player.colliderData.size.y[0], 0.0f, 50.0f);
+	//ImGui::SliderFloat2("Z", &game->player.colliderData.size.z[0], 0.0f, 50.0f);
 
-	ImGui::Checkbox("simulate", &game->simulate);
+	//ImGui::Checkbox("simulate", &game->simulate);
 
-	ImGui::Separator();
+	//ImGui::Separator();
 
 	
 
 	// 2D // 
 	// -------------
 	// TODO(CK): put player at the 0th index for now
-	//ImGui::SliderFloat("Player Speed", &game->world->player->speed, 0.0f, 500.0f);
+	ImGui::SliderFloat("Player Speed", &game->world->player->speed, 0.0f, 500.0f);
 
-	//char buffer[64];
-	//snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.x);
-	//ImGui::LabelText("player x", buffer);
-	//snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.y);
-	//ImGui::LabelText("player y", buffer);
-	//
-	//ImGui::SliderInt("Tile 0 ID: ", &game->world->map->tiles[0].tileId, 0, 3, NULL);
-	//
-	//char entitysizebuf[64];
-	//snprintf(entitysizebuf, sizeof(entitysizebuf), "%d", game->world->entities.size());
+	char buffer[64];
+	snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.x);
+	ImGui::LabelText("player x", buffer);
+	snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.y);
+	ImGui::LabelText("player y", buffer);
+	
+	ImGui::SliderInt("Tile 0 ID: ", &game->world->map->tiles[0].tileId, 0, 3, NULL);
+	
+	char entitysizebuf[64];
+	snprintf(entitysizebuf, sizeof(entitysizebuf), "%d", game->world->entities.size());
 
 	//char dtbuf[64];
 	//snprintf(dtbuf, sizeof(dtbuf), "%f", g_GameState->deltaTime);

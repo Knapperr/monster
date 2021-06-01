@@ -5,9 +5,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/glm.hpp>
 
-#include "mon_entity.h"
 #include "mon_world.h"
-#include "mon_texture.h"
 #include "mon_shader.h"
 
 
@@ -91,9 +89,6 @@ namespace MonGL
 	};
 
 
-	float* tileVertices;
-	float* tileIndices;
-
 	// TODO(ck): gl_InitBoundingBox
 	void gl_InitBoundingBox(RenderData* data);
 	// TODO(ck): gl_DrawBoundingBox
@@ -105,8 +100,9 @@ namespace MonGL
 	// 2d
 	void initRenderData(Sprite* sprite);
 	void initTile(Sprite* sprite, int x, int y);
-	void initTileSheet(BatchData* batch);
+	void initTileMap(std::vector<Tile>& tiles);
 	void drawObject(MonShader::Shader* shader, Entity* obj);
+	void drawTile(MonShader::Shader* shader, int tileOffsetX, int tileOffsetY);
 	void drawTile(MonShader::Shader* shader, BatchData* batch, int tileOffsetX, int tileOffsetY);
 	void drawTile(MonShader::Shader* shader, float minX, float minY, float maxX, float maxY);
 	void cleanUp(Sprite* sprite);
