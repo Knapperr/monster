@@ -107,7 +107,7 @@ World::World()
 	initTileSheet(&map->sheet, "res/textures/basic_tiles.png");
 	
 	initTileMap(map);
-	MonGL::initTileMap(map->tiles);
+	MonGL::initTileMap(map->tiles.size());
 	
 	
 	//const char* files[4];

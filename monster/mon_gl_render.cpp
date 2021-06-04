@@ -126,6 +126,10 @@ namespace MonGL
 	/// 
 	/// 2D
 	/// 
+	 
+	BatchData* batch;
+	int* tileIndices;
+	
 
 	void initRenderData(Sprite* sprite)
 	{
@@ -212,9 +216,12 @@ namespace MonGL
 		glEnableVertexAttribArray(2);
 	}
 
-	void initTileMap(std::vector<Tile>& tiles)
+	void initTileMap(int tileAmount)
 	{
 		/*
+		* 
+		* IMPORTANT(ck): I dont think we fill it here we just init
+		* 
 			Need to get all of the vertices and indices of every tile
 			i guess I pass in the tiles or can i get tileAmount and Rect TileSize
 			then if its 32,32 i just loop through and do that many 
@@ -231,14 +238,18 @@ namespace MonGL
 				
 			}
 		*/
+
+	
+
+
 		// These will be figured out after looping our tilemap and pushing quads
-		int maxVertices = 1;
+		int maxVertices = 100000;
 		int usedVertices = 1;
 		int indicesLength = 1;
 		 
 		// TEST
-		BatchData* batch = new BatchData();
-		int* tileIndices = new int[10];
+		batch = new BatchData();
+		tileIndices = new int[indicesLength];
 
 
 		glGenVertexArrays(1, &batch->VAO);
@@ -251,13 +262,13 @@ namespace MonGL
 
 		unsigned int EBO;
 		glGenBuffers(1, &EBO);
-		unsigned int offset = 0;
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesLength * sizeof(int), tileIndices, GL_STREAM_DRAW);
 
 
 		// these sizes wont work
 		// position attribute
+		unsigned int offset = 0;
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
 		glEnableVertexAttribArray(0);
 		offset += sizeof(glm::vec2);
@@ -271,6 +282,10 @@ namespace MonGL
 
 		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+
+		// Fill vertices here
+
 	};
 
 	// OpenGL
@@ -302,42 +317,19 @@ namespace MonGL
 	}
 
 
-	void drawTile(MonShader::Shader* shader, int tileOffsetX, int tileOffsetY)
+	void drawTile(MonShader::Shader* shader)
 	{
-		glUseProgram(shader->id);
-
-		float sheetWidth = 256.0f;
-		float sheetHeight = 256.0f;
-		int spriteWidth = 32;
-		int spriteHeight = 32;
-
-		float topRightX = (tileOffsetX * spriteWidth) / sheetWidth;
-		float topRightY = (tileOffsetY * spriteHeight) / sheetHeight;
-		float topLeftX = (tileOffsetX * spriteWidth) / sheetWidth;
-		float topLeftY = ((tileOffsetY + 1) * spriteHeight) / sheetHeight;
-		float bottomRightX = ((tileOffsetX + 1) * spriteWidth) / sheetWidth;
-		float bottomRightY = (tileOffsetY * spriteHeight) / sheetHeight;
-		float bottomLeftX = ((tileOffsetX + 1) * spriteWidth) / sheetWidth;
-		float bottomLeftY = ((tileOffsetY + 1) * spriteHeight) / sheetHeight;
-
-		float textureCoords[] = {
-			 bottomLeftX, bottomLeftY, // top right
-			 bottomRightX, bottomRightY, // bottom right
-			 topRightX, topRightY, // bottom left
-			 topLeftX, topLeftY // top left 
-		};
-
 
 		// fill batch
 
 
-		//float vertices[] = {
-		//	// positions          // colors           // texture coords
-		//	 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   bottomLeftX, bottomLeftY, // top right
-		//	 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   bottomRightX, bottomRightY, // bottom right
-		//	-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   topRightX, topRightY, // bottom left
-		//	-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   topLeftX, topLeftY // top left 
-		//};
+	//float vertices[] = {
+	//	// positions          // colors           // texture coords
+	//	 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   bottomLeftX, bottomLeftY, // top right
+	//	 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   bottomRightX, bottomRightY, // bottom right
+	//	-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   topRightX, topRightY, // bottom left
+	//	-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   topLeftX, topLeftY // top left 
+	//};
 
 
 
@@ -362,6 +354,106 @@ namespace MonGL
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 	}
+
+
+	// This isn't draw this is fill
+	void fillBatch(MonShader::Shader* shader, int tileOffsetX, int tileOffsetY)
+	{
+		glUseProgram(shader->id);
+
+
+		float sheetWidth = 256.0f;
+		float sheetHeight = 256.0f;
+		int spriteWidth = 32;
+		int spriteHeight = 32;
+
+		float topRightX = (tileOffsetX * spriteWidth) / sheetWidth;
+		float topRightY = (tileOffsetY * spriteHeight) / sheetHeight;
+		float topLeftX = (tileOffsetX * spriteWidth) / sheetWidth;
+		float topLeftY = ((tileOffsetY + 1) * spriteHeight) / sheetHeight;
+		float bottomRightX = ((tileOffsetX + 1) * spriteWidth) / sheetWidth;
+		float bottomRightY = (tileOffsetY * spriteHeight) / sheetHeight;
+		float bottomLeftX = ((tileOffsetX + 1) * spriteWidth) / sheetWidth;
+		float bottomLeftY = ((tileOffsetY + 1) * spriteHeight) / sheetHeight;
+
+		float textureCoords[] = {
+			 bottomLeftX, bottomLeftY, // top right
+			 bottomRightX, bottomRightY, // bottom right
+			 topRightX, topRightY, // bottom left
+			 topLeftX, topLeftY // top left 
+		};
+
+		
+		// TODO(ck): Structure
+
+		// Filling the batch the VAO, VBO or EBO do not get touched here
+		// this is all CPU that is just filling it up getting all of the data 
+		// ready checking if anything has changed to get rid of cached data
+		
+		// We fill the indices every frame too the reason why he does INSERT_BATCH
+		// is because if the m_batches has indices in it already they need to get dumped
+		// so that when push_quad gets called i think??
+		// this method is a little confusing so i might have to do something less oopy 
+		// for myself not that it is super oop but i might just 
+
+		// then make a quad for our vertices so we push a quad for that tile 
+		// we aren't like pushing a quad of opengl its literally the coords and stuff
+		// then we move onto actual rendering for gpu
+
+		
+
+
+		// All of our 
+		// Rendering at the end of the game->draw() function
+		// this is where the renderer actually gets called and checks to see
+		// we still update the VAO and VBO here 
+
+		/*
+		* // VERTICES
+			m_vertex_count = count;
+			gl.BindVertexArray(m_id);
+			{
+				// Create Buffer if it doesn't exist yet
+				if (m_vertex_buffer == 0)
+					gl.GenBuffers(1, &(m_vertex_buffer));
+
+				// TODO:
+				// Cache this
+				m_vertex_size = gl_mesh_assign_attributes(m_vertex_buffer, GL_ARRAY_BUFFER, format, 0);
+
+				// Upload Buffer
+				gl.BindBuffer(GL_ARRAY_BUFFER, m_vertex_buffer);
+				gl.BufferData(GL_ARRAY_BUFFER, m_vertex_size * count, vertices, GL_DYNAMIC_DRAW);
+			}
+			gl.BindVertexArray(0);
+		
+		
+		// INDICES
+			m_instance_count = count;
+			gl.BindVertexArray(m_id);
+			{
+				// Create Buffer if it doesn't exist yet
+				if (m_instance_buffer == 0)
+					gl.GenBuffers(1, &(m_instance_buffer));
+
+				// TODO:
+				// Cache this
+				m_instance_size = gl_mesh_assign_attributes(m_instance_buffer, GL_ARRAY_BUFFER, format, 1);
+
+				// Upload Buffer
+				gl.BindBuffer(GL_ARRAY_BUFFER, m_instance_buffer);
+				gl.BufferData(GL_ARRAY_BUFFER, m_instance_size * count, instances, GL_DYNAMIC_DRAW);
+			}
+			gl.BindVertexArray(0);
+		
+		
+		
+		*/
+
+		
+	}
+
+
 
 
 	void drawTile(MonShader::Shader* shader, BatchData* batch, int tileOffsetX, int tileOffsetY)

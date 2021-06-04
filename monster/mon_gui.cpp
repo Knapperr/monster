@@ -3,6 +3,9 @@
 // TODO(ck): remove
 #include <string>
 
+
+//#define _3D_GUI_
+
 #ifdef USE_SDL
 void InitGui(SDL_Window* window, SDL_GLContext* context)
 {
@@ -123,46 +126,46 @@ void StatsWindow(bool* p_open, Mon::Game* game)
 //
 // 3D STATS
 //
+#ifdef _3D_GUI_
+	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.x);
+	ImGui::LabelText(buffer, "player x");
+	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.y);
+	ImGui::LabelText(buffer, "player y");
+	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.z);
+	ImGui::LabelText(buffer, "player z");
 
-	//snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.x);
-	//ImGui::LabelText(buffer, "player x");
-	//snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.y);
-	//ImGui::LabelText(buffer, "player y");
-	//snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.z);
-	//ImGui::LabelText(buffer, "player z");
+	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.velocity.x);
+	ImGui::LabelText(buffer, "player velocity");
+	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.acceleration.x);
+	ImGui::LabelText(buffer, "player acc");
 
-	//snprintf(buffer, sizeof(buffer), "%f", game->player.particle.velocity.x);
-	//ImGui::LabelText(buffer, "player velocity");
-	//snprintf(buffer, sizeof(buffer), "%f", game->player.particle.acceleration.x);
-	//ImGui::LabelText(buffer, "player acc");
+	snprintf(buffer, sizeof(buffer), "%f", game->cam.pos.x);
+	ImGui::LabelText(buffer, "cam x");
+	snprintf(buffer, sizeof(buffer), "%f", game->cam.pos.y);
+	ImGui::LabelText(buffer, "cam y");
+	snprintf(buffer, sizeof(buffer), "%f", game->cam.pos.z);
+	ImGui::LabelText(buffer, "cam z");
 
-	//snprintf(buffer, sizeof(buffer), "%f", game->cam.pos.x);
-	//ImGui::LabelText(buffer, "cam x");
-	//snprintf(buffer, sizeof(buffer), "%f", game->cam.pos.y);
-	//ImGui::LabelText(buffer, "cam y");
-	//snprintf(buffer, sizeof(buffer), "%f", game->cam.pos.z);
-	//ImGui::LabelText(buffer, "cam z");
-
-	//snprintf(buffer, sizeof(buffer), "%f", game->cam.right.x);
-	//ImGui::LabelText(buffer, "right x");
-	//snprintf(buffer, sizeof(buffer), "%f", game->cam.right.y);
-	//ImGui::LabelText(buffer, "right y");
-	//snprintf(buffer, sizeof(buffer), "%f", game->cam.right.z);
-	//ImGui::LabelText(buffer, "right z");
+	snprintf(buffer, sizeof(buffer), "%f", game->cam.right.x);
+	ImGui::LabelText(buffer, "right x");
+	snprintf(buffer, sizeof(buffer), "%f", game->cam.right.y);
+	ImGui::LabelText(buffer, "right y");
+	snprintf(buffer, sizeof(buffer), "%f", game->cam.right.z);
+	ImGui::LabelText(buffer, "right z");
 
 
-	//snprintf(buffer, sizeof(buffer), "%f", game->cam.front.x);
-	//ImGui::LabelText(buffer, "front x");
-	//snprintf(buffer, sizeof(buffer), "%f", game->cam.front.y);
-	//ImGui::LabelText(buffer, "front y");
-	//snprintf(buffer, sizeof(buffer), "%f", game->cam.front.z);
-	//ImGui::LabelText(buffer, "front z");
+	snprintf(buffer, sizeof(buffer), "%f", game->cam.front.x);
+	ImGui::LabelText(buffer, "front x");
+	snprintf(buffer, sizeof(buffer), "%f", game->cam.front.y);
+	ImGui::LabelText(buffer, "front y");
+	snprintf(buffer, sizeof(buffer), "%f", game->cam.front.z);
+	ImGui::LabelText(buffer, "front z");
 
-	//snprintf(buffer, sizeof(buffer), "%f", game->cam.pitch);
-	//ImGui::LabelText(buffer, "pitch");
-	//snprintf(buffer, sizeof(buffer), "%f", game->cam.yaw);
-	//ImGui::LabelText(buffer, "yaw");
-
+	snprintf(buffer, sizeof(buffer), "%f", game->cam.pitch);
+	ImGui::LabelText(buffer, "pitch");
+	snprintf(buffer, sizeof(buffer), "%f", game->cam.yaw);
+	ImGui::LabelText(buffer, "yaw");
+#endif
 	ImGui::End();
 }
 
@@ -192,39 +195,45 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 	ImGui::Checkbox("Demo", &showDemoWindow);
 	ImGui::SameLine();
 	ImGui::Checkbox("stats", &showStatsWindow);
-	
-	//ImGui::Checkbox("Terrain", &showTerrainWindow);
-	//ImGui::SameLine();
-	//ImGui::Checkbox("Camera", &showCameraWindow);
-	//ImGui::SameLine();
 
-	//ImGui::Checkbox("camera disabled", &game->cam.disabled);
+#ifdef _3D_GUI_
 
-	///// 
-	///// Player 
-	/////
-	//ImGui::LabelText("", "Player");
-	//if (ImGui::SmallButton("reset Pos"))
-	//{
-	//	game->player.particle.pos.y = 0.1f;
-	//	game->player.particle.pos.x = 10.0f;
-	//	game->player.particle.pos.z = 10.0f;
-	//}
+	ImGui::Checkbox("Terrain", &showTerrainWindow);
+	ImGui::SameLine();
+	ImGui::Checkbox("Camera", &showCameraWindow);
+	ImGui::SameLine();
 
-	//ImGui::SliderFloat3("color", &game->player.colliderData.color[0], 0.0f, 1.0f);
-	//ImGui::SliderFloat2("X", &game->player.colliderData.size.x[0], 0.0f, 50.0f);
-	//ImGui::SliderFloat2("Y", &game->player.colliderData.size.y[0], 0.0f, 50.0f);
-	//ImGui::SliderFloat2("Z", &game->player.colliderData.size.z[0], 0.0f, 50.0f);
+	ImGui::Checkbox("camera disabled", &game->cam.disabled);
 
-	//ImGui::Checkbox("simulate", &game->simulate);
+	/// 
+	/// Player 
+	///
+	ImGui::LabelText("", "Player");
+	if (ImGui::SmallButton("reset Pos"))
+	{
+		game->player.particle.pos.y = 0.1f;
+		game->player.particle.pos.x = 10.0f;
+		game->player.particle.pos.z = 10.0f;
+	}
 
-	//ImGui::Separator();
+	ImGui::SliderFloat3("color", &game->player.colliderData.color[0], 0.0f, 1.0f);
+	ImGui::SliderFloat2("X", &game->player.colliderData.size.x[0], 0.0f, 50.0f);
+	ImGui::SliderFloat2("Y", &game->player.colliderData.size.y[0], 0.0f, 50.0f);
+	ImGui::SliderFloat2("Z", &game->player.colliderData.size.z[0], 0.0f, 50.0f);
 
+	ImGui::Checkbox("simulate", &game->simulate);
+
+	ImGui::Separator();
+
+#endif
 	
 
 	// 2D // 
 	// -------------
 	// TODO(CK): put player at the 0th index for now
+
+#ifndef _3D_GUI_
+
 	ImGui::SliderFloat("Player Speed", &game->world->player->speed, 0.0f, 500.0f);
 
 	char buffer[64];
@@ -238,6 +247,7 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 	char entitysizebuf[64];
 	snprintf(entitysizebuf, sizeof(entitysizebuf), "%d", game->world->entities.size());
 
+#endif
 	//char dtbuf[64];
 	//snprintf(dtbuf, sizeof(dtbuf), "%f", g_GameState->deltaTime);
 

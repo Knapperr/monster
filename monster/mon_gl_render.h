@@ -100,10 +100,10 @@ namespace MonGL
 	// 2d
 	void initRenderData(Sprite* sprite);
 	void initTile(Sprite* sprite, int x, int y);
-	void initTileMap(std::vector<Tile>& tiles);
+	void initTileMap(int tileAmount);
 	void drawObject(MonShader::Shader* shader, Entity* obj);
-	void drawTile(MonShader::Shader* shader, int tileOffsetX, int tileOffsetY);
-	void drawTile(MonShader::Shader* shader, BatchData* batch, int tileOffsetX, int tileOffsetY);
+	void drawTile(MonShader::Shader* shader);
+	void fillBatch(MonShader::Shader* shader, BatchData* batch, int tileOffsetX, int tileOffsetY);
 	void drawTile(MonShader::Shader* shader, float minX, float minY, float maxX, float maxY);
 	void cleanUp(Sprite* sprite);
 

@@ -16,7 +16,9 @@
 
 // should not be in this layer either
 // the app just takes 
+#include "mon_terrain.h"
 #include "mon_gl_render.h"
+
 
 namespace Mon
 {
@@ -97,7 +99,7 @@ namespace Mon
 		// DO NOT KEEP the shaders in the game and renderer like you did last time...
 		// keep them in a structure that can be accessed globally instead keep it clean
 		World* world;
-		//Terrain* terrain;
+		Terrain* terrain;
 
 		Camera cam;
 		CameraTwo camera;

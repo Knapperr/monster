@@ -93,8 +93,8 @@ namespace Mon
 
 
 		// TODO(ck): Memory Allocation
-		//terrain = new Terrain(0, 0);
-		//terrain->generate();
+		terrain = new Terrain(0, 0);
+		terrain->generate();
 
 
 		simulate = false;
@@ -204,27 +204,27 @@ namespace Mon
 		glUniform3fv(glGetUniformLocation(shader.id, "light.diffuse"), 1, &light.diffuse[0]);
 		glUniform3fv(glGetUniformLocation(shader.id, "light.specular"), 1, &light.specular[0]);
 
-		//glUniform3fv(glGetUniformLocation(shader.id, "material.ambient"), 1, &terrain->material.ambient[0]);
-		//glUniform3fv(glGetUniformLocation(shader.id, "material.diffuse"), 1, &terrain->material.diffuse[0]);
-		//glUniform3fv(glGetUniformLocation(shader.id, "material.specular"), 1, &terrain->material.specular[0]);
-		//glUniform1f(glGetUniformLocation(shader.id, "material.shininess"), terrain->material.shininess);
+		glUniform3fv(glGetUniformLocation(shader.id, "material.ambient"), 1, &terrain->material.ambient[0]);
+		glUniform3fv(glGetUniformLocation(shader.id, "material.diffuse"), 1, &terrain->material.diffuse[0]);
+		glUniform3fv(glGetUniformLocation(shader.id, "material.specular"), 1, &terrain->material.specular[0]);
+		glUniform1f(glGetUniformLocation(shader.id, "material.shininess"), terrain->material.shininess);
 
 		glUniform3fv(glGetUniformLocation(shader.id, "viewPos"), 1, &cam.pos[0]);
 
-		/*
+		
 		// set the sampler to the correct texture unit
-		glUniform1i(glGetUniformLocation(terr->shader->id, "texture_diffuse1"), 0);
-		if (terr->drawTexture)
-		{
-			glBindTexture(GL_TEXTURE_2D, terr->selectedTextureId);
-		}
-		*/
+		//glUniform1i(glGetUniformLocation(terrain->shader->id, "texture_diffuse1"), 0);
+		//if (terr->drawTexture)
+		//{
+		//	glBindTexture(GL_TEXTURE_2D, terr->selectedTextureId);
+		//}
+		
 
 		glm::mat4 matModel = glm::mat4(1.0f);
 
-		//glm::mat4 matTranslate = glm::translate(glm::mat4(1.0f),
-		//										glm::vec3(terrain->x, 0.0f, terrain->z));
-		//matModel = matModel * matTranslate;
+		glm::mat4 matTranslate = glm::translate(glm::mat4(1.0f),
+												glm::vec3(terrain->x, 0.0f, terrain->z));
+		matModel = matModel * matTranslate;
 		glm::mat4 rotateZ = glm::rotate(glm::mat4(1.0f),
 										0.0f,
 										glm::vec3(0.0f, 0.0f, 1.0f));
@@ -246,14 +246,14 @@ namespace Mon
 
 		glUniform1i(glGetUniformLocation(shader.id, "useTexture"), true);
 
-		//glBindTexture(GL_TEXTURE_2D, terrain->selectedTextureId);
+		glBindTexture(GL_TEXTURE_2D, terrain->selectedTextureId);
 
 		glUniformMatrix4fv(glGetUniformLocation(shader.id, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
-		//glBindVertexArray(terrain->VAO);
+		glBindVertexArray(terrain->VAO);
 
-		//terrain->wireFrame ?
-		//	glDrawElements(GL_LINES, terrain->indicesLength, GL_UNSIGNED_INT, 0)
-		//	: glDrawElements(GL_TRIANGLES, terrain->indicesLength, GL_UNSIGNED_INT, 0);
+		terrain->wireFrame ?
+			glDrawElements(GL_LINES, terrain->indicesLength, GL_UNSIGNED_INT, 0)
+			: glDrawElements(GL_TRIANGLES, terrain->indicesLength, GL_UNSIGNED_INT, 0);
 
 		glBindVertexArray(0);
 		// Always good practice to set everything back to defaults once configured

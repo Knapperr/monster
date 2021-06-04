@@ -84,6 +84,9 @@
     <ClCompile Include="mon_world.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="mon_terrain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mon_texture.h">
@@ -150,6 +153,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="mon_world.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mon_terrain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
