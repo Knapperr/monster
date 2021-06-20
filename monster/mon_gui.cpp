@@ -34,6 +34,8 @@ void InitGui(SDL_Window* window, SDL_GLContext* context)
 	ImGui_ImplSDL2_InitForOpenGL(window, context);
 	ImGui_ImplOpenGL3_Init(glsl_version);
 
+
+
 }
 
 void TerrainWindow(bool* p_open, Mon::Game* game)

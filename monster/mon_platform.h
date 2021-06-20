@@ -27,10 +27,10 @@ class Platform
 {
 public:
 
-	// TODO(ck): Get these out of this layer by changing the
-	// gui layer to SDL_GUI or something pack it in with that
+	// TODO(ck): Need wrappers for these
 	SDL_Window* window;
 	SDL_GLContext context;
+	SDL_Joystick* joyStick;
 	bool quit;
 	bool cursorDisabled;
 

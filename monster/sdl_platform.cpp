@@ -1,6 +1,8 @@
 
 #include "sdl_platform.h"
 
+const int JOYSTICK_DEAD_ZONE = 8000;
+
 bool SDLPlatform::init(int SCREEN_WIDTH, int SCREEN_HEIGHT, int PORT_WIDTH, int PORT_HEIGHT)
 {
 	// Required to call this for Windows
@@ -43,6 +45,7 @@ bool SDLPlatform::init(int SCREEN_WIDTH, int SCREEN_HEIGHT, int PORT_WIDTH, int 
 	printf("Vendor:   %s\n", glGetString(GL_VENDOR));
 	printf("Renderer: %s\n", glGetString(GL_RENDERER));
 	printf("Version:  %s\n", glGetString(GL_VERSION));
+	printf("PID: %d\n", _getpid());
 
 	// Use v-sync
 	//SDL_GL_SetSwapInterval(1);
@@ -61,6 +64,22 @@ bool SDLPlatform::init(int SCREEN_WIDTH, int SCREEN_HEIGHT, int PORT_WIDTH, int 
 #endif
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+
+	// controller
+	// ------------------
+	if (SDL_NumJoysticks() < 1)
+	{
+		printf("PLATFORM: No joystick connected\n");
+	}
+	else
+	{
+		joyStick = SDL_JoystickOpen(0);
+		if (joyStick == NULL)
+		{
+			printf("PLATFORM: Unable to open game controller! SDL Error: %s\n", SDL_GetError());
+		}
+	}
+	
 
 	return true;
 }
@@ -197,6 +216,63 @@ void SDLPlatform::pollInput(Input* newInput, Input* oldInput)
 					processKeyboard(&newInput->shift, isDown);
 			}
 		}
+		else if (e.type == SDL_JOYAXISMOTION)
+		{
+			if (e.jaxis.which == 0)
+			{
+				// x motion
+				if (e.jaxis.axis == 0)
+				{
+					if (e.jaxis.value < -JOYSTICK_DEAD_ZONE)
+					{
+						// xDir = -1;
+						processKeyboard(&newInput->left, true);
+					}
+					else if (e.jaxis.value > JOYSTICK_DEAD_ZONE)
+					{
+						// xDir = 1;
+						processKeyboard(&newInput->right, true);
+					}
+					else
+					{
+						processKeyboard(&newInput->left, false);
+						processKeyboard(&newInput->right, false);
+					}
+				}
+				// y motion
+				if (e.jaxis.axis == 1)
+				{
+					if (e.jaxis.value < -JOYSTICK_DEAD_ZONE)
+					{
+						// yDir = -1;
+						processKeyboard(&newInput->up, true);
+					}
+					else if (e.jaxis.value > JOYSTICK_DEAD_ZONE)
+					{
+						// yDir = 1;
+						processKeyboard(&newInput->down, true);
+					}
+					else
+					{
+						processKeyboard(&newInput->up, false);
+						processKeyboard(&newInput->down, false);
+					}
+				}
+
+				/*
+				TODO(ck): JOYSTICK ANGLE 
+				
+				//Calculate angle
+				double joystickAngle = atan2((double)yDir, (double)xDir) * (180.0 / M_PI);
+
+				//Correct angle
+				if (xDir == 0 && yDir == 0)
+				{
+					joystickAngle = 0;
+				}
+				*/
+			}
+		}
 		else if (e.type == SDL_JOYBUTTONDOWN || e.type == SDL_JOYBUTTONUP)
 		{
 			bool isDown = e.type == SDL_JOYBUTTONDOWN ? true : false;
@@ -242,6 +318,9 @@ void SDLPlatform::setTitle(Config* config, const char* title)
 
 void SDLPlatform::cleanUp()
 {
+	SDL_JoystickClose(joyStick);
+	joyStick = NULL;
+
 	SDL_GL_DeleteContext(context);
 	SDL_DestroyWindow(window);
 	SDL_Quit();

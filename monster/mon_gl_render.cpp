@@ -2,6 +2,9 @@
 
 #include <glad/glad.h>
 
+#include <vector>
+#include <stack>
+
 namespace MonGL
 {
 
@@ -128,8 +131,15 @@ namespace MonGL
 	/// 
 	 
 	BatchData* batch;
+	//float* tileVertices;
+	std::vector<float*> tileVertices;
+	std::vector<Vertex> newTileVertices;
+
+	// TODO(ck): I don't need this yet a matrix stack allows me to 
+	// create the position of each for my vertices. Not that necessary for
+	// static tiles
+	std::stack<glm::vec3> matrixStack;
 	int* tileIndices;
-	
 
 	void initRenderData(Sprite* sprite)
 	{
@@ -163,59 +173,6 @@ namespace MonGL
 		// For this 
 	}
 	
-	void initTile(Sprite* sprite, int x, int y)
-	{
-		float sheetWidth = 256.0f;
-		float sheetHeight = 256.0f;
-		int spriteWidth = 32;
-		int spriteHeight = 32;
-
-		float topRightX = (x * spriteWidth) / sheetWidth;
-		float topRightY = (y * spriteHeight) / sheetHeight;
-		float topLeftX = (x * spriteWidth) / sheetWidth;
-		float topLeftY = ((y + 1) * spriteHeight) / sheetHeight;
-		float bottomRightX = ((x + 1) * spriteWidth) / sheetWidth;
-		float bottomRightY = (y * spriteHeight) / sheetHeight;
-		float bottomLeftX = ((x + 1) * spriteWidth) / sheetWidth;
-		float bottomLeftY = ((y + 1) * spriteHeight) / sheetHeight;
-
-		float vertices[] = {
-			// positions          // colors           // texture coords
-			 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   bottomLeftX, bottomLeftY, // top right
-			 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   bottomRightX, bottomRightY, // bottom right
-			-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   topRightX, topRightY, // bottom left
-			-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   topLeftX, topLeftY // top left 
-		};
-
-		unsigned int indices[] = {
-			0, 1, 3, // first triangle
-			1, 2, 3  // second triangle
-		};
-
-		unsigned int EBO;
-		glGenVertexArrays(1, &sprite->VAO);
-		glGenBuffers(1, &sprite->VBO);
-		glGenBuffers(1, &EBO);
-		
-		glBindVertexArray(sprite->VAO);
-		
-		glBindBuffer(GL_ARRAY_BUFFER, sprite->VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-		// position attribute
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(0);
-		// color attribute
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-		glEnableVertexAttribArray(1);
-		// texture coord attribute
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-		glEnableVertexAttribArray(2);
-	}
-
 	void initTileMap(int tileAmount)
 	{
 		/*
@@ -243,9 +200,11 @@ namespace MonGL
 
 
 		// These will be figured out after looping our tilemap and pushing quads
-		int maxVertices = 100000;
+		const int maxVertices = 10000;
+		
+		//tileVertices = new float[maxVertices];
 		int usedVertices = 1;
-		int indicesLength = 1;
+		int indicesLength = 8000;
 		 
 		// TEST
 		batch = new BatchData();
@@ -268,27 +227,276 @@ namespace MonGL
 
 		// these sizes wont work
 		// position attribute
-		unsigned int offset = 0;
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
 		glEnableVertexAttribArray(0);
-		offset += sizeof(glm::vec2);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
 		// color attribute
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
 		glEnableVertexAttribArray(1);
-		offset += sizeof(glm::vec4);
-
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
 		// texture coord attribute
+		glEnableVertexAttribArray(2);
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
 
 		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-
-		// Fill vertices here
-
 	};
 
-	// OpenGL
+	// This isn't draw this is fill
+	void fillBatch(int tileIndex, int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos)
+	{
+		// TODO(ck): Vertices amount
+		assert(tileIndex < 8000);
+		
+		float sheetWidth = 256.0f;
+		float sheetHeight = 256.0f;
+		int spriteWidth = 32;
+		int spriteHeight = 32;
+
+		float topRightX = (tileOffsetX * spriteWidth) / sheetWidth;
+		float topRightY = (tileOffsetY * spriteHeight) / sheetHeight;
+		float topLeftX = (tileOffsetX * spriteWidth) / sheetWidth;
+		float topLeftY = ((tileOffsetY + 1) * spriteHeight) / sheetHeight;
+		float bottomRightX = ((tileOffsetX + 1) * spriteWidth) / sheetWidth;
+		float bottomRightY = (tileOffsetY * spriteHeight) / sheetHeight;
+		float bottomLeftX = ((tileOffsetX + 1) * spriteWidth) / sheetWidth;
+		float bottomLeftY = ((tileOffsetY + 1) * spriteHeight) / sheetHeight;
+
+		//float textureCoords[] = {
+		//	 bottomLeftX, bottomLeftY, // top right
+		//	 bottomRightX, bottomRightY, // bottom right
+		//	 topRightX, topRightY, // bottom left
+		//	 topLeftX, topLeftY // top left 
+		//};
+
+		float vertices[] = {
+			// positions          // colors           // texture coords
+			 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   bottomLeftX, bottomLeftY, // top right
+			 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   bottomRightX, bottomRightY, // bottom right
+			-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   topRightX, topRightY, // bottom left
+			-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   topLeftX, topLeftY // top left 
+		};
+
+
+
+		Vertex vert = {
+			glm::vec3(0.5f, 0.5f, 0.0f),
+			glm::vec3(1.0f, 0.0f, 0.0f),
+			glm::vec2(bottomLeftX, bottomLeftY)
+		};
+
+
+
+		Vertex vert2 = {
+			glm::vec3(0.5f, -0.5f, 0.0f),
+			glm::vec3(0.0f, 1.0f, 0.0f),
+			glm::vec2(bottomRightX, bottomRightY)
+		};
+
+		Vertex vert3 = {
+			glm::vec3(-0.5f, -0.5f, 0.0f),
+			glm::vec3(0.0f, 0.0f, 1.0f),
+			glm::vec2(topRightX, topRightY)
+		};
+
+		Vertex vert4 = {
+			glm::vec3(-0.5f, 0.5f, 0.0f),
+			glm::vec3(1.0f, 1.0f, 0.0f),
+			glm::vec2(topLeftX, topLeftY)
+		};
+
+
+		/*
+		* 
+		
+		Mat3x2 Mat3x2::create_translation(float x, float y)
+		{
+			return Mat3x2(1, 0, 0, 1, x, y);
+		}
+
+
+void Batch::tex(const Subtexture& sub, const Vec2& pos, const Vec2& origin, const Vec2& scale, float rotation, Color color)
+{
+	push_matrix(Mat3x2::create_transform(pos, origin, scale, rotation));
+
+	if (!sub.texture)
+	{
+		PUSH_QUAD(
+			sub.draw_coords[0].x, sub.draw_coords[0].y,
+			sub.draw_coords[1].x, sub.draw_coords[1].y,
+			sub.draw_coords[2].x, sub.draw_coords[2].y,
+			sub.draw_coords[3].x, sub.draw_coords[3].y,
+			0, 0, 0, 0, 0, 0, 0, 0,
+			color, color, color, color,
+			0, 0, 255);
+	}
+	else
+	{
+		set_texture(sub.texture);
+
+		PUSH_QUAD(
+			sub.draw_coords[0].x, sub.draw_coords[0].y,
+			sub.draw_coords[1].x, sub.draw_coords[1].y,
+			sub.draw_coords[2].x, sub.draw_coords[2].y,
+			sub.draw_coords[3].x, sub.draw_coords[3].y,
+			sub.tex_coords[0].x, sub.tex_coords[0].y,
+			sub.tex_coords[1].x, sub.tex_coords[1].y,
+			sub.tex_coords[2].x, sub.tex_coords[2].y,
+			sub.tex_coords[3].x, sub.tex_coords[3].y,
+			color, color, color, color,
+			m_tex_mult, m_tex_wash, 0);
+	}
+
+	pop_matrix();
+}
+
+#define PUSH_QUAD(px0, py0, px1, py1, px2, py2, px3, py3, tx0, ty0, tx1, ty1, tx2, ty2, tx3, ty3, col0, col1, col2, col3, mult, fill, wash) \
+	{ \
+		m_batch.elements += 2; \
+		auto _i = m_indices.expand(6); \
+		*_i++ = (u32)m_vertices.size() + 0; \
+		*_i++ = (u32)m_vertices.size() + 1; \
+		*_i++ = (u32)m_vertices.size() + 2; \
+		*_i++ = (u32)m_vertices.size() + 0; \
+		*_i++ = (u32)m_vertices.size() + 2; \
+		*_i++ = (u32)m_vertices.size() + 3; \
+		Vertex* _v = m_vertices.expand(4); \
+		MAKE_VERTEX(_v, m_matrix, px0, py0, tx0, ty0, col0, mult, fill, wash); _v++; \
+		MAKE_VERTEX(_v, m_matrix, px1, py1, tx1, ty1, col1, mult, fill, wash); _v++; \
+		MAKE_VERTEX(_v, m_matrix, px2, py2, tx2, ty2, col2, mult, fill, wash); _v++; \
+		MAKE_VERTEX(_v, m_matrix, px3, py3, tx3, ty3, col3, mult, fill, wash); \
+	}
+
+
+#define MAKE_VERTEX(vert, mat, px, py, tx, ty, c, m, w, f) \
+	(vert)->pos.x = ((px) * mat.m11) + ((py) * mat.m21) + mat.m31; \
+	(vert)->pos.y = ((px) * mat.m12) + ((py) * mat.m22) + mat.m32; \
+	(vert)->tex.x = tx;  \
+	if (m_batch.flip_vertically) \
+		(vert)->tex.y = 1.0f - ty; \
+	else \
+		(vert)->tex.y = ty; \
+	(vert)->col = c; \
+	(vert)->mult = m; \
+	(vert)->wash = w; \
+	(vert)->fill = f;
+
+		*/
+#if 1
+		int tileX = tileXPos * 32;
+		int tileY = tileYPos * 32;
+
+		glm::vec2 tilePos = glm::vec2(tileX, tileY);
+
+		if (tileIndex == 10)
+		{
+			vert = {
+				glm::vec3((tileX * 0.5f) / 256, (tileY * 0.5f) / 256, 0.0f),
+				glm::vec3(1.0f, 0.0f, 0.0f),
+				glm::vec2(bottomLeftX, bottomLeftY)
+			};
+
+			vert2 = {
+				glm::vec3((tileX * 0.5f) / 256, (tileY * -0.5f) / 256, 0.0f),
+				glm::vec3(0.0f, 1.0f, 0.0f),
+				glm::vec2(bottomRightX, bottomRightY)
+			};
+			vert3 = {
+				glm::vec3((tileX * -0.5f), (tileY * -0.5f), 0.0f),
+				glm::vec3(0.0f, 0.0f, 1.0f),
+				glm::vec2(topRightX, topRightY)
+			};
+
+			vert4 = {
+				glm::vec3((tileX * -0.5f),(tileY * 0.5f), 0.0f),
+				glm::vec3(1.0f, 1.0f, 0.0f),
+				glm::vec2(topLeftX, topLeftY)
+			};
+		}
+#endif
+
+		newTileVertices.push_back(vert);
+		newTileVertices.push_back(vert2);
+		newTileVertices.push_back(vert3);
+		newTileVertices.push_back(vert4);
+
+
+		unsigned int indices[] = {
+			0, 1, 3, // first triangle
+			1, 2, 3  // second triangle
+		};
+
+		tileVertices.push_back(vertices);
+
+		//tileVertices[tileIndex] = *vertices;
+		tileIndices[tileIndex] = *indices;
+
+
+
+	}
+
+	void bindVertices()
+	{
+		// 2 extra vertices are needed for degenerate triangles between each strip 
+		//unsigned uNumExtraVertices = ( GL_TRIANGLE_STRIP == _config.uRenderType && _uNumUsedVertices > 0 ? 2 : 0 ); 
+
+		glBindVertexArray(batch->VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, batch->VBO);
+		//if (uNumExtraVertices > 0)
+		//{
+		//	//need to add 2 vertex copies to create degenerate triangles between this strip 
+		//	//and the last strip that was stored in the batch 
+		//	glBufferSubData(GL_ARRAY_BUFFER, _uNumUsedVertices * sizeof(GuiVertex), sizeof(GuiVertex), &_lastVertex);
+		//	glBufferSubData(GL_ARRAY_BUFFER, (_uNumUsedVertices + 1) * sizeof(GuiVertex), sizeof(GuiVertex), &vVertices[0]);
+		//}
+
+		// Use glMapBuffer instead, if moving large chunks of data > 1MB 
+		int _uNumUsedVertices = 400;
+		int uNumExtraVertices = 2;
+		//glBufferSubData(GL_ARRAY_BUFFER, (_uNumUsedVertices + uNumExtraVertices) * sizeof(Vertex), newTileVertices.size() * sizeof(Vertex), &newTileVertices[0]);
+		glBufferSubData(GL_ARRAY_BUFFER, sizeof(Vertex), newTileVertices.size() * sizeof(Vertex), &newTileVertices[0]);
+
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		//_uNumUsedVertices += vVertices.size() + uNumExtraVertices;
+		//_lastVertex = vVertices[vVertices.size() - 1];
+	}
+
+	
+
+	void drawMap(MonShader::Shader* shader, unsigned int textureID)
+	{
+		glUseProgram(shader->id);
+
+		// only needs to be set once
+		
+		//model = glm::translate(model, glm::vec3(tile->x, tile->y, 0.0f));
+		//model = glm::scale(model, glm::vec3(glm::vec2(tile->width, tile->height), 1.0f));
+
+	
+		//glUniform3f(glGetUniformLocation(shader->id, "spriteColor"), obj->color.r, obj->color.g, obj->color.b);
+
+
+
+		//glActiveTexture(GL_TEXTURE0);
+		// IMPORTANT(ck):
+		// NOTE(ck): the reason why you set it to 0 is because thats the base texture slot 
+		// its not expecting the textureID thats only for binding
+		glUniform1i(glGetUniformLocation(shader->id, "image"), 0);
+		glBindTexture(GL_TEXTURE_2D, textureID);
+
+		glBindVertexArray(batch->VAO);
+		// GL_TRIANGLES should be render type
+		// 400 = num used vertices
+		glDrawArrays(GL_TRIANGLES, 0, newTileVertices.size());
+		glBindVertexArray(0);
+
+		//reset buffer 	
+		//_uNumUsedVertices = 0;
+		//_config.iPriority = 0;
+	}
+
+
 	void drawObject(MonShader::Shader* shader, Entity* obj)
 	{
 		glUseProgram(shader->id);
@@ -320,7 +528,7 @@ namespace MonGL
 	void drawTile(MonShader::Shader* shader)
 	{
 
-		// fill batch
+		
 
 
 	//float vertices[] = {
@@ -352,231 +560,6 @@ namespace MonGL
 
 		glBindVertexArray(batch->VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
-	}
-
-
-	// This isn't draw this is fill
-	void fillBatch(MonShader::Shader* shader, int tileOffsetX, int tileOffsetY)
-	{
-		glUseProgram(shader->id);
-
-
-		float sheetWidth = 256.0f;
-		float sheetHeight = 256.0f;
-		int spriteWidth = 32;
-		int spriteHeight = 32;
-
-		float topRightX = (tileOffsetX * spriteWidth) / sheetWidth;
-		float topRightY = (tileOffsetY * spriteHeight) / sheetHeight;
-		float topLeftX = (tileOffsetX * spriteWidth) / sheetWidth;
-		float topLeftY = ((tileOffsetY + 1) * spriteHeight) / sheetHeight;
-		float bottomRightX = ((tileOffsetX + 1) * spriteWidth) / sheetWidth;
-		float bottomRightY = (tileOffsetY * spriteHeight) / sheetHeight;
-		float bottomLeftX = ((tileOffsetX + 1) * spriteWidth) / sheetWidth;
-		float bottomLeftY = ((tileOffsetY + 1) * spriteHeight) / sheetHeight;
-
-		float textureCoords[] = {
-			 bottomLeftX, bottomLeftY, // top right
-			 bottomRightX, bottomRightY, // bottom right
-			 topRightX, topRightY, // bottom left
-			 topLeftX, topLeftY // top left 
-		};
-
-		
-		// TODO(ck): Structure
-
-		// Filling the batch the VAO, VBO or EBO do not get touched here
-		// this is all CPU that is just filling it up getting all of the data 
-		// ready checking if anything has changed to get rid of cached data
-		
-		// We fill the indices every frame too the reason why he does INSERT_BATCH
-		// is because if the m_batches has indices in it already they need to get dumped
-		// so that when push_quad gets called i think??
-		// this method is a little confusing so i might have to do something less oopy 
-		// for myself not that it is super oop but i might just 
-
-		// then make a quad for our vertices so we push a quad for that tile 
-		// we aren't like pushing a quad of opengl its literally the coords and stuff
-		// then we move onto actual rendering for gpu
-
-		
-
-
-		// All of our 
-		// Rendering at the end of the game->draw() function
-		// this is where the renderer actually gets called and checks to see
-		// we still update the VAO and VBO here 
-
-		/*
-		* // VERTICES
-			m_vertex_count = count;
-			gl.BindVertexArray(m_id);
-			{
-				// Create Buffer if it doesn't exist yet
-				if (m_vertex_buffer == 0)
-					gl.GenBuffers(1, &(m_vertex_buffer));
-
-				// TODO:
-				// Cache this
-				m_vertex_size = gl_mesh_assign_attributes(m_vertex_buffer, GL_ARRAY_BUFFER, format, 0);
-
-				// Upload Buffer
-				gl.BindBuffer(GL_ARRAY_BUFFER, m_vertex_buffer);
-				gl.BufferData(GL_ARRAY_BUFFER, m_vertex_size * count, vertices, GL_DYNAMIC_DRAW);
-			}
-			gl.BindVertexArray(0);
-		
-		
-		// INDICES
-			m_instance_count = count;
-			gl.BindVertexArray(m_id);
-			{
-				// Create Buffer if it doesn't exist yet
-				if (m_instance_buffer == 0)
-					gl.GenBuffers(1, &(m_instance_buffer));
-
-				// TODO:
-				// Cache this
-				m_instance_size = gl_mesh_assign_attributes(m_instance_buffer, GL_ARRAY_BUFFER, format, 1);
-
-				// Upload Buffer
-				gl.BindBuffer(GL_ARRAY_BUFFER, m_instance_buffer);
-				gl.BufferData(GL_ARRAY_BUFFER, m_instance_size * count, instances, GL_DYNAMIC_DRAW);
-			}
-			gl.BindVertexArray(0);
-		
-		
-		
-		*/
-
-		
-	}
-
-
-
-
-	void drawTile(MonShader::Shader* shader, BatchData* batch, int tileOffsetX, int tileOffsetY)
-	{
-		glUseProgram(shader->id);
-
-		float sheetWidth = 256.0f;
-		float sheetHeight = 256.0f;
-		int spriteWidth = 32;
-		int spriteHeight = 32;
-
-		float topRightX = (tileOffsetX * spriteWidth) / sheetWidth;
-		float topRightY = (tileOffsetY * spriteHeight) / sheetHeight;
-		float topLeftX = (tileOffsetX * spriteWidth) / sheetWidth;
-		float topLeftY = ((tileOffsetY + 1) * spriteHeight) / sheetHeight;
-		float bottomRightX = ((tileOffsetX + 1) * spriteWidth) / sheetWidth;
-		float bottomRightY = (tileOffsetY * spriteHeight) / sheetHeight;
-		float bottomLeftX = ((tileOffsetX + 1) * spriteWidth) / sheetWidth;
-		float bottomLeftY = ((tileOffsetY + 1) * spriteHeight) / sheetHeight;
-
-		float textureCoords[] = {
-			 bottomLeftX, bottomLeftY, // top right
-			 bottomRightX, bottomRightY, // bottom right
-			 topRightX, topRightY, // bottom left
-			 topLeftX, topLeftY // top left 
-		};
-
-
-		// fill batch
-
-
-		//float vertices[] = {
-		//	// positions          // colors           // texture coords
-		//	 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   bottomLeftX, bottomLeftY, // top right
-		//	 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   bottomRightX, bottomRightY, // bottom right
-		//	-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   topRightX, topRightY, // bottom left
-		//	-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   topLeftX, topLeftY // top left 
-		//};
-
-
-
-
-		glm::mat4 model = glm::mat4(1.0f);
-		//model = glm::translate(model, glm::vec3(tile->x, tile->y, 0.0f));
-		//model = glm::scale(model, glm::vec3(glm::vec2(tile->width, tile->height), 1.0f));
-
-		glUniformMatrix4fv(glGetUniformLocation(shader->id, "model"), 1, GL_FALSE, glm::value_ptr(model));
-		//glUniform3f(glGetUniformLocation(shader->id, "spriteColor"), obj->color.r, obj->color.g, obj->color.b);
-
-
-
-		glActiveTexture(GL_TEXTURE0);
-		glUniform1i(glGetUniformLocation(shader->id, "image"), 0);
-		//glBindTexture(GL_TEXTURE_2D, tile->tileId);
-
-
-
-
-		glBindVertexArray(batch->VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
-	}
-
-	void drawTile(MonShader::Shader* shader, Tile* tile, Sprite* sprite)
-	{
-		glUseProgram(shader->id);
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(tile->x, tile->y, 0.0f));
-		model = glm::scale(model, glm::vec3(glm::vec2(tile->width, tile->height), 1.0f));
-
-		glUniformMatrix4fv(glGetUniformLocation(shader->id, "model"), 1, GL_FALSE, glm::value_ptr(model));
-		//glUniform3f(glGetUniformLocation(shader->id, "spriteColor"), obj->color.r, obj->color.g, obj->color.b);
-
-		//glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, sprite->texture.id);
-
-		glBindVertexArray(sprite->VAO);
-		
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
-	}
-	
-	//void gl_DrawTile(MonShader::Shader* shader, Tile* tile)
-	//{
-	//	glUseProgram(shader->id);
-	//	glm::mat4 model = glm::mat4(1.0f);
-	//	model = glm::translate(model, glm::vec3(tile->x, tile->y, 0.0f));
-	//	model = glm::scale(model, glm::vec3(glm::vec2(tile->width, tile->height), 1.0f));
-
-	//	glUniformMatrix4fv(glGetUniformLocation(shader->id, "model"), 1, GL_FALSE, glm::value_ptr(model));
-	//	//glUniform3f(glGetUniformLocation(shader->id, "spriteColor"), obj->color.r, obj->color.g, obj->color.b);
-
-	//	glActiveTexture(GL_TEXTURE0);
-	//	glUniform1i(glGetUniformLocation(shader->id, "image"), 0);
-	//	glBindTexture(GL_TEXTURE_2D, tile->tileId);
-
-	//	glBindVertexArray(tile->sprite.VAO);
-	//	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	//	glBindVertexArray(0);
-	//}
-
-	void drawTile(MonShader::Shader* shader, float minX, float minY, float maxX, float maxY)
-	{
-		glUseProgram(shader->id);
-		glm::mat4 model = glm::mat4(1.0f);
-		//model = glm::translate(model, glm::vec3(obj->pos, 0.0f));
-
-		glm::vec2 size = glm::vec2(32.0f);
-		model = glm::translate(model, glm::vec3(0.5f * size.x, 0.0f * size.y, 0.0f));
-		//model = glm::rotate(model, obj->rotation, glm::vec3(0.0f, 0.0f, 1.0f));
-		model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
-
-		model = glm::scale(model, glm::vec3(size, 1.0f));
-
-		glUniformMatrix4fv(glGetUniformLocation(shader->id, "model"), 1, GL_FALSE, glm::value_ptr(model));
-		//glUniform3f(glGetUniformLocation(shader->id, "spriteColor"), obj->color.r, obj->color.g, obj->color.b);
-
-		////glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_2D, obj->sprite.texture.id);
-
-		//glBindVertexArray(obj->sprite.VAO);
-
-		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);
 	}
 

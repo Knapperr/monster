@@ -109,6 +109,14 @@ World::World()
 	initTileMap(map);
 	MonGL::initTileMap(map->tiles.size());
 	
+	for (int i = 0; i < map->tiles.size(); ++i)
+	{
+		MonGL::fillBatch(i, map->tiles[i].offsetX, map->tiles[i].offsetY, map->tiles[i].x, map->tiles[i].y);
+	}
+
+
+
+	MonGL::bindVertices();
 	
 	//const char* files[4];
 	//files[0] = "res/textures/test_tile.png";
