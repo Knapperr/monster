@@ -277,147 +277,151 @@ namespace MonGL
 		};
 
 
+		// TODO(ck): pushQuad(pos, color, texcoords)
+#if 1
+		float x = -1.0f;
+		float y = -0.5f;
+		x = tileXPos;
+		y = tileYPos;
+#else
 
-		Vertex vert = {
-			glm::vec3(0.5f, 0.5f, 0.0f),
-			glm::vec3(1.0f, 0.0f, 0.0f),
-			glm::vec2(bottomLeftX, bottomLeftY)
-		};
-
-
-
-		Vertex vert2 = {
-			glm::vec3(0.5f, -0.5f, 0.0f),
-			glm::vec3(0.0f, 1.0f, 0.0f),
-			glm::vec2(bottomRightX, bottomRightY)
-		};
-
-		Vertex vert3 = {
-			glm::vec3(-0.5f, -0.5f, 0.0f),
-			glm::vec3(0.0f, 0.0f, 1.0f),
-			glm::vec2(topRightX, topRightY)
-		};
-
-		Vertex vert4 = {
-			glm::vec3(-0.5f, 0.5f, 0.0f),
-			glm::vec3(1.0f, 1.0f, 0.0f),
-			glm::vec2(topLeftX, topLeftY)
-		};
-
+		int screenX = 200;
+		int screenY = 200;
+		int width = 960;
+		int height = 540;
+		float x = (((2.0 * screenX) - (2.0 * tileXPos)) / width) - 1.0;
+		float y = (((2.0 * screenY) - (2.0 * tileYPos)) / height) - 1.0;
+#endif
+		float size = 32.0f;
+		printf("tile index: %d - x:%f , y:%f\n", tileIndex, x, y);
 
 		/*
-		* 
-		
-		Mat3x2 Mat3x2::create_translation(float x, float y)
-		{
-			return Mat3x2(1, 0, 0, 1, x, y);
-		}
-
-
-void Batch::tex(const Subtexture& sub, const Vec2& pos, const Vec2& origin, const Vec2& scale, float rotation, Color color)
-{
-	push_matrix(Mat3x2::create_transform(pos, origin, scale, rotation));
-
-	if (!sub.texture)
-	{
-		PUSH_QUAD(
-			sub.draw_coords[0].x, sub.draw_coords[0].y,
-			sub.draw_coords[1].x, sub.draw_coords[1].y,
-			sub.draw_coords[2].x, sub.draw_coords[2].y,
-			sub.draw_coords[3].x, sub.draw_coords[3].y,
-			0, 0, 0, 0, 0, 0, 0, 0,
-			color, color, color, color,
-			0, 0, 255);
-	}
-	else
-	{
-		set_texture(sub.texture);
+		Mat3x2(1, 0, 0, 1, x, y);
+		m11 = 1
+		m12 = 0
+		m21 = 0
+		m22 = 1
+		m31 = x
+		m32 = y
 
 		PUSH_QUAD(
-			sub.draw_coords[0].x, sub.draw_coords[0].y,
-			sub.draw_coords[1].x, sub.draw_coords[1].y,
-			sub.draw_coords[2].x, sub.draw_coords[2].y,
-			sub.draw_coords[3].x, sub.draw_coords[3].y,
+			pos.x + sub.draw_coords[0].x, pos.y + sub.draw_coords[0].y,
+			pos.x + sub.draw_coords[1].x, pos.y + sub.draw_coords[1].y,
+			pos.x + sub.draw_coords[2].x, pos.y + sub.draw_coords[2].y,
+			pos.x + sub.draw_coords[3].x, pos.y + sub.draw_coords[3].y,
 			sub.tex_coords[0].x, sub.tex_coords[0].y,
 			sub.tex_coords[1].x, sub.tex_coords[1].y,
 			sub.tex_coords[2].x, sub.tex_coords[2].y,
 			sub.tex_coords[3].x, sub.tex_coords[3].y,
 			color, color, color, color,
-			m_tex_mult, m_tex_wash, 0);
-	}
+			m_tex_mult, m_tex_wash, 0
+		);
 
-	pop_matrix();
-}
+		#define PUSH_QUAD(px0, py0, px1, py1, px2, py2, px3, py3, tx0, ty0, tx1, ty1, tx2, ty2, tx3, ty3, col0, col1, col2, col3, mult, fill, wash) \
+		{ \
+			m_batch.elements += 2; \
+			auto _i = m_indices.expand(6); \
+			*_i++ = (u32)m_vertices.size() + 0; \
+			*_i++ = (u32)m_vertices.size() + 1; \
+			*_i++ = (u32)m_vertices.size() + 2; \
+			*_i++ = (u32)m_vertices.size() + 0; \
+			*_i++ = (u32)m_vertices.size() + 2; \
+			*_i++ = (u32)m_vertices.size() + 3; \
+			Vertex* _v = m_vertices.expand(4); \
+			MAKE_VERTEX(_v, m_matrix, px0, py0, tx0, ty0, col0, mult, fill, wash); _v++; \
+			MAKE_VERTEX(_v, m_matrix, px1, py1, tx1, ty1, col1, mult, fill, wash); _v++; \
+			MAKE_VERTEX(_v, m_matrix, px2, py2, tx2, ty2, col2, mult, fill, wash); _v++; \
+			MAKE_VERTEX(_v, m_matrix, px3, py3, tx3, ty3, col3, mult, fill, wash); \
+		}
 
-#define PUSH_QUAD(px0, py0, px1, py1, px2, py2, px3, py3, tx0, ty0, tx1, ty1, tx2, ty2, tx3, ty3, col0, col1, col2, col3, mult, fill, wash) \
-	{ \
-		m_batch.elements += 2; \
-		auto _i = m_indices.expand(6); \
-		*_i++ = (u32)m_vertices.size() + 0; \
-		*_i++ = (u32)m_vertices.size() + 1; \
-		*_i++ = (u32)m_vertices.size() + 2; \
-		*_i++ = (u32)m_vertices.size() + 0; \
-		*_i++ = (u32)m_vertices.size() + 2; \
-		*_i++ = (u32)m_vertices.size() + 3; \
-		Vertex* _v = m_vertices.expand(4); \
-		MAKE_VERTEX(_v, m_matrix, px0, py0, tx0, ty0, col0, mult, fill, wash); _v++; \
-		MAKE_VERTEX(_v, m_matrix, px1, py1, tx1, ty1, col1, mult, fill, wash); _v++; \
-		MAKE_VERTEX(_v, m_matrix, px2, py2, tx2, ty2, col2, mult, fill, wash); _v++; \
-		MAKE_VERTEX(_v, m_matrix, px3, py3, tx3, ty3, col3, mult, fill, wash); \
-	}
-
-
-#define MAKE_VERTEX(vert, mat, px, py, tx, ty, c, m, w, f) \
-	(vert)->pos.x = ((px) * mat.m11) + ((py) * mat.m21) + mat.m31; \
-	(vert)->pos.y = ((px) * mat.m12) + ((py) * mat.m22) + mat.m32; \
-	(vert)->tex.x = tx;  \
-	if (m_batch.flip_vertically) \
-		(vert)->tex.y = 1.0f - ty; \
-	else \
-		(vert)->tex.y = ty; \
-	(vert)->col = c; \
-	(vert)->mult = m; \
-	(vert)->wash = w; \
-	(vert)->fill = f;
-
+		#define MAKE_VERTEX(vert, mat, px, py, tx, ty, c, m, w, f) \
+			(vert)->pos.x = ((px) * mat.m11) + ((py) * mat.m21) + mat.m31; \
+			(vert)->pos.y = ((px) * mat.m12) + ((py) * mat.m22) + mat.m32; \
+			(vert)->tex.x = tx;  \
+			if (m_batch.flip_vertically) \
+				(vert)->tex.y = 1.0f - ty; \
+			else \
+				(vert)->tex.y = ty; \
+			(vert)->col = c; \
+			(vert)->mult = m; \
+			(vert)->wash = w; \
+			(vert)->fill = f;
 		*/
-#if 1
-		int tileX = tileXPos * 32;
-		int tileY = tileYPos * 32;
 
-		glm::vec2 tilePos = glm::vec2(tileX, tileY);
+		Vertex v0 = {
+			glm::vec3(x, y, 0.0f),
+			glm::vec3(1.0f, 0.0f, 0.0f),
+			glm::vec2(bottomLeftX, bottomLeftY)
+		};
 
-		if (tileIndex == 10)
+		Vertex v1 = {
+			glm::vec3(x + size, y, 0.0f),
+			glm::vec3(0.0f, 1.0f, 0.0f),
+			glm::vec2(bottomRightX, bottomRightY)
+		};
+
+		Vertex v2 = {
+			glm::vec3(x + size, y + size, 0.0f),
+			glm::vec3(0.0f, 0.0f, 1.0f),
+			glm::vec2(topRightX, topRightY)
+		};
+
+		Vertex v3 = {
+			glm::vec3(x, y + size, 0.0f),
+			glm::vec3(1.0f, 1.0f, 0.0f),
+			glm::vec2(topLeftX, topLeftY)
+		};
+
+#if 0
+
+		if (tileIndex == 12)
 		{
-			vert = {
-				glm::vec3((tileX * 0.5f) / 256, (tileY * 0.5f) / 256, 0.0f),
+			//glm::mat4 model = glm::mat4(1.0f);
+			//vert.position  += glm::vec3(tilePos.x, tilePos.y, 0.0f);
+			//vert2.position += glm::vec3(tilePos.x, tilePos.y, 0.0f);
+			//vert3.position += glm::vec3(tilePos.x, tilePos.y, 0.0f);
+			//vert4.position += glm::vec3(tilePos.x, tilePos.y, 0.0f);
+			
+			//x = 50.5f;
+			//y = -0.5f;
+			//int screenX = 50;
+			//int screenY = 50;
+			//int width = 960;
+			//int height = 540;
+			screenX = 600;
+			screenY = 600;
+			x = (((2.0 * screenX) - (2.0 * tileXPos)) / width) - 1.0;
+			y = (((2.0 * screenY) - (2.0 * tileYPos)) / height) - 1.0;
+			v0 = {
+				glm::vec3(x, y, 0.0f),
 				glm::vec3(1.0f, 0.0f, 0.0f),
 				glm::vec2(bottomLeftX, bottomLeftY)
 			};
 
-			vert2 = {
-				glm::vec3((tileX * 0.5f) / 256, (tileY * -0.5f) / 256, 0.0f),
+			v1 = {
+				glm::vec3(x + size, y, 0.0f),
 				glm::vec3(0.0f, 1.0f, 0.0f),
 				glm::vec2(bottomRightX, bottomRightY)
 			};
-			vert3 = {
-				glm::vec3((tileX * -0.5f), (tileY * -0.5f), 0.0f),
+
+			v2 = {
+				glm::vec3(x + size, y + size, 0.0f),
 				glm::vec3(0.0f, 0.0f, 1.0f),
 				glm::vec2(topRightX, topRightY)
 			};
 
-			vert4 = {
-				glm::vec3((tileX * -0.5f),(tileY * 0.5f), 0.0f),
+			v3 = {
+				glm::vec3(x, y + size, 0.0f),
 				glm::vec3(1.0f, 1.0f, 0.0f),
 				glm::vec2(topLeftX, topLeftY)
 			};
 		}
 #endif
 
-		newTileVertices.push_back(vert);
-		newTileVertices.push_back(vert2);
-		newTileVertices.push_back(vert3);
-		newTileVertices.push_back(vert4);
+		newTileVertices.push_back(v0);
+		newTileVertices.push_back(v1);
+		newTileVertices.push_back(v2);
+		newTileVertices.push_back(v3);
 
 
 		unsigned int indices[] = {
@@ -429,8 +433,6 @@ void Batch::tex(const Subtexture& sub, const Vec2& pos, const Vec2& origin, cons
 
 		//tileVertices[tileIndex] = *vertices;
 		tileIndices[tileIndex] = *indices;
-
-
 
 	}
 
@@ -462,25 +464,13 @@ void Batch::tex(const Subtexture& sub, const Vec2& pos, const Vec2& origin, cons
 		//_lastVertex = vVertices[vVertices.size() - 1];
 	}
 
-	
-
 	void drawMap(MonShader::Shader* shader, unsigned int textureID)
 	{
 		glUseProgram(shader->id);
 
-		// only needs to be set once
-		
-		//model = glm::translate(model, glm::vec3(tile->x, tile->y, 0.0f));
-		//model = glm::scale(model, glm::vec3(glm::vec2(tile->width, tile->height), 1.0f));
-
-	
-		//glUniform3f(glGetUniformLocation(shader->id, "spriteColor"), obj->color.r, obj->color.g, obj->color.b);
-
-
-
 		//glActiveTexture(GL_TEXTURE0);
 		// IMPORTANT(ck):
-		// NOTE(ck): the reason why you set it to 0 is because thats the base texture slot 
+		// NOTE(ck): the reason why you set it to 0 is because thats the base texture slot
 		// its not expecting the textureID thats only for binding
 		glUniform1i(glGetUniformLocation(shader->id, "image"), 0);
 		glBindTexture(GL_TEXTURE_2D, textureID);
@@ -491,11 +481,10 @@ void Batch::tex(const Subtexture& sub, const Vec2& pos, const Vec2& origin, cons
 		glDrawArrays(GL_TRIANGLES, 0, newTileVertices.size());
 		glBindVertexArray(0);
 
-		//reset buffer 	
+		//reset buffer
 		//_uNumUsedVertices = 0;
 		//_config.iPriority = 0;
 	}
-
 
 	void drawObject(MonShader::Shader* shader, Entity* obj)
 	{
@@ -524,45 +513,6 @@ void Batch::tex(const Subtexture& sub, const Vec2& pos, const Vec2& origin, cons
 		glBindVertexArray(0);
 	}
 
-
-	void drawTile(MonShader::Shader* shader)
-	{
-
-		
-
-
-	//float vertices[] = {
-	//	// positions          // colors           // texture coords
-	//	 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   bottomLeftX, bottomLeftY, // top right
-	//	 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   bottomRightX, bottomRightY, // bottom right
-	//	-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   topRightX, topRightY, // bottom left
-	//	-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   topLeftX, topLeftY // top left 
-	//};
-
-
-
-
-		glm::mat4 model = glm::mat4(1.0f);
-		//model = glm::translate(model, glm::vec3(tile->x, tile->y, 0.0f));
-		//model = glm::scale(model, glm::vec3(glm::vec2(tile->width, tile->height), 1.0f));
-
-		glUniformMatrix4fv(glGetUniformLocation(shader->id, "model"), 1, GL_FALSE, glm::value_ptr(model));
-		//glUniform3f(glGetUniformLocation(shader->id, "spriteColor"), obj->color.r, obj->color.g, obj->color.b);
-
-
-
-		glActiveTexture(GL_TEXTURE0);
-		glUniform1i(glGetUniformLocation(shader->id, "image"), 0);
-		//glBindTexture(GL_TEXTURE_2D, tile->tileId);
-
-		// TEST
-		BatchData* batch = new BatchData();
-
-		glBindVertexArray(batch->VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
-	}
-
 	void cleanUp(Sprite* sprite)
 	{
 		glDeleteVertexArrays(1, &sprite->VAO);
@@ -570,5 +520,4 @@ void Batch::tex(const Subtexture& sub, const Vec2& pos, const Vec2& origin, cons
 		//glDeleteBuffers(1, &EBO);
 		//glDeleteProgram(shaderProgram);
 	}
-
 }

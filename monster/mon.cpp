@@ -321,8 +321,8 @@ namespace Mon
 		// This is for 1920x1080 I am using 1280x720 right now
 		// 2:1 960x540 -- 3:1 640x360 --- 4:! 480x240
 		float left = 0.0f;
-		float right = 640.0f;
-		float bottom = 360.0f;
+		float right = 960.0f;
+		float bottom = 540.0f;
 		float top = 0.0f;
 
 		glm::mat4 projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);

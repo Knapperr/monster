@@ -99,14 +99,14 @@ namespace MonGL
 
 	// 2d
 	void initRenderData(Sprite* sprite);
+	
 	void initTileMap(int tileAmount);
-	void drawObject(MonShader::Shader* shader, Entity* obj);
 	void fillBatch(int tileIndex, int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos);
 	void bindVertices();
+	
+	void drawObject(MonShader::Shader* shader, Entity* obj);
 	void drawMap(MonShader::Shader* shader, unsigned int textureID);
 	void cleanUp(Sprite* sprite);
-
-	void pushQuad();
 
 }
 #endif
