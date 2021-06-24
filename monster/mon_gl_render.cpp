@@ -131,15 +131,7 @@ namespace MonGL
 	/// 
 	 
 	BatchData* batch;
-	//float* tileVertices;
-	std::vector<float*> tileVertices;
-	std::vector<Vertex> newTileVertices;
-
-	// TODO(ck): I don't need this yet a matrix stack allows me to 
-	// create the position of each for my vertices. Not that necessary for
-	// static tiles
-	std::stack<glm::vec3> matrixStack;
-
+	std::vector<Vertex> tileVertices;
 	int usedIndices = 0;
 
 	void initRenderData(Sprite* sprite)
@@ -176,30 +168,6 @@ namespace MonGL
 	
 	void initTileMap(int tileAmount)
 	{
-		/*
-		* 
-		* IMPORTANT(ck): I dont think we fill it here we just init
-		* 
-			Need to get all of the vertices and indices of every tile
-			i guess I pass in the tiles or can i get tileAmount and Rect TileSize
-			then if its 32,32 i just loop through and do that many 
-			or just say it doesnt even need that i just need the vertices each tile
-			takes up it doesnt matter what size it is
-		
-
-
-			for ()
-			{
-				PushQuad()
-				fills array of tileVertices
-
-				
-			}
-		*/
-
-	
-
-
 		// These will be figured out after looping our tilemap and pushing quads
 		
 		//tileVertices = new float[maxVertices];
@@ -228,7 +196,6 @@ namespace MonGL
 		glEnableVertexAttribArray(2);
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
 
-		// TODO(ck): This is fine we are just creating the indices here
 		uint32_t tileIndices[indicesLength];
 		int offset = 0;
 		for (int i = 0; i < indicesLength; i += 6)
@@ -280,14 +247,12 @@ namespace MonGL
 		Vertex v0 = {
 			glm::vec3(x, y, 0.0f),
 			glm::vec3(1.0f, 0.0f, 0.0f),
-			//glm::vec2(bottomLeftX, bottomLeftY)
 			glm::vec2(bottomRightX, bottomRightY)	
 		};
 
 		Vertex v1 = {
 			glm::vec3(x + size, y, 0.0f),
 			glm::vec3(0.0f, 1.0f, 0.0f),
-			//glm::vec2(bottomRightX, bottomRightY)
 			glm::vec2(bottomLeftX, bottomLeftY)
 		};
 
@@ -304,10 +269,10 @@ namespace MonGL
 		};
 
 		usedIndices += 6;
-		newTileVertices.push_back(v0);
-		newTileVertices.push_back(v1);
-		newTileVertices.push_back(v2);
-		newTileVertices.push_back(v3);
+		tileVertices.push_back(v0);
+		tileVertices.push_back(v1);
+		tileVertices.push_back(v2);
+		tileVertices.push_back(v3);
 	}
 
 	void bindVertices()
@@ -326,14 +291,14 @@ namespace MonGL
 		//}
 
 		// Use glMapBuffer instead, if moving large chunks of data > 1MB 
-		int _uNumUsedVertices = 400;
-		int uNumExtraVertices = 2;
+		//int _uNumUsedVertices = 400;
+		//int uNumExtraVertices = 2;
 		//glBufferSubData(GL_ARRAY_BUFFER, (_uNumUsedVertices + uNumExtraVertices) * sizeof(Vertex), newTileVertices.size() * sizeof(Vertex), &newTileVertices[0]);
 		
 		// IMPORTANT(ck):
 		// STUDY(ck): The second param (offset) in this was set to verticesLength * sizeof(Vertex). This was causing the vertices the show up as stretched 
 		// and elongated triangles
-		glBufferSubData(GL_ARRAY_BUFFER, 0, newTileVertices.size() * sizeof(Vertex), &newTileVertices[0]);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, tileVertices.size() * sizeof(Vertex), &tileVertices[0]);
 
 		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -354,10 +319,7 @@ namespace MonGL
 		glBindTexture(GL_TEXTURE_2D, textureID);
 
 		glBindVertexArray(batch->VAO);
-		// GL_TRIANGLES should be render type
-		// 400 = num used vertices
 		glDrawElements(GL_TRIANGLES, usedIndices, GL_UNSIGNED_INT, nullptr);
-		//glDrawArrays(GL_TRIANGLES, 0, newTileVertices.size());
 		glBindVertexArray(0);
 
 		//reset buffer

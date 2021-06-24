@@ -49,7 +49,6 @@ Tile* TileSheet::createTile(int tileId, int x, int y)
 	}
 }
 
-
 void initTileMap(TileMap* map)
 {
 	// NOTE(ck): Sheet must be created first
@@ -114,73 +113,9 @@ World::World()
 		MonGL::fillBatch(i, map->tiles[i].offsetX, map->tiles[i].offsetY, map->tiles[i].x, map->tiles[i].y);
 	}
 
-
-
 	MonGL::bindVertices();
 	
-	//const char* files[4];
-	//files[0] = "res/textures/test_tile.png";
-	//files[1] = "res/textures/test_tile_1.png";
-	//files[2] = "res/textures/test_tile_2.png";
-	//files[3] = "res/textures/test_tile_3.png";
-	//for (int i = 0; i < ArrayCount(files); ++i)
-	//{
-	//	Sprite sprite = {};
-	//	MonGL::gl_InitRenderData(&sprite);
-	//	MonGL::LoadTextureFile(&sprite.texture, files[i], true);
-	//	map->sheet.sprites.push_back(sprite);
-
-	//}
-
-	//Sprite sheet = {};
-	//MonGL::gl_InitRenderData(&sheet);
-	//MonGL::LoadTextureFile(&sheet.texture, "res/textures/basic_tiles.png", true);
-	//map->sheet.sprites.push_back(sheet);
-
-	//testTile = {};
-	//MonGL::gl_InitTile(&testTile, 6, 2);
-	//MonGL::LoadTextureFile(&testTile.texture, "res/textures/basic_tiles.png", true);
-
-
-
-	/*
-	for (int y = 0; y < MAP_SIZE; ++y)
-	{
-		for (int x = 0; x < MAP_SIZE; ++x)
-		{
-			// this gets the x and y position 
-			// tileX 
-			// x = screenX * tilesPerWidth + tileX;
-			// y = screenY * tilesPerHeight + tileY;
-			Tile tile = {0, 0, 0};
-			
-
-			if (testmap[y][x] == 3)
-			{
-				tile = Tile(testmap[y][x], x * width, y * height);
-				MonGL::gl_InitTile(&tile, 6, 2);
-			}
-			if (testmap[y][x] == 1)
-			{
-				tile = Tile(testmap[y][x], x * width, y * height);
-				MonGL::gl_InitTile(&tile.sprite, 7, 2);
-			}
-			if (testmap[y][x] == 2)
-			{
-				tile = Tile(testmap[y][x], x * width, y * height);
-				MonGL::gl_InitTile(&tile.sprite, 7, 2);
-			}
-			if (testmap[y][x] == 0)
-			{
-				tile = Tile(testmap[y][x], x * width, y * height);
-				MonGL::gl_InitTile(&tile.sprite, 7, 2);
-			}
-
-			tile.tileId = testTile.texture.id;
-			map->tiles.push_back(tile);
-		}
-	}
-	*/
+	
 	// TODO(ck): Memory management
 	player = new Entity("res/textures/p1.png", true,
 						glm::vec2(5, 5), glm::vec2(32, 32), glm::vec3(1.0f, 1.0f, 1.0f),
