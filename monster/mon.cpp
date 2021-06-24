@@ -410,17 +410,6 @@ namespace Mon
 		int projLoc = glGetUniformLocation(tileShader.id, "projection");
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-		//// TODO(ck): Draw tilemap function that we pass the tilemap into
-		
-		// yeah drawtilemap just sends all of the vertices and everything then
-		// calls the renderer inside? or do we just call the renderer here
-		// update tilemap will fill the vertices?
-		//MonGL::drawTileMap();
-		//for (unsigned int i = 0; i < world->map->tiles.size(); ++i)
-		//{
-		//	//MonGL::drawTile(&tileShader, world->map->tiles[i].offsetX, world->map->tiles[i].offsetY);
-		//	//void drawTile(MonShader::Shader * shader, BatchData * batch, int tileOffsetX, int tileOffsetY);
-		//}
 		MonGL::drawMap(&tileShader, world->map->sheet.texture.id);
 
 		glUseProgram(shader.id);

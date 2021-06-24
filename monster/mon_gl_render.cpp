@@ -260,36 +260,35 @@ namespace MonGL
 		// TODO(ck): Vertices amount
 		assert(tileIndex < 8000);
 		
-		float sheetWidth = 256.0f;
-		float sheetHeight = 256.0f;
-		int spriteWidth = 32;
-		int spriteHeight = 32;
+		float sheetSize = 256.0f;
+		int spriteSize = 32;
 
 		// Texture coords
-		float topRightX = (tileOffsetX * spriteWidth) / sheetWidth;
-		float topRightY = (tileOffsetY * spriteHeight) / sheetHeight;
-		float topLeftX = (tileOffsetX * spriteWidth) / sheetWidth;
-		float topLeftY = ((tileOffsetY + 1) * spriteHeight) / sheetHeight;
-		float bottomRightX = ((tileOffsetX + 1) * spriteWidth) / sheetWidth;
-		float bottomRightY = (tileOffsetY * spriteHeight) / sheetHeight;
-		float bottomLeftX = ((tileOffsetX + 1) * spriteWidth) / sheetWidth;
-		float bottomLeftY = ((tileOffsetY + 1) * spriteHeight) / sheetHeight;
+		float topRightX		= ((tileOffsetX + 1) * spriteSize) / sheetSize;
+		float topRightY		= ((tileOffsetY + 1) * spriteSize) / sheetSize;
+		float topLeftX		= (tileOffsetX * spriteSize) / sheetSize;
+		float topLeftY		= ((tileOffsetY + 1) * spriteSize) / sheetSize;
+		float bottomRightX	= (tileOffsetX * spriteSize) / sheetSize;
+		float bottomRightY  = (tileOffsetY * spriteSize) / sheetSize;
+		float bottomLeftX	= ((tileOffsetX + 1) * spriteSize) / sheetSize;
+		float bottomLeftY	= (tileOffsetY * spriteSize) / sheetSize;
 
-
-		// TODO(ck): pushQuad(pos, color, texcoords)
-		int size = 32;
+		// TODO(ck): pushQuad(pos, color, texcoords)		
 		float x = tileXPos;
 		float y = tileYPos;		
+		int size = 32;
 		Vertex v0 = {
 			glm::vec3(x, y, 0.0f),
 			glm::vec3(1.0f, 0.0f, 0.0f),
-			glm::vec2(bottomLeftX, bottomLeftY)
+			//glm::vec2(bottomLeftX, bottomLeftY)
+			glm::vec2(bottomRightX, bottomRightY)	
 		};
 
 		Vertex v1 = {
 			glm::vec3(x + size, y, 0.0f),
 			glm::vec3(0.0f, 1.0f, 0.0f),
-			glm::vec2(bottomRightX, bottomRightY)
+			//glm::vec2(bottomRightX, bottomRightY)
+			glm::vec2(bottomLeftX, bottomLeftY)
 		};
 
 		Vertex v2 = {
@@ -330,6 +329,10 @@ namespace MonGL
 		int _uNumUsedVertices = 400;
 		int uNumExtraVertices = 2;
 		//glBufferSubData(GL_ARRAY_BUFFER, (_uNumUsedVertices + uNumExtraVertices) * sizeof(Vertex), newTileVertices.size() * sizeof(Vertex), &newTileVertices[0]);
+		
+		// IMPORTANT(ck):
+		// STUDY(ck): The second param (offset) in this was set to verticesLength * sizeof(Vertex). This was causing the vertices the show up as stretched 
+		// and elongated triangles
 		glBufferSubData(GL_ARRAY_BUFFER, 0, newTileVertices.size() * sizeof(Vertex), &newTileVertices[0]);
 
 		glBindVertexArray(0);
