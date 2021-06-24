@@ -139,7 +139,8 @@ namespace MonGL
 	// create the position of each for my vertices. Not that necessary for
 	// static tiles
 	std::stack<glm::vec3> matrixStack;
-	int* tileIndices;
+
+	int usedIndices = 0;
 
 	void initRenderData(Sprite* sprite)
 	{
@@ -200,41 +201,53 @@ namespace MonGL
 
 
 		// These will be figured out after looping our tilemap and pushing quads
-		const int maxVertices = 10000;
 		
 		//tileVertices = new float[maxVertices];
 		int usedVertices = 1;
-		int indicesLength = 8000;
+		const int quadCount = 1000;
+		const int maxVertices = quadCount * 4;
+		const int indicesLength = quadCount * 6;
 		 
 		// TEST
 		batch = new BatchData();
-		tileIndices = new int[indicesLength];
-
-
+		
 		glGenVertexArrays(1, &batch->VAO);
 		glBindVertexArray(batch->VAO);
 
-		// TODO(ck): Consider GL_DYNAMIC_DRAW OVER GL_STREAM_DRAW
 		glGenBuffers(1, &batch->VBO);
 		glBindBuffer(GL_ARRAY_BUFFER, batch->VBO);
-		glBufferData(GL_ARRAY_BUFFER, maxVertices * sizeof(Vertex), nullptr, GL_STREAM_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, maxVertices * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
 
-		unsigned int EBO;
-		glGenBuffers(1, &EBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesLength * sizeof(int), tileIndices, GL_STREAM_DRAW);
-
-
-		// these sizes wont work
 		// position attribute
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
 		// color attribute
 		glEnableVertexAttribArray(1);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
 		// texture coord attribute
 		glEnableVertexAttribArray(2);
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
+
+		// TODO(ck): This is fine we are just creating the indices here
+		uint32_t tileIndices[indicesLength];
+		int offset = 0;
+		for (int i = 0; i < indicesLength; i += 6)
+		{
+			tileIndices[i + 0] = 0 + offset;
+			tileIndices[i + 1] = 1 + offset;
+			tileIndices[i + 2] = 2 + offset;
+			
+			tileIndices[i + 3] = 2 + offset;
+			tileIndices[i + 4] = 3 + offset;
+			tileIndices[i + 5] = 0 + offset;
+
+			offset += 4;
+		}
+
+		unsigned int EBO;
+		glGenBuffers(1, &EBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(tileIndices), tileIndices, GL_STATIC_DRAW);
 
 		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -252,6 +265,7 @@ namespace MonGL
 		int spriteWidth = 32;
 		int spriteHeight = 32;
 
+		// Texture coords
 		float topRightX = (tileOffsetX * spriteWidth) / sheetWidth;
 		float topRightY = (tileOffsetY * spriteHeight) / sheetHeight;
 		float topLeftX = (tileOffsetX * spriteWidth) / sheetWidth;
@@ -261,93 +275,11 @@ namespace MonGL
 		float bottomLeftX = ((tileOffsetX + 1) * spriteWidth) / sheetWidth;
 		float bottomLeftY = ((tileOffsetY + 1) * spriteHeight) / sheetHeight;
 
-		//float textureCoords[] = {
-		//	 bottomLeftX, bottomLeftY, // top right
-		//	 bottomRightX, bottomRightY, // bottom right
-		//	 topRightX, topRightY, // bottom left
-		//	 topLeftX, topLeftY // top left 
-		//};
-
-		float vertices[] = {
-			// positions          // colors           // texture coords
-			 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   bottomLeftX, bottomLeftY, // top right
-			 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   bottomRightX, bottomRightY, // bottom right
-			-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   topRightX, topRightY, // bottom left
-			-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   topLeftX, topLeftY // top left 
-		};
-
 
 		// TODO(ck): pushQuad(pos, color, texcoords)
-#if 1
-		float x = -1.0f;
-		float y = -0.5f;
-		x = tileXPos;
-		y = tileYPos;
-#else
-
-		int screenX = 200;
-		int screenY = 200;
-		int width = 960;
-		int height = 540;
-		float x = (((2.0 * screenX) - (2.0 * tileXPos)) / width) - 1.0;
-		float y = (((2.0 * screenY) - (2.0 * tileYPos)) / height) - 1.0;
-#endif
-		float size = 32.0f;
-		printf("tile index: %d - x:%f , y:%f\n", tileIndex, x, y);
-
-		/*
-		Mat3x2(1, 0, 0, 1, x, y);
-		m11 = 1
-		m12 = 0
-		m21 = 0
-		m22 = 1
-		m31 = x
-		m32 = y
-
-		PUSH_QUAD(
-			pos.x + sub.draw_coords[0].x, pos.y + sub.draw_coords[0].y,
-			pos.x + sub.draw_coords[1].x, pos.y + sub.draw_coords[1].y,
-			pos.x + sub.draw_coords[2].x, pos.y + sub.draw_coords[2].y,
-			pos.x + sub.draw_coords[3].x, pos.y + sub.draw_coords[3].y,
-			sub.tex_coords[0].x, sub.tex_coords[0].y,
-			sub.tex_coords[1].x, sub.tex_coords[1].y,
-			sub.tex_coords[2].x, sub.tex_coords[2].y,
-			sub.tex_coords[3].x, sub.tex_coords[3].y,
-			color, color, color, color,
-			m_tex_mult, m_tex_wash, 0
-		);
-
-		#define PUSH_QUAD(px0, py0, px1, py1, px2, py2, px3, py3, tx0, ty0, tx1, ty1, tx2, ty2, tx3, ty3, col0, col1, col2, col3, mult, fill, wash) \
-		{ \
-			m_batch.elements += 2; \
-			auto _i = m_indices.expand(6); \
-			*_i++ = (u32)m_vertices.size() + 0; \
-			*_i++ = (u32)m_vertices.size() + 1; \
-			*_i++ = (u32)m_vertices.size() + 2; \
-			*_i++ = (u32)m_vertices.size() + 0; \
-			*_i++ = (u32)m_vertices.size() + 2; \
-			*_i++ = (u32)m_vertices.size() + 3; \
-			Vertex* _v = m_vertices.expand(4); \
-			MAKE_VERTEX(_v, m_matrix, px0, py0, tx0, ty0, col0, mult, fill, wash); _v++; \
-			MAKE_VERTEX(_v, m_matrix, px1, py1, tx1, ty1, col1, mult, fill, wash); _v++; \
-			MAKE_VERTEX(_v, m_matrix, px2, py2, tx2, ty2, col2, mult, fill, wash); _v++; \
-			MAKE_VERTEX(_v, m_matrix, px3, py3, tx3, ty3, col3, mult, fill, wash); \
-		}
-
-		#define MAKE_VERTEX(vert, mat, px, py, tx, ty, c, m, w, f) \
-			(vert)->pos.x = ((px) * mat.m11) + ((py) * mat.m21) + mat.m31; \
-			(vert)->pos.y = ((px) * mat.m12) + ((py) * mat.m22) + mat.m32; \
-			(vert)->tex.x = tx;  \
-			if (m_batch.flip_vertically) \
-				(vert)->tex.y = 1.0f - ty; \
-			else \
-				(vert)->tex.y = ty; \
-			(vert)->col = c; \
-			(vert)->mult = m; \
-			(vert)->wash = w; \
-			(vert)->fill = f;
-		*/
-
+		int size = 32;
+		float x = tileXPos;
+		float y = tileYPos;		
 		Vertex v0 = {
 			glm::vec3(x, y, 0.0f),
 			glm::vec3(1.0f, 0.0f, 0.0f),
@@ -372,68 +304,11 @@ namespace MonGL
 			glm::vec2(topLeftX, topLeftY)
 		};
 
-#if 0
-
-		if (tileIndex == 12)
-		{
-			//glm::mat4 model = glm::mat4(1.0f);
-			//vert.position  += glm::vec3(tilePos.x, tilePos.y, 0.0f);
-			//vert2.position += glm::vec3(tilePos.x, tilePos.y, 0.0f);
-			//vert3.position += glm::vec3(tilePos.x, tilePos.y, 0.0f);
-			//vert4.position += glm::vec3(tilePos.x, tilePos.y, 0.0f);
-			
-			//x = 50.5f;
-			//y = -0.5f;
-			//int screenX = 50;
-			//int screenY = 50;
-			//int width = 960;
-			//int height = 540;
-			screenX = 600;
-			screenY = 600;
-			x = (((2.0 * screenX) - (2.0 * tileXPos)) / width) - 1.0;
-			y = (((2.0 * screenY) - (2.0 * tileYPos)) / height) - 1.0;
-			v0 = {
-				glm::vec3(x, y, 0.0f),
-				glm::vec3(1.0f, 0.0f, 0.0f),
-				glm::vec2(bottomLeftX, bottomLeftY)
-			};
-
-			v1 = {
-				glm::vec3(x + size, y, 0.0f),
-				glm::vec3(0.0f, 1.0f, 0.0f),
-				glm::vec2(bottomRightX, bottomRightY)
-			};
-
-			v2 = {
-				glm::vec3(x + size, y + size, 0.0f),
-				glm::vec3(0.0f, 0.0f, 1.0f),
-				glm::vec2(topRightX, topRightY)
-			};
-
-			v3 = {
-				glm::vec3(x, y + size, 0.0f),
-				glm::vec3(1.0f, 1.0f, 0.0f),
-				glm::vec2(topLeftX, topLeftY)
-			};
-		}
-#endif
-
+		usedIndices += 6;
 		newTileVertices.push_back(v0);
 		newTileVertices.push_back(v1);
 		newTileVertices.push_back(v2);
 		newTileVertices.push_back(v3);
-
-
-		unsigned int indices[] = {
-			0, 1, 3, // first triangle
-			1, 2, 3  // second triangle
-		};
-
-		tileVertices.push_back(vertices);
-
-		//tileVertices[tileIndex] = *vertices;
-		tileIndices[tileIndex] = *indices;
-
 	}
 
 	void bindVertices()
@@ -455,7 +330,7 @@ namespace MonGL
 		int _uNumUsedVertices = 400;
 		int uNumExtraVertices = 2;
 		//glBufferSubData(GL_ARRAY_BUFFER, (_uNumUsedVertices + uNumExtraVertices) * sizeof(Vertex), newTileVertices.size() * sizeof(Vertex), &newTileVertices[0]);
-		glBufferSubData(GL_ARRAY_BUFFER, sizeof(Vertex), newTileVertices.size() * sizeof(Vertex), &newTileVertices[0]);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, newTileVertices.size() * sizeof(Vertex), &newTileVertices[0]);
 
 		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -478,7 +353,8 @@ namespace MonGL
 		glBindVertexArray(batch->VAO);
 		// GL_TRIANGLES should be render type
 		// 400 = num used vertices
-		glDrawArrays(GL_TRIANGLES, 0, newTileVertices.size());
+		glDrawElements(GL_TRIANGLES, usedIndices, GL_UNSIGNED_INT, nullptr);
+		//glDrawArrays(GL_TRIANGLES, 0, newTileVertices.size());
 		glBindVertexArray(0);
 
 		//reset buffer
