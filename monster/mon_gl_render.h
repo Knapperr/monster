@@ -101,7 +101,7 @@ namespace MonGL
 	void initRenderData(Sprite* sprite);
 	
 	void initTileMap(int tileAmount);
-	void fillBatch(int tileIndex, int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos);
+	void fillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos);
 	void bindVertices();
 	
 	void drawObject(MonShader::Shader* shader, Entity* obj);

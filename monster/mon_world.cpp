@@ -56,17 +56,11 @@ void initTileMap(TileMap* map)
 
 	int testmap[MAP_SIZE][MAP_SIZE] =
 	{
-		{3, 0, 0, 0, 1,  2, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 		{3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
 		{3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
 		{3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
 		{3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
-
-		{3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
-		{3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
-		{3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
-		{3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
-		{0, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
 
 		{3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
 		{3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
@@ -78,7 +72,13 @@ void initTileMap(TileMap* map)
 		{3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
 		{3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
 		{3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
-		{0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 3, 0, 3, 3, 3, 3, 3, 3, 3, 3},
+		{3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
+
+		{3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
+		{3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
+		{3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
+		{3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
+		{0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
 	};
 
 	int width = 32;
@@ -87,8 +87,7 @@ void initTileMap(TileMap* map)
 	{
 		for (int x = 0; x < MAP_SIZE; ++x)
 		{
-			// this gets the x and y position 
-			// tileX 
+			// this gets the x and y position for the vertice since its screenpos
 			// x = screenX * tilesPerWidth + tileX;
 			// y = screenY * tilesPerHeight + tileY;
 			Tile tile = *map->sheet.createTile(testmap[y][x], x * width, y * height);
@@ -110,7 +109,7 @@ World::World()
 	
 	for (int i = 0; i < map->tiles.size(); ++i)
 	{
-		MonGL::fillBatch(i, map->tiles[i].offsetX, map->tiles[i].offsetY, map->tiles[i].x, map->tiles[i].y);
+		MonGL::fillBatch(map->tiles[i].offsetX, map->tiles[i].offsetY, map->tiles[i].x, map->tiles[i].y);
 	}
 
 	MonGL::bindVertices();
@@ -121,6 +120,17 @@ World::World()
 						glm::vec2(5, 5), glm::vec2(32, 32), glm::vec3(1.0f, 1.0f, 1.0f),
 						200.0f, 0.0f, false);
 
+	Entity* ball = new Entity("res/textures/awesomeface.png", true,
+							  glm::vec2(200, 200), glm::vec2(32, 32), glm::vec3(1.0f, 1.0f, 1.0f),
+							  200.0f, 0.0f, false);
+	entities.push_back(ball);
+	for (int i = 0; i < 5; ++i)
+	{
+		Entity* e = new Entity("res/textures/awesomeface.png", true,
+							   glm::vec2(30 * i, 5 * i), glm::vec2(32, 32), glm::vec3(1.0f, 1.0f, 1.0f),
+							   200.0f, 0.0f, false);
+		entities.push_back(e);
+	}
 }
 
 World::~World()

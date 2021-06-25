@@ -196,7 +196,8 @@ namespace MonGL
 		glEnableVertexAttribArray(2);
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
 
-		uint32_t tileIndices[indicesLength];
+		// TODO(ck): Memory management
+		uint32_t* tileIndices = new uint32_t[indicesLength];
 		int offset = 0;
 		for (int i = 0; i < indicesLength; i += 6)
 		{
@@ -214,19 +215,16 @@ namespace MonGL
 		unsigned int EBO;
 		glGenBuffers(1, &EBO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(tileIndices), tileIndices, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesLength * sizeof(tileIndices), tileIndices, GL_STATIC_DRAW);
 
+		delete[] tileIndices;
 		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
 	};
 
 	// This isn't draw this is fill
-	void fillBatch(int tileIndex, int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos)
-	{
-		// TODO(ck): Vertices amount
-		assert(tileIndex < 8000);
-		
+	void fillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos)
+	{		
 		float sheetSize = 256.0f;
 		int spriteSize = 32;
 

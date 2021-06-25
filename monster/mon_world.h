@@ -83,7 +83,7 @@ public:
 	//GameObject* objects[MAX_OBJECTS];
 
 	// Just put the player with the entites and have a getPlayer for it
-	Entity* player; // player needs its own class --- it needs to have an array of spells and stuff
+	Entity* player;
 	std::vector<Entity*> entities;
 	TileMap* map;
 	Sprite testTile;

@@ -305,13 +305,6 @@ namespace Mon
 		// TODO(ck): REMOVE TESTING TILE SHADER
 		LoadShader(&tileShader, "res/shaders/vert_tile.glsl", "res/shaders/frag_tile.glsl", NULL);
 
-		Entity* ball = new Entity("res/textures/awesomeface.png", true,
-								  glm::vec2(200, 200), glm::vec2(32, 32), glm::vec3(1.0f, 1.0f, 1.0f),
-								  200.0f, 0.0f, false);
-
-		world->entities.push_back(ball);
-
-
 		// Set up the shader locations for our objects
 		glUseProgram(shader.id);
 
@@ -348,9 +341,6 @@ namespace Mon
 		model = glm::translate(model, pos);
 		model = glm::scale(model, glm::vec3(glm::vec2(32, 32), 1.0f));
 		glUniformMatrix4fv(glGetUniformLocation(tileShader.id, "model"), 1, GL_FALSE, glm::value_ptr(model));
-
-
-
 
 
 		return true;
