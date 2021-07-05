@@ -23,9 +23,8 @@ namespace MonTexture
 		unsigned int filterMax;
 	};
 
-	void GenerateTexture(Texture* texture, unsigned int width, unsigned int height, unsigned char* data);
 	void LoadTextureFile(Texture* texture, const char* file, bool alpha);
-	unsigned int LoadTextureFile(const char* path, const std::string& directory, bool gamma = false);
+
 
 }
 #endif

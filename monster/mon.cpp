@@ -60,9 +60,9 @@ namespace Mon
 		cam = Camera();
 
 		player = {};
-		MonGL::gl_InitBoundingBox(&player.data);
-		MonGL::gl_InitBoundingBox(&player.colliderData);
-		player.particle.pos = glm::vec3(10.0f, 10.0f, 20.0f);
+		MonGL::initBoundingBox(&player.data);
+		MonGL::initBoundingBox(&player.colliderData);
+		player.particle.pos = glm::vec3(10.0f, 0.0f, 20.0f);
 		player.particle.inverseMass = 10.0f;
 		player.particle.velocity = glm::vec3(0.0f, 0.0f, 0.0f); // 35m/s
 		player.particle.acceleration = glm::vec3(-40.0f, 0.0f, 0.0f);
@@ -76,7 +76,7 @@ namespace Mon
 		for (int i = 0; i < 4; ++i)
 		{
 			EntityTwo entity = {};
-			MonGL::gl_InitBoundingBox(&entity.colliderData);
+			MonGL::initBoundingBox(&entity.colliderData);
 			entity.particle.pos = glm::vec3(5.0f * i, 0.1f, 1.5f * i);
 			glm::mat4 model = glm::mat4(1.0f);
 			entity.colliderData.worldMatrix = glm::translate(model, entity.particle.pos);
@@ -94,8 +94,8 @@ namespace Mon
 
 		// TODO(ck): Memory Allocation
 		terrain = new Terrain(0, 0);
-		terrain->generate();
-
+		MonGL::generateTerrain(&terrain->mesh);
+		//terrain->generate();
 
 		simulate = false;
 
@@ -109,11 +109,7 @@ namespace Mon
 		if (dt < deltaTime)
 			printf("LOWER dt: %f\n", deltaTime);
 
-		//if (!newInput->leftMouseButton.endedDown)
-			//printf("MOUSE LET GO\n");
 		deltaTime = dt;
-
-
 		input = *newInput;
 
 		// TODO(ck): TEMP INPUT
@@ -192,80 +188,9 @@ namespace Mon
 		glm::mat4 projection = glm::perspective(glm::radians(cam.zoom), 960.0f / 540.0f, cam.nearPlane, cam.farPlane);
 		glm::mat4 view = cam.viewMatrix();
 
-		// TERRAIN
-		// ------------------------------------------
-		glUseProgram(shader.id);
+		MonGL::drawTerrain(shader.id, &terrain->mesh, &light, projection, view, cam.pos);
 
-		glUniformMatrix4fv(glGetUniformLocation(shader.id, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(glGetUniformLocation(shader.id, "view"), 1, GL_FALSE, glm::value_ptr(view));
-
-		glUniform3fv(glGetUniformLocation(shader.id, "light.pos"), 1, &light.pos[0]);
-		glUniform3fv(glGetUniformLocation(shader.id, "light.ambient"), 1, &light.ambient[0]);
-		glUniform3fv(glGetUniformLocation(shader.id, "light.diffuse"), 1, &light.diffuse[0]);
-		glUniform3fv(glGetUniformLocation(shader.id, "light.specular"), 1, &light.specular[0]);
-
-		glUniform3fv(glGetUniformLocation(shader.id, "material.ambient"), 1, &terrain->material.ambient[0]);
-		glUniform3fv(glGetUniformLocation(shader.id, "material.diffuse"), 1, &terrain->material.diffuse[0]);
-		glUniform3fv(glGetUniformLocation(shader.id, "material.specular"), 1, &terrain->material.specular[0]);
-		glUniform1f(glGetUniformLocation(shader.id, "material.shininess"), terrain->material.shininess);
-
-		glUniform3fv(glGetUniformLocation(shader.id, "viewPos"), 1, &cam.pos[0]);
-
-		
-		// set the sampler to the correct texture unit
-		//glUniform1i(glGetUniformLocation(terrain->shader->id, "texture_diffuse1"), 0);
-		//if (terr->drawTexture)
-		//{
-		//	glBindTexture(GL_TEXTURE_2D, terr->selectedTextureId);
-		//}
-		
-
-		glm::mat4 matModel = glm::mat4(1.0f);
-
-		glm::mat4 matTranslate = glm::translate(glm::mat4(1.0f),
-												glm::vec3(terrain->x, 0.0f, terrain->z));
-		matModel = matModel * matTranslate;
-		glm::mat4 rotateZ = glm::rotate(glm::mat4(1.0f),
-										0.0f,
-										glm::vec3(0.0f, 0.0f, 1.0f));
-		matModel = matModel * rotateZ;
-		glm::mat4 rotateY = glm::rotate(glm::mat4(1.0f),
-										0.0f,
-										glm::vec3(0.0f, 1.0f, 0.0f));
-		matModel = matModel * rotateY;
-		glm::mat4 rotateX = glm::rotate(glm::mat4(1.0f),
-										0.0f,
-										glm::vec3(1.0f, 0.0f, 0.0f));
-		matModel = matModel * rotateX;
-
-		glm::mat4 matScale = glm::scale(glm::mat4(1.0f),
-										glm::vec3(1.0, 1.0, 1.0));
-
-		matModel = matModel * matScale;
-
-
-		glUniform1i(glGetUniformLocation(shader.id, "useTexture"), true);
-
-		glBindTexture(GL_TEXTURE_2D, terrain->selectedTextureId);
-
-		glUniformMatrix4fv(glGetUniformLocation(shader.id, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
-		glBindVertexArray(terrain->VAO);
-
-		terrain->wireFrame ?
-			glDrawElements(GL_LINES, terrain->indicesLength, GL_UNSIGNED_INT, 0)
-			: glDrawElements(GL_TRIANGLES, terrain->indicesLength, GL_UNSIGNED_INT, 0);
-
-		glBindVertexArray(0);
-		// Always good practice to set everything back to defaults once configured
-		// NOTE(CK): bind texture must be AFTER glActiveTexture or it will not unbind properly
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, 0);
-		// ------------------------------------------
-
-
-
-		// ------------------------------------------
-			// TODO(ck): use shader
+		// TODO(ck): use shader
 		glUseProgram(shader.id);
 		// light & material
 		glUniform3fv(glGetUniformLocation(shader.id, "light.pos"), 1, &light.pos[0]);
@@ -274,14 +199,12 @@ namespace Mon
 		glUniform3fv(glGetUniformLocation(shader.id, "light.specular"), 1, &light.specular[0]);
 
 		//MonGL::gl_DrawCube(&player.data, player.particle.pos, cam.pos, projection, view, shader.id);
-		MonGL::gl_DrawBoundingBox(&player.colliderData, player.particle.pos, cam.pos, projection, view, shader.id);
+		MonGL::drawBoundingBox(&player.colliderData, player.particle.pos, cam.pos, projection, view, shader.id);
 
 		for (auto& e : enemies)
 		{
-			MonGL::gl_DrawBoundingBox(&e.colliderData, e.particle.pos, cam.pos, projection, view, shader.id);
+			MonGL::drawBoundingBox(&e.colliderData, e.particle.pos, cam.pos, projection, view, shader.id);
 		}
-		// ------------------------------------------
-
 	}
 
 	void Game::cleanUp()

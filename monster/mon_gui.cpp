@@ -4,7 +4,7 @@
 #include <string>
 
 
-//#define _3D_GUI_
+#define _3D_GUI_
 
 #ifdef USE_SDL
 void InitGui(SDL_Window* window, SDL_GLContext* context)
@@ -42,28 +42,28 @@ void TerrainWindow(bool* p_open, Mon::Game* game)
 {
 	ImGui::Begin("Terrain", p_open);
 
-	//ImGui::Text("Texture");
-	//ImGui::Separator();
-	//if (ImGui::Button("UV")) { game->terrain->selectedTextureId = game->terrain->textureIds[0]; }
-	//ImGui::SameLine();
-	//if (ImGui::Button("Rock")) { game->terrain->selectedTextureId = game->terrain->textureIds[1]; }
-	//ImGui::SameLine();
-	//if (ImGui::Button("Grass")) { game->terrain->selectedTextureId = game->terrain->textureIds[2]; }
-	//ImGui::SameLine();
-	//if (ImGui::Button("Snow")) { game->terrain->selectedTextureId = game->terrain->textureIds[3]; }
-	//ImGui::Separator();
+	ImGui::Text("Texture");
+	ImGui::Separator();
+	if (ImGui::Button("UV")) { game->terrain->selectedTextureId = game->terrain->textureIds[0]; }
+	ImGui::SameLine();
+	if (ImGui::Button("Rock")) { game->terrain->selectedTextureId = game->terrain->textureIds[1]; }
+	ImGui::SameLine();
+	if (ImGui::Button("Grass")) { game->terrain->selectedTextureId = game->terrain->textureIds[2]; }
+	ImGui::SameLine();
+	if (ImGui::Button("Snow")) { game->terrain->selectedTextureId = game->terrain->textureIds[3]; }
+	ImGui::Separator();
 
-	//ImGui::Checkbox("Wireframe", &game->terrain->wireFrame);
+	ImGui::Checkbox("Wireframe", &game->terrain->wireFrame);
 
-	//ImGui::PushItemWidth(100.0f);
-	//	ImGui::DragFloat("Mat diffuse r", &game->terrain->material.diffuse.x, 0.01f, 0.0f, 1.0f, "%.02f");
-	//	ImGui::DragFloat("Mat diffuse g", &game->terrain->material.diffuse.y, 0.01f, 0.0f, 1.0f, "%.02f");
-	//	ImGui::DragFloat("Mat diffuse b", &game->terrain->material.diffuse.z, 0.01f, 0.0f, 1.0f, "%.02f");
-	//	ImGui::Separator();
-	//	ImGui::DragFloat("Mat ambient r", &game->terrain->material.ambient.x, 0.01f, 0.0f, 1.0f, "%.02f");
-	//	ImGui::DragFloat("Mat ambient g", &game->terrain->material.ambient.y, 0.01f, 0.0f, 1.0f, "%.02f");
-	//	ImGui::DragFloat("Mat ambient b", &game->terrain->material.ambient.z, 0.01f, 0.0f, 1.0f, "%.02f");
-	//ImGui::PopItemWidth();
+	ImGui::PushItemWidth(100.0f);
+		ImGui::DragFloat("Mat diffuse r", &game->terrain->mesh.mat.diffuse.x, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("Mat diffuse g", &game->terrain->mesh.mat.diffuse.y, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("Mat diffuse b", &game->terrain->mesh.mat.diffuse.z, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::Separator();
+		ImGui::DragFloat("Mat ambient r", &game->terrain->mesh.mat.ambient.x, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("Mat ambient g", &game->terrain->mesh.mat.ambient.y, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("Mat ambient b", &game->terrain->mesh.mat.ambient.z, 0.01f, 0.0f, 1.0f, "%.02f");
+	ImGui::PopItemWidth();
 
 	ImGui::End();
 }

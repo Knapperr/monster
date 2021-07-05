@@ -12,187 +12,86 @@ Terrain::Terrain(int gridX, int gridZ)
 	x = (float)gridX * SIZE;
 	z = (float)gridZ * SIZE;
 
-	VAO = 0;
-	VBO = 0;
-	indicesLength = 0;
+	mesh = {};
 	wireFrame = false;
 	drawTexture = true;
 
-	// TODO(ck): memory allocation
-	vertices = new MonVertex[VERTEX_COUNT * VERTEX_COUNT];
-	// HOW TO DO ARENA WITH FLOAT
-	heightMap = new float[VERTEX_COUNT * VERTEX_COUNT];
-
+	// TODO(ck): Memory allocation
 	textureIds = new int[TEXTURE_ID_COUNT];
 	std::string textPath = "res/textures/terrain/";
 	std::string textDir = textPath.substr(0, textPath.find_last_of('/'));
-	textureIds[0] = MonTexture::LoadTextureFile("1024multi.png", textDir, false);
+	/*textureIds[0] = MonTexture::LoadTextureFile("1024multi.png", textDir, false);
 	textureIds[1] = MonTexture::LoadTextureFile("rock.png", textDir, false);
 	textureIds[2] = MonTexture::LoadTextureFile("grass.jpg", textDir, false);
-	textureIds[3] = MonTexture::LoadTextureFile("snow.jpg", textDir, false);
-
-	selectedTextureId = textureIds[0];
+	textureIds[3] = MonTexture::LoadTextureFile("snow.jpg", textDir, false);*/
+	//selectedTextureId = textureIds[0];
 
 	// TODO(ck): just use the model shader?
 	// base shader?
 	//shader = {};
 	//LoadShader(&shader, "res/shaders/vert_colors.glsl", "res/shaders/frag_colors.glsl", NULL);
-	material = {};
-	material.ambient = glm::vec3(1.0f, 0.5f, 0.6f);
-	material.diffuse = glm::vec3(1.0f, 0.5f, 0.31f);
-	material.specular = glm::vec3(0.5f, 0.5f, 0.5f);
-	material.shininess = 32.0f;
+
 	// grass shader
 }
 
 Terrain::~Terrain()
 {
+	// TODO(ck): Move
 	// delete[] grass.matrices;
-	delete[] vertices;
 	delete[] textureIds;
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	// TODO(ck): delete index buffer too?
 }
 
-float Terrain::getHeight(int x, int z)
-{
-	float gridSquareSize = (float)SIZE / ((float)VERTEX_COUNT);
-	int gridX = (int)std::floor(x / gridSquareSize);
-	int gridZ = (int)std::floor(z / gridSquareSize);
-
-	if (gridX >= VERTEX_COUNT || gridZ >= VERTEX_COUNT || gridX < 0 || gridZ < 0)
-		return 0;
-
-	float xCoord = ((int)x % (int)gridSquareSize) / gridSquareSize;
-	float zCoord = ((int)z % (int)gridSquareSize) / gridSquareSize;
-	float result;
-
-	if (xCoord <= (1 - zCoord))
-	{
-		result = barryCentric(glm::vec3(0, lookUpHeight(gridX, gridZ), 0),
-							  glm::vec3(1, lookUpHeight(gridX + 1, gridZ), 0),
-							  glm::vec3(0, lookUpHeight(gridX, gridZ + 1), 1),
-							  glm::vec2(xCoord, zCoord));
-	}
-	else
-	{
-		result = barryCentric(glm::vec3(1, lookUpHeight(gridX + 1, gridZ), 0),
-							  glm::vec3(1, lookUpHeight(gridX + 1, gridZ + 1), 1),
-							  glm::vec3(0, lookUpHeight(gridX, gridZ + 1), 1),
-							  glm::vec2(xCoord, zCoord));
-	}
-
-	return result;
-}
+//float Terrain::getHeight(int x, int z)
+//{
+//	float gridSquareSize = (float)SIZE / ((float)VERTEX_COUNT);
+//	int gridX = (int)std::floor(x / gridSquareSize);
+//	int gridZ = (int)std::floor(z / gridSquareSize);
+//
+//	if (gridX >= VERTEX_COUNT || gridZ >= VERTEX_COUNT || gridX < 0 || gridZ < 0)
+//		return 0;
+//
+//	float xCoord = ((int)x % (int)gridSquareSize) / gridSquareSize;
+//	float zCoord = ((int)z % (int)gridSquareSize) / gridSquareSize;
+//	float result;
+//
+//	if (xCoord <= (1 - zCoord))
+//	{
+//		result = barryCentric(glm::vec3(0, lookUpHeight(gridX, gridZ), 0),
+//							  glm::vec3(1, lookUpHeight(gridX + 1, gridZ), 0),
+//							  glm::vec3(0, lookUpHeight(gridX, gridZ + 1), 1),
+//							  glm::vec2(xCoord, zCoord));
+//	}
+//	else
+//	{
+//		result = barryCentric(glm::vec3(1, lookUpHeight(gridX + 1, gridZ), 0),
+//							  glm::vec3(1, lookUpHeight(gridX + 1, gridZ + 1), 1),
+//							  glm::vec3(0, lookUpHeight(gridX, gridZ + 1), 1),
+//							  glm::vec2(xCoord, zCoord));
+//	}
+//
+//	return result;
+//}
 
 // NOTE(ck): https://github.com/munro98/LandscapeWorld/blob/master/src/Terrain.cpp
-float Terrain::barryCentric(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec2 pos)
-{
-	float det = (p2.z - p3.z) * (p1.x - p3.x) + (p3.x - p2.x) * (p1.z - p3.z);
-	float l1 = ((p2.z - p3.z) * (pos.x - p3.x) + (p3.x - p2.x) * (pos.y - p3.z)) / det;
-	float l2 = ((p3.z - p1.z) * (pos.x - p3.x) + (p1.x - p3.x) * (pos.y - p3.z)) / det;
-	float l3 = 1.0f - l1 - l2;
-	return l1 * p1.y + l2 * p2.y + l3 * p3.y;
-}
-
-float Terrain::lookUpHeight(int x, int z)
-{
-	// NOTE(ck): Mine should be different than this
-	// int i = (x + 1) + ((z + 1) * (VERTEX_COUNT + 3));
-	int i = (x + 1) + ((z + 1) * (VERTEX_COUNT));
-	return heightMap[i];
-}
-
-void Terrain::generate()
-{
-	// TODO(ck): Memory Allocation
-	int* indices = new int[6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1)];
-	int verticesLength = VERTEX_COUNT * VERTEX_COUNT;
-	indicesLength = 6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1);
-
-	int index = 0;
-	for (int i = 0; i < VERTEX_COUNT; ++i)
-	{
-		for (int j = 0; j < VERTEX_COUNT; ++j)
-		{
-			vertices[index].position.x = (float)j / ((float)VERTEX_COUNT - 1) * SIZE;
-
-			vertices[index].position.y = 0.0f;
-			heightMap[index] = vertices[index].position.y;
-
-			vertices[index].position.z = (float)i / ((float)VERTEX_COUNT - 1) * SIZE;
-
-			vertices[index].normal.x = 0;
-			vertices[index].normal.y = 1;
-			vertices[index].normal.z = 0;
-
-			vertices[index].texCoords.x = (float)j / ((float)VERTEX_COUNT - 1);
-			vertices[index].texCoords.y = (float)i / ((float)VERTEX_COUNT - 1);
-
-			++index;
-		}
-	}
-
-	index = 0;
-	for (int gz = 0; gz < VERTEX_COUNT - 1; ++gz)
-	{
-		for (int gx = 0; gx < VERTEX_COUNT - 1; ++gx)
-		{
-			int topLeft = (gz * VERTEX_COUNT) + gx;
-			int topRight = topLeft + 1;
-			int bottomLeft = ((gz + 1) * VERTEX_COUNT) + gx;
-			int bottomRight = bottomLeft + 1;
-
-			indices[index++] = topLeft;
-			indices[index++] = bottomLeft;
-			indices[index++] = topRight;
-			indices[index++] = topRight;
-			indices[index++] = bottomLeft;
-			indices[index++] = bottomRight;
-		}
-	}
-
-	unsigned int ebo;
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &ebo);
-
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, verticesLength * sizeof(MonVertex), vertices, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesLength * sizeof(int), indices, GL_STATIC_DRAW);
-
-	// pos
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(MonVertex), (void*)0);
-	// normals
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(MonVertex), (void*)offsetof(MonVertex, normal));
-	// tex coords
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(MonVertex), (void*)offsetof(MonVertex, texCoords));
-
-	// TODO(CK) & STUDY(CK): I forgot 3 * sizeof(float) in the last parameter 
-	// I need to make sure that I study glBufferData and glVertexAttribPointer I think because 
-	// it was missing the stride it wasn't formating the data correctly which is why it looked
-	// like a mountain
-	//glEnableVertexAttribArray(0);
-	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-
-
-	// STUDY(CK): For some reason at the very end of this (void*)(6 * sizeof(float))); 
-	// was causing the texcoords to distort.. this is probably why you are meant to have
-	// ONE BUFFER bound instead 
-	// glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-
-	// unbind
-	glBindVertexArray(0);
-	delete[] indices;
-	delete[] vertices;
-}
+//float Terrain::barryCentric(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec2 pos)
+//{
+//	float det = (p2.z - p3.z) * (p1.x - p3.x) + (p3.x - p2.x) * (p1.z - p3.z);
+//	float l1 = ((p2.z - p3.z) * (pos.x - p3.x) + (p3.x - p2.x) * (pos.y - p3.z)) / det;
+//	float l2 = ((p3.z - p1.z) * (pos.x - p3.x) + (p1.x - p3.x) * (pos.y - p3.z)) / det;
+//	float l3 = 1.0f - l1 - l2;
+//	return l1 * p1.y + l2 * p2.y + l3 * p3.y;
+//}
+//
+//float Terrain::lookUpHeight(int x, int z)
+//{
+//	// NOTE(ck): Mine should be different than this
+//	// int i = (x + 1) + ((z + 1) * (VERTEX_COUNT + 3));
+//	int i = (x + 1) + ((z + 1) * (VERTEX_COUNT));
+//	return heightMap[i];
+//}
 
 /*
 void Terrain::GenerateGrass()

@@ -11,6 +11,17 @@
 
 namespace MonGL
 {
+
+	struct Light
+	{
+		glm::vec3 pos;
+
+		glm::vec3 ambient;
+		glm::vec3 diffuse;
+		glm::vec3 specular;
+	};
+
+
 	struct Material
 	{
 		glm::vec3 ambient;
@@ -52,8 +63,18 @@ namespace MonGL
 	//glm::vec3 center = glm::vec3((min_x + max_x) / 2, (min_y + max_y) / 2, (min_z + max_z) / 2);
 	//glm::mat4 transform = 
 
+	struct Vertex3D
+	{
+		glm::vec3 position;
+		glm::vec3 normal;
+		glm::vec2 texCoords;
+	};
+
+	// MESH
 	struct RenderData
 	{
+		std::vector<Vertex3D> vertices;
+
 		unsigned int VAO;
 		unsigned int VBO;
 		unsigned int IBO;
@@ -68,6 +89,7 @@ namespace MonGL
 		glm::mat4 worldMatrix;
 		// TODO(ck): More collider specific info
 
+		MonTexture::Texture texture;
 		ColliderSize size;
 		//float pos;
 		// view 
@@ -89,13 +111,19 @@ namespace MonGL
 	};
 
 
+
 	// TODO(ck): gl_InitBoundingBox
-	void gl_InitBoundingBox(RenderData* data);
+	void initBoundingBox(RenderData* data);
 	// TODO(ck): gl_DrawBoundingBox
-	void gl_DrawBoundingBox(RenderData* data,
+	void drawBoundingBox(RenderData* data,
 					 glm::vec3 playerPos, glm::vec3 camPos,
 					 glm::mat4 projection, glm::mat4 view,
 					 unsigned int shaderID);
+
+	void generateTerrain(RenderData* data);
+	void drawTerrain(unsigned int shaderID, RenderData* data, Light* light, glm::mat4 projection, glm::mat4 view,
+					 glm::vec3 camPos);
+	// ----------------------------------------
 
 	// 2d
 	void initRenderData(Sprite* sprite);

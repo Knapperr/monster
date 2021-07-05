@@ -35,30 +35,3 @@ Entity::~Entity()
 {
 	MonGL::cleanUp(&this->sprite);
 }
-
-// This has to come from gl_render
-void RenderData(CircleCollider* col)
-{
-
-}
-
-void CreateCollider(CircleCollider* col, glm::vec2 pos, glm::vec2 center, float radius)
-{
-	col->pos = col->center = center;
-	col->radius = radius;
-}
-
-// Real-Time Collision Detection Christer Ericson 2005. Chapter 4.3 Pg 88
-int Intersects(CircleCollider a, CircleCollider b)
-{
-	glm::vec2 d = a.center - b.center;
-	float dist2 = glm::dot(d, d);
-	float radiusSum = a.radius + a.radius;
-	return dist2 <= radiusSum * radiusSum;
-
-}
-
-void UpdateCollider(CircleCollider* col, glm::vec2 pos)
-{
-	col->pos = pos;
-}

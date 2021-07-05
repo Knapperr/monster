@@ -5,28 +5,13 @@
 #include "mon_texture.h"
 #include <vector>
 
-
-// TODO(CK): Figure out where to put this
+// TODO(ck): Move to gl_render
 struct Sprite
 {
 	MonTexture::Texture texture;
 	unsigned int VAO;
 	unsigned int VBO;
 };
-
-struct CircleCollider
-{
-	Sprite sprite;
-
-	glm::vec2 pos;
-	glm::vec2 center;
-	float radius;
-};
-
-void CreateCollider(CircleCollider* col, glm::vec2 pos, glm::vec2 center, float radius);
-void UpdateCollider(CircleCollider* col, glm::vec2 pos);
-int Intersects(CircleCollider a, CircleCollider b);
-
 
 // Pass the collider for the x,y,z in pos and the radius ...! :)
 void DrawCollider(float x, float y, float z, float radius, int numberOfSides);
@@ -46,7 +31,6 @@ public:
 	// Components  Sprite can't be part of Default Constructor 
 	// default just sets this to nulls
 	Sprite sprite;
-	CircleCollider col;
 	// Texture2D sprite
 
 	// TODO(CK): Maybe worry about this later (remember we jsut want to make a game)

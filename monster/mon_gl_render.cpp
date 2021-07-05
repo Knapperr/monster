@@ -3,7 +3,6 @@
 #include <glad/glad.h>
 
 #include <vector>
-#include <stack>
 
 namespace MonGL
 {
@@ -24,11 +23,16 @@ namespace MonGL
 	}
 
 	// TODO(ck): gl_InitBoundingBox
-	void gl_InitBoundingBox(RenderData* data)
+	void initBoundingBox(RenderData* data)
 	{
 		data->lineWidth = 2;
 		data->color = glm::vec3(0.2, 0.7, 0.4);
 
+		// TODO(ck): Keep this... dont want to keep
+		// vertices in a vector in memory just need
+		// different way to render and keep collision boxes
+
+#if 0
 		float vertices[] = {
 			-0.5, -0.5, -0.5, 1.0,
 			 0.5, -0.5, -0.5, 1.0,
@@ -39,12 +43,24 @@ namespace MonGL
 			 0.5,  0.5,  0.5, 1.0,
 			-0.5,  0.5,  0.5, 1.0,
 		};
+#endif
+		data->vertices.push_back({ glm::vec3(-0.5, -0.5, -0.5), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f) });
+		data->vertices.push_back({ glm::vec3(0.5, -0.5, -0.5), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f) });
+		data->vertices.push_back({ glm::vec3(0.5, 0.5, -0.5), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f) });
+		data->vertices.push_back({ glm::vec3(-0.5, 0.5, -0.5), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f) });
+		
+		data->vertices.push_back({ glm::vec3(-0.5, -0.5, 0.5), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f) });
+		data->vertices.push_back({ glm::vec3(0.5, -0.5, 0.5), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f) });
+		data->vertices.push_back({ glm::vec3(0.5, 0.5, 0.5), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f) });
+		data->vertices.push_back({ glm::vec3(-0.5, 0.5, 0.5), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f) });
 
 		glGenVertexArrays(1, &data->VAO);
 		glGenBuffers(1, &data->VBO);
 		glBindBuffer(GL_ARRAY_BUFFER, data->VBO);
+#if 0
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
+#endif
+		glBufferData(GL_ARRAY_BUFFER, data->vertices.size() * sizeof(Vertex3D), &data->vertices[0], GL_STATIC_DRAW);
 		glBindVertexArray(data->VAO);
 		
 		GLushort elements[] = {
@@ -59,8 +75,11 @@ namespace MonGL
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);  
 
 		// Position
-		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0);
 		glEnableVertexAttribArray(0);
+#if 0
+		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0);
+#endif
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 
@@ -83,7 +102,7 @@ namespace MonGL
 
 	// TODO(ck): gl_DrawBoundingBox(size) 
 	// the collider will have a size
-	void gl_DrawBoundingBox(RenderData* data, 
+	void drawBoundingBox(RenderData* data, 
 					 glm::vec3 playerPos, glm::vec3 camPos,
 					 glm::mat4 projection, glm::mat4 view, 
 					 unsigned int shaderID)
@@ -106,12 +125,8 @@ namespace MonGL
 		glUniform1i(glGetUniformLocation(shaderID, "collider"), true);
 		// ==============================================================================
 
-
-
 		glm::mat4 model = data->worldMatrix * GetTransform(&data->size);
-
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(model));
-
 		glBindVertexArray(data->VAO);
 
 		glEnable(GL_LINE_SMOOTH);
@@ -121,7 +136,162 @@ namespace MonGL
 		glDrawElements(GL_LINES, 8, GL_UNSIGNED_SHORT, (GLvoid*)(8 * sizeof(GLushort)));
 	}
 
-	// ======================
+
+	void generateTerrain(RenderData* data)
+	{
+		data->VAO = 0;
+		data->VBO = 0;
+
+		const int SIZE = 32;
+		const int VERTEX_COUNT = 16;
+		
+		data->vertices.resize(VERTEX_COUNT * VERTEX_COUNT);
+
+		// TODO(ck): Memory Allocation
+		int* indices = new int[6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1)];
+		int verticesLength = VERTEX_COUNT * VERTEX_COUNT;
+		data->elementLength = 6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1);
+
+		int index = 0;
+		for (int i = 0; i < VERTEX_COUNT; ++i)
+		{
+			for (int j = 0; j < VERTEX_COUNT; ++j)
+			{
+				data->vertices[index].position.x = (float)j / ((float)VERTEX_COUNT - 1) * SIZE;
+
+				data->vertices[index].position.y = 0.0f;
+				//heightMap[index] = vertices[index].position.y;
+
+				data->vertices[index].position.z = (float)i / ((float)VERTEX_COUNT - 1) * SIZE;
+
+				data->vertices[index].normal.x = 0;
+				data->vertices[index].normal.y = 1;
+				data->vertices[index].normal.z = 0;
+				
+				data->vertices[index].texCoords.x = (float)j / ((float)VERTEX_COUNT - 1);
+				data->vertices[index].texCoords.y = (float)i / ((float)VERTEX_COUNT - 1);
+				++index;
+			}
+		}
+
+		index = 0;
+		for (int gz = 0; gz < VERTEX_COUNT - 1; ++gz)
+		{
+			for (int gx = 0; gx < VERTEX_COUNT - 1; ++gx)
+			{
+				int topLeft = (gz * VERTEX_COUNT) + gx;
+				int topRight = topLeft + 1;
+				int bottomLeft = ((gz + 1) * VERTEX_COUNT) + gx;
+				int bottomRight = bottomLeft + 1;
+
+				indices[index++] = topLeft;
+				indices[index++] = bottomLeft;
+				indices[index++] = topRight;
+				indices[index++] = topRight;
+				indices[index++] = bottomLeft;
+				indices[index++] = bottomRight;
+			}
+		}
+
+		unsigned int ebo;
+		glGenVertexArrays(1, &data->VAO);
+		glGenBuffers(1, &data->VBO);
+		glGenBuffers(1, &ebo);
+
+		glBindVertexArray(data->VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, data->VBO);
+		glBufferData(GL_ARRAY_BUFFER, data->vertices.size() *sizeof(Vertex3D), &data->vertices[0], GL_STATIC_DRAW);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, data->elementLength * sizeof(int), indices, GL_STATIC_DRAW);
+		
+		// pos
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)0);
+		// normals
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, normal));
+		// tex coords
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, texCoords));
+
+		// unbind
+		glBindVertexArray(0);
+		delete[] indices;
+
+		
+		data->mat = {};
+		data->mat.ambient = glm::vec3(1.0f, 0.5f, 0.6f);
+		data->mat.diffuse = glm::vec3(1.0f, 0.5f, 0.31f);
+		data->mat.specular = glm::vec3(0.5f, 0.5f, 0.5f);
+		data->mat.shininess = 32.0f;
+
+		std::string textPath = "res/textures/terrain/1024multi.png";
+		std::string textDir = textPath.substr(0, textPath.find_last_of('/'));
+		/*
+		textureIds[0] = MonTexture::LoadTextureFile("1024multi.png", textDir, false);
+		std::string filename = std::string(path);
+		filename = directory + '/' + filename;
+		*/
+		data->texture = {};
+		MonTexture::LoadTextureFile(&data->texture, textPath.c_str(), false);
+
+		int a = 0;
+
+	}
+
+	void drawTerrain(unsigned int shaderID, RenderData* data, Light* light, glm::mat4 projection, glm::mat4 view,
+						glm::vec3 camPos)
+	{
+		glUseProgram(shaderID);
+
+		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(view));
+
+		glUniform3fv(glGetUniformLocation(shaderID, "light.pos"), 1, &light->pos[0]);
+		glUniform3fv(glGetUniformLocation(shaderID, "light.ambient"), 1, &light->ambient[0]);
+		glUniform3fv(glGetUniformLocation(shaderID, "light.diffuse"), 1, &light->diffuse[0]);
+		glUniform3fv(glGetUniformLocation(shaderID, "light.specular"), 1, &light->specular[0]);
+
+		glUniform3fv(glGetUniformLocation(shaderID, "material.ambient"), 1, &data->mat.ambient[0]);
+		glUniform3fv(glGetUniformLocation(shaderID, "material.diffuse"), 1, &data->mat.diffuse[0]);
+		glUniform3fv(glGetUniformLocation(shaderID, "material.specular"), 1, &data->mat.specular[0]);
+		glUniform1f(glGetUniformLocation(shaderID, "material.shininess"), data->mat.shininess);
+
+		glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camPos[0]);
+
+
+		glm::mat4 matModel = glm::mat4(1.0f);
+
+		//glm::mat4 matTranslate = glm::translate(glm::mat4(1.0f),
+		//										glm::vec3(terrain->x, 0.0f, terrain->z));
+		glm::mat4 matTranslate = glm::translate(glm::mat4(1.0f),
+												glm::vec3(0.0f, 0.0f, 0.0f));
+		matModel = matModel * matTranslate;
+
+		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), true);
+
+		//glBindTexture(GL_TEXTURE_2D, terrain->selectedTextureId);
+		glBindTexture(GL_TEXTURE_2D, data->texture.id);
+
+		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
+		glBindVertexArray(data->VAO);
+
+		//terrain->wireFrame ?
+		//	glDrawElements(GL_LINES, terrain->indicesLength, GL_UNSIGNED_INT, 0)
+		//	: glDrawElements(GL_TRIANGLES, terrain->indicesLength, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, data->elementLength, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
+		// Always good practice to set everything back to defaults once configured
+		// NOTE(CK): bind texture must be AFTER glActiveTexture or it will not unbind properly
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+	}
+
+	// ==================================================================
+
+
 
 
 

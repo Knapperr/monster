@@ -32,14 +32,6 @@ namespace Mon
 
 #define ArrayCount(Array) (sizeof(Array) / sizeof((Array)[0]))
 
-	struct Light
-	{
-		glm::vec3 pos;
-
-		glm::vec3 ambient;
-		glm::vec3 diffuse;
-		glm::vec3 specular;
-	};
 
 
 	// Use this for now
@@ -115,7 +107,7 @@ namespace Mon
 		MonShader::Shader tileShader;
 
 		double deltaTime;
-		Light light;
+		MonGL::Light light;
 
 
 		unsigned int testVAO;
