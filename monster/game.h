@@ -1,5 +1,5 @@
-#ifndef MON_H
-#define MON_H
+#ifndef GAME_H
+#define GAME_H
 
 
 

@@ -1,4 +1,4 @@
-#include "mon.h"
+#include "game.h"
 
 #include "handmade_random.h"
 
@@ -77,7 +77,7 @@ namespace Mon
 		{
 			EntityTwo entity = {};
 			MonGL::initBoundingBox(&entity.colliderData);
-			entity.particle.pos = glm::vec3(5.0f * i, 0.1f, 1.5f * i);
+			entity.particle.pos = glm::vec3(10.0f * i, 0.1f, 1.5f * i);
 			glm::mat4 model = glm::mat4(1.0f);
 			entity.colliderData.worldMatrix = glm::translate(model, entity.particle.pos);
 			entity.colliderData.color = glm::vec3(0.0f, 0.0f, 0.0f);

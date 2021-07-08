@@ -27,7 +27,7 @@
     <ClCompile Include="mon_texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mon.cpp">
+    <ClCompile Include="game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="include\imgui\imgui.cpp">
@@ -92,7 +92,7 @@
     <ClInclude Include="mon_texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mon.h">
+    <ClInclude Include="game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\imgui\imconfig.h">

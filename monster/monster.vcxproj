@@ -161,7 +161,7 @@
     <ClCompile Include="include\imgui\imgui_widgets.cpp" />
     <ClCompile Include="include\stb_image\stb_image.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="mon.cpp" />
+    <ClCompile Include="game.cpp" />
     <ClCompile Include="mon_app.cpp" />
     <ClCompile Include="mon_debug_camera.cpp" />
     <ClCompile Include="mon_entity.cpp" />
@@ -183,7 +183,7 @@
     <ClInclude Include="include\imgui\imstb_rectpack.h" />
     <ClInclude Include="include\imgui\imstb_textedit.h" />
     <ClInclude Include="include\imgui\imstb_truetype.h" />
-    <ClInclude Include="mon.h" />
+    <ClInclude Include="game.h" />
     <ClInclude Include="mon_app.h" />
     <ClInclude Include="mon_debug_camera.h" />
     <ClInclude Include="mon_entity.h" />

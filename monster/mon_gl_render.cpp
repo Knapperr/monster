@@ -236,7 +236,6 @@ namespace MonGL
 		data->texture = {};
 		MonTexture::LoadTextureFile(&data->texture, textPath.c_str(), false);
 
-		int a = 0;
 
 	}
 

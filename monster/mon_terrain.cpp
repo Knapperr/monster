@@ -15,23 +15,6 @@ Terrain::Terrain(int gridX, int gridZ)
 	mesh = {};
 	wireFrame = false;
 	drawTexture = true;
-
-	// TODO(ck): Memory allocation
-	textureIds = new int[TEXTURE_ID_COUNT];
-	std::string textPath = "res/textures/terrain/";
-	std::string textDir = textPath.substr(0, textPath.find_last_of('/'));
-	/*textureIds[0] = MonTexture::LoadTextureFile("1024multi.png", textDir, false);
-	textureIds[1] = MonTexture::LoadTextureFile("rock.png", textDir, false);
-	textureIds[2] = MonTexture::LoadTextureFile("grass.jpg", textDir, false);
-	textureIds[3] = MonTexture::LoadTextureFile("snow.jpg", textDir, false);*/
-	//selectedTextureId = textureIds[0];
-
-	// TODO(ck): just use the model shader?
-	// base shader?
-	//shader = {};
-	//LoadShader(&shader, "res/shaders/vert_colors.glsl", "res/shaders/frag_colors.glsl", NULL);
-
-	// grass shader
 }
 
 Terrain::~Terrain()
