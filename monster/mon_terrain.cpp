@@ -22,8 +22,6 @@ Terrain::~Terrain()
 	// TODO(ck): Move
 	// delete[] grass.matrices;
 	delete[] textureIds;
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
 	// TODO(ck): delete index buffer too?
 }
 

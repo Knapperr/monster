@@ -13,9 +13,6 @@ class Terrain
 public:
 	float x;
 	float z;
-	unsigned int VBO;
-	unsigned int VAO;
-	unsigned int indicesLength;
 
 	int selectedTextureId;
 	bool wireFrame;

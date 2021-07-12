@@ -7,6 +7,8 @@
 
 namespace MonTexture
 {
+//#define _3D_
+
 	void Generate2DTexture(Texture* texture, unsigned int width, unsigned int height, int nrChannels, unsigned char* data)
 	{
 		glGenTextures(1, &texture->id);
@@ -42,6 +44,7 @@ namespace MonTexture
 	{
 		// TODO(CK): Clean up
 		// set wrap and filter here for now same with internal formats
+#ifdef _3D_
 		texture->wrapS = GL_REPEAT; // GL_REPEAT was before
 		texture->wrapT = GL_REPEAT;
 		texture->filterMin = GL_LINEAR_MIPMAP_LINEAR; // GL_LINEAR was before
@@ -55,6 +58,21 @@ namespace MonTexture
 			texture->internalFormat = GL_RGBA;
 			texture->imageFormat = GL_RGBA;
 		}
+#else
+		texture->wrapS = GL_CLAMP_TO_BORDER; // GL_REPEAT was before
+		texture->wrapT = GL_CLAMP_TO_BORDER;
+		texture->filterMin = GL_NEAREST; 
+		texture->filterMax = GL_NEAREST; 
+
+		// TODO(ck): REmove this its getting changed in Generate and its also not using ->imageFormat anymore
+		texture->internalFormat = GL_RGB;
+		texture->imageFormat = GL_RGB;
+		if (alpha)
+		{
+			texture->internalFormat = GL_RGBA;
+			texture->imageFormat = GL_RGBA;
+		}
+#endif
 
 		int width;
 		int height;
