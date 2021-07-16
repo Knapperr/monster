@@ -1,10 +1,10 @@
 #include "mon_world.h"
-#include "mon.h"
+#include "game.h"
 
 
 void initTileSheet(TileSheet* sheet, const char* fileName)
 {
-	MonTexture::LoadTextureFile(&sheet->texture, fileName, true);
+	MonTexture::LoadTextureFile(&sheet->texture, fileName, true, false, true);
 
 	// TODO(ck): Parse the loaded texture and calculate the tileids
 	// all we need is the width and height i.e 256x256 and the gridX and gridY
@@ -22,7 +22,7 @@ void initTileSheet(TileSheet* sheet, const char* fileName)
 	sheet->tiles[0].offsetY = 1;
 
 	sheet->tiles[1].tileId = 1;
-	sheet->tiles[1].offsetX = 7;
+	sheet->tiles[1].offsetX = 6;
 	sheet->tiles[1].offsetY = 2;
 
 	sheet->tiles[2].tileId = 2;
@@ -78,7 +78,7 @@ void initTileMap(TileMap* map)
 		{3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
 		{3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
 		{3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
-		{0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
+		{1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
 	};
 
 	int width = 32;

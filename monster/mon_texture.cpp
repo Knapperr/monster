@@ -7,12 +7,11 @@
 
 namespace MonTexture
 {
-//#define _3D_
+#define _3D_
 
 	void Generate2DTexture(Texture* texture, unsigned int width, unsigned int height, int nrChannels, unsigned char* data)
 	{
 		glGenTextures(1, &texture->id);
-
 
 		texture->internalFormat = GL_RGB;
 		if (nrChannels == 1)
@@ -21,7 +20,6 @@ namespace MonTexture
 			texture->internalFormat = GL_RGB;
 		else if (nrChannels == 4)
 			texture->internalFormat = GL_RGBA;
-
 
 		texture->width = width;
 		texture->height = height;
@@ -40,46 +38,48 @@ namespace MonTexture
 	}
 
 	// Generates the texture as well
-	void LoadTextureFile(Texture* texture, const char* file, bool alpha)
+	void LoadTextureFile(Texture* texture, const char* file, bool alpha, bool flip, bool pixelArtTexture)
 	{
 		// TODO(CK): Clean up
 		// set wrap and filter here for now same with internal formats
-#ifdef _3D_
-		texture->wrapS = GL_REPEAT; // GL_REPEAT was before
-		texture->wrapT = GL_REPEAT;
-		texture->filterMin = GL_LINEAR_MIPMAP_LINEAR; // GL_LINEAR was before
-		texture->filterMax = GL_LINEAR; // GL_LINEAR
-
-		// TODO(ck): REmove this its getting changed in Generate and its also not using ->imageFormat anymore
-		texture->internalFormat = GL_RGB;
-		texture->imageFormat = GL_RGB;
-		if (alpha)
+		if (pixelArtTexture == false)
 		{
-			texture->internalFormat = GL_RGBA;
-			texture->imageFormat = GL_RGBA;
-		}
-#else
-		texture->wrapS = GL_CLAMP_TO_BORDER; // GL_REPEAT was before
-		texture->wrapT = GL_CLAMP_TO_BORDER;
-		texture->filterMin = GL_NEAREST; 
-		texture->filterMax = GL_NEAREST; 
+			texture->wrapS = GL_REPEAT; // GL_REPEAT was before
+			texture->wrapT = GL_REPEAT;
+			texture->filterMin = GL_LINEAR_MIPMAP_LINEAR; // GL_LINEAR was before
+			texture->filterMax = GL_LINEAR; // GL_LINEAR
 
-		// TODO(ck): REmove this its getting changed in Generate and its also not using ->imageFormat anymore
-		texture->internalFormat = GL_RGB;
-		texture->imageFormat = GL_RGB;
-		if (alpha)
-		{
-			texture->internalFormat = GL_RGBA;
-			texture->imageFormat = GL_RGBA;
+			// TODO(ck): REmove this its getting changed in Generate and its also not using ->imageFormat anymore
+			texture->internalFormat = GL_RGB;
+			texture->imageFormat = GL_RGB;
+			if (alpha)
+			{
+				texture->internalFormat = GL_RGBA;
+				texture->imageFormat = GL_RGBA;
+			}
 		}
-#endif
+		else
+		{
+			texture->wrapS = GL_CLAMP_TO_BORDER; // GL_REPEAT was before
+			texture->wrapT = GL_CLAMP_TO_BORDER;
+			texture->filterMin = GL_NEAREST;
+			texture->filterMax = GL_NEAREST;
+
+			// TODO(ck): REmove this its getting changed in Generate and its also not using ->imageFormat anymore
+			texture->internalFormat = GL_RGB;
+			texture->imageFormat = GL_RGB;
+			if (alpha)
+			{
+				texture->internalFormat = GL_RGBA;
+				texture->imageFormat = GL_RGBA;
+			}
+		}
 
 		int width;
 		int height;
 		int nrChannels;
 
-		// TODO(CK): Set this?
-		stbi_set_flip_vertically_on_load(false); // use stbi to flip a texture on y-axis
+		stbi_set_flip_vertically_on_load(flip);
 		unsigned char* image = stbi_load(file, &width, &height, &nrChannels, 0);
 		if (image)
 		{

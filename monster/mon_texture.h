@@ -23,7 +23,7 @@ namespace MonTexture
 		unsigned int filterMax;
 	};
 
-	void LoadTextureFile(Texture* texture, const char* file, bool alpha);
+	void LoadTextureFile(Texture* texture, const char* file, bool alpha, bool flip, bool pixelArtTexture = false);
 
 
 }

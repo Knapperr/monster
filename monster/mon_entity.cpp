@@ -18,7 +18,7 @@ Entity::Entity(const char* fileLocation,
 	Sprite sprite = {};
 	// TODO(CK): Don't automatically make opengl data... figure out what renderer we are using
 	MonGL::initRenderData(&sprite);
-	MonTexture::LoadTextureFile(&sprite.texture, fileLocation, isAlpha);
+	MonTexture::LoadTextureFile(&sprite.texture, fileLocation, isAlpha, false);
 
 	this->pos = pos;
 	this->size = size;

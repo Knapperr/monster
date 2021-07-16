@@ -5,7 +5,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 
-
 namespace Mon
 {
 #define real_pow powf
@@ -60,7 +59,7 @@ namespace Mon
 		cam = Camera();
 
 		player = {};
-		MonGL::initBoundingBox(&player.data);
+		MonGL::initCharacter(&player.data, shader.id, 1);
 		MonGL::initBoundingBox(&player.colliderData);
 		player.particle.pos = glm::vec3(10.0f, 0.0f, 20.0f);
 		player.particle.inverseMass = 10.0f;
@@ -72,6 +71,14 @@ namespace Mon
 		player.data.mat.diffuse = glm::vec3(1.0f, 0.5f, 0.31f);
 		player.data.mat.specular = glm::vec3(0.5f, 0.5f, 0.5f);
 		player.data.mat.shininess = 32.0f;
+
+		for (int i = 0; i < 10; ++i)
+		{
+			EntityTwo tree = {};
+			MonGL::initCharacter(&tree.data, shader.id, 2);
+			tree.particle.pos = glm::vec3(2.0f * i, 0.1f, 5.5f * i);
+			trees.push_back(tree);
+		}
 
 		for (int i = 0; i < 4; ++i)
 		{
@@ -136,8 +143,6 @@ namespace Mon
 					player.particle.velocity.z = player.particle.velocity.z / 2;
 				}
 
-
-				//player.particle.velocity.x = 0.0f;
 				player.particle.acceleration = glm::vec3(0.0f, 0.0f, 10.0f);
 				player.particle.integrate(dt);
 			}
@@ -148,9 +153,6 @@ namespace Mon
 					player.particle.dir = Direction::LEFT;
 					player.particle.velocity.x = player.particle.velocity.x / 2;
 				}
-
-
-				//player.particle.velocity.z = 0.0f;
 
 				player.particle.acceleration = glm::vec3(-10.0f, 0.0f, 0.0f);
 				player.particle.integrate(dt);
@@ -198,12 +200,17 @@ namespace Mon
 		glUniform3fv(glGetUniformLocation(shader.id, "light.diffuse"), 1, &light.diffuse[0]);
 		glUniform3fv(glGetUniformLocation(shader.id, "light.specular"), 1, &light.specular[0]);
 
-		//MonGL::gl_DrawCube(&player.data, player.particle.pos, cam.pos, projection, view, shader.id);
+
 		MonGL::drawBoundingBox(&player.colliderData, player.particle.pos, cam.pos, projection, view, shader.id);
+		MonGL::drawCharacter(&player.data, player.particle.pos, cam.pos, projection, view, shader.id);
 
 		for (auto& e : enemies)
 		{
 			MonGL::drawBoundingBox(&e.colliderData, e.particle.pos, cam.pos, projection, view, shader.id);
+		}
+		for (auto& e : trees)
+		{
+			MonGL::drawCharacter(&e.data, e.particle.pos, cam.pos, projection, view, shader.id);
 		}
 	}
 
@@ -337,6 +344,7 @@ namespace Mon
 			MonGL::drawObject(&shader, world->entities[i]);
 		}
 
+		
 
 
 		MonGL::drawObject(&shader, world->player);

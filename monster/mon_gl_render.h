@@ -86,10 +86,10 @@ namespace MonGL
 		// should be initCollider i guess?
 		// this isn't just a position its a MATRIX its ALL of the 
 		// information its the rotation, position the size of it...
+		MonTexture::Texture texture;
 		glm::mat4 worldMatrix;
 		// TODO(ck): More collider specific info
 
-		MonTexture::Texture texture;
 		ColliderSize size;
 		//float pos;
 		// view 
@@ -111,10 +111,12 @@ namespace MonGL
 	};
 
 
-
-	// TODO(ck): gl_InitBoundingBox
+	void initCharacter(RenderData* data, int shaderID, int TESTCHOOSE);
 	void initBoundingBox(RenderData* data);
-	// TODO(ck): gl_DrawBoundingBox
+	void drawCharacter(RenderData* data,
+						 glm::vec3 playerPos, glm::vec3 camPos,
+						 glm::mat4 projection, glm::mat4 view,
+						 unsigned int shaderID);
 	void drawBoundingBox(RenderData* data,
 					 glm::vec3 playerPos, glm::vec3 camPos,
 					 glm::mat4 projection, glm::mat4 view,
@@ -123,8 +125,8 @@ namespace MonGL
 	void generateTerrain(RenderData* data);
 	void drawTerrain(unsigned int shaderID, RenderData* data, Light* light, glm::mat4 projection, glm::mat4 view,
 					 glm::vec3 camPos);
-	// ----------------------------------------
 
+	
 	// 2d
 	void initRenderData(Sprite* sprite);
 	

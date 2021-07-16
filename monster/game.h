@@ -88,7 +88,7 @@ namespace Mon
 
 
 		// TODO(ck):
-		// DO NOT KEEP the shaders in the game and renderer like you did last time...
+		// DO NOT KEEP the shaders in the game and renderer like you did last time... 
 		// keep them in a structure that can be accessed globally instead keep it clean
 		World* world;
 		Terrain* terrain;
@@ -97,7 +97,9 @@ namespace Mon
 		CameraTwo camera;
 		Input input;
 		
+		// TODO(ck): Use one container
 		EntityTwo player;
+		std::vector<EntityTwo> trees;
 		std::vector<EntityTwo> enemies;
 		bool simulate;
 

@@ -27,13 +27,36 @@ uniform Light light;
 uniform sampler2D texture_diffuse1;
 uniform bool useTexture;
 uniform bool collider;
+uniform bool pixelTexture;
 uniform vec3 colliderColor;
+
+// this is a better way to do pixel art
+// https://www.shadertoy.com/view/MlB3D3 - d7Samurai
+
+// This method is working for making the pixel art look nice
+// https://gist.github.com/Beefster09/7264303ee4b4b2086f372f1e70e8eddd
+float sharpen(float pix_coord) {
+	float sharpness = 2.0;
+
+    float norm = (fract(pix_coord) - 0.5) * 2.0;
+    float norm2 = norm * norm;
+    return floor(pix_coord) + norm * pow(norm2, sharpness) / 2.0 + 0.5;
+}
 
 void main()
 {
     if (useTexture)
     {
         FragColor = texture(texture_diffuse1, TexCoords);
+        if (pixelTexture)
+        {
+            vec2 vres = textureSize(texture_diffuse1, 0);
+            FragColor = texture(texture_diffuse1, vec2(
+		        sharpen(TexCoords.x * vres.x) / vres.x,
+		        sharpen(TexCoords.y * vres.y) / vres.y
+            )); 
+        }
+        
         return;
     }
 

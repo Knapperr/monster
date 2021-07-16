@@ -1,6 +1,7 @@
 #include "mon_gl_render.h"
 
 #include <glad/glad.h>
+#include <glm/gtx/transform.hpp>
 
 #include <vector>
 
@@ -22,28 +23,68 @@ namespace MonGL
 		return glm::translate(glm::mat4(1), GetCenter(size)) * glm::scale(glm::mat4(1), GetSize(size));
 	}
 
-	// TODO(ck): gl_InitBoundingBox
+	void initCharacter(RenderData* data, int shaderID, int TESTCHOOSE)
+	{
+		data->vertices.push_back({ glm::vec3(0.5, 0.5, 0.0), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 1.0f) });
+		data->vertices.push_back({ glm::vec3(0.5, -0.5, 0.0), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 0.0f) });
+		data->vertices.push_back({ glm::vec3(-0.5,-0.5, 0.0), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f) });
+		data->vertices.push_back({ glm::vec3(-0.5, 0.5, 0.0), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 1.0f) });
+
+		unsigned int indices[] = {
+			0, 1, 3,
+			1, 2, 3
+		};
+
+		unsigned int EBO;
+		glGenVertexArrays(1, &data->VAO);
+		glGenBuffers(1, &data->VBO);
+		glGenBuffers(1, &EBO);
+
+		glBindVertexArray(data->VAO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, data->VBO);
+		glBufferData(GL_ARRAY_BUFFER, data->vertices.size() * sizeof(Vertex3D), &data->vertices[0], GL_STATIC_DRAW);
+		
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+		
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+		
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(1);
+		
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+		glEnableVertexAttribArray(2);
+
+
+		if (TESTCHOOSE == 1)
+		{
+			std::string textPath = "res/textures/p1.png";
+			std::string textDir = textPath.substr(0, textPath.find_last_of('/'));
+			data->texture = {};
+			MonTexture::LoadTextureFile(&data->texture, textPath.c_str(), false, true, true);
+
+			glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
+		}
+		if (TESTCHOOSE == 2)
+		{
+			std::string textPath = "res/textures/tree.png";
+			std::string textDir = textPath.substr(0, textPath.find_last_of('/'));
+			data->texture = {};
+			MonTexture::LoadTextureFile(&data->texture, textPath.c_str(), false, true, true);
+
+			glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
+		}
+
+	}
+
 	void initBoundingBox(RenderData* data)
 	{
 		data->lineWidth = 2;
 		data->color = glm::vec3(0.2, 0.7, 0.4);
 
-		// TODO(ck): Keep this... dont want to keep
-		// vertices in a vector in memory just need
-		// different way to render and keep collision boxes
-
-#if 0
-		float vertices[] = {
-			-0.5, -0.5, -0.5, 1.0,
-			 0.5, -0.5, -0.5, 1.0,
-			 0.5,  0.5, -0.5, 1.0,
-			-0.5,  0.5, -0.5, 1.0,
-			-0.5, -0.5,  0.5, 1.0,
-			 0.5, -0.5,  0.5, 1.0,
-			 0.5,  0.5,  0.5, 1.0,
-			-0.5,  0.5,  0.5, 1.0,
-		};
-#endif
 		data->vertices.push_back({ glm::vec3(-0.5, -0.5, -0.5), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f) });
 		data->vertices.push_back({ glm::vec3(0.5, -0.5, -0.5), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f) });
 		data->vertices.push_back({ glm::vec3(0.5, 0.5, -0.5), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f) });
@@ -99,6 +140,46 @@ namespace MonGL
 		//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 		//glEnableVertexAttribArray(2);
 	}
+
+	void drawCharacter(RenderData* data,
+						 glm::vec3 playerPos, glm::vec3 camPos,
+						 glm::mat4 projection, glm::mat4 view,
+						 unsigned int shaderID)
+	{
+
+		// ==============================================================================
+		//glUniform3fv(glGetUniformLocation(shaderID, "material.ambient"), 1, &data->mat.ambient[0]);
+		//glUniform3fv(glGetUniformLocation(shaderID, "material.diffuse"), 1, &data->mat.diffuse[0]);
+		//glUniform3fv(glGetUniformLocation(shaderID, "material.specular"), 1, &data->mat.specular[0]);
+		//glUniform1f(glGetUniformLocation(shaderID, "material.shininess"), data->mat.shininess);
+
+		glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camPos[0]);
+
+		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(view));
+
+		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), true);
+		glUniform1i(glGetUniformLocation(shaderID, "pixelTexture"), true);
+		// bind textures on corresponding texture units
+		//glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, data->texture.id);
+
+		glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
+		glUniform1i(glGetUniformLocation(shaderID, "collider"), true);
+		// ==============================================================================
+
+		glm::mat4 model = glm::mat4(1.0f);
+		playerPos.x = playerPos.x + 1.0f;
+		playerPos.y = playerPos.y + 0.5f;
+		playerPos.z = playerPos.z + 1.0f;
+		model = glm::translate(model, playerPos);
+		model = glm::rotate(model, glm::radians(-60.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+		glBindVertexArray(data->VAO);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	}
+
 
 	// TODO(ck): gl_DrawBoundingBox(size) 
 	// the collider will have a size
@@ -160,7 +241,6 @@ namespace MonGL
 				data->vertices[index].position.x = (float)j / ((float)VERTEX_COUNT - 1) * SIZE;
 
 				data->vertices[index].position.y = 0.0f;
-				//heightMap[index] = vertices[index].position.y;
 
 				data->vertices[index].position.z = (float)i / ((float)VERTEX_COUNT - 1) * SIZE;
 
@@ -219,14 +299,14 @@ namespace MonGL
 		glBindVertexArray(0);
 		delete[] indices;
 
-		
 		data->mat = {};
 		data->mat.ambient = glm::vec3(1.0f, 0.5f, 0.6f);
 		data->mat.diffuse = glm::vec3(1.0f, 0.5f, 0.31f);
 		data->mat.specular = glm::vec3(0.5f, 0.5f, 0.5f);
 		data->mat.shininess = 32.0f;
 
-		std::string textPath = "res/textures/terrain/1024multi.png";
+		//std::string textPath = "res/textures/terrain/1024multi.png";
+		std::string textPath = "res/textures/terrain/pix_grass.png";
 		std::string textDir = textPath.substr(0, textPath.find_last_of('/'));
 		/*
 		textureIds[0] = MonTexture::LoadTextureFile("1024multi.png", textDir, false);
@@ -234,7 +314,7 @@ namespace MonGL
 		filename = directory + '/' + filename;
 		*/
 		data->texture = {};
-		MonTexture::LoadTextureFile(&data->texture, textPath.c_str(), false);
+		MonTexture::LoadTextureFile(&data->texture, textPath.c_str(), false, true);
 
 
 	}
@@ -292,12 +372,9 @@ namespace MonGL
 
 
 
-
-
-
-	/// 
+	///
 	/// 2D
-	/// 
+	///
 	 
 	BatchData* batch;
 	std::vector<Vertex> tileVertices;
@@ -338,14 +415,13 @@ namespace MonGL
 	void initTileMap(int tileAmount)
 	{
 		// These will be figured out after looping our tilemap and pushing quads
-		
-		//tileVertices = new float[maxVertices];
+		// TODO(ck): Need to be able to choose amount of vertices and indices
 		int usedVertices = 1;
 		const int quadCount = 1000;
 		const int maxVertices = quadCount * 4;
 		const int indicesLength = quadCount * 6;
 		 
-		// TEST
+		// TODO(ck): MEMORY - TEST 
 		batch = new BatchData();
 		
 		glGenVertexArrays(1, &batch->VAO);
