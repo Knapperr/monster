@@ -105,7 +105,7 @@ namespace Mon
 		//terrain->generate();
 
 		simulate = false;
-
+		drawCollisions = true;
 		return true;
 	}
 
@@ -201,7 +201,9 @@ namespace Mon
 		glUniform3fv(glGetUniformLocation(shader.id, "light.specular"), 1, &light.specular[0]);
 
 
-		MonGL::drawBoundingBox(&player.colliderData, player.particle.pos, cam.pos, projection, view, shader.id);
+		if (drawCollisions)
+			MonGL::drawBoundingBox(&player.colliderData, player.particle.pos, cam.pos, projection, view, shader.id);
+
 		MonGL::drawCharacter(&player.data, player.particle.pos, cam.pos, projection, view, shader.id);
 
 		for (auto& e : enemies)

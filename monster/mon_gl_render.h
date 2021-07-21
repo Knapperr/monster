@@ -21,7 +21,6 @@ namespace MonGL
 		glm::vec3 specular;
 	};
 
-
 	struct Material
 	{
 		glm::vec3 ambient;
@@ -30,30 +29,10 @@ namespace MonGL
 		float shininess;
 	};
 
-
 	struct ColliderSize
 	{
-		glm::vec2 x;
-		glm::vec2 y;
-		glm::vec2 z;
-		
-		float minX() { return x.x; }
-		float maxX() {return x.y; }
-		void minX(float minX) { x.x = minX; }
-		void maxX(float maxX) { x.y = maxX; }
-		void X(float minX, float maxX) { x = glm::vec2(minX, maxX); }
-
-		float minY() { return y.x; }
-		float maxY() { return y.y; }
-		void minY(float minY) { y.x = minY; }
-		void maxY(float maxY) { y.y = maxY; }
-		void Y(float minY, float maxY) { y = glm::vec2(minY, maxY); }
-
-		float minZ() { return z.x; }
-		float maxZ() { return z.y; }
-		void minZ(float minZ) { z.x = minZ; }
-		void maxZ(float maxZ) { z.y = maxZ; }
-		void Z(float minZ, float maxZ) { z = glm::vec2(minZ, maxZ); }
+		glm::vec3 min;
+		glm::vec3 max;
 	};
 
 	glm::vec3 GetSize(ColliderSize* size);

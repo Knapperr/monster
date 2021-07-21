@@ -102,6 +102,7 @@ namespace Mon
 		std::vector<EntityTwo> trees;
 		std::vector<EntityTwo> enemies;
 		bool simulate;
+		bool drawCollisions;
 
 		// TODO(ck): 
 		// Shader lives in the opengl renderer

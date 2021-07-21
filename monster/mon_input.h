@@ -15,6 +15,9 @@ struct Input
 	ButtonState rightMouseButton;
 	float stickAverageX;
 	float stickAverageY;
+	float rightStickValue;
+	float rightStickAxis;
+	float rightStickAngle;
 	float mouseXScreen;
 	float mouseYScreen;
 	float mouseXOffset;
@@ -33,6 +36,10 @@ struct Input
 			ButtonState lower;
 			ButtonState select;
 			ButtonState shift;
+			ButtonState rightStickUp;
+			ButtonState rightStickdown;
+			ButtonState rightStickleft;
+			ButtonState rightStickright;
 		};
 	};
 };

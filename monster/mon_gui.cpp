@@ -119,6 +119,16 @@ void StatsWindow(bool* p_open, Mon::Game* game)
 	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseYScreen);
 	ImGui::LabelText(buffer, "win y");
 
+	/*
+		newInput->rightStickValue
+		newInput->rightStickAxis
+	*/
+	snprintf(buffer, sizeof(buffer), "%f", game->input.rightStickAngle);
+	ImGui::LabelText(buffer, "R stick angle");
+	snprintf(buffer, sizeof(buffer), "%f", game->input.rightStickAxis);
+	ImGui::LabelText(buffer, "R stick axis");
+
+
 	snprintf(buffer, sizeof(buffer), "%d", game->input.leftMouseButton.endedDown);
 	ImGui::LabelText(buffer, "left mouse down");
 
@@ -224,6 +234,7 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 	ImGui::SliderFloat2("Z", &game->player.colliderData.size.z[0], 0.0f, 50.0f);
 
 	ImGui::Checkbox("simulate", &game->simulate);
+	ImGui::Checkbox("draw collisions", &game->drawCollisions);
 
 	ImGui::Separator();
 

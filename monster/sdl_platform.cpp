@@ -126,13 +126,15 @@ void SDLPlatform::pollInput(Input* newInput, Input* oldInput)
 	}
 
 	newInput->leftMouseButton.endedDown = oldInput->leftMouseButton.endedDown;
-	
-	// TODO(ck):
-	// I think resetting these is unecessary they are being recomputed every frame
+	 
+	// TODO(ck): Add to loop mouse[] something like that
 	newInput->mouseXOffset = oldInput->mouseXOffset;
 	newInput->mouseYOffset = oldInput->mouseYOffset;
 	newInput->mouseXScreen = oldInput->mouseXScreen;
 	newInput->mouseYScreen = oldInput->mouseYScreen;
+	newInput->rightStickValue = oldInput->rightStickValue;
+	newInput->rightStickAxis = oldInput->rightStickAxis;
+	newInput->rightStickAngle = oldInput->rightStickAngle;
 
 
 	// TODO(ck): Idk if I need these MIGHT BE ABLE TO USE OLD INPUT..?
@@ -220,44 +222,50 @@ void SDLPlatform::pollInput(Input* newInput, Input* oldInput)
 		{
 			if (e.jaxis.which == 0)
 			{
-				// x motion
+				
+				static int yDir = 0;
+				static int xDir = 0;
 				if (e.jaxis.axis == 0)
 				{
 					if (e.jaxis.value < -JOYSTICK_DEAD_ZONE)
 					{
-						// xDir = -1;
+						xDir = -1;
 						processKeyboard(&newInput->left, true);
 					}
 					else if (e.jaxis.value > JOYSTICK_DEAD_ZONE)
 					{
-						// xDir = 1;
+						xDir = 1;
 						processKeyboard(&newInput->right, true);
 					}
 					else
 					{
+						xDir = 0;
 						processKeyboard(&newInput->left, false);
 						processKeyboard(&newInput->right, false);
 					}
 				}
-				// y motion
 				if (e.jaxis.axis == 1)
 				{
 					if (e.jaxis.value < -JOYSTICK_DEAD_ZONE)
 					{
-						// yDir = -1;
+						yDir = -1;
 						processKeyboard(&newInput->up, true);
 					}
 					else if (e.jaxis.value > JOYSTICK_DEAD_ZONE)
 					{
-						// yDir = 1;
+						yDir = 1;
 						processKeyboard(&newInput->down, true);
 					}
 					else
 					{
+						yDir = 0;
 						processKeyboard(&newInput->up, false);
 						processKeyboard(&newInput->down, false);
 					}
 				}
+
+				//newInput->rightStickValue = e.jaxis.value;
+				newInput->rightStickAxis = e.jaxis.axis;				
 
 				/*
 				TODO(ck): JOYSTICK ANGLE 
@@ -271,6 +279,10 @@ void SDLPlatform::pollInput(Input* newInput, Input* oldInput)
 					joystickAngle = 0;
 				}
 				*/
+
+				newInput->rightStickAngle = atan2((double)yDir, (double)xDir) * (180.0 / M_PI);
+				//if (xDir == 0 && yDir == 0)
+					//newInput->rightStickValue = 0;
 			}
 		}
 		else if (e.type == SDL_JOYBUTTONDOWN || e.type == SDL_JOYBUTTONUP)

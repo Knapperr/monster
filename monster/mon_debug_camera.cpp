@@ -43,7 +43,6 @@ namespace Mon
 		{
 			mouseInput(input->mouseXOffset, input->mouseYOffset, constrainPitch);
 			calculateCameraVectors();
-
 		}
 	}
 
@@ -64,6 +63,7 @@ namespace Mon
 	{
 		xOffset *= mouseSensitivity;
 		yOffset *= mouseSensitivity;
+
 
 		yaw += xOffset;
 		pitch += yOffset;

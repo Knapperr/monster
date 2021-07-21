@@ -10,12 +10,12 @@ namespace MonGL
 
 	glm::vec3 GetSize(ColliderSize* size)
 	{
-		return glm::vec3(size->maxX() - size->minX(), size->maxY() - size->minY(), size->maxZ() - size->minZ());
+		return glm::vec3(size->max.x - size->min.x, size->max.y - size->min.y, size->max.z - size->min.z);
 	}
 
 	glm::vec3 GetCenter(ColliderSize* size)
 	{
-		return glm::vec3((size->minX() + size->maxX()) / 2, (size->minY() + size->maxY()) / 2, (size->minZ() + size->maxZ()) / 2);
+		return glm::vec3((size->min.x + size->max.x) / 2, (size->min.y + size->max.y) / 2, (size->min.z + size->max.z) / 2);
 	}
 
 	glm::mat4 GetTransform(ColliderSize* size)
@@ -125,10 +125,8 @@ namespace MonGL
 		glBindVertexArray(0);
 
 		data->size = {};
-		data->size.X(0.0f, 2.0f);
-		data->size.Y(0.0f, 2.0f);
-		data->size.Z(0.0f, 2.0f);
-
+		data->size.min = glm::vec3(0.0f, 0.0f, 0.0f);
+		data->size.max = glm::vec3(2.0f, 2.0f, 2.0f);
 		// Set world matrix to be the same size as the bounding box
 		//data->worldMatrix = GetTransform(&data->size);
 
@@ -173,7 +171,7 @@ namespace MonGL
 		playerPos.y = playerPos.y + 0.5f;
 		playerPos.z = playerPos.z + 1.0f;
 		model = glm::translate(model, playerPos);
-		model = glm::rotate(model, glm::radians(-60.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		glBindVertexArray(data->VAO);
