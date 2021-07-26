@@ -41,7 +41,9 @@ namespace Mon
 
 		if (input->leftMouseButton.endedDown)
 		{
-			mouseInput(input->mouseXOffset, input->mouseYOffset, constrainPitch);
+			mouseInput(input->mouseOffset, constrainPitch);
+			// TODO(ck): joystickInput
+			mouseInput(input->stickDir, constrainPitch);
 			calculateCameraVectors();
 		}
 	}
@@ -59,14 +61,14 @@ namespace Mon
 	}
 
 
-	void Camera::mouseInput(float xOffset, float yOffset, bool constrainPitch)
+	void Camera::mouseInput(glm::vec2 offset, bool constrainPitch)
 	{
-		xOffset *= mouseSensitivity;
-		yOffset *= mouseSensitivity;
+		offset.x *= mouseSensitivity;
+		offset.y *= mouseSensitivity;
 
 
-		yaw += xOffset;
-		pitch += yOffset;
+		yaw += offset.x;
+		pitch += offset.y;
 
 		if (constrainPitch)
 		{

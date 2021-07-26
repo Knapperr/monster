@@ -7,8 +7,6 @@
 
 namespace MonTexture
 {
-#define _3D_
-
 	void Generate2DTexture(Texture* texture, unsigned int width, unsigned int height, int nrChannels, unsigned char* data)
 	{
 		glGenTextures(1, &texture->id);

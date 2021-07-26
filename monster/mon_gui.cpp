@@ -4,7 +4,7 @@
 #include <string>
 
 
-#define _3D_GUI_
+//#define _3D_GUI_
 
 #ifdef USE_SDL
 void InitGui(SDL_Window* window, SDL_GLContext* context)
@@ -110,24 +110,21 @@ void StatsWindow(bool* p_open, Mon::Game* game)
 
 	char buffer[64];
 	
-	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseXOffset);
+	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseOffset.x);
 	ImGui::LabelText(buffer, "mouse x");
-	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseYOffset);
+	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseOffset.y);
 	ImGui::LabelText(buffer, "mouse y");
 	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseXScreen);
 	ImGui::LabelText(buffer, "win x");
 	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseYScreen);
 	ImGui::LabelText(buffer, "win y");
 
-	/*
-		newInput->rightStickValue
-		newInput->rightStickAxis
-	*/
 	snprintf(buffer, sizeof(buffer), "%f", game->input.rightStickAngle);
 	ImGui::LabelText(buffer, "R stick angle");
 	snprintf(buffer, sizeof(buffer), "%f", game->input.rightStickAxis);
 	ImGui::LabelText(buffer, "R stick axis");
-
+	snprintf(buffer, sizeof(buffer), "%f", game->input.rightStickValue);
+	ImGui::LabelText(buffer, "stick value");
 
 	snprintf(buffer, sizeof(buffer), "%d", game->input.leftMouseButton.endedDown);
 	ImGui::LabelText(buffer, "left mouse down");
@@ -229,9 +226,9 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 	}
 
 	ImGui::SliderFloat3("color", &game->player.colliderData.color[0], 0.0f, 1.0f);
-	ImGui::SliderFloat2("X", &game->player.colliderData.size.x[0], 0.0f, 50.0f);
-	ImGui::SliderFloat2("Y", &game->player.colliderData.size.y[0], 0.0f, 50.0f);
-	ImGui::SliderFloat2("Z", &game->player.colliderData.size.z[0], 0.0f, 50.0f);
+	ImGui::SliderFloat3("min", &game->player.colliderData.size.min[0], 0.0f, 50.0f);
+	ImGui::SliderFloat3("max", &game->player.colliderData.size.max[0], 0.0f, 50.0f);
+	//ImGui::SliderFloat2("Z", &game->player.colliderData.size.min, 0.0f, 50.0f);
 
 	ImGui::Checkbox("simulate", &game->simulate);
 	ImGui::Checkbox("draw collisions", &game->drawCollisions);

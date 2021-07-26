@@ -24,11 +24,14 @@ Entity::Entity(const char* fileLocation,
 	this->size = size;
 	this->color = color;
 	this->speed = speed;
+	// TODO(ck): Deal with speed
+	this->maxSpeed = 250.0f;
 	this->rotation = rotation;
 	this->destroyed = destroyed;
 	this->sprite = sprite;
 
 	this->velocity = glm::vec2(1.0f);
+	this->weight = 44.0f;
 }
 
 Entity::~Entity()

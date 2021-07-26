@@ -48,7 +48,9 @@ bool SDLPlatform::init(int SCREEN_WIDTH, int SCREEN_HEIGHT, int PORT_WIDTH, int 
 	printf("PID: %d\n", _getpid());
 
 	// Use v-sync
-	//SDL_GL_SetSwapInterval(1);
+	// https://wiki.libsdl.org/SDL_GL_SetSwapInterval
+	// 0 for immediate updates, 1 for updates synchronized with the vertical retrace, -1 for adaptive vsync
+	SDL_GL_SetSwapInterval(-1);
 
 	int xOffset = (SCREEN_WIDTH - PORT_WIDTH) / 2;
 	int yOffset = (SCREEN_HEIGHT - PORT_HEIGHT) / 2;
@@ -102,14 +104,14 @@ void SDLPlatform::processMouseMotion(Input* newInput, SDL_Event* e, int& lastX, 
 	SDL_GetRelativeMouseState(&x, &y);
 	SDL_GetMouseState(&winX, &winY);
 	//SDL_GetGlobalMouseState(&x, &y);
-	newInput->mouseXOffset = (float)x;
-	newInput->mouseYOffset = (float)-y;
-	
+	newInput->mouseOffset.x = (float)x;
+	newInput->mouseOffset.y = (float)-y;
+
 	newInput->mouseXScreen = (float)winX;
 	newInput->mouseYScreen = (float)winY;
 
-	lastX = newInput->mouseXOffset;
-	lastY = newInput->mouseYOffset;
+	lastX = newInput->mouseOffset.x;
+	lastY = newInput->mouseOffset.y;
 }
 
 void SDLPlatform::pollInput(Input* newInput, Input* oldInput)
@@ -128,13 +130,13 @@ void SDLPlatform::pollInput(Input* newInput, Input* oldInput)
 	newInput->leftMouseButton.endedDown = oldInput->leftMouseButton.endedDown;
 	 
 	// TODO(ck): Add to loop mouse[] something like that
-	newInput->mouseXOffset = oldInput->mouseXOffset;
-	newInput->mouseYOffset = oldInput->mouseYOffset;
+	newInput->mouseOffset = oldInput->mouseOffset;
 	newInput->mouseXScreen = oldInput->mouseXScreen;
 	newInput->mouseYScreen = oldInput->mouseYScreen;
 	newInput->rightStickValue = oldInput->rightStickValue;
 	newInput->rightStickAxis = oldInput->rightStickAxis;
 	newInput->rightStickAngle = oldInput->rightStickAngle;
+	newInput->stickDir = oldInput->stickDir;
 
 
 	// TODO(ck): Idk if I need these MIGHT BE ABLE TO USE OLD INPUT..?
@@ -218,30 +220,34 @@ void SDLPlatform::pollInput(Input* newInput, Input* oldInput)
 					processKeyboard(&newInput->shift, isDown);
 			}
 		}
+		// SDL_CONTROLLERAXISMOTION
 		else if (e.type == SDL_JOYAXISMOTION)
 		{
 			if (e.jaxis.which == 0)
 			{
-				
 				static int yDir = 0;
 				static int xDir = 0;
 				if (e.jaxis.axis == 0)
 				{
 					if (e.jaxis.value < -JOYSTICK_DEAD_ZONE)
 					{
+					
 						xDir = -1;
-						processKeyboard(&newInput->left, true);
+						newInput->stickDir.x = -2;
+						//processKeyboard(&newInput->left, true);
 					}
 					else if (e.jaxis.value > JOYSTICK_DEAD_ZONE)
 					{
 						xDir = 1;
-						processKeyboard(&newInput->right, true);
+						newInput->stickDir.x = 2;
+						//processKeyboard(&newInput->right, true);
 					}
 					else
 					{
 						xDir = 0;
-						processKeyboard(&newInput->left, false);
-						processKeyboard(&newInput->right, false);
+						newInput->stickDir.x = 0;
+						//processKeyboard(&newInput->left, false);
+						//processKeyboard(&newInput->right, false);
 					}
 				}
 				if (e.jaxis.axis == 1)
@@ -249,22 +255,27 @@ void SDLPlatform::pollInput(Input* newInput, Input* oldInput)
 					if (e.jaxis.value < -JOYSTICK_DEAD_ZONE)
 					{
 						yDir = -1;
-						processKeyboard(&newInput->up, true);
+						newInput->stickDir.y = 2;
+						//processKeyboard(&newInput->up, true);
 					}
 					else if (e.jaxis.value > JOYSTICK_DEAD_ZONE)
 					{
 						yDir = 1;
-						processKeyboard(&newInput->down, true);
+						newInput->stickDir.y = -2;
+						//processKeyboard(&newInput->down, true);
 					}
 					else
 					{
 						yDir = 0;
-						processKeyboard(&newInput->up, false);
-						processKeyboard(&newInput->down, false);
+						newInput->stickDir.y = 0;
+						//processKeyboard(&newInput->up, false);
+						//processKeyboard(&newInput->down, false);
 					}
 				}
 
-				//newInput->rightStickValue = e.jaxis.value;
+
+
+				newInput->rightStickValue = e.jaxis.value / 32767.0f;;
 				newInput->rightStickAxis = e.jaxis.axis;				
 
 				/*
@@ -277,6 +288,25 @@ void SDLPlatform::pollInput(Input* newInput, Input* oldInput)
 				if (xDir == 0 && yDir == 0)
 				{
 					joystickAngle = 0;
+				}
+				*/
+
+				/*
+				else if (event.type == SDL_JOYAXISMOTION)
+				{
+					auto index = find_joystick_index(event.jdevice.which);
+					if (index >= 0)
+					{
+						if (SDL_IsGameController(index) == SDL_FALSE)
+						{
+							float value;
+							if (event.jaxis.value >= 0)
+								value = event.jaxis.value / 32767.0f;
+							else
+								value = event.jaxis.value / 32768.0f;
+							InputBackend::on_axis_move(index, event.jaxis.axis, value);
+						}
+					}
 				}
 				*/
 

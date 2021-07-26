@@ -14,11 +14,11 @@ namespace Mon
 			return;
 
 		// assert(duration > 0.0);
-		/*x += vector.x * scale;
-		y += vector.y * scale;
-		z += vector.z * scale;
+		/*
+			x += vector.x * scale;
+			y += vector.y * scale;
+			z += vector.z * scale;
 		*/
-
 		pos += velocity * duration;
 
 		// update linear pos
@@ -40,8 +40,6 @@ namespace Mon
 			velocity.z = -15.0f;
 		if (velocity.z > 15.0f)
 			velocity.z = 15.0f;
-
-
 
 		clearAccumulator();
 	}
@@ -65,7 +63,7 @@ namespace Mon
 		player.particle.inverseMass = 10.0f;
 		player.particle.velocity = glm::vec3(0.0f, 0.0f, 0.0f); // 35m/s
 		player.particle.acceleration = glm::vec3(-40.0f, 0.0f, 0.0f);
-		player.particle.damping = 0.99f;
+		player.particle.damping = 0.9f;
 
 		player.data.mat.ambient = glm::vec3(1.0f, 0.5f, 0.6f);
 		player.data.mat.diffuse = glm::vec3(1.0f, 0.5f, 0.31f);
@@ -280,8 +278,13 @@ namespace Mon
 
 	void Game::update(double dt, Input* input, int x)
 	{
+		if (dt > deltaTime || dt < deltaTime)
+			printf("dt: %f\n", dt);
+
 		deltaTime = dt;
 		this->input = *input;
+
+		
 
 		//if (state->deltaTime != dt)
 			//state->deltaTime = dt;
@@ -289,11 +292,60 @@ namespace Mon
 		if (input->shift.endedDown)
 			newSpeed *= 1.7;
 
-		if (input->up.endedDown)    world->player->pos.y -= (int)(newSpeed * dt);
-		if (input->down.endedDown)  world->player->pos.y += (int)(newSpeed * dt);
-		if (input->left.endedDown)  world->player->pos.x -= (int)(newSpeed * dt);
-		if (input->right.endedDown) world->player->pos.x += (int)(newSpeed * dt);
+		Entity* p = world->player;
 
+
+		if (input->up.endedDown)
+		{
+			p->velocity.y -= p->speed;
+
+			if (p->velocity.y <= -p->maxSpeed)
+				p->velocity.y = -p->maxSpeed;
+		}
+		else if (input->down.endedDown)
+		{
+			p->velocity.y += p->speed;
+
+			if (p->velocity.y >= p->maxSpeed)
+				p->velocity.y = p->maxSpeed;
+		}
+		else
+		{
+			p->velocity.y = 0;
+		}
+		
+		if (input->left.endedDown)
+		{
+			p->velocity.x -= p->speed;
+
+			if (p->velocity.x <= -p->maxSpeed)
+				p->velocity.x = -p->maxSpeed;
+
+		}
+		else if (input->right.endedDown)
+		{
+			p->velocity.x += p->speed;
+
+			if (p->velocity.x >= p->maxSpeed)
+				p->velocity.x = p->maxSpeed;
+
+		}
+		else
+		{
+			p->velocity.x = 0;
+		}
+
+		// TODO(ck): This is making me go too slow
+		if ((p->velocity.x != 0.0f) && (p->velocity.y != 0.0f))
+		{
+			p->velocity *= 0.707106781187f;
+			
+		}
+
+
+		p->pos.x += p->velocity.x * dt;
+		p->pos.y += p->velocity.y * dt;
+		
 
 		// TODO(ck): Update camera pos
 		// camera position = player position

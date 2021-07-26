@@ -221,7 +221,7 @@ namespace MonGL
 		data->VAO = 0;
 		data->VBO = 0;
 
-		const int SIZE = 32;
+		const int SIZE = 64;
 		const int VERTEX_COUNT = 16;
 		
 		data->vertices.resize(VERTEX_COUNT * VERTEX_COUNT);
@@ -357,7 +357,7 @@ namespace MonGL
 		//terrain->wireFrame ?
 		//	glDrawElements(GL_LINES, terrain->indicesLength, GL_UNSIGNED_INT, 0)
 		//	: glDrawElements(GL_TRIANGLES, terrain->indicesLength, GL_UNSIGNED_INT, 0);
-		glDrawElements(GL_TRIANGLES, data->elementLength, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_LINES, data->elementLength, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 		// Always good practice to set everything back to defaults once configured
 		// NOTE(CK): bind texture must be AFTER glActiveTexture or it will not unbind properly
@@ -406,8 +406,6 @@ namespace MonGL
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 
-
-		// For this 
 	}
 	
 	void initTileMap(int tileAmount)

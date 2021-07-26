@@ -54,6 +54,7 @@ void initTileMap(TileMap* map)
 	// NOTE(ck): Sheet must be created first
 #define MAP_SIZE 20
 
+	// TODO(ck): Load from file
 	int testmap[MAP_SIZE][MAP_SIZE] =
 	{
 		{0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -118,7 +119,7 @@ World::World()
 	// TODO(ck): Memory management
 	player = new Entity("res/textures/p1.png", true,
 						glm::vec2(5, 5), glm::vec2(32, 32), glm::vec3(1.0f, 1.0f, 1.0f),
-						200.0f, 0.0f, false);
+						60.0f, 0.0f, false);
 
 	Entity* ball = new Entity("res/textures/awesomeface.png", true,
 							  glm::vec2(200, 200), glm::vec2(32, 32), glm::vec3(1.0f, 1.0f, 1.0f),

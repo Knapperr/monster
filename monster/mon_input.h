@@ -16,12 +16,12 @@ struct Input
 	float stickAverageX;
 	float stickAverageY;
 	float rightStickValue;
-	float rightStickAxis;
+	uint8_t rightStickAxis;
 	float rightStickAngle;
 	float mouseXScreen;
 	float mouseYScreen;
-	float mouseXOffset;
-	float mouseYOffset;
+	glm::vec2 mouseOffset;
+	glm::vec2 stickDir;
 
 	union
 	{

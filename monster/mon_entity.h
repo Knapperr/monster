@@ -24,6 +24,8 @@ public:
 	glm::vec2 velocity;
 	glm::vec3 color;
 	float speed;
+	float maxSpeed;
+	float weight;
 	float rotation;
 	bool destroyed;
 

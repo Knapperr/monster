@@ -57,6 +57,8 @@ namespace Mon
 
 		void integrate(float duration);
 		void clearAccumulator();
+
+
 	};
 
 	struct EntityTwo

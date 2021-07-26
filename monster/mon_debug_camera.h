@@ -39,7 +39,7 @@ namespace Mon
 
 
 		void keyInput(double dt, Input* input);
-		void mouseInput(float xOffset, float yOffset, bool constrainPitch);
+		void mouseInput(glm::vec2 offset, bool constrainPitch);
 		void calculateCameraVectors();
 	};
 }
