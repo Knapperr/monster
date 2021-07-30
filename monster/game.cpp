@@ -120,63 +120,36 @@ namespace Mon
 		// TODO(ck): TEMP INPUT
 		if (cam.disabled == true)
 		{
+
+			player.particle.velocity = {};
 			if (input.up.endedDown)
 			{
-				if (player.particle.dir != Direction::FORWARD)
-				{
-					player.particle.dir = Direction::FORWARD;
-					player.particle.velocity.z = player.particle.velocity.z / 2;
-				}
-
-
-				//player.particle.velocity.x = 0.0f;
-				player.particle.acceleration = glm::vec3(0.0f, 0.0f, -10.0f);
-				player.particle.integrate(dt);
+				player.particle.velocity.z = -1.0f;
 			}
 			if (input.down.endedDown)
 			{
-				if (player.particle.dir != Direction::BACKWARD)
-				{
-					player.particle.dir = Direction::BACKWARD;
-					player.particle.velocity.z = player.particle.velocity.z / 2;
-				}
+				player.particle.velocity.z = 1.0f;
 
-				player.particle.acceleration = glm::vec3(0.0f, 0.0f, 10.0f);
-				player.particle.integrate(dt);
 			}
 			if (input.left.endedDown)
 			{
-				if (player.particle.dir != Direction::LEFT)
-				{
-					player.particle.dir = Direction::LEFT;
-					player.particle.velocity.x = player.particle.velocity.x / 2;
-				}
+				player.particle.velocity.x = -1.0f;
 
-				player.particle.acceleration = glm::vec3(-10.0f, 0.0f, 0.0f);
-				player.particle.integrate(dt);
 			}
-
 			if (input.right.endedDown)
 			{
-				if (player.particle.dir != Direction::RIGHT)
-				{
-					player.particle.dir = Direction::RIGHT;
-					player.particle.velocity.x = player.particle.velocity.x / 2;
-				}
+				player.particle.velocity.x = 1.0f;
 
-				//player.particle.velocity.z = 0.0f;
-				player.particle.acceleration = glm::vec3(10.0f, 0.0f, 0.0f);
-				player.particle.integrate(dt);
 			}
-			// The integate will be called here. Normally i suspect that you call the force and then it applies in the integrate and 
-			// clears it out so that if no input is being pressed it wont move the object 
-
-			//player.particle.integrate(dt);
+			float speed = 12.0f;
+			player.particle.velocity *= speed;
+			player.particle.pos.x += player.particle.velocity.x * dt;
+			player.particle.pos.z += player.particle.velocity.z * dt;
 		}
 		cam.update(deltaTime, &input, true);
 
-		if (simulate == true)
-			player.particle.integrate(deltaTime);
+		//if (simulate == true)
+			//player.particle.integrate(deltaTime);
 
 		glm::mat4 model = glm::mat4(1.0f);
 		player.colliderData.worldMatrix = glm::translate(model, player.particle.pos);
@@ -224,9 +197,14 @@ namespace Mon
 	}
 
 
+
+
 	/// 
 	/// 2D
 	/// 
+	
+	// Camera
+
 	bool Game::init(int x)
 	{
 		// TODO(ck): Memory management

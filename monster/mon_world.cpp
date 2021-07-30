@@ -6,7 +6,8 @@ void initTileSheet(TileSheet* sheet, const char* fileName)
 {
 	MonTexture::LoadTextureFile(&sheet->texture, fileName, true, false, true);
 
-	// TODO(ck): Parse the loaded texture and calculate the tileids
+	// TODO(ck): 
+	// Parse the loaded texture and calculate the tileids
 	// all we need is the width and height i.e 256x256 and the gridX and gridY
 	// that will give us our ids for the sheet that we can then use for picking tiles
 	// tileid 0 = 0,0 - 1 = 0,1 and so on this info can easily be put into the gui 
@@ -23,7 +24,7 @@ void initTileSheet(TileSheet* sheet, const char* fileName)
 
 	sheet->tiles[1].tileId = 1;
 	sheet->tiles[1].offsetX = 6;
-	sheet->tiles[1].offsetY = 2;
+	sheet->tiles[1].offsetY = 3;
 
 	sheet->tiles[2].tileId = 2;
 	sheet->tiles[2].offsetX = 6;

@@ -91,64 +91,71 @@ void App::run()
 
 
 		// fixed time framerate
-		uint64_t time_target = (uint64_t)((1.0 / target_framerate) * ticks_per_second);
-		uint64_t time_curr = platform->ticks();
-		uint64_t time_diff = time_curr - time_last;
-		time_last = time_curr;
-		time_accumulator += time_diff;
-
-		// do not run too fast
-		while (time_accumulator < time_target)
 		{
-			int milliseconds = (int)(time_target - time_accumulator) / (ticks_per_second / 1000);
-			platform->sleep(milliseconds);
-
-			time_curr = platform->ticks();
-			time_diff = time_curr - time_last;
+			uint64_t time_target = (uint64_t)((1.0 / target_framerate) * ticks_per_second);
+			uint64_t time_curr = platform->ticks();
+			uint64_t time_diff = time_curr - time_last;
 			time_last = time_curr;
 			time_accumulator += time_diff;
-		}
 
-		// Do not allow us to fall behind too many updates
-		// (otherwise we'll get spiral of death)
-		
-		uint64_t time_maximum = max_updates * time_target;
-		if (time_accumulator > time_maximum)
-			time_accumulator = time_maximum;
-
-		// do as many updates as we can
-		while (time_accumulator >= time_target)
-		{
-			time_accumulator -= time_target;
-
-			delta = (1.0f / target_framerate); // 60
-
-			if (pauseTimer > 0)
+			// do not run too fast
+			while (time_accumulator < time_target)
 			{
-				pauseTimer -= delta;
-				if (pauseTimer <= -0.0001)
-					delta = -pauseTimer;
-				else
-					continue;
+				int milliseconds = (int)(time_target - time_accumulator) / (ticks_per_second / 1000);
+				// TODO(ck): Sleep might be causing stuttering this happened in handmade remember
+				platform->sleep(milliseconds);
+
+				time_curr = platform->ticks();
+				time_diff = time_curr - time_last;
+				time_last = time_curr;
+				time_accumulator += time_diff;
 			}
 
-			previousTicks = ticks;
-			ticks += time_target;
-			previousSeconds = seconds;
-			seconds += delta;
+			// Do not allow us to fall behind too many updates
+			// (otherwise we'll get spiral of death)
 
-			// input backend just resets the state of the input instead of doing it every frame at the top
-			//InputBackend::frame();
-			//GraphicsBackend::frame();
+			uint64_t time_maximum = max_updates * time_target; // max_updates = 5
+			if (time_accumulator > time_maximum)
+				time_accumulator = time_maximum;
 
-			//if (app_config.on_update != nullptr)
-				//app_config.on_update();
+			// do as many updates as we can
+			while (time_accumulator >= time_target)
+			{
+				time_accumulator -= time_target;
+
+				delta = (1.0f / target_framerate); // 60
+
+				if (pauseTimer > 0)
+				{
+					pauseTimer -= delta;
+					if (pauseTimer <= -0.0001)
+						delta = -pauseTimer;
+					else
+						continue;
+				}
+
+				previousTicks = ticks;
+				ticks += time_target;
+				previousSeconds = seconds;
+				seconds += delta;
+				//printf("delta: %f\n", previousSeconds);
+
+				// input backend just resets the state of the input instead of doing it every frame at the top
+				//InputBackend::frame();
+				//GraphicsBackend::frame();
+
+				//if (app_config.on_update != nullptr)
+					//app_config.on_update();
 
 #ifdef _3D_
-			game->update(delta, newInput);
+				game->update(delta, newInput);
 #else
-			game->update(delta, newInput, 1);
+				// TODO(ck): I think I need to reset my inputs here like switch between states
+				// that means I would have to remove the resetting of states to be in here 
+				// maybe platform->clear() or something like that
+				game->update(delta, newInput, 1);
 #endif
+			}
 		}
 
 		UpdateGui(platform->window, game);

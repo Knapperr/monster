@@ -357,7 +357,7 @@ namespace MonGL
 		//terrain->wireFrame ?
 		//	glDrawElements(GL_LINES, terrain->indicesLength, GL_UNSIGNED_INT, 0)
 		//	: glDrawElements(GL_TRIANGLES, terrain->indicesLength, GL_UNSIGNED_INT, 0);
-		glDrawElements(GL_LINES, data->elementLength, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, data->elementLength, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 		// Always good practice to set everything back to defaults once configured
 		// NOTE(CK): bind texture must be AFTER glActiveTexture or it will not unbind properly

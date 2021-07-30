@@ -74,6 +74,8 @@ namespace Mon
 		glm::vec2 pos;
 		glm::vec2 target;
 		float zoom;
+
+
 	};
 
 	class Game
