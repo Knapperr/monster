@@ -140,7 +140,7 @@ namespace MonGL
 	}
 
 	void drawCharacter(RenderData* data,
-						 glm::vec3 playerPos, glm::vec3 camPos,
+						 glm::vec3 playerPos, glm::vec3 scale, glm::vec3 camPos,
 						 glm::mat4 projection, glm::mat4 view,
 						 unsigned int shaderID)
 	{
@@ -167,12 +167,9 @@ namespace MonGL
 		// ==============================================================================
 
 		glm::mat4 model = glm::mat4(1.0f);
-		playerPos.x = playerPos.x + 1.0f;
-		playerPos.y = playerPos.y + 0.5f;
-		playerPos.z = playerPos.z + 1.0f;
 		model = glm::translate(model, playerPos);
 		model = glm::rotate(model, glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+		model = glm::scale(model, scale);
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		glBindVertexArray(data->VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -238,7 +235,7 @@ namespace MonGL
 			{
 				data->vertices[index].position.x = (float)j / ((float)VERTEX_COUNT - 1) * SIZE;
 
-				data->vertices[index].position.y = 0.0f;
+				data->vertices[index].position.y = -0.3f;
 
 				data->vertices[index].position.z = (float)i / ((float)VERTEX_COUNT - 1) * SIZE;
 
@@ -564,6 +561,28 @@ namespace MonGL
 		//reset buffer
 		//_uNumUsedVertices = 0;
 		//_config.iPriority = 0;
+	}
+
+	void drawObject(MonShader::Shader* shader, RenderData2D* data)
+	{
+		glUseProgram(shader->id);
+
+		// TODO(ck): We don't calculate the matrix here
+		// we calc it in the game and send the matrix to the
+		// renderer 
+		// CONVERT World matrix to drawing position
+		glm::mat4 model = glm::mat4(1.0f);
+		model * -data->pos;
+
+		//glUniformMatrix4fv(glGetUniformLocation(shader->id, "model"), 1, GL_FALSE, glm::value_ptr(model));
+		//glUniform3f(glGetUniformLocation(shader->id, "spriteColor"), obj->color.r, obj->color.g, obj->color.b);
+
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_2D, obj->sprite.texture.id);
+
+		glBindVertexArray(data->VAO);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glBindVertexArray(0);
 	}
 
 	void drawObject(MonShader::Shader* shader, Entity* obj)

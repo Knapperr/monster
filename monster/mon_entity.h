@@ -13,9 +13,6 @@ struct Sprite
 	unsigned int VBO;
 };
 
-// Pass the collider for the x,y,z in pos and the radius ...! :)
-void DrawCollider(float x, float y, float z, float radius, int numberOfSides);
-
 class Entity
 {
 public:

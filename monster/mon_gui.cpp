@@ -121,7 +121,7 @@ void StatsWindow(bool* p_open, Mon::Game* game)
 
 	snprintf(buffer, sizeof(buffer), "%f", game->input.rightStickAngle);
 	ImGui::LabelText(buffer, "R stick angle");
-	snprintf(buffer, sizeof(buffer), "%f", game->input.rightStickAxis);
+	snprintf(buffer, sizeof(buffer), "%f", (float)game->input.rightStickAxis);
 	ImGui::LabelText(buffer, "R stick axis");
 	snprintf(buffer, sizeof(buffer), "%f", game->input.rightStickValue);
 	ImGui::LabelText(buffer, "stick value");
@@ -224,11 +224,11 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 		game->player.particle.pos.x = 10.0f;
 		game->player.particle.pos.z = 10.0f;
 	}
-
+	ImGui::SliderFloat("speed", &game->player.particle.speed, 0.0f, 100.0f);
 	ImGui::SliderFloat3("color", &game->player.colliderData.color[0], 0.0f, 1.0f);
 	ImGui::SliderFloat3("min", &game->player.colliderData.size.min[0], 0.0f, 50.0f);
 	ImGui::SliderFloat3("max", &game->player.colliderData.size.max[0], 0.0f, 50.0f);
-	//ImGui::SliderFloat2("Z", &game->player.colliderData.size.min, 0.0f, 50.0f);
+	
 
 	ImGui::Checkbox("simulate", &game->simulate);
 	ImGui::Checkbox("draw collisions", &game->drawCollisions);

@@ -2,7 +2,7 @@
 #define MON_PLATFORM_H
 
 
- #define _3D_
+#define _3D_
 
 struct Context
 {
@@ -15,7 +15,6 @@ struct Config
 	Context* context;
 	int width;
 	int height;
-
 
 };
 

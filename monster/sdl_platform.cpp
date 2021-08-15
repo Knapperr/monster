@@ -15,6 +15,7 @@ bool SDLPlatform::init(int SCREEN_WIDTH, int SCREEN_HEIGHT, int PORT_WIDTH, int 
 		// config has the window in it
 		// if config->graphics == OPENGL then set opengl stuff
 
+	// IMPORTANT(ck): Entry point for renderdoc
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) < 0)
 		return false;
 	// NOTE(ck): See this in Noel Berry's sdl platform 
@@ -59,10 +60,11 @@ bool SDLPlatform::init(int SCREEN_WIDTH, int SCREEN_HEIGHT, int PORT_WIDTH, int 
 	printf("View Port Size: %d, %d\n", PORT_WIDTH, PORT_HEIGHT);
 
 	//glEnable(GL_CULL_FACE);
-	glDepthFunc(GL_LESS);
+	//glDepthFunc(GL_LESS);
 	glEnable(GL_BLEND);
 #ifdef _3D_
 	glEnable(GL_DEPTH_TEST); // NOTE(ck): OFF FOR 2D
+	//glDepthFunc(GL_ALWAYS);
 #endif
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 

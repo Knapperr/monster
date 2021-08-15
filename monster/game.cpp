@@ -7,6 +7,7 @@
 
 namespace Mon
 {
+
 #define real_pow powf
 	void Particle::integrate(float duration)
 	{
@@ -64,6 +65,7 @@ namespace Mon
 		player.particle.velocity = glm::vec3(0.0f, 0.0f, 0.0f); // 35m/s
 		player.particle.acceleration = glm::vec3(-40.0f, 0.0f, 0.0f);
 		player.particle.damping = 0.9f;
+		player.particle.speed = 50.0f;
 
 		player.data.mat.ambient = glm::vec3(1.0f, 0.5f, 0.6f);
 		player.data.mat.diffuse = glm::vec3(1.0f, 0.5f, 0.31f);
@@ -107,6 +109,41 @@ namespace Mon
 		return true;
 	}
 
+	float square(float a)
+	{
+		float result = a * a;
+		return result;
+	}
+
+	// TODO(ck): Should this param be pointer?
+	// should velocity be acceleratio?
+	void Game::movePlayer(glm::vec3* velocity)
+	{
+		if ((velocity->x != 0.0f) && (velocity->y != 0.0f))
+		{
+			*velocity *= 0.707106781187f;
+		}
+		*velocity *= player.particle.speed;
+
+		*velocity += -7.0f * player.particle.velocity;
+
+		glm::vec3 oldPos = player.particle.pos;
+		glm::vec3 newPos = oldPos;
+		float deltaX = (0.5f * velocity->x * square(deltaTime) + player.particle.velocity.x * deltaTime);
+		float deltaZ = (0.5f * velocity->z * square(deltaTime) + player.particle.velocity.z * deltaTime);
+		glm::vec3 delta = { deltaX, 0.0f, deltaZ };
+
+		// TODO(ck): need to set an offest like casey does
+		newPos += delta;
+
+
+		player.particle.velocity.x = velocity->x * deltaTime + player.particle.velocity.x;
+		player.particle.velocity.z = velocity->z * deltaTime + player.particle.velocity.z;
+
+		player.particle.pos = newPos;
+
+	}
+
 	void Game::update(double dt, Input* newInput)
 	{
 		if (dt > deltaTime)
@@ -117,34 +154,45 @@ namespace Mon
 		deltaTime = dt;
 		input = *newInput;
 
+		//
+		// Input start
+		//
+ 
 		// TODO(ck): TEMP INPUT
 		if (cam.disabled == true)
 		{
+		
+			//player.particle.velocity = {};
+			glm::vec3 velocity = {};
 
-			player.particle.velocity = {};
 			if (input.up.endedDown)
 			{
-				player.particle.velocity.z = -1.0f;
+				velocity.z = -1.0f;
+				//player.particle.velocity.z = -1.0f;
 			}
 			if (input.down.endedDown)
 			{
-				player.particle.velocity.z = 1.0f;
-
+				velocity.z = 1.0f;
+				//player.particle.velocity.z = 1.0f;
 			}
 			if (input.left.endedDown)
 			{
-				player.particle.velocity.x = -1.0f;
+				velocity.x = -1.0f;
+				//player.particle.velocity.x = -1.0f;
 
 			}
 			if (input.right.endedDown)
 			{
-				player.particle.velocity.x = 1.0f;
+				velocity.x = 1.0f;
+				//player.particle.velocity.x = 1.0f;
 
 			}
-			float speed = 12.0f;
-			player.particle.velocity *= speed;
-			player.particle.pos.x += player.particle.velocity.x * dt;
-			player.particle.pos.z += player.particle.velocity.z * dt;
+
+			// PIPE velocity to function
+			movePlayer(&velocity);
+			//player.particle.velocity *= player.particle.speed;
+			//player.particle.pos.x += player.particle.velocity.x * dt;
+			//player.particle.pos.z += player.particle.velocity.z * dt;
 		}
 		cam.update(deltaTime, &input, true);
 
@@ -175,7 +223,7 @@ namespace Mon
 		if (drawCollisions)
 			MonGL::drawBoundingBox(&player.colliderData, player.particle.pos, cam.pos, projection, view, shader.id);
 
-		MonGL::drawCharacter(&player.data, player.particle.pos, cam.pos, projection, view, shader.id);
+		MonGL::drawCharacter(&player.data, player.particle.pos, glm::vec3(1.0f), cam.pos, projection, view, shader.id);
 
 		for (auto& e : enemies)
 		{
@@ -183,7 +231,7 @@ namespace Mon
 		}
 		for (auto& e : trees)
 		{
-			MonGL::drawCharacter(&e.data, e.particle.pos, cam.pos, projection, view, shader.id);
+			MonGL::drawCharacter(&e.data, e.particle.pos, glm::vec3(1.0f, 10.0f, 10.0f), cam.pos, projection, view, shader.id);
 		}
 	}
 
@@ -227,8 +275,7 @@ namespace Mon
 		float top = 0.0f;
 
 		glm::mat4 projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
-		// TODO(CK): We don't need to set the image in the shader im not sure why we
-		// are setting it to 0 just to enforce that it gets used maybe????
+
 		int imgLoc = glGetUniformLocation(shader.id, "image");
 		glUniform1i(imgLoc, 0);
 
@@ -266,61 +313,39 @@ namespace Mon
 
 		//if (state->deltaTime != dt)
 			//state->deltaTime = dt;
-		float newSpeed = world->player->speed;
-		if (input->shift.endedDown)
-			newSpeed *= 1.7;
 
 		Entity* p = world->player;
 
+		p->velocity = {};
 
 		if (input->up.endedDown)
 		{
-			p->velocity.y -= p->speed;
-
-			if (p->velocity.y <= -p->maxSpeed)
-				p->velocity.y = -p->maxSpeed;
+			p->velocity.y = -1.0f;
 		}
-		else if (input->down.endedDown)
+		if (input->down.endedDown)
 		{
-			p->velocity.y += p->speed;
-
-			if (p->velocity.y >= p->maxSpeed)
-				p->velocity.y = p->maxSpeed;
+			p->velocity.y = 1.0f;
 		}
-		else
-		{
-			p->velocity.y = 0;
-		}
-		
 		if (input->left.endedDown)
 		{
-			p->velocity.x -= p->speed;
-
-			if (p->velocity.x <= -p->maxSpeed)
-				p->velocity.x = -p->maxSpeed;
-
+			p->velocity.x = -1.0f;
 		}
-		else if (input->right.endedDown)
+		if (input->right.endedDown)
 		{
-			p->velocity.x += p->speed;
-
-			if (p->velocity.x >= p->maxSpeed)
-				p->velocity.x = p->maxSpeed;
-
-		}
-		else
-		{
-			p->velocity.x = 0;
+			p->velocity.x = 1.0f;
 		}
 
-		// TODO(ck): This is making me go too slow
 		if ((p->velocity.x != 0.0f) && (p->velocity.y != 0.0f))
 		{
 			p->velocity *= 0.707106781187f;
-			
 		}
 
+		float newSpeed = p->speed;
+		if (input->shift.endedDown)
+			newSpeed *= 1.7;
 
+		p->velocity *= newSpeed;
+		
 		p->pos.x += p->velocity.x * dt;
 		p->pos.y += p->velocity.y * dt;
 		
@@ -348,13 +373,22 @@ namespace Mon
 		glm::vec2 target = camera.target;
 		float width = 960.0f;
 		float height = 540.0f;
+
+#if 1
 		float half = 4.0f;
 		float left = target.x - width / half;
 		float right = target.x + width / half;
 		float top = target.y - height / half;
 		float bottom = target.y + height / half;
+#else
+		float left = 0.0f;
+		float right = 960.0f;
+		float top = 0.0f;
+		float bottom = 540.0f;
+#endif
+
 		glm::mat4 projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
-		glm::mat4 zoom = glm::scale(glm::mat4(1.0f), glm::vec3(camera.zoom, camera.zoom, camera.zoom));
+		//glm::mat4 zoom = glm::scale(glm::mat4(1.0f), glm::vec3(camera.zoom, camera.zoom, camera.zoom));
 		//projection *= zoom;
 
 		// TEST DRAW

@@ -89,11 +89,20 @@ namespace MonGL
 		unsigned int VBO;
 	};
 
+	struct RenderData2D
+	{
+		unsigned int VAO;
+		unsigned int VBO;
+		glm::mat4 pos;
+		glm::vec3 col;
+		MonTexture::Texture texture;
+
+	};
 
 	void initCharacter(RenderData* data, int shaderID, int TESTCHOOSE);
 	void initBoundingBox(RenderData* data);
 	void drawCharacter(RenderData* data,
-						 glm::vec3 playerPos, glm::vec3 camPos,
+						 glm::vec3 playerPos, glm::vec3 scale, glm::vec3 camPos,
 						 glm::mat4 projection, glm::mat4 view,
 						 unsigned int shaderID);
 	void drawBoundingBox(RenderData* data,
@@ -113,6 +122,7 @@ namespace MonGL
 	void fillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos);
 	void bindVertices();
 	
+	void drawObject(MonShader::Shader* shader, RenderData2D* data);
 	void drawObject(MonShader::Shader* shader, Entity* obj);
 	void drawMap(MonShader::Shader* shader, unsigned int textureID);
 	void cleanUp(Sprite* sprite);

@@ -58,6 +58,8 @@ namespace Mon
 		void integrate(float duration);
 		void clearAccumulator();
 
+		// TODO(ck): TEST REMOVE
+		float speed;
 
 	};
 
@@ -82,6 +84,7 @@ namespace Mon
 	{
 	public:
 		bool init();
+		void movePlayer(glm::vec3* velocity);
 		void update(double dt, Input* newInput);
 		void render(double dt);
 		void cleanUp();

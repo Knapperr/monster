@@ -162,7 +162,13 @@ void App::run()
 		// TODO(ck): Platform->Renderer->clearColor 
 		glClearColor(0.126f, 0.113f, 0.165f, 1.0f);
 		// TODO(ck): Platform->Renderer->clear
+
+#ifdef _3D_
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+#else
+		glClear(GL_COLOR_BUFFER_BIT);
+#endif
+
 
 #ifdef _3D_
 		game->render(1);
