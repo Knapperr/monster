@@ -103,7 +103,7 @@ void Terrain::GenerateGrass()
 		float x = rand() % 380 + 10;
 		float y = 0;
 		float z = rand() % 380 + 10;
-		model = glm::translate(model, glm::vec3(x, y, z));
+		model = glm::translate(model, v3(x, y, z));
 
 		// 2. scale: Scale between 0.05 and 0.25f
 		float scale = 1.0f;

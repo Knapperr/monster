@@ -2,9 +2,6 @@
 
 #include "handmade_random.h"
 
-#include <glm/gtc/matrix_transform.hpp>
-
-
 namespace Mon
 {
 
@@ -23,7 +20,7 @@ namespace Mon
 		pos += velocity * duration;
 
 		// update linear pos
-		glm::vec3 resultingAcc = acceleration;
+		v3 resultingAcc = acceleration;
 
 		// work out the acceleration from the force
 		velocity += resultingAcc * duration;
@@ -60,23 +57,24 @@ namespace Mon
 		player = {};
 		MonGL::initCharacter(&player.data, shader.id, 1);
 		MonGL::initBoundingBox(&player.colliderData);
-		player.particle.pos = glm::vec3(10.0f, 0.0f, 20.0f);
+		player.particle.pos = v3(40.0f, 0.1f, 10.0);
 		player.particle.inverseMass = 10.0f;
-		player.particle.velocity = glm::vec3(0.0f, 0.0f, 0.0f); // 35m/s
-		player.particle.acceleration = glm::vec3(-40.0f, 0.0f, 0.0f);
+		player.particle.velocity = v3(0.0f, 0.0f, 0.0f); // 35m/s
+		player.particle.acceleration = v3(-40.0f, 0.0f, 0.0f);
+		player.particle.orientation = v3(1.0f, 1.0f, 1.0);
 		player.particle.damping = 0.9f;
 		player.particle.speed = 50.0f;
 
-		player.data.mat.ambient = glm::vec3(1.0f, 0.5f, 0.6f);
-		player.data.mat.diffuse = glm::vec3(1.0f, 0.5f, 0.31f);
-		player.data.mat.specular = glm::vec3(0.5f, 0.5f, 0.5f);
+		player.data.mat.ambient = v3(1.0f, 0.5f, 0.6f);
+		player.data.mat.diffuse = v3(1.0f, 0.5f, 0.31f);
+		player.data.mat.specular = v3(0.5f, 0.5f, 0.5f);
 		player.data.mat.shininess = 32.0f;
 
 		for (int i = 0; i < 10; ++i)
 		{
 			EntityTwo tree = {};
 			MonGL::initCharacter(&tree.data, shader.id, 2);
-			tree.particle.pos = glm::vec3(2.0f * i, 0.1f, 5.5f * i);
+			tree.particle.pos = v3(2.0f * i, 0.1f, 5.5f * i);
 			trees.push_back(tree);
 		}
 
@@ -84,19 +82,19 @@ namespace Mon
 		{
 			EntityTwo entity = {};
 			MonGL::initBoundingBox(&entity.colliderData);
-			entity.particle.pos = glm::vec3(10.0f * i, 0.1f, 1.5f * i);
-			glm::mat4 model = glm::mat4(1.0f);
+			entity.particle.pos = v3(10.0f * i, 0.1f, 1.5f * i);
+			mat4 model = mat4(1.0f);
 			entity.colliderData.worldMatrix = glm::translate(model, entity.particle.pos);
-			entity.colliderData.color = glm::vec3(0.0f, 0.0f, 0.0f);
+			entity.colliderData.color = v3(0.0f, 0.0f, 0.0f);
 			enemies.push_back(entity);
 		}
 
 		light = {};
-		glm::vec3 lightColor = glm::vec3(0.2f, 0.3f, 0.6f);
-		light.diffuse = lightColor * glm::vec3(0.5f);
-		light.ambient = light.diffuse * glm::vec3(0.2f);
-		light.specular = glm::vec3(1.0f, 1.0f, 1.0f);
-		light.pos = glm::vec3(16.0f, 10.0f, 16.0f);
+		v3 lightColor = v3(0.2f, 0.3f, 0.6f);
+		light.diffuse = lightColor * v3(0.5f);
+		light.ambient = light.diffuse * v3(0.2f);
+		light.specular = v3(1.0f, 1.0f, 1.0f);
+		light.pos = v3(16.0f, 10.0f, 16.0f);
 
 
 		// TODO(ck): Memory Allocation
@@ -117,7 +115,7 @@ namespace Mon
 
 	// TODO(ck): Should this param be pointer?
 	// should velocity be acceleratio?
-	void Game::movePlayer(glm::vec3* velocity)
+	void Game::movePlayer(v3* velocity)
 	{
 		if ((velocity->x != 0.0f) && (velocity->y != 0.0f))
 		{
@@ -127,11 +125,11 @@ namespace Mon
 
 		*velocity += -7.0f * player.particle.velocity;
 
-		glm::vec3 oldPos = player.particle.pos;
-		glm::vec3 newPos = oldPos;
+		v3 oldPos = player.particle.pos;
+		v3 newPos = oldPos;
 		float deltaX = (0.5f * velocity->x * square(deltaTime) + player.particle.velocity.x * deltaTime);
 		float deltaZ = (0.5f * velocity->z * square(deltaTime) + player.particle.velocity.z * deltaTime);
-		glm::vec3 delta = { deltaX, 0.0f, deltaZ };
+		v3 delta = { deltaX, 0.0f, deltaZ };
 
 		// TODO(ck): need to set an offest like casey does
 		newPos += delta;
@@ -163,7 +161,7 @@ namespace Mon
 		{
 		
 			//player.particle.velocity = {};
-			glm::vec3 velocity = {};
+			v3 velocity = {};
 
 			if (input.up.endedDown)
 			{
@@ -194,20 +192,22 @@ namespace Mon
 			//player.particle.pos.x += player.particle.velocity.x * dt;
 			//player.particle.pos.z += player.particle.velocity.z * dt;
 		}
-		cam.update(deltaTime, &input, true);
+		cam.move(player.particle.pos, player.particle.orientation);
+		// TODO(ck): toggle between debug
+		//cam.update(deltaTime, &input, true);
 
 		//if (simulate == true)
 			//player.particle.integrate(deltaTime);
 
-		glm::mat4 model = glm::mat4(1.0f);
-		player.colliderData.worldMatrix = glm::translate(model, player.particle.pos);
+		mat4 model = mat4(1.0f);
+		player.colliderData.worldMatrix = translate(model, player.particle.pos);
 	}
 
 	void Game::render(double dt)
 	{
 		//projection = glm::perspective(glm::radians(cam.zoom), 1440.0f / 720.0f, 0.1f, 100.0f);
-		glm::mat4 projection = glm::perspective(glm::radians(cam.zoom), 960.0f / 540.0f, cam.nearPlane, cam.farPlane);
-		glm::mat4 view = cam.viewMatrix();
+		mat4 projection = glm::perspective(glm::radians(cam.zoom), 960.0f / 540.0f, cam.nearPlane, cam.farPlane);
+		mat4 view = cam.viewMatrix();
 
 		MonGL::drawTerrain(shader.id, &terrain->mesh, &light, projection, view, cam.pos);
 
@@ -223,7 +223,7 @@ namespace Mon
 		if (drawCollisions)
 			MonGL::drawBoundingBox(&player.colliderData, player.particle.pos, cam.pos, projection, view, shader.id);
 
-		MonGL::drawCharacter(&player.data, player.particle.pos, glm::vec3(1.0f), cam.pos, projection, view, shader.id);
+		MonGL::drawCharacter(&player.data, player.particle.pos, v3(1.0f), cam.pos, projection, view, shader.id);
 
 		for (auto& e : enemies)
 		{
@@ -231,7 +231,7 @@ namespace Mon
 		}
 		for (auto& e : trees)
 		{
-			MonGL::drawCharacter(&e.data, e.particle.pos, glm::vec3(1.0f, 10.0f, 10.0f), cam.pos, projection, view, shader.id);
+			MonGL::drawCharacter(&e.data, e.particle.pos, v3(1.0f, 10.0f, 10.0f), cam.pos, projection, view, shader.id);
 		}
 	}
 
@@ -274,7 +274,7 @@ namespace Mon
 		float bottom = 540.0f;
 		float top = 0.0f;
 
-		glm::mat4 projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
+		mat4 projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
 
 		int imgLoc = glGetUniformLocation(shader.id, "image");
 		glUniform1i(imgLoc, 0);
@@ -291,10 +291,10 @@ namespace Mon
 		projLoc = glGetUniformLocation(tileShader.id, "projection");
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-		glm::mat4 model = glm::mat4(1.0f);
-		glm::vec3 pos = glm::vec3(0, 0, 1.0f);
+		mat4 model = mat4(1.0f);
+		v3 pos = v3(0, 0, 1.0f);
 		model = glm::translate(model, pos);
-		model = glm::scale(model, glm::vec3(glm::vec2(32, 32), 1.0f));
+		model = glm::scale(model, v3(v2(32, 32), 1.0f));
 		glUniformMatrix4fv(glGetUniformLocation(tileShader.id, "model"), 1, GL_FALSE, glm::value_ptr(model));
 
 
@@ -370,7 +370,7 @@ namespace Mon
 
 		// 640.0f = window.x
 		// 360.0f = window.y
-		glm::vec2 target = camera.target;
+		v2 target = camera.target;
 		float width = 960.0f;
 		float height = 540.0f;
 
@@ -387,8 +387,8 @@ namespace Mon
 		float bottom = 540.0f;
 #endif
 
-		glm::mat4 projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
-		//glm::mat4 zoom = glm::scale(glm::mat4(1.0f), glm::vec3(camera.zoom, camera.zoom, camera.zoom));
+		mat4 projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
+		//mat4 zoom = glm::scale(mat4(1.0f), v3(camera.zoom, camera.zoom, camera.zoom));
 		//projection *= zoom;
 
 		// TEST DRAW

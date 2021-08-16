@@ -190,6 +190,7 @@
     <ClInclude Include="mon_gui.h" />
     <ClInclude Include="mon_gl_render.h" />
     <ClInclude Include="mon_input.h" />
+    <ClInclude Include="mon_math.h" />
     <ClInclude Include="mon_ortho_camera.h" />
     <ClInclude Include="mon_platform.h" />
     <ClInclude Include="mon_shader.h" />

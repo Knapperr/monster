@@ -1,47 +1,51 @@
 #ifndef MON_INPUT_H
 #define MON_INPUT_H
 
-struct ButtonState
-{
-	int halfTransitionCount;
-	bool endedDown;
-};
+#include "mon_math.h"
 
-struct Input
+namespace Mon
 {
-	bool isConnected;
-	// maybe make an array for mouse buttons
-	ButtonState leftMouseButton;
-	ButtonState rightMouseButton;
-	float stickAverageX;
-	float stickAverageY;
-	float rightStickValue;
-	uint8_t rightStickAxis;
-	float rightStickAngle;
-	float mouseXScreen;
-	float mouseYScreen;
-	glm::vec2 mouseOffset;
-	glm::vec2 stickDir;
-
-	union
+	struct ButtonState
 	{
-		ButtonState buttons[8];
-		struct
+		int halfTransitionCount;
+		bool endedDown;
+	};
+
+	struct Input
+	{
+		bool isConnected;
+		// maybe make an array for mouse buttons
+		ButtonState leftMouseButton;
+		ButtonState rightMouseButton;
+		float stickAverageX;
+		float stickAverageY;
+		float rightStickValue;
+		uint8_t rightStickAxis;
+		float rightStickAngle;
+		float mouseXScreen;
+		float mouseYScreen;
+		v2 mouseOffset;
+		v2 stickDir;
+
+		union
 		{
-			ButtonState up;
-			ButtonState down;
-			ButtonState left;
-			ButtonState right;
-			ButtonState raise;
-			ButtonState lower;
-			ButtonState select;
-			ButtonState shift;
-			ButtonState rightStickUp;
-			ButtonState rightStickdown;
-			ButtonState rightStickleft;
-			ButtonState rightStickright;
+			ButtonState buttons[8];
+			struct
+			{
+				ButtonState up;
+				ButtonState down;
+				ButtonState left;
+				ButtonState right;
+				ButtonState raise;
+				ButtonState lower;
+				ButtonState select;
+				ButtonState shift;
+				ButtonState rightStickUp;
+				ButtonState rightStickdown;
+				ButtonState rightStickleft;
+				ButtonState rightStickright;
+			};
 		};
 	};
-};
-
+}
 #endif

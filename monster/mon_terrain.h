@@ -4,10 +4,6 @@
 #include "mon_shader.h"
 #include "mon_gl_render.h"
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
 class Terrain
 {
 public:
@@ -27,7 +23,7 @@ public:
 	Terrain(int gridX, int gridZ);
 	~Terrain();
 
-	//float barryCentric(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec2 pos);
+	//float barryCentric(v3 p1, v3 p2, v3 p3, v2 pos);
 	//float getHeight(int x, int z);
 	//float lookUpHeight(int x, int z);
 	//void generate();

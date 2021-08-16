@@ -1,52 +1,51 @@
 #ifndef MON_GL_RENDER_H
 #define MON_GL_RENDER_H
 
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/glm.hpp>
 
 #include "mon_world.h"
 #include "mon_shader.h"
 
+#include "mon_math.h"
 
 namespace MonGL
 {
+	using namespace Mon;
 
 	struct Light
 	{
-		glm::vec3 pos;
+		v3 pos;
 
-		glm::vec3 ambient;
-		glm::vec3 diffuse;
-		glm::vec3 specular;
+		v3 ambient;
+		v3 diffuse;
+		v3 specular;
 	};
 
 	struct Material
 	{
-		glm::vec3 ambient;
-		glm::vec3 diffuse;
-		glm::vec3 specular;
+		v3 ambient;
+		v3 diffuse;
+		v3 specular;
 		float shininess;
 	};
 
 	struct ColliderSize
 	{
-		glm::vec3 min;
-		glm::vec3 max;
+		v3 min;
+		v3 max;
 	};
 
-	glm::vec3 GetSize(ColliderSize* size);
-	glm::vec3 GetCenter(ColliderSize* size);
-	glm::mat4 GetTransform(ColliderSize* size);
+	v3 GetSize(ColliderSize* size);
+	v3 GetCenter(ColliderSize* size);
+	mat4 GetTransform(ColliderSize* size);
 
-	//glm::vec3 center = glm::vec3((min_x + max_x) / 2, (min_y + max_y) / 2, (min_z + max_z) / 2);
-	//glm::mat4 transform = 
+	//v3 center = v3((min_x + max_x) / 2, (min_y + max_y) / 2, (min_z + max_z) / 2);
+	//mat4 transform = 
 
 	struct Vertex3D
 	{
-		glm::vec3 position;
-		glm::vec3 normal;
-		glm::vec2 texCoords;
+		v3 position;
+		v3 normal;
+		v2 texCoords;
 	};
 
 	// MESH
@@ -60,13 +59,13 @@ namespace MonGL
 		int elementLength;
 		Material mat;
 		int lineWidth;
-		glm::vec3 color;
+		v3 color;
 		// TODO(ck): Shouldn't be here? 
 		// should be initCollider i guess?
 		// this isn't just a position its a MATRIX its ALL of the 
 		// information its the rotation, position the size of it...
 		MonTexture::Texture texture;
-		glm::mat4 worldMatrix;
+		mat4 worldMatrix;
 		// TODO(ck): More collider specific info
 
 		ColliderSize size;
@@ -78,9 +77,9 @@ namespace MonGL
 
 	struct Vertex
 	{
-		glm::vec3 position;
-		glm::vec3 color;
-		glm::vec2 texCoords;
+		v3 position;
+		v3 color;
+		v2 texCoords;
 	};
 
 	struct BatchData
@@ -93,8 +92,8 @@ namespace MonGL
 	{
 		unsigned int VAO;
 		unsigned int VBO;
-		glm::mat4 pos;
-		glm::vec3 col;
+		mat4 pos;
+		v3 col;
 		MonTexture::Texture texture;
 
 	};
@@ -102,17 +101,16 @@ namespace MonGL
 	void initCharacter(RenderData* data, int shaderID, int TESTCHOOSE);
 	void initBoundingBox(RenderData* data);
 	void drawCharacter(RenderData* data,
-						 glm::vec3 playerPos, glm::vec3 scale, glm::vec3 camPos,
-						 glm::mat4 projection, glm::mat4 view,
+						 v3 playerPos, v3 scale, v3 camPos,
+						 mat4 projection, mat4 view,
 						 unsigned int shaderID);
 	void drawBoundingBox(RenderData* data,
-					 glm::vec3 playerPos, glm::vec3 camPos,
-					 glm::mat4 projection, glm::mat4 view,
+					 v3 playerPos, v3 camPos,
+					 mat4 projection, mat4 view,
 					 unsigned int shaderID);
 
 	void generateTerrain(RenderData* data);
-	void drawTerrain(unsigned int shaderID, RenderData* data, Light* light, glm::mat4 projection, glm::mat4 view,
-					 glm::vec3 camPos);
+	void drawTerrain(unsigned int shaderID, RenderData* data, Light* light, mat4 projection, mat4 view, v3 camPos);
 
 	
 	// 2d

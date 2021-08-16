@@ -1,34 +1,32 @@
 #include "mon_gl_render.h"
 
 #include <glad/glad.h>
-#include <glm/gtx/transform.hpp>
 
 #include <vector>
 
 namespace MonGL
 {
-
-	glm::vec3 GetSize(ColliderSize* size)
+	v3 GetSize(ColliderSize* size)
 	{
-		return glm::vec3(size->max.x - size->min.x, size->max.y - size->min.y, size->max.z - size->min.z);
+		return v3(size->max.x - size->min.x, size->max.y - size->min.y, size->max.z - size->min.z);
 	}
 
-	glm::vec3 GetCenter(ColliderSize* size)
+	v3 GetCenter(ColliderSize* size)
 	{
-		return glm::vec3((size->min.x + size->max.x) / 2, (size->min.y + size->max.y) / 2, (size->min.z + size->max.z) / 2);
+		return v3((size->min.x + size->max.x) / 2, (size->min.y + size->max.y) / 2, (size->min.z + size->max.z) / 2);
 	}
 
-	glm::mat4 GetTransform(ColliderSize* size)
+	mat4 GetTransform(ColliderSize* size)
 	{
-		return glm::translate(glm::mat4(1), GetCenter(size)) * glm::scale(glm::mat4(1), GetSize(size));
+		return translate(mat4(1), GetCenter(size)) * scale(mat4(1), GetSize(size));
 	}
 
 	void initCharacter(RenderData* data, int shaderID, int TESTCHOOSE)
 	{
-		data->vertices.push_back({ glm::vec3(0.5, 0.5, 0.0), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 1.0f) });
-		data->vertices.push_back({ glm::vec3(0.5, -0.5, 0.0), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 0.0f) });
-		data->vertices.push_back({ glm::vec3(-0.5,-0.5, 0.0), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f) });
-		data->vertices.push_back({ glm::vec3(-0.5, 0.5, 0.0), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 1.0f) });
+		data->vertices.push_back({ v3(0.5, 0.5, 0.0), v3(1.0f, 1.0f, 1.0f), v2(1.0f, 1.0f) });
+		data->vertices.push_back({ v3(0.5, -0.5, 0.0), v3(1.0f, 1.0f, 1.0f), v2(1.0f, 0.0f) });
+		data->vertices.push_back({ v3(-0.5,-0.5, 0.0), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 0.0f) });
+		data->vertices.push_back({ v3(-0.5, 0.5, 0.0), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 1.0f) });
 
 		unsigned int indices[] = {
 			0, 1, 3,
@@ -83,17 +81,17 @@ namespace MonGL
 	void initBoundingBox(RenderData* data)
 	{
 		data->lineWidth = 2;
-		data->color = glm::vec3(0.2, 0.7, 0.4);
+		data->color = v3(0.2, 0.7, 0.4);
 
-		data->vertices.push_back({ glm::vec3(-0.5, -0.5, -0.5), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f) });
-		data->vertices.push_back({ glm::vec3(0.5, -0.5, -0.5), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f) });
-		data->vertices.push_back({ glm::vec3(0.5, 0.5, -0.5), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f) });
-		data->vertices.push_back({ glm::vec3(-0.5, 0.5, -0.5), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f) });
+		data->vertices.push_back({ v3(-0.5, -0.5, -0.5), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 0.0f) });
+		data->vertices.push_back({ v3(0.5, -0.5, -0.5), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 0.0f) });
+		data->vertices.push_back({ v3(0.5, 0.5, -0.5), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 0.0f) });
+		data->vertices.push_back({ v3(-0.5, 0.5, -0.5), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 0.0f) });
 		
-		data->vertices.push_back({ glm::vec3(-0.5, -0.5, 0.5), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f) });
-		data->vertices.push_back({ glm::vec3(0.5, -0.5, 0.5), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f) });
-		data->vertices.push_back({ glm::vec3(0.5, 0.5, 0.5), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f) });
-		data->vertices.push_back({ glm::vec3(-0.5, 0.5, 0.5), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f) });
+		data->vertices.push_back({ v3(-0.5, -0.5, 0.5), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 0.0f) });
+		data->vertices.push_back({ v3(0.5, -0.5, 0.5), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 0.0f) });
+		data->vertices.push_back({ v3(0.5, 0.5, 0.5), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 0.0f) });
+		data->vertices.push_back({ v3(-0.5, 0.5, 0.5), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 0.0f) });
 
 		glGenVertexArrays(1, &data->VAO);
 		glGenBuffers(1, &data->VBO);
@@ -125,8 +123,8 @@ namespace MonGL
 		glBindVertexArray(0);
 
 		data->size = {};
-		data->size.min = glm::vec3(0.0f, 0.0f, 0.0f);
-		data->size.max = glm::vec3(2.0f, 2.0f, 2.0f);
+		data->size.min = v3(0.0f, 0.0f, 0.0f);
+		data->size.max = v3(2.0f, 2.0f, 2.0f);
 		// Set world matrix to be the same size as the bounding box
 		//data->worldMatrix = GetTransform(&data->size);
 
@@ -140,8 +138,8 @@ namespace MonGL
 	}
 
 	void drawCharacter(RenderData* data,
-						 glm::vec3 playerPos, glm::vec3 scale, glm::vec3 camPos,
-						 glm::mat4 projection, glm::mat4 view,
+						 v3 playerPos, v3 scale, v3 camPos,
+						 mat4 projection, mat4 view,
 						 unsigned int shaderID)
 	{
 
@@ -166,9 +164,9 @@ namespace MonGL
 		glUniform1i(glGetUniformLocation(shaderID, "collider"), true);
 		// ==============================================================================
 
-		glm::mat4 model = glm::mat4(1.0f);
+		mat4 model = mat4(1.0f);
 		model = glm::translate(model, playerPos);
-		model = glm::rotate(model, glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(-45.0f), v3{ 1.0f, 0.0f, 0.0f });
 		model = glm::scale(model, scale);
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		glBindVertexArray(data->VAO);
@@ -179,8 +177,8 @@ namespace MonGL
 	// TODO(ck): gl_DrawBoundingBox(size) 
 	// the collider will have a size
 	void drawBoundingBox(RenderData* data, 
-					 glm::vec3 playerPos, glm::vec3 camPos,
-					 glm::mat4 projection, glm::mat4 view, 
+					 v3 playerPos, v3 camPos,
+					 mat4 projection, mat4 view, 
 					 unsigned int shaderID)
 	{
 
@@ -201,7 +199,7 @@ namespace MonGL
 		glUniform1i(glGetUniformLocation(shaderID, "collider"), true);
 		// ==============================================================================
 
-		glm::mat4 model = data->worldMatrix * GetTransform(&data->size);
+		mat4 model = data->worldMatrix * GetTransform(&data->size);
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		glBindVertexArray(data->VAO);
 
@@ -295,9 +293,9 @@ namespace MonGL
 		delete[] indices;
 
 		data->mat = {};
-		data->mat.ambient = glm::vec3(1.0f, 0.5f, 0.6f);
-		data->mat.diffuse = glm::vec3(1.0f, 0.5f, 0.31f);
-		data->mat.specular = glm::vec3(0.5f, 0.5f, 0.5f);
+		data->mat.ambient = v3(1.0f, 0.5f, 0.6f);
+		data->mat.diffuse = v3(1.0f, 0.5f, 0.31f);
+		data->mat.specular = v3(0.5f, 0.5f, 0.5f);
 		data->mat.shininess = 32.0f;
 
 		//std::string textPath = "res/textures/terrain/1024multi.png";
@@ -314,8 +312,7 @@ namespace MonGL
 
 	}
 
-	void drawTerrain(unsigned int shaderID, RenderData* data, Light* light, glm::mat4 projection, glm::mat4 view,
-						glm::vec3 camPos)
+	void drawTerrain(unsigned int shaderID, RenderData* data, Light* light, mat4 projection, mat4 view, v3 camPos)
 	{
 		glUseProgram(shaderID);
 
@@ -335,12 +332,12 @@ namespace MonGL
 		glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camPos[0]);
 
 
-		glm::mat4 matModel = glm::mat4(1.0f);
+		mat4 matModel = mat4(1.0f);
 
-		//glm::mat4 matTranslate = glm::translate(glm::mat4(1.0f),
-		//										glm::vec3(terrain->x, 0.0f, terrain->z));
-		glm::mat4 matTranslate = glm::translate(glm::mat4(1.0f),
-												glm::vec3(0.0f, 0.0f, 0.0f));
+		//mat4 matTranslate = glm::translate(mat4(1.0f),
+		//										v3(terrain->x, 0.0f, terrain->z));
+		mat4 matTranslate = glm::translate(mat4(1.0f),
+												v3(0.0f, 0.0f, 0.0f));
 		matModel = matModel * matTranslate;
 
 		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), true);
@@ -480,35 +477,35 @@ namespace MonGL
 		float x = tileXPos;
 		float y = tileYPos;		
 		int size = 32;
-		Vertex v0 = {
-			glm::vec3(x, y, 0.0f),
-			glm::vec3(1.0f, 0.0f, 0.0f),
-			glm::vec2(bottomRightX, bottomRightY)	
+		Vertex vec0 = {
+			v3(x, y, 0.0f),
+			v3(1.0f, 0.0f, 0.0f),
+			v2(bottomRightX, bottomRightY)	
 		};
 
-		Vertex v1 = {
-			glm::vec3(x + size, y, 0.0f),
-			glm::vec3(0.0f, 1.0f, 0.0f),
-			glm::vec2(bottomLeftX, bottomLeftY)
+		Vertex vec1 = {
+			v3(x + size, y, 0.0f),
+			v3(0.0f, 1.0f, 0.0f),
+			v2(bottomLeftX, bottomLeftY)
 		};
 
-		Vertex v2 = {
-			glm::vec3(x + size, y + size, 0.0f),
-			glm::vec3(0.0f, 0.0f, 1.0f),
-			glm::vec2(topRightX, topRightY)
+		Vertex vec2 = {
+			v3(x + size, y + size, 0.0f),
+			v3(0.0f, 0.0f, 1.0f),
+			v2(topRightX, topRightY)
 		};
 
-		Vertex v3 = {
-			glm::vec3(x, y + size, 0.0f),
-			glm::vec3(1.0f, 1.0f, 0.0f),
-			glm::vec2(topLeftX, topLeftY)
+		Vertex vec3 = {
+			v3(x, y + size, 0.0f),
+			v3(1.0f, 1.0f, 0.0f),
+			v2(topLeftX, topLeftY)
 		};
 
 		usedIndices += 6;
-		tileVertices.push_back(v0);
-		tileVertices.push_back(v1);
-		tileVertices.push_back(v2);
-		tileVertices.push_back(v3);
+		tileVertices.push_back(vec0);
+		tileVertices.push_back(vec1);
+		tileVertices.push_back(vec2);
+		tileVertices.push_back(vec3);
 	}
 
 	void bindVertices()
@@ -571,7 +568,7 @@ namespace MonGL
 		// we calc it in the game and send the matrix to the
 		// renderer 
 		// CONVERT World matrix to drawing position
-		glm::mat4 model = glm::mat4(1.0f);
+		mat4 model = mat4(1.0f);
 		model * -data->pos;
 
 		//glUniformMatrix4fv(glGetUniformLocation(shader->id, "model"), 1, GL_FALSE, glm::value_ptr(model));
@@ -592,14 +589,14 @@ namespace MonGL
 		// TODO(ck): We don't calculate the matrix here
 		// we calc it in the game and send the matrix to the
 		// renderer 
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(obj->pos, 0.0f));
+		mat4 model = mat4(1.0f);
+		model = glm::translate(model, v3(obj->pos, 0.0f));
 
-		model = glm::translate(model, glm::vec3(0.5f * obj->size.x, 0.0f * obj->size.y, 0.0f));
-		model = glm::rotate(model, obj->rotation, glm::vec3(0.0f, 0.0f, 1.0f));
-		model = glm::translate(model, glm::vec3(-0.5f * obj->size.x, -0.5f * obj->size.y, 0.0f));
+		model = glm::translate(model, v3(0.5f * obj->size.x, 0.0f * obj->size.y, 0.0f));
+		model = glm::rotate(model, obj->rotation, v3(0.0f, 0.0f, 1.0f));
+		model = glm::translate(model, v3(-0.5f * obj->size.x, -0.5f * obj->size.y, 0.0f));
 
-		model = glm::scale(model, glm::vec3(obj->size, 1.0f));
+		model = glm::scale(model, v3(obj->size, 1.0f));
 
 		glUniformMatrix4fv(glGetUniformLocation(shader->id, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		glUniform3f(glGetUniformLocation(shader->id, "spriteColor"), obj->color.r, obj->color.g, obj->color.b);

@@ -22,7 +22,7 @@ bool App::init()
 {
 
 	// TODO(ck): Memory Allocation
-	platform = new SDLPlatform();
+	platform = new Mon::SDLPlatform();
 
 
 	if (!platform->init(SCREEN_WIDTH, SCREEN_HEIGHT, PORT_WIDTH, PORT_HEIGHT))
@@ -33,8 +33,8 @@ bool App::init()
 	//Platform->SetTitle(window, "Monster");
 
 	// TODO(ck): Memory Allocation
-	oldInput = new Input();
-	newInput = new Input();
+	oldInput = new Mon::Input();
+	newInput = new Mon::Input();
 	//oldInput = &input[0];
 	//newInput = &input[1];
 	game = new Mon::Game();
@@ -182,7 +182,7 @@ void App::run()
 		// TODO(ck): Platform->swapWindow()
 		SDL_GL_SwapWindow(platform->window);
 
-		Input* temp = newInput;
+		Mon::Input* temp = newInput;
 		newInput = oldInput;
 		oldInput = temp;
 	}

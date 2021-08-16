@@ -6,30 +6,65 @@ namespace Mon
 
 	Camera::Camera()
 	{
-		worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+		worldUp = v3(0.0f, 1.0f, 0.0f);
 
-		pos = glm::vec3(13.0f, 13.0f, 40.0f);
-		front = glm::vec3(0.0f, 0.0f, -1.0f);
+		pos = v3(1.0f);
+		front = v3(0.0f, 0.0f, -1.0f);
 
 		//direction = glm::normalize(pos - target);
-		//right = glm::vec3(1.0f);
+		//right = v3(1.0f);
 		//up = glm::cross(direction, right);
 		speed = 30.0f;
 		disabled = false;
-		yaw = -90.0f;
-		pitch = -18.0f;
+		yaw = 0.0f;
+		pitch = 20.0f;
 		zoom = 45.0f;
 		mouseSensitivity = 0.1f;
 
 		nearPlane = 0.1f;
 		farPlane = 1000.0f;
 
+		distanceFromTarget = 10.0f;
+		angleAroundTarget = 180.0f;
+
 		calculateCameraVectors();
 	}
 
-	glm::mat4 Camera::viewMatrix()
+	mat4 Camera::viewMatrix()
 	{
-		return glm::lookAt(pos, pos + front, up);
+		//return glm::lookAt(pos, pos + front, up);
+
+		// different view matrix
+		glm::mat4 viewMatrix = glm::mat4(1.0f);
+		viewMatrix = glm::rotate(viewMatrix, glm::radians(pitch), glm::vec3(1, 0, 0));
+		viewMatrix = glm::rotate(viewMatrix, glm::radians(yaw), glm::vec3(0, 1, 0));
+		glm::vec3 cameraPos = pos;
+		glm::vec3 negativeCameraPos = glm::vec3(-cameraPos.x, -cameraPos.y, -cameraPos.z);
+		glm::mat4 translate = glm::translate(glm::mat4(1.0f), negativeCameraPos);
+		viewMatrix = viewMatrix * translate;
+
+		return viewMatrix;
+	}
+
+	void Camera::move(v3 tPos, v3 tOrientation)
+	{
+		// these are being done every frame.....
+		// calczoom 
+		// calcpitch
+		// calculateanglearoundplayer
+		// ---------------
+
+		float offsety = 2.0f;
+
+		float horizontalDistance = (float)(distanceFromTarget * cosf(glm::radians(pitch)));
+		float verticalDistance = (float)(distanceFromTarget * sinf(glm::radians(pitch)));
+		float theta = glm::radians(tOrientation.y) + angleAroundTarget;
+		float offsetx = horizontalDistance * sinf(glm::radians(theta));
+		float offsetz = horizontalDistance * cosf(glm::radians(theta));
+		pos.x = tPos.x - offsetx;
+		pos.z = tPos.z - offsetz;
+		pos.y = (tPos.y + verticalDistance) + offsety; // need some kind of offset for the target so the camera doesn't point at the floot
+		yaw = 180 - (glm::radians(tOrientation.y) + angleAroundTarget);
 	}
 
 	void Camera::update(double dt, Input* input, bool constrainPitch)
@@ -43,14 +78,24 @@ namespace Mon
 		{
 			mouseInput(input->mouseOffset, constrainPitch);
 			// TODO(ck): joystickInput
-			mouseInput(input->stickDir, constrainPitch);
+			//mouseInput(input->stickDir, constrainPitch);
+			//calculateAngleAroundTarget(input->mouseOffset);
 			calculateCameraVectors();
 		}
 	}
 
+	void Camera::calculateAngleAroundTarget(v2 offset)
+	{
+		//if (g_Game->leftMousePressed)
+		//{
+		float angle = offset.x * 0.3f; // sensitivity
+		this->angleAroundTarget -= angle;
+		//}
+	}
+
 	void Camera::calculateCameraVectors()
 	{
-		glm::vec3 frontResult;
+		v3 frontResult = {};
 		frontResult.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 		frontResult.y = sin(glm::radians(pitch));
 		frontResult.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
@@ -61,7 +106,7 @@ namespace Mon
 	}
 
 
-	void Camera::mouseInput(glm::vec2 offset, bool constrainPitch)
+	void Camera::mouseInput(v2 offset, bool constrainPitch)
 	{
 		offset.x *= mouseSensitivity;
 		offset.y *= mouseSensitivity;

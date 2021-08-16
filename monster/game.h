@@ -7,9 +7,6 @@
 #include <glad/glad.h>
 #include <SDL/SDL.h>
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 #include "mon_debug_camera.h"
 //#include "mon_terrain.h"
@@ -46,9 +43,10 @@ namespace Mon
 	// Get to this starts pg49 Ian Millington
 	struct Particle
 	{
-		glm::vec3 pos;
-		glm::vec3 velocity;
-		glm::vec3 acceleration;
+		v3 pos;
+		v3 velocity;
+		v3 acceleration;
+		v3 orientation;
 
 		Direction dir = Direction::FORWARD;
 
@@ -73,8 +71,8 @@ namespace Mon
 
 	struct CameraTwo
 	{
-		glm::vec2 pos;
-		glm::vec2 target;
+		v2 pos;
+		v2 target;
 		float zoom;
 
 
@@ -84,7 +82,7 @@ namespace Mon
 	{
 	public:
 		bool init();
-		void movePlayer(glm::vec3* velocity);
+		void movePlayer(v3* velocity);
 		void update(double dt, Input* newInput);
 		void render(double dt);
 		void cleanUp();

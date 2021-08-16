@@ -7,11 +7,11 @@
 class App
 {
 public:
-	Platform* platform; /* SDLPlatform */
+	Mon::Platform* platform; /* SDLPlatform */
 	Mon::Game* game;
 	bool running = true;
-	Input* oldInput;
-	Input* newInput;
+	Mon::Input* oldInput;
+	Mon::Input* newInput;
 
 	bool init();
 	void run();
