@@ -166,7 +166,7 @@ namespace MonGL
 
 		mat4 model = mat4(1.0f);
 		model = glm::translate(model, playerPos);
-		model = glm::rotate(model, glm::radians(-45.0f), v3{ 1.0f, 0.0f, 0.0f });
+		model = glm::rotate(model, glm::radians(-25.0f), v3{ 1.0f, 0.0f, 0.0f });
 		model = glm::scale(model, scale);
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		glBindVertexArray(data->VAO);

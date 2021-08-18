@@ -15,7 +15,6 @@ namespace Mon
 		//right = v3(1.0f);
 		//up = glm::cross(direction, right);
 		speed = 30.0f;
-		disabled = false;
 		yaw = 0.0f;
 		pitch = 20.0f;
 		zoom = 45.0f;
@@ -26,15 +25,26 @@ namespace Mon
 
 		distanceFromTarget = 10.0f;
 		angleAroundTarget = 180.0f;
+		follow = false;
 
 		calculateCameraVectors();
 	}
 
 	mat4 Camera::viewMatrix()
 	{
-		//return glm::lookAt(pos, pos + front, up);
+		if (follow)
+			return followViewMatrix();
+		else
+			return debugViewMatrix();
+	}
 
-		// different view matrix
+	mat4 Camera::debugViewMatrix()
+	{
+		return glm::lookAt(pos, pos + front, up);
+	}
+
+	mat4 Camera::followViewMatrix()
+	{
 		glm::mat4 viewMatrix = glm::mat4(1.0f);
 		viewMatrix = glm::rotate(viewMatrix, glm::radians(pitch), glm::vec3(1, 0, 0));
 		viewMatrix = glm::rotate(viewMatrix, glm::radians(yaw), glm::vec3(0, 1, 0));
@@ -67,20 +77,22 @@ namespace Mon
 		yaw = 180 - (glm::radians(tOrientation.y) + angleAroundTarget);
 	}
 
-	void Camera::update(double dt, Input* input, bool constrainPitch)
+	void Camera::update(double dt, Input* input, v3 pos, v3 orientation, bool constrainPitch)
 	{
-		if (disabled == false)
+		if (follow)
+		{
+			move(pos, orientation);
+		}
+		else
 		{
 			keyInput(dt, input);
-		}
-
-		if (input->leftMouseButton.endedDown)
-		{
-			mouseInput(input->mouseOffset, constrainPitch);
-			// TODO(ck): joystickInput
-			//mouseInput(input->stickDir, constrainPitch);
-			//calculateAngleAroundTarget(input->mouseOffset);
-			calculateCameraVectors();
+			if (input->leftMouseButton.endedDown)
+			{
+				mouseInput(input->mouseOffset, constrainPitch);
+				// TODO(ck): joystickInput
+				//mouseInput(input->stickDir, constrainPitch;
+				calculateCameraVectors();
+			}
 		}
 	}
 
@@ -142,5 +154,18 @@ namespace Mon
 		if (input->shift.endedDown)
 			speed /= 2.0f;
 
+	}
+
+	void Camera::followOn()
+	{
+		follow = true;
+		yaw = 0.0f;
+		pitch = 20.0f;
+		front = v3(0.0f, 0.0f, -1.0f);
+	}
+
+	void Camera::followOff()
+	{
+		follow = false;
 	}
 }

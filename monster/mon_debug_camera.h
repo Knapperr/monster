@@ -5,22 +5,24 @@
 
 namespace Mon
 {
-
 	class Camera
 	{
 	public:
 		Camera();
-		void update(double dt, Input* input, bool constrainPitch = true);
+		void update(double dt, Input* input, v3 pos, v3 orientation, bool constrainPitch = true);
 		void move(v3 tPos, v3 tOrientation);
 		void getKeyboardInput();
+		void followOn();
+		void followOff();
 		mat4 viewMatrix();
+		mat4 debugViewMatrix();
+		mat4 followViewMatrix();
 		v3 pos;
 		v3 front;
 		v3 right;
 		float speed;
 		float zoom;
-		bool disabled;
-		bool following;
+		bool follow;
 
 		float nearPlane;
 		float farPlane;

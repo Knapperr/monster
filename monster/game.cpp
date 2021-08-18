@@ -103,6 +103,7 @@ namespace Mon
 		//terrain->generate();
 
 		simulate = false;
+		
 		drawCollisions = true;
 		return true;
 	}
@@ -157,7 +158,7 @@ namespace Mon
 		//
  
 		// TODO(ck): TEMP INPUT
-		if (cam.disabled == true)
+		if (cam.follow == true)
 		{
 		
 			//player.particle.velocity = {};
@@ -192,9 +193,7 @@ namespace Mon
 			//player.particle.pos.x += player.particle.velocity.x * dt;
 			//player.particle.pos.z += player.particle.velocity.z * dt;
 		}
-		cam.move(player.particle.pos, player.particle.orientation);
-		// TODO(ck): toggle between debug
-		//cam.update(deltaTime, &input, true);
+		cam.update(deltaTime, &input, player.particle.pos, player.particle.orientation, true);
 
 		//if (simulate == true)
 			//player.particle.integrate(deltaTime);

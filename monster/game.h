@@ -74,8 +74,6 @@ namespace Mon
 		v2 pos;
 		v2 target;
 		float zoom;
-
-
 	};
 
 	class Game

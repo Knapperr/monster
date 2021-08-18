@@ -210,9 +210,16 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 	ImGui::Checkbox("Terrain", &showTerrainWindow);
 	ImGui::SameLine();
 	ImGui::Checkbox("Camera", &showCameraWindow);
-	ImGui::SameLine();
 
-	ImGui::Checkbox("camera disabled", &game->cam.disabled);
+	if (ImGui::Button("follow on", { 96.0f, 16.0f })) { game->cam.followOn(); }
+	ImGui::SameLine();
+	if (ImGui::Button("follow off", { 96.0f, 16.0f })) { game->cam.followOff(); }
+
+
+	// just make button you press that restarts the camera
+	// pass it a boolean from gui?? no we don't want to keep
+	// track of state
+	//ImGui::Button("debug camera on", )
 
 	/// 
 	/// Player 
