@@ -49,6 +49,8 @@ namespace Mon
 
 	bool Game::init()
 	{
+		state = State::Debug;
+
 		shader = {};
 		MonShader::LoadShader(&shader, "res/shaders/vert_colors.glsl", "res/shaders/frag_colors.glsl", NULL);
 
@@ -158,10 +160,11 @@ namespace Mon
 		//
  
 		// TODO(ck): TEMP INPUT
-		if (cam.follow == true)
-		{
+
 		
-			//player.particle.velocity = {};
+		//player.particle.velocity = {};
+		if (state == State::Play && cam.follow)
+		{
 			v3 velocity = {};
 
 			if (input.up.endedDown)
@@ -189,10 +192,11 @@ namespace Mon
 
 			// PIPE velocity to function
 			movePlayer(&velocity);
-			//player.particle.velocity *= player.particle.speed;
-			//player.particle.pos.x += player.particle.velocity.x * dt;
-			//player.particle.pos.z += player.particle.velocity.z * dt;
 		}
+		//player.particle.velocity *= player.particle.speed;
+		//player.particle.pos.x += player.particle.velocity.x * dt;
+		//player.particle.pos.z += player.particle.velocity.z * dt;
+		
 		cam.update(deltaTime, &input, player.particle.pos, player.particle.orientation, true);
 
 		//if (simulate == true)
@@ -312,7 +316,6 @@ namespace Mon
 
 		//if (state->deltaTime != dt)
 			//state->deltaTime = dt;
-
 		Entity* p = world->player;
 
 		p->velocity = {};

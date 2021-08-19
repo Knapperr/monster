@@ -199,6 +199,12 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 
 	ImGui::Begin("DEBUG MENU");
 
+	ImGui::Separator();
+	ImGui::RadioButton("debug", &game->state, Mon::State::Debug);
+	ImGui::SameLine();
+	ImGui::RadioButton("play", &game->state, Mon::State::Play);
+	ImGui::Separator();
+
 	ImGui::LabelText(std::to_string(game->deltaTime).c_str(), "dt:");
 
 	ImGui::Checkbox("Demo", &showDemoWindow);
@@ -211,9 +217,15 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 	ImGui::SameLine();
 	ImGui::Checkbox("Camera", &showCameraWindow);
 
+	ImGui::Separator();
 	if (ImGui::Button("follow on", { 96.0f, 16.0f })) { game->cam.followOn(); }
 	ImGui::SameLine();
 	if (ImGui::Button("follow off", { 96.0f, 16.0f })) { game->cam.followOff(); }
+	ImGui::Separator();
+
+	ImGui::SliderFloat("camera angle", &game->cam.angleAroundTarget, -360.0f, 180.0f);
+	ImGui::SliderFloat("camera pitch", &game->cam.pitch, -1.10f, 100.0f, "%1.0f");
+
 
 
 	// just make button you press that restarts the camera

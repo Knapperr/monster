@@ -16,7 +16,7 @@ namespace Mon
 		//up = glm::cross(direction, right);
 		speed = 30.0f;
 		yaw = 0.0f;
-		pitch = 20.0f;
+		pitch = 60.0f;
 		zoom = 45.0f;
 		mouseSensitivity = 0.1f;
 
@@ -160,7 +160,7 @@ namespace Mon
 	{
 		follow = true;
 		yaw = 0.0f;
-		pitch = 20.0f;
+		pitch = 60.0f;
 		front = v3(0.0f, 0.0f, -1.0f);
 	}
 

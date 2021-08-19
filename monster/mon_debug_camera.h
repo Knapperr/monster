@@ -29,6 +29,8 @@ namespace Mon
 
 		float yaw;
 		float pitch;
+		float angleAroundTarget;
+
 
 	private:
 		v3 target;
@@ -38,7 +40,6 @@ namespace Mon
 
 		float mouseSensitivity;
 		float distanceFromTarget;
-		float angleAroundTarget;
 
 		void keyInput(double dt, Input* input);
 		void mouseInput(v2 offset, bool constrainPitch);

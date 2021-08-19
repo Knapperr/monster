@@ -76,6 +76,12 @@ namespace Mon
 		float zoom;
 	};
 
+	enum State
+	{
+		Debug,
+		Play
+	};
+
 	class Game
 	{
 	public:
@@ -106,6 +112,9 @@ namespace Mon
 		std::vector<EntityTwo> enemies;
 		bool simulate;
 		bool drawCollisions;
+
+		// Note(ck): Current game state - State::Debug is default
+		int state; 
 
 		// TODO(ck): 
 		// Shader lives in the opengl renderer
