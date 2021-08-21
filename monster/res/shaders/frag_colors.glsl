@@ -47,7 +47,14 @@ void main()
 {
     if (useTexture)
     {
-        FragColor = texture(texture_diffuse1, TexCoords);
+        // Remove white pixels on texture
+        vec4 texColor = texture(texture_diffuse1, TexCoords);
+        if (texColor.a < 0.1)
+        {
+            discard;
+        }
+
+       // FragColor = texture(texture_diffuse1, TexCoords);
         if (pixelTexture)
         {
             vec2 vres = textureSize(texture_diffuse1, 0);

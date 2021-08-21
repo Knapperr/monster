@@ -106,12 +106,16 @@ namespace Mon
 		CameraTwo camera;
 		Input input;
 		
+		MonGL::Config* config;
+
 		// TODO(ck): Use one container
 		EntityTwo player;
 		std::vector<EntityTwo> trees;
 		std::vector<EntityTwo> enemies;
 		bool simulate;
 		bool drawCollisions;
+
+
 
 		// Note(ck): Current game state - State::Debug is default
 		int state; 

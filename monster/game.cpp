@@ -76,7 +76,7 @@ namespace Mon
 		{
 			EntityTwo tree = {};
 			MonGL::initCharacter(&tree.data, shader.id, 2);
-			tree.particle.pos = v3(2.0f * i, 0.1f, 5.5f * i);
+			tree.particle.pos = v3(6.0f * (i + 1), 0.1f, 5.5f * i);
 			trees.push_back(tree);
 		}
 
@@ -84,7 +84,7 @@ namespace Mon
 		{
 			EntityTwo entity = {};
 			MonGL::initBoundingBox(&entity.colliderData);
-			entity.particle.pos = v3(10.0f * i, 0.1f, 1.5f * i);
+			entity.particle.pos = v3((8.0f * (i + 1)), 0.1f, 1.5f * i);
 			mat4 model = mat4(1.0f);
 			entity.colliderData.worldMatrix = glm::translate(model, entity.particle.pos);
 			entity.colliderData.color = v3(0.0f, 0.0f, 0.0f);
@@ -105,6 +105,10 @@ namespace Mon
 		//terrain->generate();
 
 		simulate = false;
+		
+
+		config = new MonGL::Config();
+		config->angleDegrees = -45.0f;
 		
 		drawCollisions = true;
 		return true;
@@ -226,7 +230,7 @@ namespace Mon
 		if (drawCollisions)
 			MonGL::drawBoundingBox(&player.colliderData, player.particle.pos, cam.pos, projection, view, shader.id);
 
-		MonGL::drawCharacter(&player.data, player.particle.pos, v3(1.0f), cam.pos, projection, view, shader.id);
+		MonGL::drawCharacter(config, &player.data, player.particle.pos, v3(1.0f), cam.pos, projection, view, shader.id);
 
 		for (auto& e : enemies)
 		{
@@ -234,8 +238,10 @@ namespace Mon
 		}
 		for (auto& e : trees)
 		{
-			MonGL::drawCharacter(&e.data, e.particle.pos, v3(1.0f, 10.0f, 10.0f), cam.pos, projection, view, shader.id);
+			MonGL::drawCharacter(config, &e.data, e.particle.pos, v3(1.0f, 10.0f, 10.0f), cam.pos, projection, view, shader.id);
 		}
+
+
 	}
 
 	void Game::cleanUp()

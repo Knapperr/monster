@@ -8,7 +8,7 @@ namespace Mon
 	{
 		worldUp = v3(0.0f, 1.0f, 0.0f);
 
-		pos = v3(1.0f);
+		pos = v3(29.0f, 17.0f, 46.0f);
 		front = v3(0.0f, 0.0f, -1.0f);
 
 		//direction = glm::normalize(pos - target);
@@ -16,8 +16,8 @@ namespace Mon
 		//up = glm::cross(direction, right);
 		speed = 30.0f;
 		yaw = 0.0f;
-		pitch = 60.0f;
-		zoom = 45.0f;
+		pitch = -34.0f;
+		zoom = 40.0f;
 		mouseSensitivity = 0.1f;
 
 		nearPlane = 0.1f;

@@ -75,7 +75,6 @@ namespace MonGL
 
 			glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
 		}
-
 	}
 
 	void initBoundingBox(RenderData* data)
@@ -137,10 +136,10 @@ namespace MonGL
 		//glEnableVertexAttribArray(2);
 	}
 
-	void drawCharacter(RenderData* data,
-						 v3 playerPos, v3 scale, v3 camPos,
-						 mat4 projection, mat4 view,
-						 unsigned int shaderID)
+	void drawCharacter(Config* config, RenderData* data,
+						v3 playerPos, v3 scale, v3 camPos,
+						mat4 projection, mat4 view,
+						unsigned int shaderID)
 	{
 
 		// ==============================================================================
@@ -161,12 +160,12 @@ namespace MonGL
 		glBindTexture(GL_TEXTURE_2D, data->texture.id);
 
 		glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
-		glUniform1i(glGetUniformLocation(shaderID, "collider"), true);
+		glUniform1i(glGetUniformLocation(shaderID, "collider"), false);
 		// ==============================================================================
 
 		mat4 model = mat4(1.0f);
 		model = glm::translate(model, playerPos);
-		model = glm::rotate(model, glm::radians(-65.0f), v3{ 1.0f, 0.0f, 0.0f });
+		model = glm::rotate(model, glm::radians(config->angleDegrees), v3{ 1.0f, 0.0f, 0.0f });
 		model = glm::scale(model, scale);
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		glBindVertexArray(data->VAO);
@@ -341,6 +340,8 @@ namespace MonGL
 		matModel = matModel * matTranslate;
 
 		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), true);
+		glUniform1i(glGetUniformLocation(shaderID, "pixelTexture"), true);
+
 
 		//glBindTexture(GL_TEXTURE_2D, terrain->selectedTextureId);
 		glBindTexture(GL_TEXTURE_2D, data->texture.id);

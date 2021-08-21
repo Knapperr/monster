@@ -104,6 +104,15 @@ void CameraWindow(bool* p_open, Mon::Game* game)
 	ImGui::End();
 }
 
+void EntityWindow(bool* p_open, Mon::Game* game)
+{
+	ImGui::Begin("objects and things", p_open);
+
+	ImGui::DragFloat("player sprite angle", &game->config->angleDegrees, 0.10f, -180.0f, 360.0f, "%.10f");
+
+	ImGui::End();
+}
+
 void StatsWindow(bool* p_open, Mon::Game* game)
 {
 	ImGui::Begin("stats for me", p_open);
@@ -188,6 +197,7 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 	static bool showTerrainWindow = false;
 	static bool showCameraWindow = false;
 	static bool showStatsWindow = false;
+	static bool showEntityWindow = false;
 	if (showDemoWindow)
 		ImGui::ShowDemoWindow(&showDemoWindow);
 	if (showTerrainWindow)
@@ -196,6 +206,8 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 		CameraWindow(&showCameraWindow, game);
 	if (showStatsWindow)
 		StatsWindow(&showStatsWindow, game);
+	if (showEntityWindow)
+		EntityWindow(&showEntityWindow, game);
 
 	ImGui::Begin("DEBUG MENU");
 
@@ -216,6 +228,8 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 	ImGui::Checkbox("Terrain", &showTerrainWindow);
 	ImGui::SameLine();
 	ImGui::Checkbox("Camera", &showCameraWindow);
+	ImGui::SameLine();
+	ImGui::Checkbox("Things", &showEntityWindow);
 
 	ImGui::Separator();
 	if (ImGui::Button("follow on", { 96.0f, 16.0f })) { game->cam.followOn(); }

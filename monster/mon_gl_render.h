@@ -98,9 +98,14 @@ namespace MonGL
 
 	};
 
+	struct Config
+	{
+		float angleDegrees;
+	};
+
 	void initCharacter(RenderData* data, int shaderID, int TESTCHOOSE);
 	void initBoundingBox(RenderData* data);
-	void drawCharacter(RenderData* data,
+	void drawCharacter(Config* config, RenderData* data,
 						 v3 playerPos, v3 scale, v3 camPos,
 						 mat4 projection, mat4 view,
 						 unsigned int shaderID);
