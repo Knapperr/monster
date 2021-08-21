@@ -108,7 +108,7 @@ namespace Mon
 		
 
 		config = new MonGL::Config();
-		config->angleDegrees = -45.0f;
+		config->angleDegrees = -30.0f;
 		
 		drawCollisions = true;
 		return true;

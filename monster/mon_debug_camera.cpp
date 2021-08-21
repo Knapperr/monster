@@ -160,7 +160,7 @@ namespace Mon
 	{
 		follow = true;
 		yaw = 0.0f;
-		pitch = 60.0f;
+		pitch = 40.0f;
 		front = v3(0.0f, 0.0f, -1.0f);
 	}
 
