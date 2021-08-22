@@ -5,7 +5,7 @@
 #include <sstream>
 #include <fstream>
 
-namespace MonShader
+namespace MonGL
 {
 
 	unsigned int CompileShader(const char* source, GLenum shaderType)

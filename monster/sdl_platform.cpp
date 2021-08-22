@@ -131,7 +131,8 @@ namespace Mon
 			newInput->buttons[buttonIndex].endedDown = oldInput->buttons[buttonIndex].endedDown;
 		}
 
-		newInput->leftMouseButton.endedDown = oldInput->leftMouseButton.endedDown;
+		newInput->lMouseBtn.endedDown = oldInput->lMouseBtn.endedDown;
+		newInput->rMouseBtn.endedDown = oldInput->rMouseBtn.endedDown;
 
 		// TODO(ck): Add to loop mouse[] something like that
 		newInput->mouseOffset = oldInput->mouseOffset;
@@ -178,20 +179,23 @@ namespace Mon
 				//if (e.button.button == SDL_BUTTON_LEFT)
 				if (e.button.button == SDL_BUTTON_LEFT && isGuiActive == false)
 				{
-					processKeyboard(&newInput->leftMouseButton, true);
+					processKeyboard(&newInput->lMouseBtn, true);
 
 					SDL_SetRelativeMouseMode(SDL_TRUE);
 					relativeMouseMode = true;
 					lastXAfterPress = newInput->mouseXScreen;
 					lastYAfterPress = newInput->mouseYScreen;
-
+				}
+				if (e.button.button == SDL_BUTTON_RIGHT)
+				{
+					processKeyboard(&newInput->rMouseBtn, true);
 				}
 			}
 			else if (e.type == SDL_MOUSEBUTTONUP)
 			{
 				if (e.button.button == SDL_BUTTON_LEFT)
 				{
-					processKeyboard(&newInput->leftMouseButton, false);
+					processKeyboard(&newInput->lMouseBtn, false);
 
 					if (isGuiActive == false)
 					{
@@ -199,6 +203,10 @@ namespace Mon
 						relativeMouseMode = false;
 						SDL_WarpMouseInWindow(window, lastXAfterPress, lastYAfterPress);
 					}
+				}
+				if (e.button.button == SDL_BUTTON_RIGHT)
+				{
+					processKeyboard(&newInput->rMouseBtn, false);
 				}
 			}
 			else if (e.type == SDL_KEYDOWN || e.type == SDL_KEYUP)
@@ -238,20 +246,20 @@ namespace Mon
 
 							xDir = -1;
 							newInput->stickDir.x = -2;
-							//processKeyboard(&newInput->left, true);
+							processKeyboard(&newInput->left, true);
 						}
 						else if (e.jaxis.value > JOYSTICK_DEAD_ZONE)
 						{
 							xDir = 1;
 							newInput->stickDir.x = 2;
-							//processKeyboard(&newInput->right, true);
+							processKeyboard(&newInput->right, true);
 						}
 						else
 						{
 							xDir = 0;
 							newInput->stickDir.x = 0;
-							//processKeyboard(&newInput->left, false);
-							//processKeyboard(&newInput->right, false);
+							processKeyboard(&newInput->left, false);
+							processKeyboard(&newInput->right, false);
 						}
 					}
 					if (e.jaxis.axis == 1)
@@ -260,24 +268,22 @@ namespace Mon
 						{
 							yDir = -1;
 							newInput->stickDir.y = 2;
-							//processKeyboard(&newInput->up, true);
+							processKeyboard(&newInput->up, true);
 						}
 						else if (e.jaxis.value > JOYSTICK_DEAD_ZONE)
 						{
 							yDir = 1;
 							newInput->stickDir.y = -2;
-							//processKeyboard(&newInput->down, true);
+							processKeyboard(&newInput->down, true);
 						}
 						else
 						{
 							yDir = 0;
 							newInput->stickDir.y = 0;
-							//processKeyboard(&newInput->up, false);
-							//processKeyboard(&newInput->down, false);
+							processKeyboard(&newInput->up, false);
+							processKeyboard(&newInput->down, false);
 						}
 					}
-
-
 
 					newInput->rightStickValue = e.jaxis.value / 32767.0f;;
 					newInput->rightStickAxis = e.jaxis.axis;

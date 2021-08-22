@@ -135,7 +135,7 @@ void StatsWindow(bool* p_open, Mon::Game* game)
 	snprintf(buffer, sizeof(buffer), "%f", game->input.rightStickValue);
 	ImGui::LabelText(buffer, "stick value");
 
-	snprintf(buffer, sizeof(buffer), "%d", game->input.leftMouseButton.endedDown);
+	snprintf(buffer, sizeof(buffer), "%d", game->input.lMouseBtn.endedDown);
 	ImGui::LabelText(buffer, "left mouse down");
 
 	//snprintf(buffer, sizeof(buffer), "%d", GuiActive(false));

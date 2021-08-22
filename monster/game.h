@@ -61,7 +61,7 @@ namespace Mon
 
 	};
 
-	struct EntityTwo
+	struct Entity
 	{
 		Particle particle;
 		MonGL::RenderData data;
@@ -109,9 +109,10 @@ namespace Mon
 		MonGL::Config* config;
 
 		// TODO(ck): Use one container
-		EntityTwo player;
-		std::vector<EntityTwo> trees;
-		std::vector<EntityTwo> enemies;
+		//EntityTwo* entites;
+		Entity player;
+		std::vector<Entity> trees;
+		std::vector<Entity> enemies;
 		bool simulate;
 		bool drawCollisions;
 
@@ -122,8 +123,8 @@ namespace Mon
 
 		// TODO(ck): 
 		// Shader lives in the opengl renderer
-		MonShader::Shader shader;
-		MonShader::Shader tileShader;
+		MonGL::Shader shader;
+		MonGL::Shader tileShader;
 
 		double deltaTime;
 		MonGL::Light light;

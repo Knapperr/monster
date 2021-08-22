@@ -15,7 +15,7 @@ public:
 	bool drawTexture;
 
 	//Grass grass;
-	MonShader::Shader shader;
+	MonGL::Shader shader;
 	MonGL::RenderData mesh;
 	// Shader* grassShader;
 	int* textureIds;

@@ -54,7 +54,7 @@ void main()
             discard;
         }
 
-       // FragColor = texture(texture_diffuse1, TexCoords);
+        // FragColor = texture(texture_diffuse1, TexCoords);
         if (pixelTexture)
         {
             vec2 vres = textureSize(texture_diffuse1, 0);

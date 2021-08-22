@@ -21,12 +21,12 @@ namespace MonGL
 		return translate(mat4(1), GetCenter(size)) * scale(mat4(1), GetSize(size));
 	}
 
-	void initCharacter(RenderData* data, int shaderID, int TESTCHOOSE)
+	void initQuad(RenderData* data, int shaderID, std::string texturePath)
 	{
-		data->vertices.push_back({ v3(0.5, 0.5, 0.0), v3(1.0f, 1.0f, 1.0f), v2(1.0f, 1.0f) });
-		data->vertices.push_back({ v3(0.5, -0.5, 0.0), v3(1.0f, 1.0f, 1.0f), v2(1.0f, 0.0f) });
-		data->vertices.push_back({ v3(-0.5,-0.5, 0.0), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 0.0f) });
-		data->vertices.push_back({ v3(-0.5, 0.5, 0.0), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 1.0f) });
+		data->vertices.push_back({ v3(0.5f, 0.5f, 0.0f), v3(1.0f, 1.0f, 1.0f), v2(1.0f, 1.0f) });
+		data->vertices.push_back({ v3(0.5f, -0.5f, 0.0f), v3(1.0f, 1.0f, 1.0f), v2(1.0f, 0.0f) });
+		data->vertices.push_back({ v3(-0.5f,-0.5f, 0.0f), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 0.0f) });
+		data->vertices.push_back({ v3(-0.5f, 0.5f, 0.0f), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 1.0f) });
 
 		unsigned int indices[] = {
 			0, 1, 3,
@@ -39,7 +39,6 @@ namespace MonGL
 		glGenBuffers(1, &EBO);
 
 		glBindVertexArray(data->VAO);
-
 		glBindBuffer(GL_ARRAY_BUFFER, data->VBO);
 		glBufferData(GL_ARRAY_BUFFER, data->vertices.size() * sizeof(Vertex3D), &data->vertices[0], GL_STATIC_DRAW);
 		
@@ -47,34 +46,23 @@ namespace MonGL
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 		
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)0);
 		
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, normal));
 		
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, texCoords));
 
+		// unbind
+		glBindVertexArray(0);
 
-		if (TESTCHOOSE == 1)
-		{
-			std::string textPath = "res/textures/p1.png";
-			std::string textDir = textPath.substr(0, textPath.find_last_of('/'));
-			data->texture = {};
-			MonTexture::LoadTextureFile(&data->texture, textPath.c_str(), false, true, true);
+		std::string textDir = texturePath.substr(0, texturePath.find_last_of('/'));
+		data->texture = {};
+		MonTexture::LoadTextureFile(&data->texture, texturePath.c_str(), false, true, true);
 
-			glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
-		}
-		if (TESTCHOOSE == 2)
-		{
-			std::string textPath = "res/textures/tree.png";
-			std::string textDir = textPath.substr(0, textPath.find_last_of('/'));
-			data->texture = {};
-			MonTexture::LoadTextureFile(&data->texture, textPath.c_str(), false, true, true);
-
-			glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
-		}
+		glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
 	}
 
 	void initBoundingBox(RenderData* data)
@@ -136,7 +124,7 @@ namespace MonGL
 		//glEnableVertexAttribArray(2);
 	}
 
-	void drawCharacter(Config* config, RenderData* data,
+	void drawQuad(Config* config, RenderData* data,
 						v3 playerPos, v3 scale, v3 camPos,
 						mat4 projection, mat4 view,
 						unsigned int shaderID)
@@ -541,7 +529,7 @@ namespace MonGL
 		//_lastVertex = vVertices[vVertices.size() - 1];
 	}
 
-	void drawMap(MonShader::Shader* shader, unsigned int textureID)
+	void drawMap(Shader* shader, unsigned int textureID)
 	{
 		glUseProgram(shader->id);
 
@@ -561,7 +549,7 @@ namespace MonGL
 		//_config.iPriority = 0;
 	}
 
-	void drawObject(MonShader::Shader* shader, RenderData2D* data)
+	void drawObject(Shader* shader, RenderData2D* data)
 	{
 		glUseProgram(shader->id);
 
@@ -583,7 +571,7 @@ namespace MonGL
 		glBindVertexArray(0);
 	}
 
-	void drawObject(MonShader::Shader* shader, Entity* obj)
+	void drawObject(Shader* shader, Entity2D* obj)
 	{
 		glUseProgram(shader->id);
 

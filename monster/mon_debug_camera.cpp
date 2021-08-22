@@ -86,7 +86,7 @@ namespace Mon
 		else
 		{
 			keyInput(dt, input);
-			if (input->leftMouseButton.endedDown)
+			if (input->lMouseBtn.endedDown)
 			{
 				mouseInput(input->mouseOffset, constrainPitch);
 				// TODO(ck): joystickInput
@@ -142,6 +142,10 @@ namespace Mon
 			speed *= 2.0f;
 
 		float velocity = speed * (float)dt;
+
+		if (input->rMouseBtn.endedDown) {
+			pos += front * velocity;
+		}
 
 		if (input->up.endedDown)	pos += front * velocity;
 		if (input->down.endedDown)	pos -= front * velocity;

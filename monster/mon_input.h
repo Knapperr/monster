@@ -15,8 +15,8 @@ namespace Mon
 	{
 		bool isConnected;
 		// maybe make an array for mouse buttons
-		ButtonState leftMouseButton;
-		ButtonState rightMouseButton;
+		ButtonState lMouseBtn;
+		ButtonState rMouseBtn;
 		float stickAverageX;
 		float stickAverageY;
 		float rightStickValue;

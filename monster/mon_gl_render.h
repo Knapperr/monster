@@ -82,6 +82,11 @@ namespace MonGL
 		v2 texCoords;
 	};
 
+	struct Config
+	{
+		float angleDegrees;
+	};
+
 	struct BatchData
 	{
 		unsigned int VAO;
@@ -98,14 +103,9 @@ namespace MonGL
 
 	};
 
-	struct Config
-	{
-		float angleDegrees;
-	};
-
-	void initCharacter(RenderData* data, int shaderID, int TESTCHOOSE);
+	void initQuad(RenderData* data, int shaderID, std::string texturePath);
 	void initBoundingBox(RenderData* data);
-	void drawCharacter(Config* config, RenderData* data,
+	void drawQuad(Config* config, RenderData* data,
 						 v3 playerPos, v3 scale, v3 camPos,
 						 mat4 projection, mat4 view,
 						 unsigned int shaderID);
@@ -125,9 +125,9 @@ namespace MonGL
 	void fillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos);
 	void bindVertices();
 	
-	void drawObject(MonShader::Shader* shader, RenderData2D* data);
-	void drawObject(MonShader::Shader* shader, Entity* obj);
-	void drawMap(MonShader::Shader* shader, unsigned int textureID);
+	void drawObject(Shader* shader, RenderData2D* data);
+	void drawObject(Shader* shader, Entity2D* obj);
+	void drawMap(Shader* shader, unsigned int textureID);
 	void cleanUp(Sprite* sprite);
 
 }

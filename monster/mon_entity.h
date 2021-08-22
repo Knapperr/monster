@@ -13,7 +13,7 @@ struct Sprite
 	unsigned int VBO;
 };
 
-class Entity
+class Entity2D
 {
 public:
 	glm::vec2 pos;
@@ -36,7 +36,7 @@ public:
 	// IComponent 
 	//  - RigidBody 
 	//  - Sprite 
-	Entity(const char* fileLocation,
+	Entity2D(const char* fileLocation,
 			   bool isAlpha,
 			   glm::vec2 pos,
 			   glm::vec2 size,
@@ -44,7 +44,7 @@ public:
 			   float speed,
 			   float rotation,
 			   bool destroyed);
-	~Entity();
+	~Entity2D();
 };
 
 #endif

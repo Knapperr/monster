@@ -123,17 +123,17 @@ World::World()
 	
 	
 	// TODO(ck): Memory management
-	player = new Entity("res/textures/p1.png", true,
+	player = new Entity2D("res/textures/p1.png", true,
 						glm::vec2(5, 5), glm::vec2(32, 32), glm::vec3(1.0f, 1.0f, 1.0f),
 						60.0f, 0.0f, false);
 
-	Entity* ball = new Entity("res/textures/awesomeface.png", true,
+	Entity2D* ball = new Entity2D("res/textures/awesomeface.png", true,
 							  glm::vec2(200, 200), glm::vec2(32, 32), glm::vec3(1.0f, 1.0f, 1.0f),
 							  200.0f, 0.0f, false);
 	entities.push_back(ball);
 	for (int i = 0; i < 5; ++i)
 	{
-		Entity* e = new Entity("res/textures/awesomeface.png", true,
+		Entity2D* e = new Entity2D("res/textures/awesomeface.png", true,
 							   glm::vec2(30 * i, 5 * i), glm::vec2(32, 32), glm::vec3(1.0f, 1.0f, 1.0f),
 							   200.0f, 0.0f, false);
 		entities.push_back(e);

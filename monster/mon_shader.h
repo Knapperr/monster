@@ -1,7 +1,7 @@
 #ifndef MON_SHADER_H
 #define MON_SHADER_H
 
-namespace MonShader
+namespace MonGL
 {
 
 	struct Shader

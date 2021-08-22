@@ -52,12 +52,12 @@ namespace Mon
 		state = State::Debug;
 
 		shader = {};
-		MonShader::LoadShader(&shader, "res/shaders/vert_colors.glsl", "res/shaders/frag_colors.glsl", NULL);
+		MonGL::LoadShader(&shader, "res/shaders/vert_colors.glsl", "res/shaders/frag_colors.glsl", NULL);
 
 		cam = Camera();
 
 		player = {};
-		MonGL::initCharacter(&player.data, shader.id, 1);
+		MonGL::initQuad(&player.data, shader.id, "res/textures/p1.png");
 		MonGL::initBoundingBox(&player.colliderData);
 		player.particle.pos = v3(40.0f, 0.1f, 10.0);
 		player.particle.inverseMass = 10.0f;
@@ -74,15 +74,15 @@ namespace Mon
 
 		for (int i = 0; i < 10; ++i)
 		{
-			EntityTwo tree = {};
-			MonGL::initCharacter(&tree.data, shader.id, 2);
+			Entity tree = {};
+			MonGL::initQuad(&tree.data, shader.id, "res/textures/tree.png");
 			tree.particle.pos = v3(6.0f * (i + 1), 0.1f, 5.5f * i);
 			trees.push_back(tree);
 		}
 
 		for (int i = 0; i < 4; ++i)
 		{
-			EntityTwo entity = {};
+			Entity entity = {};
 			MonGL::initBoundingBox(&entity.colliderData);
 			entity.particle.pos = v3((8.0f * (i + 1)), 0.1f, 1.5f * i);
 			mat4 model = mat4(1.0f);
@@ -167,7 +167,8 @@ namespace Mon
 
 		
 		//player.particle.velocity = {};
-		if (state == State::Play && cam.follow)
+		bool enabled = state == State::Play && cam.follow;
+		if (enabled)
 		{
 			v3 velocity = {};
 
@@ -230,7 +231,7 @@ namespace Mon
 		if (drawCollisions)
 			MonGL::drawBoundingBox(&player.colliderData, player.particle.pos, cam.pos, projection, view, shader.id);
 
-		MonGL::drawCharacter(config, &player.data, player.particle.pos, v3(1.0f), cam.pos, projection, view, shader.id);
+		MonGL::drawQuad(config, &player.data, player.particle.pos, v3(1.0f), cam.pos, projection, view, shader.id);
 
 		for (auto& e : enemies)
 		{
@@ -238,7 +239,7 @@ namespace Mon
 		}
 		for (auto& e : trees)
 		{
-			MonGL::drawCharacter(config, &e.data, e.particle.pos, v3(1.0f, 10.0f, 10.0f), cam.pos, projection, view, shader.id);
+			MonGL::drawQuad(config, &e.data, e.particle.pos, v3(1.0f, 10.0f, 1.0f), cam.pos, projection, view, shader.id);
 		}
 
 
@@ -250,7 +251,7 @@ namespace Mon
 		glDeleteVertexArrays(1, &player.data.VAO);
 		glDeleteBuffers(1, &player.data.VBO);
 
-		MonShader::DeleteShader(&shader);
+		MonGL::DeleteShader(&shader);
 	}
 
 
@@ -266,9 +267,9 @@ namespace Mon
 	{
 		// TODO(ck): Memory management
 		world = new World();
-		LoadShader(&shader, "res/shaders/vert_sprite.glsl", "res/shaders/frag_sprite.glsl", NULL);
+		MonGL::LoadShader(&shader, "res/shaders/vert_sprite.glsl", "res/shaders/frag_sprite.glsl", NULL);
 		// TODO(ck): REMOVE TESTING TILE SHADER
-		LoadShader(&tileShader, "res/shaders/vert_tile.glsl", "res/shaders/frag_tile.glsl", NULL);
+		MonGL::LoadShader(&tileShader, "res/shaders/vert_tile.glsl", "res/shaders/frag_tile.glsl", NULL);
 
 		// Set up the shader locations for our objects
 		glUseProgram(shader.id);
@@ -322,7 +323,7 @@ namespace Mon
 
 		//if (state->deltaTime != dt)
 			//state->deltaTime = dt;
-		Entity* p = world->player;
+		Entity2D* p = world->player;
 
 		p->velocity = {};
 

@@ -6,7 +6,7 @@
 
 
 
-Entity::Entity(const char* fileLocation,
+Entity2D::Entity2D(const char* fileLocation,
 					   bool isAlpha,
 					   glm::vec2 pos,
 					   glm::vec2 size,
@@ -34,7 +34,7 @@ Entity::Entity(const char* fileLocation,
 	this->weight = 44.0f;
 }
 
-Entity::~Entity()
+Entity2D::~Entity2D()
 {
 	MonGL::cleanUp(&this->sprite);
 }

@@ -83,8 +83,8 @@ public:
 	//GameObject* objects[MAX_OBJECTS];
 
 	// Just put the player with the entites and have a getPlayer for it
-	Entity* player;
-	std::vector<Entity*> entities;
+	Entity2D* player;
+	std::vector<Entity2D*> entities;
 	TileMap* map;
 	Sprite testTile;
 
