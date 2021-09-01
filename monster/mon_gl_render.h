@@ -1,11 +1,11 @@
 #ifndef MON_GL_RENDER_H
 #define MON_GL_RENDER_H
 
-
-#include "mon_world.h"
 #include "mon_shader.h"
-
+#include "mon_texture.h"
 #include "mon_math.h"
+
+#include <vector>
 
 namespace MonGL
 {
@@ -97,8 +97,9 @@ namespace MonGL
 	{
 		unsigned int VAO;
 		unsigned int VBO;
-		mat4 pos;
-		v3 col;
+		v2 pos;
+		v3 color;
+		v2 size;
 		MonTexture::Texture texture;
 
 	};
@@ -119,16 +120,14 @@ namespace MonGL
 
 	
 	// 2d
-	void initRenderData(Sprite* sprite);
+	void initRenderData2D(RenderData2D* sprite);
 	
 	void initTileMap(int tileAmount);
 	void fillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos);
 	void bindVertices();
 	
 	void drawObject(Shader* shader, RenderData2D* data);
-	void drawObject(Shader* shader, Entity2D* obj);
 	void drawMap(Shader* shader, unsigned int textureID);
-	void cleanUp(Sprite* sprite);
 
 }
 #endif

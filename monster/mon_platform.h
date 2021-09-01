@@ -2,7 +2,7 @@
 #define MON_PLATFORM_H
 
 
-#define _3D_
+//#define _3D_
 
 // TODO: IMPORTANT(ck): Fix this
 #include "mon_gui.h"
@@ -22,7 +22,6 @@ namespace Mon
 		Context* context;
 		int width;
 		int height;
-
 	};
 
 

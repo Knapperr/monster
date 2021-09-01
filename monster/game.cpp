@@ -114,12 +114,6 @@ namespace Mon
 		return true;
 	}
 
-	float square(float a)
-	{
-		float result = a * a;
-		return result;
-	}
-
 	// TODO(ck): Should this param be pointer?
 	// should velocity be acceleratio?
 	void Game::movePlayer(v3* velocity)
@@ -261,7 +255,35 @@ namespace Mon
 	/// 2D
 	/// 
 	
-	// Camera
+		// TODO(ck): Should this param be pointer?
+	// should velocity be acceleratio?
+	void Game::movePlayer2D(v2* velocity, Entity2D* p)
+	{
+		if ((velocity->x != 0.0f) && (velocity->y != 0.0f))
+		{
+			*velocity *= 0.707106781187f;
+		}
+
+		*velocity *= p->speed;
+
+		*velocity += -2.5f * p->velocity;
+
+		v2 oldPos = p->pos;
+		v2 newPos = oldPos;
+		float deltaX = (0.5f * velocity->x * square(deltaTime) + p->velocity.x * deltaTime);
+		float deltaY = (0.5f * velocity->y * square(deltaTime) + p->velocity.y * deltaTime);
+		v2 delta = { deltaX, deltaY };
+
+		// TODO(ck): need to set an offest like casey does
+		newPos += delta;
+
+
+		p->velocity.x = velocity->x * deltaTime + p->velocity.x;
+		p->velocity.y = velocity->y * deltaTime + p->velocity.y;
+
+		p->pos = newPos;
+
+	}
 
 	bool Game::init(int x)
 	{
@@ -323,49 +345,41 @@ namespace Mon
 
 		//if (state->deltaTime != dt)
 			//state->deltaTime = dt;
-		Entity2D* p = world->player;
 
-		p->velocity = {};
-
-		if (input->up.endedDown)
+		bool enabled = state == State::Play;
+		if (enabled)
 		{
-			p->velocity.y = -1.0f;
+			Entity2D* p = world->player;
+			v2 velocity = {};
+
+			if (input->up.endedDown)
+			{
+				velocity.y = -1.0f;
+			}
+			if (input->down.endedDown)
+			{
+				velocity.y = 1.0f;
+			}
+			if (input->left.endedDown)
+			{
+				velocity.x = -1.0f;
+			}
+			if (input->right.endedDown)
+			{
+				velocity.x = 1.0f;
+			}
+
+			movePlayer2D(&velocity, p);
+			// update sprite position 
+			p->sprite.pos = p->pos;
+
+			// TODO(ck): Update camera pos
+			// camera position = player position
+
+			//real32 playerGroundPointX = screenCenterX + metersToPixels * diff.dX;
+			//real32 playerGroundPointY = screenCenterY - metersToPixels * diff.dY;
+
 		}
-		if (input->down.endedDown)
-		{
-			p->velocity.y = 1.0f;
-		}
-		if (input->left.endedDown)
-		{
-			p->velocity.x = -1.0f;
-		}
-		if (input->right.endedDown)
-		{
-			p->velocity.x = 1.0f;
-		}
-
-		if ((p->velocity.x != 0.0f) && (p->velocity.y != 0.0f))
-		{
-			p->velocity *= 0.707106781187f;
-		}
-
-		float newSpeed = p->speed;
-		if (input->shift.endedDown)
-			newSpeed *= 1.7;
-
-		p->velocity *= newSpeed;
-		
-		p->pos.x += p->velocity.x * dt;
-		p->pos.y += p->velocity.y * dt;
-		
-
-		// TODO(ck): Update camera pos
-		// camera position = player position
-
-		//real32 playerGroundPointX = screenCenterX + metersToPixels * diff.dX;
-		//real32 playerGroundPointY = screenCenterY - metersToPixels * diff.dY;
-
-
 
 		//const unsigned int SCREEN_WIDTH = 1280;
 		//const unsigned int SCREEN_HEIGHT = 720;
@@ -416,13 +430,13 @@ namespace Mon
 			//state->world->entities[i]->pos.x *= time;
 			//state->world->entities[i]->pos.y *= time;
 
-			MonGL::drawObject(&shader, world->entities[i]);
+			MonGL::drawObject(&shader, &world->entities[i]->sprite);
 		}
 
 		
 
 
-		MonGL::drawObject(&shader, world->player);
+		MonGL::drawObject(&shader, &world->player->sprite);
 		
 
 

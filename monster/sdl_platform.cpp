@@ -53,7 +53,7 @@ namespace Mon
 		// Use v-sync
 		// https://wiki.libsdl.org/SDL_GL_SetSwapInterval
 		// 0 for immediate updates, 1 for updates synchronized with the vertical retrace, -1 for adaptive vsync
-		SDL_GL_SetSwapInterval(-1);
+		SDL_GL_SetSwapInterval(1);
 
 		int xOffset = (SCREEN_WIDTH - PORT_WIDTH) / 2;
 		int yOffset = (SCREEN_HEIGHT - PORT_HEIGHT) / 2;

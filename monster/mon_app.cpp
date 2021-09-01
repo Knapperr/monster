@@ -80,16 +80,10 @@ void App::run()
 
 	int target_framerate = 60;
 	uint64_t ticks_per_second = 1000000;
-	int max_updates = 5;
+	int max_updates = 3;
 
 	while (running)
 	{
-
-		platform->pollInput(newInput, oldInput);
-		if (platform->quit == true)
-			running = false;
-
-
 		// fixed time framerate
 		{
 			uint64_t time_target = (uint64_t)((1.0 / target_framerate) * ticks_per_second);
@@ -123,6 +117,7 @@ void App::run()
 			{
 				time_accumulator -= time_target;
 
+				// timer.delta
 				delta = (1.0f / target_framerate); // 60
 
 				if (pauseTimer > 0)
@@ -147,6 +142,15 @@ void App::run()
 				//if (app_config.on_update != nullptr)
 					//app_config.on_update();
 
+
+				platform->pollInput(newInput, oldInput);
+				if (platform->quit == true)
+					running = false;
+
+				Mon::Input* temp = newInput;
+				newInput = oldInput;
+				oldInput = temp;
+
 #ifdef _3D_
 				game->update(delta, newInput);
 #else
@@ -154,6 +158,8 @@ void App::run()
 				// that means I would have to remove the resetting of states to be in here 
 				// maybe platform->clear() or something like that
 				game->update(delta, newInput, 1);
+
+
 #endif
 			}
 		}
@@ -161,7 +167,6 @@ void App::run()
 		UpdateGui(platform->window, game);
 		// TODO(ck): Platform->Renderer->clearColor 
 		glClearColor(0.126f, 0.113f, 0.165f, 1.0f);
-		// TODO(ck): Platform->Renderer->clear
 
 #ifdef _3D_
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -178,13 +183,8 @@ void App::run()
 
 		RenderGui();
 
-
 		// TODO(ck): Platform->swapWindow()
 		SDL_GL_SwapWindow(platform->window);
-
-		Mon::Input* temp = newInput;
-		newInput = oldInput;
-		oldInput = temp;
 	}
 	game->cleanUp();
 	ShutdownGui();

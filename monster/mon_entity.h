@@ -1,50 +1,38 @@
 #ifndef MON_ENTITY_H
 #define MON_ENTITY_H
 
-#include <glm/glm.hpp>
-#include "mon_texture.h"
+#include "mon_math.h"
+#include "mon_gl_render.h"
+
 #include <vector>
 
-// TODO(ck): Move to gl_render
-struct Sprite
+namespace Mon
 {
-	MonTexture::Texture texture;
-	unsigned int VAO;
-	unsigned int VBO;
-};
+	class Entity2D
+	{
+	public:
+		v2 pos;
+		v2 velocity;
+		float speed;
+		float maxSpeed;
+		float weight;
+		float rotation;
+		bool destroyed;
 
-class Entity2D
-{
-public:
-	glm::vec2 pos;
-	glm::vec2 size;
-	glm::vec2 velocity;
-	glm::vec3 color;
-	float speed;
-	float maxSpeed;
-	float weight;
-	float rotation;
-	bool destroyed;
 
-	
-	// Components  Sprite can't be part of Default Constructor 
-	// default just sets this to nulls
-	Sprite sprite;
-	// Texture2D sprite
+		// Components  Sprite can't be part of Default Constructor 
+		// default just sets this to nulls
+		MonGL::RenderData2D sprite;
+		// Texture2D sprite
 
-	// TODO(CK): Maybe worry about this later (remember we jsut want to make a game)
-	// IComponent 
-	//  - RigidBody 
-	//  - Sprite 
-	Entity2D(const char* fileLocation,
-			   bool isAlpha,
-			   glm::vec2 pos,
-			   glm::vec2 size,
-			   glm::vec3 color,
-			   float speed,
-			   float rotation,
-			   bool destroyed);
-	~Entity2D();
-};
-
+		// TODO(CK): Maybe worry about this later (remember we jsut want to make a game)
+		// IComponent 
+		//  - RigidBody 
+		//  - Sprite 
+		Entity2D(const char* fileLocation,
+				 bool isAlpha,
+				 v2 position);
+		~Entity2D();
+	};
+}
 #endif

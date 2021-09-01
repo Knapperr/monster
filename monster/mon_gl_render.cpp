@@ -2,7 +2,7 @@
 
 #include <glad/glad.h>
 
-#include <vector>
+
 
 namespace MonGL
 {
@@ -361,7 +361,8 @@ namespace MonGL
 	std::vector<Vertex> tileVertices;
 	int usedIndices = 0;
 
-	void initRenderData(Sprite* sprite)
+
+	void initRenderData2D(RenderData2D* sprite)
 	{
 
 #if 1
@@ -389,14 +390,18 @@ namespace MonGL
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 
+		sprite->color = v3(1.0f);
+		sprite->pos = {};
+		sprite->size = v2(32.0f, 32.0f);
 	}
+
 	
 	void initTileMap(int tileAmount)
 	{
 		// These will be figured out after looping our tilemap and pushing quads
 		// TODO(ck): Need to be able to choose amount of vertices and indices
 		int usedVertices = 1;
-		const int quadCount = 1000;
+		const int quadCount = 2000;
 		const int maxVertices = quadCount * 4;
 		const int indicesLength = quadCount * 6;
 		 
@@ -457,10 +462,10 @@ namespace MonGL
 		float topRightY		= ((tileOffsetY + 1) * spriteSize) / sheetSize;
 		float topLeftX		= (tileOffsetX * spriteSize) / sheetSize;
 		float topLeftY		= ((tileOffsetY + 1) * spriteSize) / sheetSize;
-		float bottomRightX	= (tileOffsetX * spriteSize) / sheetSize;
-		float bottomRightY  = (tileOffsetY * spriteSize) / sheetSize;
-		float bottomLeftX	= ((tileOffsetX + 1) * spriteSize) / sheetSize;
-		float bottomLeftY	= (tileOffsetY * spriteSize) / sheetSize;
+		float bottomLeftX	= (tileOffsetX * spriteSize) / sheetSize;
+		float bottomLeftY  = (tileOffsetY * spriteSize) / sheetSize;
+		float bottomRightX	= ((tileOffsetX + 1) * spriteSize) / sheetSize;
+		float bottomRightY	= (tileOffsetY * spriteSize) / sheetSize;
 
 		// TODO(ck): pushQuad(pos, color, texcoords)		
 		float x = tileXPos;
@@ -469,13 +474,13 @@ namespace MonGL
 		Vertex vec0 = {
 			v3(x, y, 0.0f),
 			v3(1.0f, 0.0f, 0.0f),
-			v2(bottomRightX, bottomRightY)	
+			v2(bottomLeftX, bottomLeftY)	
 		};
 
 		Vertex vec1 = {
 			v3(x + size, y, 0.0f),
 			v3(0.0f, 1.0f, 0.0f),
-			v2(bottomLeftX, bottomLeftY)
+			v2(bottomRightX, bottomRightY)
 		};
 
 		Vertex vec2 = {
@@ -541,7 +546,8 @@ namespace MonGL
 		glBindTexture(GL_TEXTURE_2D, textureID);
 
 		glBindVertexArray(batch->VAO);
-		glDrawElements(GL_TRIANGLES, usedIndices, GL_UNSIGNED_INT, nullptr);
+		// (void*)(index_size * pass.index_start)
+		glDrawElements(GL_TRIANGLES, usedIndices, GL_UNSIGNED_INT, (void*)(2 * 0));
 		glBindVertexArray(0);
 
 		//reset buffer
@@ -556,53 +562,50 @@ namespace MonGL
 		// TODO(ck): We don't calculate the matrix here
 		// we calc it in the game and send the matrix to the
 		// renderer 
-		// CONVERT World matrix to drawing position
 		mat4 model = mat4(1.0f);
-		model * -data->pos;
+		model = glm::translate(model, v3(data->pos, 0.0f));
 
-		//glUniformMatrix4fv(glGetUniformLocation(shader->id, "model"), 1, GL_FALSE, glm::value_ptr(model));
-		//glUniform3f(glGetUniformLocation(shader->id, "spriteColor"), obj->color.r, obj->color.g, obj->color.b);
+		//model = glm::translate(model, v3(0.5f * obj->size.x, 0.0f * obj->size.y, 0.0f));
+		//model = glm::rotate(model, obj->rotation, v3(0.0f, 0.0f, 1.0f));
+		//model = glm::translate(model, v3(-0.5f * obj->size.x, -0.5f * obj->size.y, 0.0f));
+
+		model = glm::scale(model, v3(data->size, 1.0f));
+
+		glUniformMatrix4fv(glGetUniformLocation(shader->id, "model"), 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3f(glGetUniformLocation(shader->id, "spriteColor"), data->color.r, data->color.g, data->color.b);
 
 		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_2D, obj->sprite.texture.id);
+		glBindTexture(GL_TEXTURE_2D, data->texture.id);
 
 		glBindVertexArray(data->VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);
+
+		//glUseProgram(shader->id);
+
+		//// TODO(ck): We don't calculate the matrix here
+		//// we calc it in the game and send the matrix to the
+		//// renderer 
+		//// CONVERT World matrix to drawing position
+		//mat4 model = mat4(1.0f);
+		//model * -data->pos;
+
+		////glUniformMatrix4fv(glGetUniformLocation(shader->id, "model"), 1, GL_FALSE, glm::value_ptr(model));
+		////glUniform3f(glGetUniformLocation(shader->id, "spriteColor"), obj->color.r, obj->color.g, obj->color.b);
+
+		////glActiveTexture(GL_TEXTURE0);
+		////glBindTexture(GL_TEXTURE_2D, obj->sprite.texture.id);
+
+		//glBindVertexArray(data->VAO);
+		//glDrawArrays(GL_TRIANGLES, 0, 6);
+		//glBindVertexArray(0);
 	}
 
-	void drawObject(Shader* shader, Entity2D* obj)
-	{
-		glUseProgram(shader->id);
-
-		// TODO(ck): We don't calculate the matrix here
-		// we calc it in the game and send the matrix to the
-		// renderer 
-		mat4 model = mat4(1.0f);
-		model = glm::translate(model, v3(obj->pos, 0.0f));
-
-		model = glm::translate(model, v3(0.5f * obj->size.x, 0.0f * obj->size.y, 0.0f));
-		model = glm::rotate(model, obj->rotation, v3(0.0f, 0.0f, 1.0f));
-		model = glm::translate(model, v3(-0.5f * obj->size.x, -0.5f * obj->size.y, 0.0f));
-
-		model = glm::scale(model, v3(obj->size, 1.0f));
-
-		glUniformMatrix4fv(glGetUniformLocation(shader->id, "model"), 1, GL_FALSE, glm::value_ptr(model));
-		glUniform3f(glGetUniformLocation(shader->id, "spriteColor"), obj->color.r, obj->color.g, obj->color.b);
-
-		//glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, obj->sprite.texture.id);
-
-		glBindVertexArray(obj->sprite.VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-		glBindVertexArray(0);
-	}
-
-	void cleanUp(Sprite* sprite)
-	{
-		glDeleteVertexArrays(1, &sprite->VAO);
-		glDeleteBuffers(1, &sprite->VBO);
-		//glDeleteBuffers(1, &EBO);
-		//glDeleteProgram(shaderProgram);
-	}
+	//void cleanUp(Sprite* sprite)
+	//{
+	//	glDeleteVertexArrays(1, &sprite->VAO);
+	//	glDeleteBuffers(1, &sprite->VBO);
+	//	//glDeleteBuffers(1, &EBO);
+	//	//glDeleteProgram(shaderProgram);
+	//}
 }

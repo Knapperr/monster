@@ -36,7 +36,7 @@ uniform vec3 colliderColor;
 // This method is working for making the pixel art look nice
 // https://gist.github.com/Beefster09/7264303ee4b4b2086f372f1e70e8eddd
 float sharpen(float pix_coord) {
-	float sharpness = 2.0;
+	float sharpness = 1.0;
 
     float norm = (fract(pix_coord) - 0.5) * 2.0;
     float norm2 = norm * norm;

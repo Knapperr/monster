@@ -15,6 +15,7 @@
 // the app just takes 
 #include "mon_terrain.h"
 #include "mon_gl_render.h"
+#include "mon_world.h"
 
 
 namespace Mon
@@ -87,6 +88,7 @@ namespace Mon
 	public:
 		bool init();
 		void movePlayer(v3* velocity);
+		void movePlayer2D(v2* velocity, Entity2D* player);
 		void update(double dt, Input* newInput);
 		void render(double dt);
 		void cleanUp();

@@ -16,6 +16,11 @@ namespace Mon
 
 	typedef glm::mat4 mat4;
 
+	inline float square(float a)
+	{
+		float result = a * a;
+		return result;
+	}
 
 	
 	//inline mat4 translate(mat4& model, v3& pos)
