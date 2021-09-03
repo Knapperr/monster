@@ -11,15 +11,10 @@
 namespace Mon
 {
 
-	struct Context
-	{
-
-	};
-
 	struct Config
 	{
 		const char* title;
-		Context* context;
+		//Context* context;
 		int width;
 		int height;
 	};

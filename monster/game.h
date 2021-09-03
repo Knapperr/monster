@@ -75,6 +75,7 @@ namespace Mon
 		v2 pos;
 		v2 target;
 		float zoom;
+		float lerpSpeed;
 	};
 
 	enum State

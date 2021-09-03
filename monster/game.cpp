@@ -49,7 +49,7 @@ namespace Mon
 
 	bool Game::init()
 	{
-		state = State::Debug;
+		state = State::Play;
 
 		shader = {};
 		MonGL::LoadShader(&shader, "res/shaders/vert_colors.glsl", "res/shaders/frag_colors.glsl", NULL);
@@ -109,7 +109,8 @@ namespace Mon
 
 		config = new MonGL::Config();
 		config->angleDegrees = -30.0f;
-		
+
+
 		drawCollisions = true;
 		return true;
 	}
@@ -287,6 +288,8 @@ namespace Mon
 
 	bool Game::init(int x)
 	{
+		state = State::Play;
+
 		// TODO(ck): Memory management
 		world = new World();
 		MonGL::LoadShader(&shader, "res/shaders/vert_sprite.glsl", "res/shaders/frag_sprite.glsl", NULL);
@@ -330,6 +333,21 @@ namespace Mon
 		glUniformMatrix4fv(glGetUniformLocation(tileShader.id, "model"), 1, GL_FALSE, glm::value_ptr(model));
 
 
+
+		int screenWidth = 1440;
+		int screenHeight = 900;
+		int portWidth = 960;
+		int portHeight = 540;
+		config = new MonGL::Config();
+
+		config->viewPort.x = (screenWidth - portWidth) / 2;
+		config->viewPort.y = (screenHeight - portHeight) / 2;
+		config->viewPort.w = portWidth;
+		config->viewPort.h = portHeight;
+		MonGL::viewPort(&config->viewPort);
+
+		camera = {};
+		camera.lerpSpeed = 7.0f;
 		return true;
 	}
 
@@ -342,12 +360,7 @@ namespace Mon
 		this->input = *input;
 
 		
-
-		//if (state->deltaTime != dt)
-			//state->deltaTime = dt;
-
-		bool enabled = state == State::Play;
-		if (enabled)
+		if (state == State::Play)
 		{
 			Entity2D* p = world->player;
 			v2 velocity = {};
@@ -383,7 +396,9 @@ namespace Mon
 
 		//const unsigned int SCREEN_WIDTH = 1280;
 		//const unsigned int SCREEN_HEIGHT = 720;
-		camera.target = world->player->pos;
+		// speed 
+		camera.target.x = lerp(camera.target.x, camera.lerpSpeed * dt, world->player->pos.x);
+		camera.target.y = lerp(camera.target.y, camera.lerpSpeed * dt, world->player->pos.y);
 	}
 
 	void Game::render()
@@ -393,6 +408,8 @@ namespace Mon
 
 		// 640.0f = window.x
 		// 360.0f = window.y
+		// TODO(ck): my camera isn't deciding the projection that gets sent to the renderer
+		// this might be a good thing because i can separate that off here
 		v2 target = camera.target;
 		float width = 960.0f;
 		float height = 540.0f;

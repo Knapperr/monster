@@ -17,7 +17,7 @@ namespace Mon
 
 		pos = position;
 		// TODO(ck): Deal with speed
-		speed = 100.0f;
+		speed = 500.0f;
 		maxSpeed = 250.0f;
 		
 		rotation = 0.0f;

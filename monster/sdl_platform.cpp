@@ -55,12 +55,6 @@ namespace Mon
 		// 0 for immediate updates, 1 for updates synchronized with the vertical retrace, -1 for adaptive vsync
 		SDL_GL_SetSwapInterval(1);
 
-		int xOffset = (SCREEN_WIDTH - PORT_WIDTH) / 2;
-		int yOffset = (SCREEN_HEIGHT - PORT_HEIGHT) / 2;
-		glViewport(5, yOffset, PORT_WIDTH, PORT_HEIGHT);
-		printf("Window Size: %d, %d\n", SCREEN_WIDTH, SCREEN_HEIGHT);
-		printf("View Port Size: %d, %d\n", PORT_WIDTH, PORT_HEIGHT);
-
 		//glEnable(GL_CULL_FACE);
 		//glDepthFunc(GL_LESS);
 		glEnable(GL_BLEND);
@@ -362,6 +356,8 @@ namespace Mon
 	{
 		return SDL_GetPerformanceCounter();
 	}
+
+
 
 	void SDLPlatform::setTitle(Config* config, const char* title)
 	{

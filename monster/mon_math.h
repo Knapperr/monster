@@ -16,13 +16,38 @@ namespace Mon
 
 	typedef glm::mat4 mat4;
 
+	struct Rect
+	{
+		float x, y;
+		float w, h;
+
+		float left() { return x; }
+		float right() { return x + w; }
+		float top() { return y; }
+		float bottom() { return y + h; }
+	};
+
 	inline float square(float a)
 	{
 		float result = a * a;
 		return result;
 	}
 
+	inline float lerp(float a, float time, float b)
+	{
+		float result = (1.0f - time) * a + time * b;
+		return result;
+	}
 	
+	// TODO(ck): Figure this out is it ease in
+	inline float approach(float t, float target, float delta)
+	{
+		return 1;
+		//return t > target ?
+	}
+	
+	//inline float 
+	// 
 	//inline mat4 translate(mat4& model, v3& pos)
 	//{
 	//	mat4 result = glm::translate(model, pos);

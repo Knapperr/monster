@@ -353,6 +353,16 @@ namespace MonGL
 
 
 
+
+	void viewPort(Rect* port)
+	{		
+		glViewport(port->x, port->y, port->w, port->h);
+		//printf("Window Size: %d, %d\n", SCREEN_WIDTH, SCREEN_HEIGHT);
+		//printf("View Port Size: %d, %d\n", PORT_WIDTH, PORT_HEIGHT);
+		return;
+	}
+
+
 	///
 	/// 2D
 	///
@@ -536,7 +546,7 @@ namespace MonGL
 
 	void drawMap(Shader* shader, unsigned int textureID)
 	{
-		glUseProgram(shader->id);
+		//glUseProgram(shader->id);
 
 		//glActiveTexture(GL_TEXTURE0);
 		// IMPORTANT(ck):
@@ -557,7 +567,7 @@ namespace MonGL
 
 	void drawObject(Shader* shader, RenderData2D* data)
 	{
-		glUseProgram(shader->id);
+		//glUseProgram(shader->id);
 
 		// TODO(ck): We don't calculate the matrix here
 		// we calc it in the game and send the matrix to the

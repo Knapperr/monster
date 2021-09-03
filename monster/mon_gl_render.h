@@ -82,9 +82,11 @@ namespace MonGL
 		v2 texCoords;
 	};
 
+
 	struct Config
 	{
 		float angleDegrees;
+		Rect viewPort = {};
 	};
 
 	struct BatchData
@@ -103,7 +105,8 @@ namespace MonGL
 		MonTexture::Texture texture;
 
 	};
-
+	
+	void viewPort(Rect* port);
 	void initQuad(RenderData* data, int shaderID, std::string texturePath);
 	void initBoundingBox(RenderData* data);
 	void drawQuad(Config* config, RenderData* data,

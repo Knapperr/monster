@@ -277,7 +277,8 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 
 #ifndef _3D_GUI_
 
-	ImGui::SliderFloat("Player Speed", &game->world->player->speed, 0.0f, 500.0f);
+	ImGui::SliderFloat("Player Speed", &game->world->player->speed, 0.0f, 1000.0f);
+	ImGui::SliderFloat("camera lerp", &game->camera.lerpSpeed, 0.0f, 100.0f);
 
 	char buffer[64];
 	snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.x);
@@ -288,7 +289,7 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 	ImGui::SliderInt("Tile 0 ID: ", &game->world->map->tiles[0].tileId, 0, 3, NULL);
 	
 	char entitysizebuf[64];
-	snprintf(entitysizebuf, sizeof(entitysizebuf), "%d", game->world->entities.size());
+	snprintf(entitysizebuf, sizeof(entitysizebuf), "%d", (float)game->world->entities.size());
 
 #endif
 	//char dtbuf[64];
