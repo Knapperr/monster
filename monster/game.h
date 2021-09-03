@@ -120,7 +120,6 @@ namespace Mon
 		bool drawCollisions;
 
 
-
 		// Note(ck): Current game state - State::Debug is default
 		int state; 
 
@@ -131,13 +130,6 @@ namespace Mon
 
 		double deltaTime;
 		MonGL::Light light;
-
-
-		unsigned int testVAO;
-		unsigned int testVBO;
-		unsigned int testEBO;
-		unsigned int testTextureU;
-		
 
 	};
 }

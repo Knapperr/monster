@@ -353,12 +353,9 @@ namespace MonGL
 
 
 
-
 	void viewPort(Rect* port)
 	{		
 		glViewport(port->x, port->y, port->w, port->h);
-		//printf("Window Size: %d, %d\n", SCREEN_WIDTH, SCREEN_HEIGHT);
-		//printf("View Port Size: %d, %d\n", PORT_WIDTH, PORT_HEIGHT);
 		return;
 	}
 

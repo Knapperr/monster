@@ -3,11 +3,6 @@
 
 #define ArrayCount(Array) (sizeof(Array) / sizeof((Array)[0]))
 
-const unsigned int SCREEN_WIDTH = 1440;
-const unsigned int SCREEN_HEIGHT = 900;
-const unsigned int PORT_WIDTH = 960;
-const unsigned int PORT_HEIGHT = 540;
-
 struct Timer
 {
 	uint64_t diff;
@@ -24,8 +19,7 @@ bool App::init()
 	// TODO(ck): Memory Allocation
 	platform = new Mon::SDLPlatform();
 
-
-	if (!platform->init(SCREEN_WIDTH, SCREEN_HEIGHT, PORT_WIDTH, PORT_HEIGHT))
+	if (!platform->init())
 		return false;
 
 	InitGui(platform->window, &platform->context);

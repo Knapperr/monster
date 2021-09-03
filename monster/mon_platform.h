@@ -32,7 +32,7 @@ namespace Mon
 		bool quit;
 		bool cursorDisabled;
 
-		virtual bool init(int SCREEN_WIDTH, int SCREEN_HEIGHT, int PORT_WIDTH, int PORT_HEIGHT) = 0;
+		virtual bool init() = 0;
 		virtual void pollInput(Input* newInput, Input* oldInput) = 0;
 		virtual void sleep(int milliseconds) = 0;
 		virtual uint64_t performanceFrequency() = 0;
