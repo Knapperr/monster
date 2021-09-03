@@ -8,19 +8,11 @@
 #include "mon_gui.h"
 #include <SDL/SDL_opengl.h>
 
+
+
+
 namespace Mon
 {
-
-	struct Config
-	{
-		const char* title;
-		//Context* context;
-		int width;
-		int height;
-	};
-
-
-
 	class Platform
 	{
 	public:
@@ -32,13 +24,15 @@ namespace Mon
 		bool quit;
 		bool cursorDisabled;
 
-		virtual bool init() = 0;
+		virtual bool init(Settings* settings) = 0;
 		virtual void pollInput(Input* newInput, Input* oldInput) = 0;
 		virtual void sleep(int milliseconds) = 0;
 		virtual uint64_t performanceFrequency() = 0;
 		virtual uint64_t performanceCounter() = 0;
 		virtual uint64_t ticks() = 0;
-		virtual void setTitle(Config* config, const char* title) = 0;
+
+		virtual void setWindowSize(Settings* settings) = 0;
+		virtual void setTitle(Settings* settings, const char* title) = 0;
 		virtual void cleanUp() = 0;
 	};
 }

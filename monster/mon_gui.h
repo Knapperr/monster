@@ -13,11 +13,17 @@
 
 #include "game.h"
 
-
+struct Settings
+{
+	const char* title;
+	//Context* context;
+	int width;
+	int height;
+};
 
 #ifdef USE_SDL
 void InitGui(SDL_Window* window, SDL_GLContext* context);
-void UpdateGui(SDL_Window* window, Mon::Game* game);
+void UpdateGui(SDL_Window* window, Mon::Game* game, Settings* settings);
 #else
 void InitGui();
 void UpdateGui();

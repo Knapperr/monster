@@ -8,8 +8,9 @@ namespace Mon
 	class SDLPlatform : public Platform
 	{
 	public:
-		bool init();
-		void setTitle(Mon::Config* config, const char* title);
+		bool init(Settings* settings);
+		void setWindowSize(Settings* settings);
+		void setTitle(Settings* settings, const char* title);
 		void sleep(int milliseconds);
 		uint64_t performanceFrequency();
 		uint64_t performanceCounter();

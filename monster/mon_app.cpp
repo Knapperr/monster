@@ -18,8 +18,12 @@ bool App::init()
 
 	// TODO(ck): Memory Allocation
 	platform = new Mon::SDLPlatform();
+	settings = {};
+	settings.title = "Monster";
+	settings.width = 1440;
+	settings.height = 900;
 
-	if (!platform->init())
+	if (!platform->init(&settings))
 		return false;
 
 	InitGui(platform->window, &platform->context);
@@ -158,7 +162,7 @@ void App::run()
 			}
 		}
 
-		UpdateGui(platform->window, game);
+		UpdateGui(platform->window, game, &settings);
 		// TODO(ck): Platform->Renderer->clearColor 
 		glClearColor(0.126f, 0.113f, 0.165f, 1.0f);
 

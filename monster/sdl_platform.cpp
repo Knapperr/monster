@@ -4,7 +4,7 @@ namespace Mon
 {
 	const int JOYSTICK_DEAD_ZONE = 8000;
 
-	bool SDLPlatform::init()
+	bool SDLPlatform::init(Settings* settings)
 	{
 		// Required to call this for Windows
 		// I'm not sure why SDL2 doesn't do this on Windows automatically?
@@ -31,13 +31,13 @@ namespace Mon
 		// TODO(ck): Determine screen size and port width here on init... need
 		// some kind of configuration for the width, height... maybe not the port
 		// but the screen width and height needs to be determined by the monitor or settings
-		const int SCREEN_WIDTH = 1440;
-		const int SCREEN_HEIGHT = 900;
+		// SET THE SETTINGS HERE .. if they aren't already set?
+
 
 		int flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
-		window = SDL_CreateWindow("Monster",
+		window = SDL_CreateWindow(settings->title,
 								  SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-								  SCREEN_WIDTH, SCREEN_HEIGHT,
+								  settings->width, settings->height,
 								  flags);
 
 		if (window == nullptr)
@@ -363,10 +363,14 @@ namespace Mon
 	}
 
 
-
-	void SDLPlatform::setTitle(Config* config, const char* title)
+	void SDLPlatform::setWindowSize(Settings* settings)
 	{
-		// TODO(ck):
+
+	}
+
+	void SDLPlatform::setTitle(Settings* settings, const char* title)
+	{
+		// TODO(ck): implement
 	}
 
 	void SDLPlatform::cleanUp()

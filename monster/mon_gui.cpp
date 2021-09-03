@@ -187,7 +187,7 @@ void StatsWindow(bool* p_open, Mon::Game* game)
 	ImGui::End();
 }
 
-void UpdateGui(SDL_Window* window, Mon::Game* game)
+void UpdateGui(SDL_Window* window, Mon::Game* game, Settings* settings)
 {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame(window);
@@ -298,6 +298,19 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 	//ImGui::SliderFloat("porth:", &game->config->viewPort.h, 0.0f, 1000.0f);
 	ImGui::SliderFloat("port x", &game->config->viewPort.x, 0.0f, 477.0f);
 	ImGui::SliderFloat("port y", &game->config->viewPort.y ,0.0f, 357.0f);
+
+	ImGui::SliderInt("screen width",  &settings->width, 0.0f, 1440.0f);
+	ImGui::SliderInt("screen height", &settings->height, 0.0f, 900.0f);
+
+	// IMPORTANT(ck):
+	// TODO(ck): Call in platform shouldn't be using sdl directly here
+	if (ImGui::Button("apply")) 
+	{
+		// Need to actual window..
+		//SDL_SetWindowSize(g_platform.window, width, height);
+	}
+
+
 #endif
 	//char dtbuf[64];
 	//snprintf(dtbuf, sizeof(dtbuf), "%f", g_GameState->deltaTime);
