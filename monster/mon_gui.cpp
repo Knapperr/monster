@@ -289,8 +289,15 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 	ImGui::SliderInt("Tile 0 ID: ", &game->world->map->tiles[0].tileId, 0, 3, NULL);
 	
 	char entitysizebuf[64];
-	snprintf(entitysizebuf, sizeof(entitysizebuf), "%d", (float)game->world->entities.size());
+	snprintf(entitysizebuf, sizeof(entitysizebuf), "%f", (float)game->world->entities.size());
 
+
+
+
+	//ImGui::SliderFloat("portw:", &game->config->viewPort.w, 0.0f, 1000.0f);
+	//ImGui::SliderFloat("porth:", &game->config->viewPort.h, 0.0f, 1000.0f);
+	ImGui::SliderFloat("port x", &game->config->viewPort.x, 0.0f, 477.0f);
+	ImGui::SliderFloat("port y", &game->config->viewPort.y ,0.0f, 357.0f);
 #endif
 	//char dtbuf[64];
 	//snprintf(dtbuf, sizeof(dtbuf), "%f", g_GameState->deltaTime);

@@ -406,6 +406,8 @@ namespace Mon
 		// TODO(ck): Clean up --- camera
 		//float left = 0.0f;
 
+		MonGL::viewPort(&config->viewPort);
+
 		// 640.0f = window.x
 		// 360.0f = window.y
 		// TODO(ck): my camera isn't deciding the projection that gets sent to the renderer
