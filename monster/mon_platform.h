@@ -10,14 +10,6 @@
 
 namespace Mon
 {
-	struct Settings
-	{
-		const char* title;
-		//Context* context;
-		int width;
-		int height;
-	};
-
 	class Platform
 	{
 	public:

@@ -98,6 +98,7 @@ namespace Mon
 		void update(double dt, Input* input, int x);
 		void render();
 
+		void fullScreen(int width, int height);
 		bool playing();
 
 

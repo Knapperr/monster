@@ -187,7 +187,7 @@ void StatsWindow(bool* p_open, Mon::Game* game)
 	ImGui::End();
 }
 
-void UpdateGui(SDL_Window* window, Mon::Game* game)
+void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame(window);
@@ -212,9 +212,17 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 	ImGui::Begin("DEBUG MENU");
 
 	ImGui::Separator();
-	ImGui::RadioButton("debug", &game->state, Mon::State::Debug);
+	if (ImGui::Button("debug")) 
+	{ 
+		game->cam.followOff();
+		game->state = Mon::State::Debug;
+	}
 	ImGui::SameLine();
-	ImGui::RadioButton("play", &game->state, Mon::State::Play);
+	if (ImGui::Button("play"))
+	{
+		game->cam.followOn();
+		game->state = Mon::State::Play;
+	}
 	ImGui::Separator();
 
 	ImGui::LabelText(std::to_string(game->deltaTime).c_str(), "dt:");
@@ -231,11 +239,15 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 	ImGui::SameLine();
 	ImGui::Checkbox("Things", &showEntityWindow);
 
-	ImGui::Separator();
-	if (ImGui::Button("Camera View", { 96.0f, 16.0f })) { game->cam.followOn(); }
+	ImGui::SliderFloat("port x", &game->config->viewPort.x, 0.0f, 477.0f);
+	ImGui::SliderFloat("port y", &game->config->viewPort.y, 0.0f, 357.0f);
+	if (ImGui::Button("Fullscreen")) { game->fullScreen(settings->width, settings->height); }
 	ImGui::SameLine();
-	if (ImGui::Button("exit", { 96.0f, 16.0f })) { game->cam.followOff(); }
-	ImGui::Separator();
+	if (ImGui::Button("Exit"))
+	{
+		game->config->viewPort.w = 960.0f;
+		game->config->viewPort.h = 540.0f;
+	}
 
 	ImGui::SliderFloat("camera angle", &game->cam.angleAroundTarget, -360.0f, 180.0f);
 	ImGui::SliderFloat("camera pitch", &game->cam.pitch, -1.10f, 100.0f, "%1.0f");
@@ -294,10 +306,6 @@ void UpdateGui(SDL_Window* window, Mon::Game* game)
 
 #endif
 
-	//ImGui::SliderFloat("portw:", &game->config->viewPort.w, 0.0f, 1000.0f);
-	//ImGui::SliderFloat("porth:", &game->config->viewPort.h, 0.0f, 1000.0f);
-	ImGui::SliderFloat("port x", &game->config->viewPort.x, 0.0f, 477.0f);
-	ImGui::SliderFloat("port y", &game->config->viewPort.y, 0.0f, 357.0f);
 	if (ImGui::Button("720")) { SDL_SetWindowSize(window, 1280, 720); }
 	ImGui::SameLine();
 	if (ImGui::Button("1440")) { SDL_SetWindowSize(window, 1440, 900); }

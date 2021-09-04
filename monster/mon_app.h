@@ -9,7 +9,7 @@
 class App
 {
 public:
-	Mon::Settings settings;
+	Settings settings;
 	Mon::Platform* platform; /* SDLPlatform */
 	Mon::Game* game;
 	Mon::Input* oldInput;

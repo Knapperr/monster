@@ -170,20 +170,18 @@ namespace Mon
 		
 		
 
-		if (input.quit.endedDown)
-		{
-			state = State::Debug;
-			cam.followOff();
-			config->viewPort = Rect{ config->viewPort.x, config->viewPort.y, 960, 540 };
-		}
+		//if (input.quit.endedDown)
+		//{
+		//	state = State::Debug;
+		//	cam.followOff();
+		//	config->viewPort = Rect{ config->viewPort.x, config->viewPort.y, 960, 540 };
+		//}
 
 
 		//player.particle.velocity = {};
 		bool enabled = state == State::Play;
 		if (enabled)
 		{
-			cam.followOn();
-
 			v3 velocity = {};
 
 			if (input.up.endedDown)
@@ -279,6 +277,11 @@ namespace Mon
 		MonGL::DeleteShader(&shader);
 	}
 
+	void Game::fullScreen(int width, int height)
+	{
+		config->viewPort = Rect{ 0.0f, 0.0f, (float)width, (float)height };
+
+	}
 
 	bool Game::playing()
 	{

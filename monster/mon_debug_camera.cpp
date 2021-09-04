@@ -177,9 +177,12 @@ namespace Mon
 		follow = false;
 		yaw = -80.0f;
 		pitch = -25.0f;
-		front.x = 0.0f;
+		right.x = 0.99f;
+		right.y = -0.0f;
+		right.z = 0.05f;
+		front.x = 0.03f;
 		front.y = -0.50f;
-		front.z = -1.00f;
-
+		front.z = -0.75f;
+		up = v3{ 0.0f, 1.0f, 0.0f };
 	}
 }

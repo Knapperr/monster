@@ -140,18 +140,15 @@ void App::run()
 				//if (app_config.on_update != nullptr)
 					//app_config.on_update();
 
-				if (game->playing() == true)
-				{
-					game->config->viewPort.w = settings.width;
-					game->config->viewPort.h = settings.height;
-					showGUI = false;
-				}
-				else
-					showGUI = true;
 
 				platform->pollInput(newInput, oldInput);
 				if (platform->quit == true)
 					running = false;
+
+				if (newInput->quit.endedDown)
+				{
+					showGUI = !showGUI;
+				}
 
 				Mon::Input* temp = newInput;
 				newInput = oldInput;
@@ -189,7 +186,7 @@ void App::run()
 
 		if (showGUI)
 		{ 
-			UpdateGui(platform->window, game);
+			UpdateGui(platform->window, &settings, game);
 			RenderGui();
 		}
 
