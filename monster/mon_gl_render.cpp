@@ -68,7 +68,7 @@ namespace MonGL
 	void initBoundingBox(RenderData* data)
 	{
 		data->lineWidth = 2;
-		data->color = v3(0.2, 0.7, 0.4);
+		data->color = v3(1.0f, 0.0f, 1.0f);
 
 		data->vertices.push_back({ v3(-0.5, -0.5, -0.5), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 0.0f) });
 		data->vertices.push_back({ v3(0.5, -0.5, -0.5), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 0.0f) });

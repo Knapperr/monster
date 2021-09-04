@@ -12,15 +12,8 @@ namespace Mon
 		//	SetProcessDPIAware();
 		//#endif
 
-			// TODO(ck): Config struct that sets these
-			// config has the window in it
-			// if config->graphics == OPENGL then set opengl stuff
-
-		// IMPORTANT(ck): Entry point for renderdoc
-		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) < 0)
+		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_EVENTS | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) < 0)
 			return false;
-		// NOTE(ck): See this in Noel Berry's sdl platform 
-		// 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_EVENTS | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) != 0)
 
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
@@ -34,7 +27,7 @@ namespace Mon
 		// SET THE SETTINGS HERE .. if they aren't already set?
 
 
-		int flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
+		int flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI;
 		window = SDL_CreateWindow(settings->title,
 								  SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 								  settings->width, settings->height,

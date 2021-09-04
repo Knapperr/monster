@@ -228,6 +228,8 @@ namespace Mon
 		//if (simulate == true)
 			//player.particle.integrate(deltaTime);
 
+
+		// TODO(ck): Give player pos matrix
 		mat4 model = mat4(1.0f);
 		player.colliderData.worldMatrix = translate(model, player.particle.pos);
 	}
@@ -277,7 +279,7 @@ namespace Mon
 		MonGL::DeleteShader(&shader);
 	}
 
-	void Game::fullScreen(int width, int height)
+	void Game::setViewPort(int width, int height)
 	{
 		config->viewPort = Rect{ 0.0f, 0.0f, (float)width, (float)height };
 

@@ -3,7 +3,6 @@
 // TODO(ck): remove
 #include <string>
 
-
 #define _3D_GUI_
 
 #ifdef USE_SDL
@@ -210,8 +209,21 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 		EntityWindow(&showEntityWindow, game);
 
 	ImGui::Begin("DEBUG MENU");
-
 	ImGui::Separator();
+
+	/* - Color buttons, demonstrate using PushID() to add unique identifier in the ID stack, and changing style.
+    for (int i = 0; i < 7; i++)
+    {
+        if (i > 0)
+            ImGui::SameLine();
+        ImGui::PushID(i);
+        ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(i / 7.0f, 0.6f, 0.6f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(i / 7.0f, 0.7f, 0.7f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(i / 7.0f, 0.8f, 0.8f));
+        ImGui::Button("Click");
+        ImGui::PopStyleColor(3);
+        ImGui::PopID();
+    }*/
 	if (ImGui::Button("debug")) 
 	{ 
 		game->cam.followOff();
@@ -223,6 +235,23 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 		game->cam.followOn();
 		game->state = Mon::State::Play;
 	}
+	ImGui::SameLine();
+	if (ImGui::Button("Fullscreen"))
+	{
+		SDL_DisplayMode dm;
+		SDL_GetCurrentDisplayMode(0, &dm);		
+		SDL_SetWindowSize(window, dm.w, dm.h);
+		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+		game->setViewPort(dm.w, dm.h); 
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Exit"))
+	{
+		SDL_SetWindowSize(window, settings->width, settings->height);
+		SDL_SetWindowFullscreen(window, 0);
+		game->setViewPort(960.0f, 540.0f);
+	}
+	ImGui::SliderFloat2("port", (float*)&game->config->viewPort, 0.0f, 477.0f);
 	ImGui::Separator();
 
 	ImGui::LabelText(std::to_string(game->deltaTime).c_str(), "dt:");
@@ -239,19 +268,9 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 	ImGui::SameLine();
 	ImGui::Checkbox("Things", &showEntityWindow);
 
-	ImGui::SliderFloat("port x", &game->config->viewPort.x, 0.0f, 477.0f);
-	ImGui::SliderFloat("port y", &game->config->viewPort.y, 0.0f, 357.0f);
-	if (ImGui::Button("Fullscreen")) { game->fullScreen(settings->width, settings->height); }
-	ImGui::SameLine();
-	if (ImGui::Button("Exit"))
-	{
-		game->config->viewPort.w = 960.0f;
-		game->config->viewPort.h = 540.0f;
-	}
-
 	ImGui::SliderFloat("camera angle", &game->cam.angleAroundTarget, -360.0f, 180.0f);
 	ImGui::SliderFloat("camera pitch", &game->cam.pitch, -1.10f, 100.0f, "%1.0f");
-
+	ImGui::SliderFloat("camera lerp", &game->cam.lerpSpeed, 0.0f, 100.0f);
 
 
 	// just make button you press that restarts the camera
@@ -306,9 +325,19 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 
 #endif
 
-	if (ImGui::Button("720")) { SDL_SetWindowSize(window, 1280, 720); }
+	if (ImGui::Button("720")) 
+	{
+		settings->width = 1280;
+		settings->height = 720;
+		SDL_SetWindowSize(window, settings->width, settings->height);
+	}
 	ImGui::SameLine();
-	if (ImGui::Button("1440")) { SDL_SetWindowSize(window, 1440, 900); }
+	if (ImGui::Button("1440")) 
+	{
+		settings->width = 1440;
+		settings->height = 900;
+		SDL_SetWindowSize(window, settings->width, settings->height);
+	}
 
 	//char dtbuf[64];
 	//snprintf(dtbuf, sizeof(dtbuf), "%f", g_GameState->deltaTime);

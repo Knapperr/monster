@@ -10,7 +10,7 @@ namespace Mon
 	public:
 		Camera();
 		void update(double dt, Input* input, v3 pos, v3 orientation, bool constrainPitch = true);
-		void move(v3 tPos, v3 tOrientation);
+		void move(v3 tPos, v3 tOrientation, float dt);
 		void getKeyboardInput();
 		void followOn();
 		void followOff();
@@ -30,6 +30,7 @@ namespace Mon
 		float yaw;
 		float pitch;
 		float angleAroundTarget;
+		float lerpSpeed;
 
 
 	private:

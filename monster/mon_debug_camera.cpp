@@ -25,6 +25,7 @@ namespace Mon
 
 		distanceFromTarget = 10.0f;
 		angleAroundTarget = 180.0f;
+		lerpSpeed = 7.0f;
 		follow = false;
 
 		calculateCameraVectors();
@@ -56,7 +57,7 @@ namespace Mon
 		return viewMatrix;
 	}
 
-	void Camera::move(v3 tPos, v3 tOrientation)
+	void Camera::move(v3 tPos, v3 tOrientation, float dt)
 	{
 		// these are being done every frame.....
 		// calczoom 
@@ -75,9 +76,9 @@ namespace Mon
 		float offsetz = horizontalDistance * cosf(glm::radians(theta));
 		
 		// Lerp for now
-		pos.x = tPos.x - offsetx;
-		pos.z = tPos.z - offsetz;
-		pos.y = (tPos.y + verticalDistance) + offsety; // need some kind of offset for the target so the camera doesn't point at the floot
+		pos.x = lerp(pos.x, lerpSpeed * dt, tPos.x - offsetx);
+		pos.z = lerp(pos.z, lerpSpeed * dt, tPos.z - offsetz);
+		pos.y = lerp(pos.y, lerpSpeed * dt, (tPos.y + verticalDistance) + offsety); // need some kind of offset for the target so the camera doesn't point at the floor
 		yaw = 180 - (glm::radians(tOrientation.y) + angleAroundTarget);
 	}
 
@@ -85,7 +86,7 @@ namespace Mon
 	{
 		if (follow)
 		{
-			move(pos, orientation);
+			move(pos, orientation, dt);
 		}
 		else
 		{
