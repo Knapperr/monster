@@ -2,17 +2,22 @@
 #define MON_PLATFORM_H
 
 
-//#define _3D_
+#define _3D_
 
 // TODO: IMPORTANT(ck): Fix this
 #include "mon_gui.h"
 #include <SDL/SDL_opengl.h>
 
-
-
-
 namespace Mon
 {
+	struct Settings
+	{
+		const char* title;
+		//Context* context;
+		int width;
+		int height;
+	};
+
 	class Platform
 	{
 	public:

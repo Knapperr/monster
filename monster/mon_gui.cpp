@@ -4,7 +4,7 @@
 #include <string>
 
 
-//#define _3D_GUI_
+#define _3D_GUI_
 
 #ifdef USE_SDL
 void InitGui(SDL_Window* window, SDL_GLContext* context)
@@ -187,7 +187,7 @@ void StatsWindow(bool* p_open, Mon::Game* game)
 	ImGui::End();
 }
 
-void UpdateGui(SDL_Window* window, Mon::Game* game, Settings* settings)
+void UpdateGui(SDL_Window* window, Mon::Game* game)
 {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame(window);
@@ -232,9 +232,9 @@ void UpdateGui(SDL_Window* window, Mon::Game* game, Settings* settings)
 	ImGui::Checkbox("Things", &showEntityWindow);
 
 	ImGui::Separator();
-	if (ImGui::Button("follow on", { 96.0f, 16.0f })) { game->cam.followOn(); }
+	if (ImGui::Button("Camera View", { 96.0f, 16.0f })) { game->cam.followOn(); }
 	ImGui::SameLine();
-	if (ImGui::Button("follow off", { 96.0f, 16.0f })) { game->cam.followOff(); }
+	if (ImGui::Button("exit", { 96.0f, 16.0f })) { game->cam.followOff(); }
 	ImGui::Separator();
 
 	ImGui::SliderFloat("camera angle", &game->cam.angleAroundTarget, -360.0f, 180.0f);
@@ -292,26 +292,16 @@ void UpdateGui(SDL_Window* window, Mon::Game* game, Settings* settings)
 	snprintf(entitysizebuf, sizeof(entitysizebuf), "%f", (float)game->world->entities.size());
 
 
-
+#endif
 
 	//ImGui::SliderFloat("portw:", &game->config->viewPort.w, 0.0f, 1000.0f);
 	//ImGui::SliderFloat("porth:", &game->config->viewPort.h, 0.0f, 1000.0f);
 	ImGui::SliderFloat("port x", &game->config->viewPort.x, 0.0f, 477.0f);
-	ImGui::SliderFloat("port y", &game->config->viewPort.y ,0.0f, 357.0f);
+	ImGui::SliderFloat("port y", &game->config->viewPort.y, 0.0f, 357.0f);
+	if (ImGui::Button("720")) { SDL_SetWindowSize(window, 1280, 720); }
+	ImGui::SameLine();
+	if (ImGui::Button("1440")) { SDL_SetWindowSize(window, 1440, 900); }
 
-	ImGui::SliderInt("screen width",  &settings->width, 0.0f, 1440.0f);
-	ImGui::SliderInt("screen height", &settings->height, 0.0f, 900.0f);
-
-	// IMPORTANT(ck):
-	// TODO(ck): Call in platform shouldn't be using sdl directly here
-	if (ImGui::Button("apply")) 
-	{
-		// Need to actual window..
-		//SDL_SetWindowSize(g_platform.window, width, height);
-	}
-
-
-#endif
 	//char dtbuf[64];
 	//snprintf(dtbuf, sizeof(dtbuf), "%f", g_GameState->deltaTime);
 

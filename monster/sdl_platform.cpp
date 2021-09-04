@@ -229,6 +229,8 @@ namespace Mon
 						processKeyboard(&newInput->lower, isDown);
 					if (keyCode == SDLK_LSHIFT)
 						processKeyboard(&newInput->shift, isDown);
+					if (keyCode == SDLK_ESCAPE)
+						processKeyboard(&newInput->quit, isDown);
 				}
 			}
 			// SDL_CONTROLLERAXISMOTION

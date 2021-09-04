@@ -9,12 +9,13 @@
 class App
 {
 public:
-	Settings settings;
+	Mon::Settings settings;
 	Mon::Platform* platform; /* SDLPlatform */
 	Mon::Game* game;
-	bool running = true;
 	Mon::Input* oldInput;
 	Mon::Input* newInput;
+	bool running = true;
+	bool showGUI = true;
 
 	bool init();
 	void run();

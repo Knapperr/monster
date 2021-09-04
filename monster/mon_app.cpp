@@ -140,6 +140,14 @@ void App::run()
 				//if (app_config.on_update != nullptr)
 					//app_config.on_update();
 
+				if (game->playing() == true)
+				{
+					game->config->viewPort.w = settings.width;
+					game->config->viewPort.h = settings.height;
+					showGUI = false;
+				}
+				else
+					showGUI = true;
 
 				platform->pollInput(newInput, oldInput);
 				if (platform->quit == true)
@@ -162,7 +170,7 @@ void App::run()
 			}
 		}
 
-		UpdateGui(platform->window, game, &settings);
+		
 		// TODO(ck): Platform->Renderer->clearColor 
 		glClearColor(0.126f, 0.113f, 0.165f, 1.0f);
 
@@ -179,7 +187,11 @@ void App::run()
 		game->render(); // NOTE(ck): 2D
 #endif
 
-		RenderGui();
+		if (showGUI)
+		{ 
+			UpdateGui(platform->window, game);
+			RenderGui();
+		}
 
 		// TODO(ck): Platform->swapWindow()
 		SDL_GL_SwapWindow(platform->window);

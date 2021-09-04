@@ -44,6 +44,7 @@ namespace Mon
 				ButtonState rightStickdown;
 				ButtonState rightStickleft;
 				ButtonState rightStickright;
+				ButtonState quit;
 			};
 		};
 	};

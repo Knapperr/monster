@@ -106,8 +106,16 @@ namespace Mon
 
 		simulate = false;
 		
-
 		config = new MonGL::Config();
+		int screenWidth = 1440;
+		int screenHeight = 900;
+		int portWidth = 960;
+		int portHeight = 540;
+		config->viewPort.x = (screenWidth - portWidth) / 2;
+		config->viewPort.y = (screenHeight - portHeight) / 2;
+		config->viewPort.w = portWidth;
+		config->viewPort.h = portHeight;
+		MonGL::viewPort(&config->viewPort);
 		config->angleDegrees = -30.0f;
 
 
@@ -159,12 +167,23 @@ namespace Mon
 		//
  
 		// TODO(ck): TEMP INPUT
-
 		
+		
+
+		if (input.quit.endedDown)
+		{
+			state = State::Debug;
+			cam.followOff();
+			config->viewPort = Rect{ config->viewPort.x, config->viewPort.y, 960, 540 };
+		}
+
+
 		//player.particle.velocity = {};
-		bool enabled = state == State::Play && cam.follow;
+		bool enabled = state == State::Play;
 		if (enabled)
 		{
+			cam.followOn();
+
 			v3 velocity = {};
 
 			if (input.up.endedDown)
@@ -197,6 +216,15 @@ namespace Mon
 		//player.particle.pos.x += player.particle.velocity.x * dt;
 		//player.particle.pos.z += player.particle.velocity.z * dt;
 		
+		//input.mouseOffset.x -= config->viewPort.x;
+		//input.mouseOffset.y -= config->viewPort.y;
+		//int xOffset = (1440 - 960) / 2;
+		//int yOffset = (900 - 540) / 2;
+
+		//float x = (2.0f * (mouseX)) / (float)displayWidth - 1.0f;
+		//float y = (2.0f * (mouseY - yOffset)) / (float)displayHeight - 1.0f;
+		//input.mouseOffset.x -= config->viewPort.x;
+		//input.mouseOffset.y -= config->viewPort.y;
 		cam.update(deltaTime, &input, player.particle.pos, player.particle.orientation, true);
 
 		//if (simulate == true)
@@ -211,6 +239,8 @@ namespace Mon
 		//projection = glm::perspective(glm::radians(cam.zoom), 1440.0f / 720.0f, 0.1f, 100.0f);
 		mat4 projection = glm::perspective(glm::radians(cam.zoom), 960.0f / 540.0f, cam.nearPlane, cam.farPlane);
 		mat4 view = cam.viewMatrix();
+
+		MonGL::viewPort(&config->viewPort);
 
 		MonGL::drawTerrain(shader.id, &terrain->mesh, &light, projection, view, cam.pos);
 
@@ -249,6 +279,11 @@ namespace Mon
 		MonGL::DeleteShader(&shader);
 	}
 
+
+	bool Game::playing()
+	{
+		return (state == State::Play && cam.follow == true);
+	}
 
 
 
@@ -340,8 +375,8 @@ namespace Mon
 		int portHeight = 540;
 		config = new MonGL::Config();
 
-		config->viewPort.x = (screenWidth - portWidth) / 2;
-		config->viewPort.y = (screenHeight - portHeight) / 2;
+		config->viewPort.x = (float)(screenWidth - portWidth) / 2;
+		config->viewPort.y = (float)(screenHeight - portHeight) / 2;
 		config->viewPort.w = portWidth;
 		config->viewPort.h = portHeight;
 		MonGL::viewPort(&config->viewPort);

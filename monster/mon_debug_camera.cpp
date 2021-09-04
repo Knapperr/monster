@@ -64,6 +64,8 @@ namespace Mon
 		// calculateanglearoundplayer
 		// ---------------
 
+		// TODO(ck): smooth camera movement
+
 		float offsety = 2.0f;
 
 		float horizontalDistance = (float)(distanceFromTarget * cosf(glm::radians(pitch)));
@@ -71,6 +73,8 @@ namespace Mon
 		float theta = glm::radians(tOrientation.y) + angleAroundTarget;
 		float offsetx = horizontalDistance * sinf(glm::radians(theta));
 		float offsetz = horizontalDistance * cosf(glm::radians(theta));
+		
+		// Lerp for now
 		pos.x = tPos.x - offsetx;
 		pos.z = tPos.z - offsetz;
 		pos.y = (tPos.y + verticalDistance) + offsety; // need some kind of offset for the target so the camera doesn't point at the floot
@@ -171,5 +175,11 @@ namespace Mon
 	void Camera::followOff()
 	{
 		follow = false;
+		yaw = -80.0f;
+		pitch = -25.0f;
+		front.x = 0.0f;
+		front.y = -0.50f;
+		front.z = -1.00f;
+
 	}
 }

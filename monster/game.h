@@ -98,6 +98,8 @@ namespace Mon
 		void update(double dt, Input* input, int x);
 		void render();
 
+		bool playing();
+
 
 		// TODO(ck):
 		// DO NOT KEEP the shaders in the game and renderer like you did last time... 
