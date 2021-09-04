@@ -49,7 +49,7 @@ namespace Mon
 
 	bool Game::init()
 	{
-		state = State::Play;
+		state = State::Debug;
 
 		shader = {};
 		MonGL::LoadShader(&shader, "res/shaders/vert_colors.glsl", "res/shaders/frag_colors.glsl", NULL);
