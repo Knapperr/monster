@@ -10,7 +10,7 @@
 #include <imgui/imgui_impl_opengl3.h>
 #include <stdio.h>
 
-#include "game.h"
+#include "mon_game.h"
 
 struct Settings
 {

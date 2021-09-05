@@ -87,6 +87,7 @@ namespace MonGL
 	{
 		float angleDegrees;
 		Rect viewPort = {};
+		int tileSize = 16;
 	};
 
 	struct BatchData
@@ -126,7 +127,7 @@ namespace MonGL
 	void initRenderData2D(RenderData2D* sprite);
 	
 	void initTileMap(int tileAmount);
-	void fillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos);
+	void fillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize);
 	void bindVertices();
 	
 	void drawObject(Shader* shader, RenderData2D* data);

@@ -3,7 +3,7 @@
 // TODO(ck): remove
 #include <string>
 
-#define _3D_GUI_
+//#define _3D_GUI_
 
 #ifdef USE_SDL
 void InitGui(SDL_Window* window, SDL_GLContext* context)
@@ -32,9 +32,6 @@ void InitGui(SDL_Window* window, SDL_GLContext* context)
 	// Setup Platform/Renderer bindings
 	ImGui_ImplSDL2_InitForOpenGL(window, context);
 	ImGui_ImplOpenGL3_Init(glsl_version);
-
-
-
 }
 
 void TerrainWindow(bool* p_open, Mon::Game* game)
@@ -209,7 +206,6 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 		EntityWindow(&showEntityWindow, game);
 
 	ImGui::Begin("DEBUG MENU");
-	ImGui::Separator();
 
 	/* - Color buttons, demonstrate using PushID() to add unique identifier in the ID stack, and changing style.
     for (int i = 0; i < 7; i++)
@@ -224,78 +220,94 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
         ImGui::PopStyleColor(3);
         ImGui::PopID();
     }*/
-	if (ImGui::Button("debug")) 
-	{ 
-		game->cam.followOff();
-		game->state = Mon::State::Debug;
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("play"))
-	{
-		game->cam.followOn();
-		game->state = Mon::State::Play;
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("Fullscreen"))
-	{
-		SDL_DisplayMode dm;
-		SDL_GetCurrentDisplayMode(0, &dm);		
-		SDL_SetWindowSize(window, dm.w, dm.h);
-		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
-		game->setViewPort(dm.w, dm.h); 
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("Exit"))
-	{
-		SDL_SetWindowSize(window, settings->width, settings->height);
-		SDL_SetWindowFullscreen(window, 0);
-		game->setViewPort(960.0f, 540.0f);
-	}
-	ImGui::SliderFloat2("port", (float*)&game->config->viewPort, 0.0f, 477.0f);
+	ImGui::Separator();
+		if (ImGui::Button("debug")) 
+		{ 
+			game->cam.followOff();
+			game->state = Mon::State::Debug;
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("play"))
+		{
+			game->cam.followOn();
+			game->state = Mon::State::Play;
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Fullscreen"))
+		{
+			SDL_DisplayMode dm;
+			SDL_GetCurrentDisplayMode(0, &dm);		
+			SDL_SetWindowSize(window, dm.w, dm.h);
+			SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+			game->setViewPort(dm.w, dm.h); 
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Exit"))
+		{
+			SDL_SetWindowSize(window, settings->width, settings->height);
+			SDL_SetWindowFullscreen(window, 0);
+			game->setViewPort(960.0f, 540.0f);
+		}
+
+		if (ImGui::Button("720"))
+		{
+			settings->width = 1280;
+			settings->height = 720;
+			SDL_SetWindowSize(window, settings->width, settings->height);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("1440"))
+		{
+			settings->width = 1440;
+			settings->height = 900;
+			SDL_SetWindowSize(window, settings->width, settings->height);
+		}
+	
+		ImGui::SliderFloat2("port", (float*)&game->config->viewPort, 0.0f, 477.0f);
 	ImGui::Separator();
 
-	ImGui::LabelText(std::to_string(game->deltaTime).c_str(), "dt:");
+		ImGui::LabelText(std::to_string(game->deltaTime).c_str(), "dt:");
 
-	ImGui::Checkbox("Demo", &showDemoWindow);
-	ImGui::SameLine();
-	ImGui::Checkbox("stats", &showStatsWindow);
+		ImGui::Checkbox("Demo", &showDemoWindow);
+		ImGui::SameLine();
+		ImGui::Checkbox("stats", &showStatsWindow);
 
 #ifdef _3D_GUI_
 
-	ImGui::Checkbox("Terrain", &showTerrainWindow);
-	ImGui::SameLine();
-	ImGui::Checkbox("Camera", &showCameraWindow);
-	ImGui::SameLine();
-	ImGui::Checkbox("Things", &showEntityWindow);
+		ImGui::Checkbox("Terrain", &showTerrainWindow);
+		ImGui::SameLine();
+		ImGui::Checkbox("Camera", &showCameraWindow);
+		ImGui::SameLine();
+		ImGui::Checkbox("Things", &showEntityWindow);
 
-	ImGui::SliderFloat("camera angle", &game->cam.angleAroundTarget, -360.0f, 180.0f);
-	ImGui::SliderFloat("camera pitch", &game->cam.pitch, -1.10f, 100.0f, "%1.0f");
-	ImGui::SliderFloat("camera lerp", &game->cam.lerpSpeed, 0.0f, 100.0f);
+		ImGui::SliderFloat("camera angle", &game->cam.angleAroundTarget, -360.0f, 180.0f);
+		ImGui::SliderFloat("camera pitch", &game->cam.pitch, -1.10f, 100.0f, "%1.0f");
+		ImGui::SliderFloat("camera lerp", &game->cam.lerpSpeed, 0.0f, 100.0f);
 
 
-	// just make button you press that restarts the camera
-	// pass it a boolean from gui?? no we don't want to keep
-	// track of state
-	//ImGui::Button("debug camera on", )
+		// just make button you press that restarts the camera
+		// pass it a boolean from gui?? no we don't want to keep
+		// track of state
+		//ImGui::Button("debug camera on", )
 
-	/// 
-	/// Player 
-	///
-	ImGui::LabelText("", "Player");
-	if (ImGui::SmallButton("reset Pos"))
-	{
-		game->player.particle.pos.y = 0.1f;
-		game->player.particle.pos.x = 10.0f;
-		game->player.particle.pos.z = 10.0f;
-	}
-	ImGui::SliderFloat("speed", &game->player.particle.speed, 0.0f, 100.0f);
-	ImGui::SliderFloat3("color", &game->player.colliderData.color[0], 0.0f, 1.0f);
-	ImGui::SliderFloat3("min", &game->player.colliderData.size.min[0], 0.0f, 50.0f);
-	ImGui::SliderFloat3("max", &game->player.colliderData.size.max[0], 0.0f, 50.0f);
+		/// 
+		/// Player 
+		///
+		ImGui::LabelText("", "Player");
+		if (ImGui::SmallButton("reset Pos"))
+		{
+			game->player.particle.pos.y = 0.1f;
+			game->player.particle.pos.x = 10.0f;
+			game->player.particle.pos.z = 10.0f;
+		}
+		ImGui::SliderFloat("speed", &game->player.particle.speed, 0.0f, 100.0f);
+		ImGui::SliderFloat3("color", &game->player.colliderData.color[0], 0.0f, 1.0f);
+		ImGui::SliderFloat3("min", &game->player.colliderData.size.min[0], 0.0f, 50.0f);
+		ImGui::SliderFloat3("max", &game->player.colliderData.size.max[0], 0.0f, 50.0f);
 	
 
-	ImGui::Checkbox("simulate", &game->simulate);
-	ImGui::Checkbox("draw collisions", &game->drawCollisions);
+		ImGui::Checkbox("simulate", &game->simulate);
+		ImGui::Checkbox("draw collisions", &game->drawCollisions);
 
 	ImGui::Separator();
 
@@ -324,20 +336,6 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 
 
 #endif
-
-	if (ImGui::Button("720")) 
-	{
-		settings->width = 1280;
-		settings->height = 720;
-		SDL_SetWindowSize(window, settings->width, settings->height);
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("1440")) 
-	{
-		settings->width = 1440;
-		settings->height = 900;
-		SDL_SetWindowSize(window, settings->width, settings->height);
-	}
 
 	//char dtbuf[64];
 	//snprintf(dtbuf, sizeof(dtbuf), "%f", g_GameState->deltaTime);

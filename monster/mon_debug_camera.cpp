@@ -65,7 +65,7 @@ namespace Mon
 		// calculateanglearoundplayer
 		// ---------------
 
-		// TODO(ck): smooth camera movement
+		// TODO(ck): Do not use lerp - figure out real camera following ease in ease out techniques
 
 		float offsety = 2.0f;
 
@@ -75,7 +75,7 @@ namespace Mon
 		float offsetx = horizontalDistance * sinf(glm::radians(theta));
 		float offsetz = horizontalDistance * cosf(glm::radians(theta));
 		
-		// Lerp for now
+		// NOTE(ck): Lerp for now
 		pos.x = lerp(pos.x, lerpSpeed * dt, tPos.x - offsetx);
 		pos.z = lerp(pos.z, lerpSpeed * dt, tPos.z - offsetz);
 		pos.y = lerp(pos.y, lerpSpeed * dt, (tPos.y + verticalDistance) + offsety); // need some kind of offset for the target so the camera doesn't point at the floor

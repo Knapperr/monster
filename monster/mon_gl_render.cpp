@@ -2,8 +2,6 @@
 
 #include <glad/glad.h>
 
-
-
 namespace MonGL
 {
 	v3 GetSize(ColliderSize* size)
@@ -351,13 +349,26 @@ namespace MonGL
 
 	// ==================================================================
 
-
-
 	void viewPort(Rect* port)
 	{		
 		glViewport(port->x, port->y, port->w, port->h);
 		return;
 	}
+
+	//void cleanUp(Sprite* sprite)
+	//{
+	//	glDeleteVertexArrays(1, &sprite->VAO);
+	//	glDeleteBuffers(1, &sprite->VBO);
+	//	//glDeleteBuffers(1, &EBO);
+	//	//glDeleteProgram(shaderProgram);
+	//}
+
+			// TODO(ck): clean up render data 
+	//glDeleteVertexArrays(1, &player.data.VAO);
+	//glDeleteBuffers(1, &player.data.VBO);
+
+	//MonGL::DeleteShader(&shader);
+
 
 
 	///
@@ -459,10 +470,10 @@ namespace MonGL
 	};
 
 	// This isn't draw this is fill
-	void fillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos)
+	void fillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize)
 	{		
 		float sheetSize = 256.0f;
-		int spriteSize = 32;
+		int spriteSize = 16;
 
 		// Texture coords
 		float topRightX		= ((tileOffsetX + 1) * spriteSize) / sheetSize;
@@ -477,7 +488,7 @@ namespace MonGL
 		// TODO(ck): pushQuad(pos, color, texcoords)		
 		float x = tileXPos;
 		float y = tileYPos;		
-		int size = 32;
+		int size = tileSize;
 		Vertex vec0 = {
 			v3(x, y, 0.0f),
 			v3(1.0f, 0.0f, 0.0f),
@@ -608,11 +619,5 @@ namespace MonGL
 		//glBindVertexArray(0);
 	}
 
-	//void cleanUp(Sprite* sprite)
-	//{
-	//	glDeleteVertexArrays(1, &sprite->VAO);
-	//	glDeleteBuffers(1, &sprite->VBO);
-	//	//glDeleteBuffers(1, &EBO);
-	//	//glDeleteProgram(shaderProgram);
-	//}
+
 }
