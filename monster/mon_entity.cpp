@@ -1,34 +1,57 @@
 #include "mon_entity.h"
 
-#include <glad\glad.h>
-
-
 namespace Mon
 {
 
-	Entity2D::Entity2D(const char* fileLocation,
-					   bool isAlpha,
-					   v2 position)
+	void initEntity(Entity2D* e, const char* fileLocation, bool isAlpha, v2 position)
 	{
-		sprite = {};
+		e->sprite = {};
 		// TODO(CK): Don't automatically make opengl data... figure out what renderer we are using
-		MonGL::initRenderData2D(&sprite);
-		MonTexture::LoadTextureFile(&sprite.texture, fileLocation, isAlpha, false);
+		MonGL::initRenderData2D(&e->sprite);
+		MonTexture::LoadTextureFile(&e->sprite.texture, fileLocation, isAlpha, false);
 
-		pos = position;
+		e->pos = position;
 		// TODO(ck): Deal with speed
-		speed = 500.0f;
-		maxSpeed = 250.0f;
+		e->speed = 500.0f;
+		e->maxSpeed = 250.0f;
 		
-		rotation = 0.0f;
-		destroyed = false;
+		e->rotation = 0.0f;
+		e->destroyed = false;
 
-		velocity = v2(1.0f);
-		weight = 44.0f;
+		e->velocity = v2(1.0f);
+		e->weight = 44.0f;
 	}
 
-	Entity2D::~Entity2D()
+	// TODO(ck): Should this param be pointer?
+	// should velocity be acceleratio?
+	void movePlayer(Entity2D* p, v2* velocity, float deltaTime)
 	{
-		//MonGL::cleanUp(&this->sprite);
+		if ((velocity->x != 0.0f) && (velocity->y != 0.0f))
+		{
+			*velocity *= 0.707106781187f;
+		}
+
+		*velocity *= p->speed;
+
+		*velocity += -2.5f * p->velocity;
+
+		v2 oldPos = p->pos;
+		v2 newPos = oldPos;
+		float deltaX = (0.5f * velocity->x * square(deltaTime) + p->velocity.x * deltaTime);
+		float deltaY = (0.5f * velocity->y * square(deltaTime) + p->velocity.y * deltaTime);
+		v2 delta = { deltaX, deltaY };
+
+		// TODO(ck): need to set an offest like casey does
+		newPos += delta;
+
+
+		p->velocity.x = velocity->x * deltaTime + p->velocity.x;
+		p->velocity.y = velocity->y * deltaTime + p->velocity.y;
+
+		p->pos = newPos;
+
 	}
+
+
+
 }

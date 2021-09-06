@@ -77,10 +77,9 @@ namespace Mon
 	{
 		//MonGL::BatchData* batch;
 		std::vector<Tile> tiles;
-		TileSheet sheet;
 	};
 
-	void initTileMap(TileMap* map);
+	void initTileMap(TileMap* map, TileSheet* sheet);
 
 }
 

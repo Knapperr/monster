@@ -135,7 +135,6 @@ namespace Mon
 	public:
 		bool init();
 		void movePlayer(v3* velocity);
-		void movePlayer2D(v2* velocity, Entity2D* player);
 		void update(double dt, Input* newInput);
 		void render(double dt);
 		void cleanUp();

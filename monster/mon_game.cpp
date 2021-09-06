@@ -282,7 +282,6 @@ namespace Mon
 	void Game::setViewPort(int width, int height)
 	{
 		config->viewPort = Rect{ 0.0f, 0.0f, (float)width, (float)height };
-
 	}
 
 	bool Game::playing()
@@ -295,36 +294,6 @@ namespace Mon
 	/// 
 	/// 2D
 	/// 
-	
-		// TODO(ck): Should this param be pointer?
-	// should velocity be acceleratio?
-	void Game::movePlayer2D(v2* velocity, Entity2D* p)
-	{
-		if ((velocity->x != 0.0f) && (velocity->y != 0.0f))
-		{
-			*velocity *= 0.707106781187f;
-		}
-
-		*velocity *= p->speed;
-
-		*velocity += -2.5f * p->velocity;
-
-		v2 oldPos = p->pos;
-		v2 newPos = oldPos;
-		float deltaX = (0.5f * velocity->x * square(deltaTime) + p->velocity.x * deltaTime);
-		float deltaY = (0.5f * velocity->y * square(deltaTime) + p->velocity.y * deltaTime);
-		v2 delta = { deltaX, deltaY };
-
-		// TODO(ck): need to set an offest like casey does
-		newPos += delta;
-
-
-		p->velocity.x = velocity->x * deltaTime + p->velocity.x;
-		p->velocity.y = velocity->y * deltaTime + p->velocity.y;
-
-		p->pos = newPos;
-
-	}
 
 	bool Game::init(int x)
 	{
@@ -398,7 +367,6 @@ namespace Mon
 
 		deltaTime = dt;
 		this->input = *input;
-
 		
 		if (state == State::Play)
 		{
@@ -421,8 +389,7 @@ namespace Mon
 			{
 				velocity.x = 1.0f;
 			}
-
-			movePlayer2D(&velocity, p);
+			Mon::movePlayer(p, &velocity, deltaTime);
 			// update sprite position 
 			p->sprite.pos = p->pos;
 
@@ -478,7 +445,7 @@ namespace Mon
 		int projLoc = glGetUniformLocation(tileShader.id, "projection");
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-		MonGL::drawMap(&tileShader, world->map->sheet.texture.id);
+		MonGL::drawMap(&tileShader, world->sheet.texture.id);
 
 		glUseProgram(shader.id);
 		projLoc = glGetUniformLocation(shader.id, "projection");
@@ -488,7 +455,6 @@ namespace Mon
 		{
 			//state->world->entities[i]->pos.x *= time;
 			//state->world->entities[i]->pos.y *= time;
-
 			MonGL::drawObject(&shader, &world->entities[i]->sprite);
 		}
 

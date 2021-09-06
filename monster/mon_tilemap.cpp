@@ -50,7 +50,7 @@ namespace Mon
 		}
 	}
 
-	void initTileMap(TileMap* map)
+	void initTileMap(TileMap* map, TileSheet* sheet)
 	{
 		// NOTE(ck): Sheet must be created first
 #define MAP_SIZE 40
@@ -120,7 +120,7 @@ namespace Mon
 
 				if (testmap[y][x] != 4 && testmap[y][x] != 7)
 				{
-					Tile tile = *map->sheet.createTile(testmap[y][x], x * width, y * height);
+					Tile tile = *sheet->createTile(testmap[y][x], x * width, y * height);
 					map->tiles.push_back(tile);
 				}
 			}

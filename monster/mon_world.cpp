@@ -7,10 +7,10 @@ namespace Mon
 
 		// TODO(ck): MEMORY MANAGEMENT - Efficient tile map creation
 		map = new TileMap();
-		map->sheet = {};
-		initTileSheet(&map->sheet, "res/textures/basic_tiles.png");
+		sheet = {};
+		initTileSheet(&sheet, "res/textures/basic_tiles.png");
 
-		initTileMap(map);
+		initTileMap(map, &sheet);
 		MonGL::initTileMap(map->tiles.size());
 
 		for (int i = 0; i < map->tiles.size(); ++i)
@@ -20,18 +20,18 @@ namespace Mon
 
 		MonGL::bindVertices();
 
-
 		// TODO(ck): Memory management
-		player = new Mon::Entity2D("res/textures/p1.png", true,
-								   glm::vec2(0, 0));
+		player = new Entity2D();
+		initEntity(player, "res/textures/p1.png", true, glm::vec2(0, 0));
 
-		Entity2D* ball = new Entity2D("res/textures/awesomeface.png", true,
-									  glm::vec2(200, 200));
+		Entity2D* ball = new Entity2D();
+		initEntity(ball, "res/textures/awesomeface.png", true, glm::vec2(200, 200));
 		entities.push_back(ball);
+
 		for (int i = 0; i < 5; ++i)
 		{
-			Entity2D* e = new Entity2D("res/textures/awesomeface.png", true,
-									   glm::vec2(30 * i, 5 * i));
+			Entity2D* e = new Entity2D();
+			initEntity(e, "res/textures/awesomeface.png", true, glm::vec2(30 * i, 5 * i));
 			entities.push_back(e);
 		}
 	}

@@ -14,6 +14,7 @@ namespace Mon
 		//GameObject* objects[MAX_OBJECTS];
 		std::vector<Entity2D*> entities;
 		TileMap* map;
+		TileSheet sheet;
 
 		World();
 		~World();

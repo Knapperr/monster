@@ -8,9 +8,11 @@
 
 namespace Mon
 {
-	class Entity2D
+	struct Entity2D
 	{
 	public:
+
+		MonGL::RenderData2D sprite;
 		v2 pos;
 		v2 velocity;
 		float speed;
@@ -18,21 +20,12 @@ namespace Mon
 		float weight;
 		float rotation;
 		bool destroyed;
-
-
-		// Components  Sprite can't be part of Default Constructor 
-		// default just sets this to nulls
-		MonGL::RenderData2D sprite;
-		// Texture2D sprite
-
-		// TODO(CK): Maybe worry about this later (remember we jsut want to make a game)
-		// IComponent 
-		//  - RigidBody 
-		//  - Sprite 
-		Entity2D(const char* fileLocation,
-				 bool isAlpha,
-				 v2 position);
-		~Entity2D();
 	};
+
+	void initEntity(Entity2D* e, const char* fileLocation, bool isAlpha, v2 position);
+	// TODO(ck): Should this param be pointer?
+	// should velocity be acceleration?
+	void movePlayer(Entity2D* p, v2* velocity, float deltaTime);
+
 }
 #endif
