@@ -165,20 +165,7 @@ namespace Mon
 		//
 		// Input start
 		//
- 
 		// TODO(ck): TEMP INPUT
-		
-		
-
-		//if (input.quit.endedDown)
-		//{
-		//	state = State::Debug;
-		//	cam.followOff();
-		//	config->viewPort = Rect{ config->viewPort.x, config->viewPort.y, 960, 540 };
-		//}
-
-
-		//player.particle.velocity = {};
 		bool enabled = state == State::Play;
 		if (enabled)
 		{
@@ -237,12 +224,12 @@ namespace Mon
 	void Game::render(double dt)
 	{
 		//projection = glm::perspective(glm::radians(cam.zoom), 1440.0f / 720.0f, 0.1f, 100.0f);
-		mat4 projection = glm::perspective(glm::radians(cam.zoom), 960.0f / 540.0f, cam.nearPlane, cam.farPlane);
+		mat4 proj = cam.projection();
 		mat4 view = cam.viewMatrix();
 
-		MonGL::viewPort(&config->viewPort);
+		MonGL::beginRender(config, proj, view, shader.id);
 
-		MonGL::drawTerrain(shader.id, &terrain->mesh, &light, projection, view, cam.pos);
+		MonGL::drawTerrain(shader.id, &terrain->mesh, &light, proj, view, cam.pos);
 
 		// TODO(ck): use shader
 		glUseProgram(shader.id);
@@ -254,17 +241,17 @@ namespace Mon
 
 
 		if (drawCollisions)
-			MonGL::drawBoundingBox(&player.colliderData, player.particle.pos, cam.pos, projection, view, shader.id);
+			MonGL::drawBoundingBox(&player.colliderData, player.particle.pos, cam.pos, proj, view, shader.id);
 
-		MonGL::drawQuad(config, &player.data, player.particle.pos, v3(1.0f), cam.pos, projection, view, shader.id);
+		MonGL::drawQuad(config, &player.data, player.particle.pos, v3(1.0f), cam.pos, shader.id);
 
 		for (auto& e : enemies)
 		{
-			MonGL::drawBoundingBox(&e.colliderData, e.particle.pos, cam.pos, projection, view, shader.id);
+			MonGL::drawBoundingBox(&e.colliderData, e.particle.pos, cam.pos, proj, view, shader.id);
 		}
 		for (auto& e : trees)
 		{
-			MonGL::drawQuad(config, &e.data, e.particle.pos, v3(1.0f, 10.0f, 1.0f), cam.pos, projection, view, shader.id);
+			MonGL::drawQuad(config, &e.data, e.particle.pos, v3(1.0f, 10.0f, 1.0f), cam.pos, shader.id);
 		}
 
 

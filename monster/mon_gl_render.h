@@ -40,6 +40,13 @@ namespace MonGL
 
 	//v3 center = v3((min_x + max_x) / 2, (min_y + max_y) / 2, (min_z + max_z) / 2);
 	//mat4 transform = 
+	struct Config
+	{
+		float angleDegrees;
+		Rect viewPort = {};
+		int tileSize = 16;
+
+	};
 
 	struct Vertex3D
 	{
@@ -83,13 +90,6 @@ namespace MonGL
 	};
 
 
-	struct Config
-	{
-		float angleDegrees;
-		Rect viewPort = {};
-		int tileSize = 16;
-	};
-
 	struct BatchData
 	{
 		unsigned int VAO;
@@ -106,13 +106,13 @@ namespace MonGL
 		MonTexture::Texture texture;
 
 	};
-	
+
+	void beginRender(Config* config, mat4 projection, mat4 view, int shaderID);
 	void viewPort(Rect* port);
 	void initQuad(RenderData* data, int shaderID, std::string texturePath);
 	void initBoundingBox(RenderData* data);
 	void drawQuad(Config* config, RenderData* data,
 						 v3 playerPos, v3 scale, v3 camPos,
-						 mat4 projection, mat4 view,
 						 unsigned int shaderID);
 	void drawBoundingBox(RenderData* data,
 					 v3 playerPos, v3 camPos,

@@ -14,6 +14,7 @@ namespace Mon
 		void getKeyboardInput();
 		void followOn();
 		void followOff();
+		mat4 projection();
 		mat4 viewMatrix();
 		mat4 debugViewMatrix();
 		mat4 followViewMatrix();

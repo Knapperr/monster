@@ -31,6 +31,11 @@ namespace Mon
 		calculateCameraVectors();
 	}
 
+	mat4 Camera::projection()
+	{
+		return glm::perspective(glm::radians(zoom), 960.0f / 540.0f, nearPlane, farPlane);
+	}
+
 	mat4 Camera::viewMatrix()
 	{
 		if (follow)

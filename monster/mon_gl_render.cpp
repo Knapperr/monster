@@ -122,9 +122,17 @@ namespace MonGL
 		//glEnableVertexAttribArray(2);
 	}
 
+
+	void beginRender(Config* config, mat4 projection, mat4 view, int shaderID)
+	{
+		MonGL::viewPort(&config->viewPort);
+		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(view));
+
+	}
+
 	void drawQuad(Config* config, RenderData* data,
 						v3 playerPos, v3 scale, v3 camPos,
-						mat4 projection, mat4 view,
 						unsigned int shaderID)
 	{
 
@@ -134,10 +142,8 @@ namespace MonGL
 		//glUniform3fv(glGetUniformLocation(shaderID, "material.specular"), 1, &data->mat.specular[0]);
 		//glUniform1f(glGetUniformLocation(shaderID, "material.shininess"), data->mat.shininess);
 
+		// TODO(ck): Move to begin render. MonGL::beginRender(&cam);
 		glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camPos[0]);
-
-		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
 		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), true);
 		glUniform1i(glGetUniformLocation(shaderID, "pixelTexture"), true);
@@ -149,6 +155,8 @@ namespace MonGL
 		glUniform1i(glGetUniformLocation(shaderID, "collider"), false);
 		// ==============================================================================
 
+		// TODO(ck): Does this happen at the end of update. the data gets its mat4 updated 
+		// and then we can just call glUniformMatrix on this
 		mat4 model = mat4(1.0f);
 		model = glm::translate(model, playerPos);
 		model = glm::rotate(model, glm::radians(config->angleDegrees), v3{ 1.0f, 0.0f, 0.0f });
