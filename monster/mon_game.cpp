@@ -47,6 +47,126 @@ namespace Mon
 		return;
 	}
 
+
+	/*
+	GenerateShader("waterDis",
+			"shaders/waterdistortion_vert.glsl",
+			"shaders/waterdistortion_frag.glsl",
+			NULL);
+
+	GenerateShader("waterDir",
+				"shaders/waterdirection_vert.glsl",
+				"shaders/waterdirection_frag.glsl",
+				NULL);
+
+		void Renderer::DrawWater(WaterObject* water)
+	{
+		glUseProgram(waterShader->id);
+		glUniformMatrix4fv(GetLoc(waterShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(GetLoc(waterShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
+
+		for (unsigned int i = 0; i < water->model->meshes.size(); i++)
+		{
+			unsigned int diffuseNr = 1;
+			unsigned int specularNr = 1;
+			unsigned int normalNr = 1;
+			unsigned int heightNr = 1;
+
+			for (unsigned int j = 0; j < water->model->meshes[i].textures.size(); ++j)
+			{
+				glActiveTexture(GL_TEXTURE0 + j); // activate the proper texture unit before binding
+				// retrieve texture number (the N in diffuse_TextureN)
+				std::string number;
+				std::string name = water->model->meshes[i].textures[j].type;
+
+				if (name == "texture_diffuse")
+					number = std::to_string(diffuseNr++);
+				else if (name == "texture_specular")
+					number = std::to_string(specularNr++);
+				else if (name == "texture_normal")
+					number = std::to_string(normalNr++);
+				else if (name == "texture_height")
+					number = std::to_string(heightNr++);
+
+				// now set the sampler to the correct texture unit
+				glUniform1i(glGetUniformLocation(waterShader->id, (name + number).c_str()), j);
+				// and finally bind the texture
+				glBindTexture(GL_TEXTURE_2D, water->model->meshes[i].textures[j].id);
+			}
+
+
+			// loop through draw info grabbed passed to gui from game. then game passes to renderer
+			// can loop through all uniforms with shader.GetUniforms();
+			glUniform1f(GetLoc(waterShader, "time"), (float)glfwGetTime());
+			glUniform3fv(GetLoc(waterShader, "lightPos"), 1, &g_lamp[0]);
+			glUniform3fv(GetLoc(waterShader, "viewPos"), 1, &camPos[0]);
+
+			glUniform1f(GetLoc(waterShader, "uJump"), water->uJump);
+			glUniform1f(GetLoc(waterShader, "vJump"), water->vJump);
+			glUniform1f(GetLoc(waterShader, "tiling"), water->tiling);
+			glUniform1f(GetLoc(waterShader, "speed"), water->speed);
+			glUniform1f(GetLoc(waterShader, "flowStrength"), water->flowStrength);
+			glUniform1f(GetLoc(waterShader, "flowOffset"), water->flowOffset);
+			glUniform1f(GetLoc(waterShader, "heightScale"), water->heightScale);
+			glUniform1f(GetLoc(waterShader, "heightScaleModulated"), water->heightScaleModulated);
+			glUniform1f(GetLoc(waterShader, "waveLength"), water->waveLength);
+
+			// Set position, rotation and scale
+			glm::mat4 matModel = glm::mat4(1.0f);
+
+			glm::mat4 matTranslate = glm::translate(glm::mat4(1.0f),
+													glm::vec3(water->pos.x, water->pos.y, water->pos.z));
+			matModel = matModel * matTranslate;
+
+			glm::mat4 rotateZ = glm::rotate(glm::mat4(1.0f),
+											water->orientation.z,
+											glm::vec3(0.0f, 0.0f, 1.0f));
+			matModel = matModel * rotateZ;
+
+			glm::mat4 rotateY = glm::rotate(glm::mat4(1.0f),
+											water->orientation.y,
+											glm::vec3(0.0f, 1.0f, 0.0f));
+			matModel = matModel * rotateY;
+
+			glm::mat4 rotateX = glm::rotate(glm::mat4(1.0f),
+											water->orientation.x,
+											glm::vec3(1.0f, 0.0f, 0.0f));
+			matModel = matModel * rotateX;
+
+			glm::mat4 matScale = glm::scale(glm::mat4(1.0f),
+											glm::vec3(water->scale, water->scale, water->scale));
+
+			matModel = matModel * matScale;
+			glUniformMatrix4fv(GetLoc(waterShader, "model"),
+							   1, GL_FALSE, glm::value_ptr(matModel));
+
+			// INVERSE WAS FROM GRAPHICS CLASS
+				GLint matModel_loc = glGetUniformLocation(shaderProgID, "matModel");
+				GLint matModelInvTran_loc = glGetUniformLocation(shaderProgID, "matModelInvTrans");
+			
+
+			if (water->wireFrame)
+			{
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			}
+			else
+			{
+				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			}
+
+			// Draw mesh
+			glBindVertexArray(water->model->meshes[i].VAO);
+			glDrawElements(GL_TRIANGLES, water->model->meshes[i].indices.size(), GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
+
+			// Always good practice to set everything back to defaults once configured
+			// NOTE(CK): bind texture must be AFTER glActiveTexture or it will not unbind properly
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
+		return;
+	}*/
+
 	bool Game::init()
 	{
 		state = State::Debug;
@@ -218,7 +338,9 @@ namespace Mon
 
 		// TODO(ck): Give player pos matrix
 		mat4 model = mat4(1.0f);
-		player.colliderData.worldMatrix = translate(model, player.particle.pos);
+		float colliderPosX = player.particle.pos.x - (0.5f);
+		float colliderPosZ = player.particle.pos.z - (0.5f);
+		player.colliderData.worldMatrix = translate(model, v3(colliderPosX, -0.2f, colliderPosZ));
 	}
 
 	void Game::render(double dt)
@@ -342,8 +464,8 @@ namespace Mon
 		config->viewPort.h = portHeight;
 		MonGL::viewPort(&config->viewPort);
 
-		camera = {};
-		camera.lerpSpeed = 7.0f;
+		camera = OrthoCamera(world->player->pos);
+
 		return true;
 	}
 
@@ -391,8 +513,8 @@ namespace Mon
 		//const unsigned int SCREEN_WIDTH = 1280;
 		//const unsigned int SCREEN_HEIGHT = 720;
 		// speed 
-		camera.target.x = lerp(camera.target.x, camera.lerpSpeed * dt, world->player->pos.x);
-		camera.target.y = lerp(camera.target.y, camera.lerpSpeed * dt, world->player->pos.y);
+		
+		camera.update(&world->player->pos, deltaTime);
 	}
 
 	void Game::render()

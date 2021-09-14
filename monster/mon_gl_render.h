@@ -14,7 +14,6 @@ namespace MonGL
 	struct Light
 	{
 		v3 pos;
-
 		v3 ambient;
 		v3 diffuse;
 		v3 specular;
@@ -45,7 +44,6 @@ namespace MonGL
 		float angleDegrees;
 		Rect viewPort = {};
 		int tileSize = 16;
-
 	};
 
 	struct Vertex3D
@@ -55,7 +53,6 @@ namespace MonGL
 		v2 texCoords;
 	};
 
-	// MESH
 	struct RenderData
 	{
 		std::vector<Vertex3D> vertices;

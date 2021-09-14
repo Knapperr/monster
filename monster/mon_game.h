@@ -9,6 +9,7 @@
 
 
 #include "mon_debug_camera.h"
+#include "mon_ortho_camera.h"
 //#include "mon_terrain.h"
 
 // should not be in this layer either
@@ -116,14 +117,6 @@ namespace Mon
 		
 	};
 
-	struct CameraTwo
-	{
-		v2 pos;
-		v2 target;
-		float zoom;
-		float lerpSpeed;
-	};
-
 	enum State
 	{
 		Debug,
@@ -154,7 +147,7 @@ namespace Mon
 		Terrain* terrain;
 
 		Camera cam;
-		CameraTwo camera;
+		OrthoCamera camera;
 		Input input;
 		
 		MonGL::Config* config;

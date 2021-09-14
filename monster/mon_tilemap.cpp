@@ -19,20 +19,20 @@ namespace Mon
 		sheet->tiles = new Tile[sheet->tileCount];
 
 		sheet->tiles[0].tileId = 0;
-		sheet->tiles[0].offsetX = 6;
+		sheet->tiles[0].offsetX = 4;
 		sheet->tiles[0].offsetY = 1;
 
 		sheet->tiles[1].tileId = 1;
-		sheet->tiles[1].offsetX = 6;
+		sheet->tiles[1].offsetX = 4;
 		sheet->tiles[1].offsetY = 3;
 
 		sheet->tiles[2].tileId = 2;
-		sheet->tiles[2].offsetX = 6;
+		sheet->tiles[2].offsetX = 4;
 		sheet->tiles[2].offsetY = 2;
 
 		sheet->tiles[3].tileId = 3;
-		sheet->tiles[3].offsetX = 6;
-		sheet->tiles[3].offsetY = 2;
+		sheet->tiles[3].offsetX = 7;
+		sheet->tiles[3].offsetY = 3;
 	}
 
 	// TODO(ck): MEMORY MANAGEMENT

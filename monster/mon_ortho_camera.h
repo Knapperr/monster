@@ -1,9 +1,21 @@
 #ifndef MON_ORTHO_CAMERA
 #define MON_ORTHO_CAMERA
 
-struct OrthoCamera
-{
-	int x = 1;
-};
+#include "mon_math.h"
 
+namespace Mon
+{
+	class OrthoCamera
+	{
+	public:
+		v2 pos;
+		v2 target;
+		float zoom;
+		float lerpSpeed;
+
+		OrthoCamera();
+		OrthoCamera(v2 position);
+		void update(v2* pos, float dt);
+	};
+}
 #endif

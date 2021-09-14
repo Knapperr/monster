@@ -109,7 +109,7 @@ namespace MonGL
 
 		data->size = {};
 		data->size.min = v3(0.0f, 0.0f, 0.0f);
-		data->size.max = v3(2.0f, 2.0f, 2.0f);
+		data->size.max = v3(1.0f, 1.0f, 1.0f);
 		// Set world matrix to be the same size as the bounding box
 		//data->worldMatrix = GetTransform(&data->size);
 
@@ -291,8 +291,8 @@ namespace MonGL
 		data->mat.specular = v3(0.5f, 0.5f, 0.5f);
 		data->mat.shininess = 32.0f;
 
-		//std::string textPath = "res/textures/terrain/1024multi.png";
-		std::string textPath = "res/textures/terrain/pix_grass.png";
+		std::string textPath = "res/textures/terrain/1024multi.png";
+		//std::string textPath = "res/textures/terrain/pix_grass.png";
 		std::string textDir = textPath.substr(0, textPath.find_last_of('/'));
 		/*
 		textureIds[0] = MonTexture::LoadTextureFile("1024multi.png", textDir, false);
@@ -300,7 +300,7 @@ namespace MonGL
 		filename = directory + '/' + filename;
 		*/
 		data->texture = {};
-		MonTexture::LoadTextureFile(&data->texture, textPath.c_str(), false, true);
+		MonTexture::LoadTextureFile(&data->texture, textPath.c_str(), false, false, false);
 
 
 	}
@@ -418,7 +418,6 @@ namespace MonGL
 
 		sprite->color = v3(1.0f);
 		sprite->pos = {};
-		sprite->size = v2(32.0f, 32.0f);
 	}
 
 	
