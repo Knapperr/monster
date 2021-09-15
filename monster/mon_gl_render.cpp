@@ -612,7 +612,12 @@ namespace MonGL
 		glBindTexture(GL_TEXTURE_2D, data->texture.id);
 
 		glBindVertexArray(data->VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+
+		if (data->wireFrame)
+			glDrawArrays(GL_LINES, 0, 6);
+		else 
+			glDrawArrays(GL_TRIANGLES, 0, 6);
+		
 		glBindVertexArray(0);
 
 		//glUseProgram(shader->id);

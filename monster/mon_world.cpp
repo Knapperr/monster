@@ -23,6 +23,10 @@ namespace Mon
 		// TODO(ck): Memory management
 		player = new Entity2D();
 		initEntity(player, "res/textures/p1.png", true, v2(0, 0));
+		Entity2D* collider = new Entity2D();
+		initEntity(collider, "res/textures/p1.png", true, v2(50, 50));
+		collider->sprite.wireFrame = true;
+		entities.push_back(collider);
 
 		Entity2D* ball = new Entity2D();
 		initEntity(ball, "res/textures/p1_.png", true, v2(200, 200));

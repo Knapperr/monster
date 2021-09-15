@@ -95,12 +95,13 @@ namespace MonGL
 
 	struct RenderData2D
 	{
+		MonTexture::Texture texture;
 		unsigned int VAO;
 		unsigned int VBO;
 		v2 pos;
 		v3 color;
 		v2 size;
-		MonTexture::Texture texture;
+		bool wireFrame;
 
 	};
 

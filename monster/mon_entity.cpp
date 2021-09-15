@@ -26,6 +26,8 @@ namespace Mon
 
 		e->velocity = v2(1.0f);
 		e->weight = 44.0f;
+
+		e->sprite.wireFrame = false;
 	}
 
 	// TODO(ck): Should this param be pointer?

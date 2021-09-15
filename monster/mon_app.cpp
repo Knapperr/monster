@@ -56,7 +56,7 @@ void App::run()
 	//if (app_config.on_startup != nullptr)
 		//app_config.on_startup();
 
-	uint64_t time_last = platform->ticks();
+	uint64_t time_last = 0;
 	uint64_t time_accumulator = 0;
 	
 	// time struct
@@ -78,7 +78,7 @@ void App::run()
 
 	int target_framerate = 60;
 	uint64_t ticks_per_second = 1000000;
-	int max_updates = 3;
+	int max_updates = 5;
 
 	while (running)
 	{
@@ -95,7 +95,10 @@ void App::run()
 			{
 				int milliseconds = (int)(time_target - time_accumulator) / (ticks_per_second / 1000);
 				// TODO(ck): Sleep might be causing stuttering this happened in handmade remember
-				platform->sleep(milliseconds);
+				// TODO(ck): The bandaid for handmade was the multiply the time passed to sleep by 400
+				// TODO(ck): For some reason here sleep needs to be divided by 2 in order for it to run smoothly.
+				//			 Sleep() on this machine is very problematic?
+				platform->sleep(milliseconds/2);
 
 				time_curr = platform->ticks();
 				time_diff = time_curr - time_last;
@@ -127,6 +130,7 @@ void App::run()
 						continue;
 				}
 
+				// Timer:: this needs to be packed in and passed to game
 				previousTicks = ticks;
 				ticks += time_target;
 				previousSeconds = seconds;
