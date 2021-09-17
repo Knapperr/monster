@@ -68,7 +68,7 @@ namespace MonGL
 		// should be initCollider i guess?
 		// this isn't just a position its a MATRIX its ALL of the 
 		// information its the rotation, position the size of it...
-		MonTexture::Texture texture;
+		std::vector<MonTexture::Texture> textures;
 		mat4 worldMatrix;
 		// TODO(ck): More collider specific info
 
@@ -112,6 +112,7 @@ namespace MonGL
 	void drawQuad(Config* config, RenderData* data,
 						 v3 playerPos, v3 scale, v3 camPos,
 						 unsigned int shaderID);
+	void drawWater(RenderData* data, v3 pos, v3 scale, v3 camPos, unsigned int shaderID);
 	void drawBoundingBox(RenderData* data,
 					 v3 playerPos, v3 camPos,
 					 mat4 projection, mat4 view,

@@ -1,9 +1,8 @@
 #include "mon_gui.h"
 
-// TODO(ck): remove
 #include <string>
 
-#define _3D_GUI_
+//#define _3D_GUI_
 
 #ifdef USE_SDL
 void InitGui(SDL_Window* window, SDL_GLContext* context)

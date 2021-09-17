@@ -58,121 +58,55 @@ namespace Mon
 				"shaders/waterdirection_vert.glsl",
 				"shaders/waterdirection_frag.glsl",
 				NULL);
-
-		void Renderer::DrawWater(WaterObject* water)
+	void LoadDistortedWater(WaterObject* water)
 	{
-		glUseProgram(waterShader->id);
-		glUniformMatrix4fv(GetLoc(waterShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(GetLoc(waterShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
+		water->tiling = 5.0f;
+		water->speed = 0.3f;
+		water->flowStrength = 0.05f;
+		water->flowOffset = -0.23f;
+		water->heightScale = 0.1f;
+		water->heightScaleModulated = 8.0f;
 
-		for (unsigned int i = 0; i < water->model->meshes.size(); i++)
-		{
-			unsigned int diffuseNr = 1;
-			unsigned int specularNr = 1;
-			unsigned int normalNr = 1;
-			unsigned int heightNr = 1;
+		// CREATE A BASIC SHAPE LOADER replace ASSIMP
+		// WE WILL HAVE TO PUSH THIS TEXTURE TO THE TEXUTES OF THE QUAD 
+		// IN model.h
+		std::string uvpath = "content/textures/water/water.png";
+		std::string uvdirectory = uvpath.substr(0, uvpath.find_last_of('/'));
+		Texture uvtexture = {};
+		uvtexture.id = LoadTextureFile("water.png", uvdirectory);
+		uvtexture.type = "texture_diffuse";
+		uvtexture.path = uvpath;
 
-			for (unsigned int j = 0; j < water->model->meshes[i].textures.size(); ++j)
-			{
-				glActiveTexture(GL_TEXTURE0 + j); // activate the proper texture unit before binding
-				// retrieve texture number (the N in diffuse_TextureN)
-				std::string number;
-				std::string name = water->model->meshes[i].textures[j].type;
+		std::string flowpath = "content/textures/water/flow-speed-noise.png";
+		std::string flowdirectory = flowpath.substr(0, flowpath.find_last_of('/'));
+		Texture flowtexture = {};
+		flowtexture.id = LoadTextureFile("flow-speed-noise.png", flowdirectory);
+		flowtexture.type = "texture_normal";
+		flowtexture.path = flowpath;
 
-				if (name == "texture_diffuse")
-					number = std::to_string(diffuseNr++);
-				else if (name == "texture_specular")
-					number = std::to_string(specularNr++);
-				else if (name == "texture_normal")
-					number = std::to_string(normalNr++);
-				else if (name == "texture_height")
-					number = std::to_string(heightNr++);
+		std::string normalpath = "content/textures/water/water-derivative-height.png";
+		std::string normaldir = normalpath.substr(0, normalpath.find_last_of('/'));
+		Texture normaltexture = {};
+		normaltexture.id = LoadTextureFile("water-derivative-height.png", normaldir);
+		normaltexture.type = "texture_normal";
+		normaltexture.path = normalpath;
 
-				// now set the sampler to the correct texture unit
-				glUniform1i(glGetUniformLocation(waterShader->id, (name + number).c_str()), j);
-				// and finally bind the texture
-				glBindTexture(GL_TEXTURE_2D, water->model->meshes[i].textures[j].id);
-			}
+		water->model->meshes[0].textures.push_back(uvtexture);
+		water->model->meshes[0].textures.push_back(flowtexture);
+		water->model->meshes[0].textures.push_back(normaltexture);
+	}
 
 
-			// loop through draw info grabbed passed to gui from game. then game passes to renderer
-			// can loop through all uniforms with shader.GetUniforms();
-			glUniform1f(GetLoc(waterShader, "time"), (float)glfwGetTime());
-			glUniform3fv(GetLoc(waterShader, "lightPos"), 1, &g_lamp[0]);
-			glUniform3fv(GetLoc(waterShader, "viewPos"), 1, &camPos[0]);
-
-			glUniform1f(GetLoc(waterShader, "uJump"), water->uJump);
-			glUniform1f(GetLoc(waterShader, "vJump"), water->vJump);
-			glUniform1f(GetLoc(waterShader, "tiling"), water->tiling);
-			glUniform1f(GetLoc(waterShader, "speed"), water->speed);
-			glUniform1f(GetLoc(waterShader, "flowStrength"), water->flowStrength);
-			glUniform1f(GetLoc(waterShader, "flowOffset"), water->flowOffset);
-			glUniform1f(GetLoc(waterShader, "heightScale"), water->heightScale);
-			glUniform1f(GetLoc(waterShader, "heightScaleModulated"), water->heightScaleModulated);
-			glUniform1f(GetLoc(waterShader, "waveLength"), water->waveLength);
-
-			// Set position, rotation and scale
-			glm::mat4 matModel = glm::mat4(1.0f);
-
-			glm::mat4 matTranslate = glm::translate(glm::mat4(1.0f),
-													glm::vec3(water->pos.x, water->pos.y, water->pos.z));
-			matModel = matModel * matTranslate;
-
-			glm::mat4 rotateZ = glm::rotate(glm::mat4(1.0f),
-											water->orientation.z,
-											glm::vec3(0.0f, 0.0f, 1.0f));
-			matModel = matModel * rotateZ;
-
-			glm::mat4 rotateY = glm::rotate(glm::mat4(1.0f),
-											water->orientation.y,
-											glm::vec3(0.0f, 1.0f, 0.0f));
-			matModel = matModel * rotateY;
-
-			glm::mat4 rotateX = glm::rotate(glm::mat4(1.0f),
-											water->orientation.x,
-											glm::vec3(1.0f, 0.0f, 0.0f));
-			matModel = matModel * rotateX;
-
-			glm::mat4 matScale = glm::scale(glm::mat4(1.0f),
-											glm::vec3(water->scale, water->scale, water->scale));
-
-			matModel = matModel * matScale;
-			glUniformMatrix4fv(GetLoc(waterShader, "model"),
-							   1, GL_FALSE, glm::value_ptr(matModel));
-
-			// INVERSE WAS FROM GRAPHICS CLASS
-				GLint matModel_loc = glGetUniformLocation(shaderProgID, "matModel");
-				GLint matModelInvTran_loc = glGetUniformLocation(shaderProgID, "matModelInvTrans");
-			
-
-			if (water->wireFrame)
-			{
-				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			}
-			else
-			{
-				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			}
-
-			// Draw mesh
-			glBindVertexArray(water->model->meshes[i].VAO);
-			glDrawElements(GL_TRIANGLES, water->model->meshes[i].indices.size(), GL_UNSIGNED_INT, 0);
-			glBindVertexArray(0);
-
-			// Always good practice to set everything back to defaults once configured
-			// NOTE(CK): bind texture must be AFTER glActiveTexture or it will not unbind properly
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, 0);
-		}
-		return;
-	}*/
+	*/
 
 	bool Game::init()
 	{
 		state = State::Debug;
 
 		shader = {};
+		waterShader = {};
 		MonGL::LoadShader(&shader, "res/shaders/vert_colors.glsl", "res/shaders/frag_colors.glsl", NULL);
+		MonGL::LoadShader(&waterShader, "res/shaders/vert_water.glsl", "res/shaders/frag_water.glsl", NULL);
 
 		cam = Camera();
 
@@ -219,6 +153,17 @@ namespace Mon
 		light.pos = v3(16.0f, 10.0f, 16.0f);
 
 
+		water = {};
+		MonGL::initQuad(&water.data, waterShader.id, "res/texture/water/uv.png");
+		MonGL::initBoundingBox(&water.colliderData);
+		water.particle.pos = v3(40.0f, 0.1f, 10.0);
+		water.particle.inverseMass = 10.0f;
+		water.particle.velocity = v3(0.0f, 0.0f, 0.0f); // 35m/s
+		water.particle.acceleration = v3(-40.0f, 0.0f, 0.0f);
+		water.particle.orientation = v3(1.0f, 1.0f, 1.0);
+		water.particle.damping = 0.9f;
+		water.particle.speed = 50.0f;
+
 		// TODO(ck): Memory Allocation
 		terrain = new Terrain(0, 0);
 		MonGL::generateTerrain(&terrain->mesh);
@@ -247,7 +192,7 @@ namespace Mon
 	// should velocity be acceleratio?
 	void Game::movePlayer(v3* velocity)
 	{
-		if ((velocity->x != 0.0f) && (velocity->y != 0.0f))
+		if ((velocity->x != 0.0f) && (velocity->z != 0.0f))
 		{
 			*velocity *= 0.707106781187f;
 		}
@@ -500,6 +445,9 @@ namespace Mon
 			}
 			Mon::movePlayer(p, &velocity, deltaTime);
 			// update sprite position 
+			// TODO(ck): I am pretty sure in handmade hero he rounds these values before drawing
+			//p->sprite.pos.x = (int)p->pos.x;
+			//p->sprite.pos.y = (int)p->pos.y;
 			p->sprite.pos = p->pos;
 
 			// TODO(ck): Update camera pos
@@ -567,13 +515,9 @@ namespace Mon
 			MonGL::drawObject(&shader, &world->entities[i]->sprite);
 		}
 
-		
-
-
+	
 		MonGL::drawObject(&shader, &world->player->sprite);
 		
-
-
 	}
 
 }

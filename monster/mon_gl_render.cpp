@@ -57,8 +57,9 @@ namespace MonGL
 		glBindVertexArray(0);
 
 		std::string textDir = texturePath.substr(0, texturePath.find_last_of('/'));
-		data->texture = {};
-		MonTexture::LoadTextureFile(&data->texture, texturePath.c_str(), false, true, true);
+		MonTexture::Texture text = {};
+		MonTexture::LoadTextureFile(&text, texturePath.c_str(), false, true, true);
+		data->textures.push_back(text);
 
 		glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
 	}
@@ -149,7 +150,7 @@ namespace MonGL
 		glUniform1i(glGetUniformLocation(shaderID, "pixelTexture"), true);
 		// bind textures on corresponding texture units
 		//glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, data->texture.id);
+		glBindTexture(GL_TEXTURE_2D, data->textures[0].id);
 
 		glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
 		glUniform1i(glGetUniformLocation(shaderID, "collider"), false);
@@ -164,6 +165,88 @@ namespace MonGL
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		glBindVertexArray(data->VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	}
+
+
+	void drawWater(RenderData* data, v3 pos, v3 scale, v3 camPos, unsigned int shaderID)
+	{
+
+		// ==============================================================================
+		//glUniform3fv(glGetUniformLocation(shaderID, "material.ambient"), 1, &data->mat.ambient[0]);
+		//glUniform3fv(glGetUniformLocation(shaderID, "material.diffuse"), 1, &data->mat.diffuse[0]);
+		//glUniform3fv(glGetUniformLocation(shaderID, "material.specular"), 1, &data->mat.specular[0]);
+		//glUniform1f(glGetUniformLocation(shaderID, "material.shininess"), data->mat.shininess);
+
+		// TODO(ck): Move to begin render. MonGL::beginRender(&cam);
+
+		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), true);
+		
+
+		unsigned int diffuseNr = 1;
+		unsigned int specularNr = 1;
+		unsigned int normalNr = 1;
+		unsigned int heightNr = 1;
+
+		// Textures
+		// ==================================================================================
+		//for (unsigned int j = 0; j < water->model->meshes[i].textures.size(); ++j)
+		//{
+		//	glActiveTexture(GL_TEXTURE0 + j); // activate the proper texture unit before binding
+		//	// retrieve texture number (the N in diffuse_TextureN)
+		//	std::string number;
+		//	std::string name = water->model->meshes[i].textures[j].type;
+
+		//	if (name == "texture_diffuse")
+		//		number = std::to_string(diffuseNr++);
+		//	else if (name == "texture_specular")
+		//		number = std::to_string(specularNr++);
+		//	else if (name == "texture_normal")
+		//		number = std::to_string(normalNr++);
+		//	else if (name == "texture_height")
+		//		number = std::to_string(heightNr++);
+
+		//	// now set the sampler to the correct texture unit
+		//	glUniform1i(glGetUniformLocation(waterShader->id, (name + number).c_str()), j);
+		//	// and finally bind the texture		
+		//	glBindTexture(GL_TEXTURE_2D, water->model->meshes[i].textures[j].id);
+		//}
+
+		// ==================================================================================
+
+		//glUniform1f(GetLoc(waterShader, "time"), (float)glfwGetTime());
+		//glUniform3fv(GetLoc(waterShader, "lightPos"), 1, &g_lamp[0]);
+		glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camPos[0]);
+		//glUniform3fv(GetLoc(waterShader, "viewPos"), 1, &camPos[0]);
+
+		glUniform1f(glGetUniformLocation(shaderID, "uJump"), 0.25f);	// water->uJump
+		glUniform1f(glGetUniformLocation(shaderID, "vJump"), 0.25f);	// water->vJump
+		glUniform1f(glGetUniformLocation(shaderID, "tiling"), 5.0f);	// water->tiling
+		glUniform1f(glGetUniformLocation(shaderID, "speed"), 0.3f);	// water->speed 
+		glUniform1f(glGetUniformLocation(shaderID, "flowStrength"), 0.05f); // water->flowStrength
+		glUniform1f(glGetUniformLocation(shaderID, "flowOffset"), -0.23f);	// water->flowOffset
+		glUniform1f(glGetUniformLocation(shaderID, "heightScale"), 0.10f);	// water->heightScale
+		glUniform1f(glGetUniformLocation(shaderID, "heightScaleModulated"), 8.0f); // water->heightScaleModulated
+		glUniform1f(glGetUniformLocation(shaderID, "waveLength"), 12.0f);	//  water->waveLength
+
+
+		glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
+		glUniform1i(glGetUniformLocation(shaderID, "collider"), false);
+		// ==============================================================================
+
+		// TODO(ck): Does this happen at the end of update. the data gets its mat4 updated 
+		// and then we can just call glUniformMatrix on this
+		mat4 model = mat4(1.0f);
+		model = glm::translate(model, pos);
+		//model = glm::rotate(model, glm::radians(config->angleDegrees), v3{ 1.0f, 0.0f, 0.0f });
+		//model = glm::scale(model, scale);
+		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+		glBindVertexArray(data->VAO);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+		// Always good practice to set everything back to defaults once configured
+		// NOTE(CK): bind texture must be AFTER glActiveTexture or it will not unbind properly
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
 
@@ -299,8 +382,9 @@ namespace MonGL
 		std::string filename = std::string(path);
 		filename = directory + '/' + filename;
 		*/
-		data->texture = {};
-		MonTexture::LoadTextureFile(&data->texture, textPath.c_str(), false, false, false);
+		MonTexture::Texture text = {};
+		data->textures.push_back(text);
+		MonTexture::LoadTextureFile(&data->textures[0], textPath.c_str(), false, false, false);
 
 
 	}
@@ -338,7 +422,7 @@ namespace MonGL
 
 
 		//glBindTexture(GL_TEXTURE_2D, terrain->selectedTextureId);
-		glBindTexture(GL_TEXTURE_2D, data->texture.id);
+		glBindTexture(GL_TEXTURE_2D, data->textures[0].id);
 
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
 		glBindVertexArray(data->VAO);
@@ -607,6 +691,8 @@ namespace MonGL
 
 		glUniformMatrix4fv(glGetUniformLocation(shader->id, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		glUniform3f(glGetUniformLocation(shader->id, "spriteColor"), data->color.r, data->color.g, data->color.b);
+		glUniform1i(glGetUniformLocation(shader->id, "useTexture"), true);
+		glUniform1i(glGetUniformLocation(shader->id, "pixelTexture"), true);
 
 		//glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, data->texture.id);

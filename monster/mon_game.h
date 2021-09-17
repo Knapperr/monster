@@ -155,6 +155,7 @@ namespace Mon
 		// TODO(ck): Use one container
 		//EntityTwo* entites;
 		Entity player;
+		Entity water;
 		std::vector<Entity> trees;
 		std::vector<Entity> enemies;
 		bool simulate;
@@ -166,7 +167,9 @@ namespace Mon
 
 		// TODO(ck): 
 		// Shader lives in the opengl renderer
+		// Need a shader store or something
 		MonGL::Shader shader;
+		MonGL::Shader waterShader;
 		MonGL::Shader tileShader;
 
 		double deltaTime;

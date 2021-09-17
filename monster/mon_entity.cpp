@@ -41,7 +41,7 @@ namespace Mon
 
 		*velocity *= p->speed;
 
-		*velocity += -2.5f * p->velocity;
+		*velocity += -3.5f * p->velocity;
 
 		v2 oldPos = p->pos;
 		v2 newPos = oldPos;
