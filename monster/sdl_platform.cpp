@@ -2,7 +2,7 @@
 
 namespace Mon
 {
-	const int JOYSTICK_DEAD_ZONE = 8000;
+	const int JOYSTICK_DEAD_ZONE = 7849;
 
 	bool SDLPlatform::init(Settings* settings)
 	{
@@ -110,6 +110,19 @@ namespace Mon
 		lastY = newInput->mouseOffset.y;
 	}
 
+	
+	float processStickValue(int16_t value, int deadzoneThreshold)
+	{
+		float result = 0;
+		
+		if (value < -deadzoneThreshold)
+			result = (float)((value + deadzoneThreshold) / (32768.0f - deadzoneThreshold));
+		else if (value > deadzoneThreshold)
+			result = (float)((value - deadzoneThreshold) / (32767.0f - deadzoneThreshold));
+
+		return result;
+	}
+
 	void SDLPlatform::pollInput(Mon::Input* newInput, Mon::Input* oldInput)
 	{
 		//Input* newInput = &input[0];
@@ -147,6 +160,33 @@ namespace Mon
 		// Update mouse every frame
 		processMouseMotion(newInput, &e, lastX, lastY);
 
+		// Update joystick every frame TODO(ck): Method for this
+		// ============================================================
+		newInput->isAnalog = oldInput->isAnalog;
+
+		int16_t xAxis, yAxis, rXAxis, rYAxis;
+		xAxis = SDL_JoystickGetAxis(joyStick, 0);
+		yAxis = SDL_JoystickGetAxis(joyStick, 1);
+		rXAxis = SDL_JoystickGetAxis(joyStick, 2);
+		rYAxis = SDL_JoystickGetAxis(joyStick, 3);
+		newInput->stickAverageX = processStickValue(xAxis, JOYSTICK_DEAD_ZONE);
+		newInput->stickAverageY = processStickValue(yAxis, JOYSTICK_DEAD_ZONE);
+		newInput->stickAvgRX = processStickValue(rXAxis, JOYSTICK_DEAD_ZONE);
+		newInput->stickAvgRY = processStickValue(rYAxis, JOYSTICK_DEAD_ZONE);
+
+		if ((newInput->stickAverageX != 0.0f) ||
+			(newInput->stickAverageY != 0.0f))
+		{
+			newInput->isAnalog = true;
+		}
+		else
+		{
+			newInput->isAnalog = false;
+		}
+
+		// ============================================================
+
+
 		// TODO(ck): fix input polling
 		while (SDL_PollEvent(&e))
 		{
@@ -157,7 +197,6 @@ namespace Mon
 
 			// you might also want to check io.WantCaptureMouse and io.WantCaptureKeyboard
 			// before processing events
-
 
 			if (e.type == SDL_QUIT)
 			{
@@ -204,7 +243,7 @@ namespace Mon
 			else if (e.type == SDL_KEYDOWN || e.type == SDL_KEYUP)
 			{
 				SDL_Keycode keyCode = e.key.keysym.sym;
-				bool isDown = e.type == SDL_KEYDOWN ? true : false;
+				bool isDown = (e.type == SDL_KEYDOWN ? true : false);
 
 				if (e.key.repeat == 0)
 				{
@@ -220,67 +259,96 @@ namespace Mon
 						processKeyboard(&newInput->raise, isDown);
 					if (keyCode == SDLK_q)
 						processKeyboard(&newInput->lower, isDown);
+					if (keyCode == SDLK_g)
+						processKeyboard(&newInput->debug, isDown);
 					if (keyCode == SDLK_LSHIFT)
 						processKeyboard(&newInput->shift, isDown);
 					if (keyCode == SDLK_ESCAPE)
 						processKeyboard(&newInput->quit, isDown);
 				}
 			}
+			else if (e.type == SDL_JOYBUTTONDOWN || e.type == SDL_JOYBUTTONUP)
+			{
+				//int buttons = SDL_JoystickNumButtons(joyStick);
+				bool isDown = (e.type == SDL_JOYBUTTONDOWN ? true : false);
+				// TODO(ck): Handle buttons... 
+				if (e.jbutton.button == 6) // SELECT 
+					processKeyboard(&newInput->debug, isDown);
+			}
+			// IMPORTANT(ck): Need to always process joystick
 			// SDL_CONTROLLERAXISMOTION
 			else if (e.type == SDL_JOYAXISMOTION)
 			{
 				if (e.jaxis.which == 0)
 				{
-					static int yDir = 0;
-					static int xDir = 0;
-					if (e.jaxis.axis == 0)
-					{
-						if (e.jaxis.value < -JOYSTICK_DEAD_ZONE)
-						{
 
-							xDir = -1;
-							newInput->stickDir.x = -2;
-							processKeyboard(&newInput->left, true);
-						}
-						else if (e.jaxis.value > JOYSTICK_DEAD_ZONE)
-						{
-							xDir = 1;
-							newInput->stickDir.x = 2;
-							processKeyboard(&newInput->right, true);
-						}
-						else
-						{
-							xDir = 0;
-							newInput->stickDir.x = 0;
-							processKeyboard(&newInput->left, false);
-							processKeyboard(&newInput->right, false);
-						}
-					}
-					if (e.jaxis.axis == 1)
-					{
-						if (e.jaxis.value < -JOYSTICK_DEAD_ZONE)
-						{
-							yDir = -1;
-							newInput->stickDir.y = 2;
-							processKeyboard(&newInput->up, true);
-						}
-						else if (e.jaxis.value > JOYSTICK_DEAD_ZONE)
-						{
-							yDir = 1;
-							newInput->stickDir.y = -2;
-							processKeyboard(&newInput->down, true);
-						}
-						else
-						{
-							yDir = 0;
-							newInput->stickDir.y = 0;
-							processKeyboard(&newInput->up, false);
-							processKeyboard(&newInput->down, false);
-						}
-					}
+					
+					//newInput->rightStickAngle = atan2((double)yDir, (double)xDir) * (180.0 / M_PI);
+					//if (xDir == 0 && yDir == 0)
+					//newInput->rightStickValue = 0;
 
-					newInput->rightStickValue = e.jaxis.value / 32767.0f;;
-					newInput->rightStickAxis = e.jaxis.axis;
+
+					//static int yDir = 0;
+					//static int xDir = 0;
+					//if (e.jaxis.axis == 0)
+					//{
+					//	if (e.jaxis.value < -JOYSTICK_DEAD_ZONE)
+					//	{
+					//		newInput->isAnalog = true;
+
+					//		xDir = -1;
+					//		newInput->stickDir.x = -2;
+					//		//processKeyboard(&newInput->left, true);
+					//	}
+					//	else if (e.jaxis.value > JOYSTICK_DEAD_ZONE)
+					//	{
+					//		newInput->isAnalog = true;
+
+					//		xDir = 1;
+					//		newInput->stickDir.x = 2;
+					//		//processKeyboard(&newInput->right, true);
+					//	}
+					//	else
+					//	{
+					//		xDir = 0;
+					//		newInput->stickDir.x = 0;
+					//		//processKeyboard(&newInput->left, false);
+					//		//processKeyboard(&newInput->right, false);
+
+					//		newInput->isAnalog = false;
+					//	}
+					//}
+					//if (e.jaxis.axis == 1)
+					//{
+					//	if (e.jaxis.value < -JOYSTICK_DEAD_ZONE)
+					//	{
+					//		newInput->isAnalog = true;
+
+					//		yDir = -1;
+					//		newInput->stickDir.y = 2;
+					//		//processKeyboard(&newInput->up, true);
+					//	}
+					//	else if (e.jaxis.value > JOYSTICK_DEAD_ZONE)
+					//	{
+					//		newInput->isAnalog = true;
+
+					//		yDir = 1;
+					//		newInput->stickDir.y = -2;
+					//		processKeyboard(&newInput->down, true);
+					//	}
+					//	else
+					//	{
+					//		yDir = 0;
+					//		newInput->stickDir.y = 0;
+					//		processKeyboard(&newInput->up, false);
+					//		processKeyboard(&newInput->down, false);
+
+					//		newInput->isAnalog = false;
+					//	}
+					//}
+
+					//newInput->rightStickValue = e.jaxis.value / 32767.0f;;
+					//newInput->rightStickAxis = e.jaxis.axis;
 
 					/*
 					TODO(ck): JOYSTICK ANGLE
@@ -313,10 +381,6 @@ namespace Mon
 						}
 					}
 					*/
-
-					newInput->rightStickAngle = atan2((double)yDir, (double)xDir) * (180.0 / M_PI);
-					//if (xDir == 0 && yDir == 0)
-						//newInput->rightStickValue = 0;
 				}
 			}
 			else if (e.type == SDL_JOYBUTTONDOWN || e.type == SDL_JOYBUTTONUP)

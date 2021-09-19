@@ -18,7 +18,6 @@ namespace Mon
 		yaw = 0.0f;
 		pitch = -34.0f;
 		zoom = 40.0f;
-		mouseSensitivity = 0.1f;
 
 		nearPlane = 0.1f;
 		farPlane = 1000.0f;
@@ -98,9 +97,7 @@ namespace Mon
 			keyInput(dt, input);
 			if (input->lMouseBtn.endedDown)
 			{
-				mouseInput(input->mouseOffset, constrainPitch);
-				// TODO(ck): joystickInput
-				//mouseInput(input->stickDir, constrainPitch;
+				calculateYawPitch(input->mouseOffset, 0.01f, constrainPitch);
 				calculateCameraVectors();
 			}
 		}
@@ -127,12 +124,10 @@ namespace Mon
 		up = glm::normalize(glm::cross(right, front));
 	}
 
-
-	void Camera::mouseInput(v2 offset, bool constrainPitch)
+	void Camera::calculateYawPitch(v2 offset, float sensitivity, bool constrainPitch)
 	{
-		offset.x *= mouseSensitivity;
-		offset.y *= mouseSensitivity;
-
+		offset.x *= sensitivity;
+		offset.y *= sensitivity;
 
 		yaw += offset.x;
 		pitch += offset.y;
@@ -157,17 +152,34 @@ namespace Mon
 			pos += front * velocity;
 		}
 
-		if (input->up.endedDown)	pos += front * velocity;
-		if (input->down.endedDown)	pos -= front * velocity;
-		if (input->left.endedDown)	pos -= right * velocity;
-		if (input->right.endedDown)	pos += right * velocity;
+		if (input->isAnalog)
+		{
+			if (input->stickAverageX >= 1.0f) pos += right * velocity;
+			if (input->stickAverageX <= -1.0f) pos -= right * velocity;
+			if (input->stickAverageY >= 0.9f) pos -= front * velocity;
+			if (input->stickAverageY <= -0.8f) pos += front * velocity;
+		}
+		else
+		{
+			if (input->up.endedDown)	pos += front * velocity;
+			if (input->down.endedDown)	pos -= front * velocity;
+			if (input->left.endedDown)	pos -= right * velocity;
+			if (input->right.endedDown)	pos += right * velocity;
 
-		if (input->raise.endedDown)	pos.y += 1.0f * velocity;
-		if (input->lower.endedDown)	pos.y -= 1.0f * velocity;
+			if (input->raise.endedDown)	pos.y += 1.0f * velocity;
+			if (input->lower.endedDown)	pos.y -= 1.0f * velocity;
 
-		if (input->shift.endedDown)
-			speed /= 2.0f;
+			if (input->shift.endedDown)
+				speed /= 2.0f;
+		}
 
+		// Right stick
+		if (input->stickAvgRX != 0.0f || input->stickAvgRY)
+		{
+			// NOTE(ck): Flip Y 
+			calculateYawPitch(v2{ input->stickAvgRX, -input->stickAvgRY }, 0.70f, true);
+			calculateCameraVectors();
+		}
 	}
 
 	void Camera::followOn()

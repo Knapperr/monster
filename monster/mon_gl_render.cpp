@@ -124,6 +124,15 @@ namespace MonGL
 	}
 
 
+	void initCube(RenderData* data, int shaderID, std::string texturePath)
+	{
+		// Load from .vt file (need to do efficient as possible)
+		// maybe dont need to do this but?? tilemap does a quad and its a huge
+		// cubes can just be created with a macro PUSH_CUBE
+
+
+	}
+
 	void beginRender(Config* config, mat4 projection, mat4 view, int shaderID)
 	{
 		MonGL::viewPort(&config->viewPort);

@@ -2,7 +2,7 @@
 
 #include <string>
 
-//#define _3D_GUI_
+#define _3D_GUI_
 
 #ifdef USE_SDL
 void InitGui(SDL_Window* window, SDL_GLContext* context)
@@ -123,12 +123,15 @@ void StatsWindow(bool* p_open, Mon::Game* game)
 	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseYScreen);
 	ImGui::LabelText(buffer, "win y");
 
-	snprintf(buffer, sizeof(buffer), "%f", game->input.rightStickAngle);
-	ImGui::LabelText(buffer, "R stick angle");
-	snprintf(buffer, sizeof(buffer), "%f", (float)game->input.rightStickAxis);
-	ImGui::LabelText(buffer, "R stick axis");
-	snprintf(buffer, sizeof(buffer), "%f", game->input.rightStickValue);
-	ImGui::LabelText(buffer, "stick value");
+	snprintf(buffer, sizeof(buffer), "%f", game->input.stickAverageX);
+	ImGui::LabelText(buffer, "stick average X:");
+	snprintf(buffer, sizeof(buffer), "%f", (float)game->input.stickAverageY);
+	ImGui::LabelText(buffer, "stick average Y:");
+
+	snprintf(buffer, sizeof(buffer), "%f", game->input.stickAvgRX);
+	ImGui::LabelText(buffer, "right stick average X:");
+	snprintf(buffer, sizeof(buffer), "%f", (float)game->input.stickAvgRY);
+	ImGui::LabelText(buffer, "right stick average Y:");
 
 	snprintf(buffer, sizeof(buffer), "%d", game->input.lMouseBtn.endedDown);
 	ImGui::LabelText(buffer, "left mouse down");
@@ -220,18 +223,11 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
         ImGui::PopID();
     }*/
 	ImGui::Separator();
-		if (ImGui::Button("debug")) 
-		{ 
-			game->cam.followOff();
-			game->state = Mon::State::Debug;
-		}
+		if (ImGui::Button("debug")) { game->debugMode(); }
 		ImGui::SameLine();
-		if (ImGui::Button("play"))
-		{
-			game->cam.followOn();
-			game->state = Mon::State::Play;
-		}
+		if (ImGui::Button("play")) { game->playMode(); }
 		ImGui::SameLine();
+
 		if (ImGui::Button("Fullscreen"))
 		{
 			SDL_DisplayMode dm;

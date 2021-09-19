@@ -231,34 +231,39 @@ namespace Mon
 		// Input start
 		//
 		// TODO(ck): TEMP INPUT
-		bool enabled = state == State::Play;
+		if (input.debug.endedDown)
+		{
+			if (state == State::Debug)
+			{
+				playMode();
+			}
+			else if (state == State::Play)
+			{
+				debugMode();
+			}
+		}
+		
+		
+		bool enabled = (state == State::Play);
 		if (enabled)
 		{
 			v3 velocity = {};
 
-			if (input.up.endedDown)
+			if (input.isAnalog)
 			{
-				velocity.z = -1.0f;
-				//player.particle.velocity.z = -1.0f;
+				velocity = v3{ input.stickAverageX, 0.0f ,input.stickAverageY };
 			}
-			if (input.down.endedDown)
+			else
 			{
-				velocity.z = 1.0f;
-				//player.particle.velocity.z = 1.0f;
+				if (input.up.endedDown)
+					velocity.z = -1.0f;
+				if (input.down.endedDown)
+					velocity.z = 1.0f;
+				if (input.left.endedDown)
+					velocity.x = -1.0f;
+				if (input.right.endedDown)
+					velocity.x = 1.0f;
 			}
-			if (input.left.endedDown)
-			{
-				velocity.x = -1.0f;
-				//player.particle.velocity.x = -1.0f;
-
-			}
-			if (input.right.endedDown)
-			{
-				velocity.x = 1.0f;
-				//player.particle.velocity.x = 1.0f;
-
-			}
-
 			// PIPE velocity to function
 			movePlayer(&velocity);
 		}
@@ -343,7 +348,17 @@ namespace Mon
 		return (state == State::Play && cam.follow == true);
 	}
 
+	void Game::playMode()
+	{
+		state = State::Play;
+		cam.followOn();
+	}
 
+	void Game::debugMode()
+	{
+		state = State::Debug;
+		cam.followOff();
+	}
 
 	/// 
 	/// 2D
@@ -457,11 +472,6 @@ namespace Mon
 			//real32 playerGroundPointY = screenCenterY - metersToPixels * diff.dY;
 
 		}
-
-		//const unsigned int SCREEN_WIDTH = 1280;
-		//const unsigned int SCREEN_HEIGHT = 720;
-		// speed 
-		
 		camera.update(&world->player->pos, deltaTime);
 	}
 

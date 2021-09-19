@@ -14,11 +14,16 @@ namespace Mon
 	struct Input
 	{
 		bool isConnected;
+		bool isAnalog;
 		// maybe make an array for mouse buttons
 		ButtonState lMouseBtn;
 		ButtonState rMouseBtn;
+
 		float stickAverageX;
 		float stickAverageY;
+		float stickAvgRX;
+		float stickAvgRY;
+
 		float rightStickValue;
 		uint8_t rightStickAxis;
 		float rightStickAngle;
@@ -44,6 +49,7 @@ namespace Mon
 				ButtonState rightStickdown;
 				ButtonState rightStickleft;
 				ButtonState rightStickright;
+				ButtonState debug;
 				ButtonState quit;
 			};
 		};

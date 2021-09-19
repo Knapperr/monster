@@ -139,6 +139,9 @@ namespace Mon
 		void setViewPort(int width, int height);
 		bool playing();
 
+		void playMode();
+		void debugMode();
+
 
 		// TODO(ck):
 		// DO NOT KEEP the shaders in the game and renderer like you did last time... 

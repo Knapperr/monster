@@ -40,11 +40,10 @@ namespace Mon
 		v3 worldUp;
 		v3 up;
 
-		float mouseSensitivity;
 		float distanceFromTarget;
 
 		void keyInput(double dt, Input* input);
-		void mouseInput(v2 offset, bool constrainPitch);
+		void calculateYawPitch(v2 offset, float sensitivity, bool constrainPitch);
 		void calculateCameraVectors();
 		void calculateAngleAroundTarget(v2 offset);
 	};
