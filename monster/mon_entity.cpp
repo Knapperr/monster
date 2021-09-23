@@ -12,7 +12,12 @@ namespace Mon
 		MonTexture::LoadTextureFile(&e->sprite.texture, fileLocation, isAlpha, false, true);
 
 		e->pos = position;
-		e->sprite.pos = e->pos;
+		
+		// TODO(ck): Update this is a Point now not a v2
+		e->sprite.pos = {};
+		e->sprite.pos.x = position.x;
+		e->sprite.pos.y = position.y;
+
 		// TODO(ck): set in renderer use texture size
 		e->sprite.size.x = e->sprite.texture.width;
 		e->sprite.size.y = e->sprite.texture.height;
@@ -43,7 +48,9 @@ namespace Mon
 
 		*velocity += -3.5f * p->velocity;
 
-		v2 oldPos = p->pos;
+		v2 oldPos = {};
+		oldPos.x = p->position.x;
+		oldPos.y = p->position.y;
 		v2 newPos = oldPos;
 		float deltaX = (0.5f * velocity->x * square(deltaTime) + p->velocity.x * deltaTime);
 		float deltaY = (0.5f * velocity->y * square(deltaTime) + p->velocity.y * deltaTime);
@@ -52,12 +59,23 @@ namespace Mon
 		// TODO(ck): need to set an offest like casey does
 		newPos += delta;
 
-
 		p->velocity.x = velocity->x * deltaTime + p->velocity.x;
 		p->velocity.y = velocity->y * deltaTime + p->velocity.y;
 
-		p->pos = newPos;
+		// NOTE(ck): Get the remaining time 
+		// get the amount we should move, including remainder from the previous frame
+		v2 total = p->remainder + newPos;
+	
+		//// round to integer values since we only move in pixels at a time
+		Point toMove = Point{ (int)total.x, (int)total.y };
 
+		//// store remainder floating values for next frame
+		p->remainder.x = total.x - toMove.x;
+		p->remainder.y = total.y - toMove.y;
+
+		p->position = toMove;
+
+		
 	}
 
 

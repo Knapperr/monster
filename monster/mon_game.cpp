@@ -442,28 +442,37 @@ namespace Mon
 			Entity2D* p = world->player;
 			v2 velocity = {};
 
-			if (input->up.endedDown)
+			if (input->isAnalog)
 			{
-				velocity.y = -1.0f;
+				velocity = v2{ input->stickAverageX, input->stickAverageY };
 			}
-			if (input->down.endedDown)
+			else
 			{
-				velocity.y = 1.0f;
-			}
-			if (input->left.endedDown)
-			{
-				velocity.x = -1.0f;
-			}
-			if (input->right.endedDown)
-			{
-				velocity.x = 1.0f;
+
+				if (input->up.endedDown)
+				{
+					velocity.y = -1.0f;
+				}
+				if (input->down.endedDown)
+				{
+					velocity.y = 1.0f;
+				}
+				if (input->left.endedDown)
+				{
+					velocity.x = -1.0f;
+				}
+				if (input->right.endedDown)
+				{
+					velocity.x = 1.0f;
+				}
 			}
 			Mon::movePlayer(p, &velocity, deltaTime);
 			// update sprite position 
 			// TODO(ck): I am pretty sure in handmade hero he rounds these values before drawing
 			//p->sprite.pos.x = (int)p->pos.x;
 			//p->sprite.pos.y = (int)p->pos.y;
-			p->sprite.pos = p->pos;
+			//p->sprite.pos = p->pos;
+			p->sprite.pos = p->position;
 
 			// TODO(ck): Update camera pos
 			// camera position = player position
@@ -472,7 +481,7 @@ namespace Mon
 			//real32 playerGroundPointY = screenCenterY - metersToPixels * diff.dY;
 
 		}
-		camera.update(&world->player->pos, deltaTime);
+		camera.update(&world->player->position, deltaTime);
 	}
 
 	void Game::render()

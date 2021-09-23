@@ -319,9 +319,9 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 	ImGui::SliderFloat("camera lerp", &game->camera.lerpSpeed, 0.0f, 100.0f);
 
 	char buffer[64];
-	snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.x);
+	snprintf(buffer, sizeof(buffer), "%d", game->world->player->position.x);
 	ImGui::LabelText("player x", buffer);
-	snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.y);
+	snprintf(buffer, sizeof(buffer), "%d", game->world->player->position.y);
 	ImGui::LabelText("player y", buffer);
 	
 	ImGui::SliderInt("Tile 0 ID: ", &game->world->map->tiles[0].tileId, 0, 3, NULL);

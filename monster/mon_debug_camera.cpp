@@ -97,7 +97,7 @@ namespace Mon
 			keyInput(dt, input);
 			if (input->lMouseBtn.endedDown)
 			{
-				calculateYawPitch(input->mouseOffset, 0.01f, constrainPitch);
+				calculateYawPitch(input->mouseOffset, 0.10f, constrainPitch);
 				calculateCameraVectors();
 			}
 		}
@@ -154,9 +154,9 @@ namespace Mon
 
 		if (input->isAnalog)
 		{
-			if (input->stickAverageX >= 1.0f) pos += right * velocity;
-			if (input->stickAverageX <= -1.0f) pos -= right * velocity;
-			if (input->stickAverageY >= 0.9f) pos -= front * velocity;
+			if (input->stickAverageX >= 0.8f) pos += right * velocity;
+			if (input->stickAverageX <= -0.8f) pos -= right * velocity;
+			if (input->stickAverageY >= 0.8f) pos -= front * velocity;
 			if (input->stickAverageY <= -0.8f) pos += front * velocity;
 		}
 		else
@@ -177,7 +177,7 @@ namespace Mon
 		if (input->stickAvgRX != 0.0f || input->stickAvgRY)
 		{
 			// NOTE(ck): Flip Y 
-			calculateYawPitch(v2{ input->stickAvgRX, -input->stickAvgRY }, 0.70f, true);
+			calculateYawPitch(v2{ input->stickAvgRX, -input->stickAvgRY }, 0.90f, true);
 			calculateCameraVectors();
 		}
 	}

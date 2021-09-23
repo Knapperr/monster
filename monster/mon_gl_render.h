@@ -98,7 +98,7 @@ namespace MonGL
 		MonTexture::Texture texture;
 		unsigned int VAO;
 		unsigned int VBO;
-		v2 pos;
+		Point pos;
 		v3 color;
 		v2 size;
 		bool wireFrame;

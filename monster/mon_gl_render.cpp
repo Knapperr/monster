@@ -690,7 +690,10 @@ namespace MonGL
 		// we calc it in the game and send the matrix to the
 		// renderer 
 		mat4 model = mat4(1.0f);
-		model = glm::translate(model, v3(data->pos, 0.0f));
+		v3 tilePosition = {};
+		tilePosition.x = data->pos.x;
+		tilePosition.y = data->pos.y;
+		model = glm::translate(model, tilePosition);
 
 		//model = glm::translate(model, v3(0.5f * obj->size.x, 0.0f * obj->size.y, 0.0f));
 		//model = glm::rotate(model, obj->rotation, v3(0.0f, 0.0f, 1.0f));
@@ -699,6 +702,7 @@ namespace MonGL
 		model = glm::scale(model, v3(data->size, 1.0f));
 
 		glUniformMatrix4fv(glGetUniformLocation(shader->id, "model"), 1, GL_FALSE, glm::value_ptr(model));
+		
 		glUniform3f(glGetUniformLocation(shader->id, "spriteColor"), data->color.r, data->color.g, data->color.b);
 		glUniform1i(glGetUniformLocation(shader->id, "useTexture"), true);
 		glUniform1i(glGetUniformLocation(shader->id, "pixelTexture"), true);

@@ -16,6 +16,8 @@ namespace Mon
 		OrthoCamera();
 		OrthoCamera(v2 position);
 		void update(v2* pos, float dt);
+		void update(Point* pos, float dt);
+		void createOrtho();
 	};
 }
 #endif

@@ -21,10 +21,18 @@ namespace Mon
 		float x, y;
 		float w, h;
 
-		float left() { return x; }
-		float right() { return x + w; }
-		float top() { return y; }
-		float bottom() { return y + h; }
+		float left()	{ return x; }
+		float right()	{ return x + w; }
+		float top()		{ return y; }
+		float bottom()	{ return y + h; }
+	};
+
+	// pull out to own file
+	struct Point
+	{
+		int x, y;
+
+
 	};
 
 	inline float square(float a)

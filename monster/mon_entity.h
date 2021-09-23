@@ -8,6 +8,14 @@
 
 namespace Mon
 {
+	// TODO(ck): Component?
+	struct Movement
+	{
+		v2 pos;
+		float speed;
+		
+	};
+
 	struct Entity2D
 	{
 	public:
@@ -20,6 +28,11 @@ namespace Mon
 		float weight;
 		float rotation;
 		bool destroyed;
+
+
+		// separate out 
+		Point position;
+		v2 remainder;
 	};
 
 	void initEntity(Entity2D* e, const char* fileLocation, bool isAlpha, v2 position);

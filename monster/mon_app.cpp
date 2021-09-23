@@ -98,7 +98,7 @@ void App::run()
 				// TODO(ck): The bandaid for handmade was the multiply the time passed to sleep by 400
 				// TODO(ck): For some reason here sleep needs to be divided by 2 in order for it to run smoothly.
 				//			 Sleep() on this machine is very problematic?
-				platform->sleep(milliseconds/2);
+				platform->sleep(milliseconds);
 
 				time_curr = platform->ticks();
 				time_diff = time_curr - time_last;
@@ -165,8 +165,6 @@ void App::run()
 				// that means I would have to remove the resetting of states to be in here 
 				// maybe platform->clear() or something like that
 				game->update(delta, newInput, 1);
-
-
 #endif
 			}
 		}

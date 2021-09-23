@@ -156,6 +156,7 @@ namespace Mon
 		static int lastXAfterPress = 0;
 		static int lastYAfterPress = 0;
 		static bool relativeMouseMode = false;
+
 		SDL_Event e;
 		// Update mouse every frame
 		processMouseMotion(newInput, &e, lastX, lastY);
