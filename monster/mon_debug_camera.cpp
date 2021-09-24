@@ -154,10 +154,10 @@ namespace Mon
 
 		if (input->isAnalog)
 		{
-			if (input->stickAverageX >= 0.8f) pos += right * velocity;
-			if (input->stickAverageX <= -0.8f) pos -= right * velocity;
-			if (input->stickAverageY >= 0.8f) pos -= front * velocity;
-			if (input->stickAverageY <= -0.8f) pos += front * velocity;
+			if (input->stickAverageX >= 0.7f) pos += right * velocity;
+			if (input->stickAverageX <= -0.7f) pos -= right * velocity;
+			if (input->stickAverageY >= 0.7f) pos -= front * velocity;
+			if (input->stickAverageY <= -0.7f) pos += front * velocity;
 		}
 		else
 		{

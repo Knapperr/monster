@@ -36,12 +36,14 @@ namespace Mon
 	}
 
 	// TODO(ck): Should this param be pointer?
-	// should velocity be acceleratio?
+	// should velocity be acceleration?
 	void movePlayer(Entity2D* p, v2* velocity, float deltaTime)
 	{
-		if ((velocity->x != 0.0f) && (velocity->y != 0.0f))
+		// ddPLength
+		float velocityLength = lengthSq(*velocity);
+		if (velocityLength > 1.0f)
 		{
-			*velocity *= 0.707106781187f;
+			*velocity *= (1.0f / squareRoot(velocityLength));
 		}
 
 		*velocity *= p->speed;

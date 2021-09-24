@@ -10,6 +10,7 @@
 
 namespace Mon
 {
+	// TODO(ck): Slowly remove glm
 	typedef glm::vec2 v2;
 	typedef glm::vec3 v3;
 	typedef glm::vec4 v4;
@@ -32,7 +33,6 @@ namespace Mon
 	{
 		int x, y;
 
-
 	};
 
 	inline float square(float a)
@@ -40,6 +40,27 @@ namespace Mon
 		float result = a * a;
 		return result;
 	}
+
+	// TODO(ck): Intrinsic
+	inline float squareRoot(float real)
+	{
+		float result = sqrtf(real);
+		return result;
+	}
+	
+	inline float inner(v2 a, v2 b)
+	{
+		float result = a.x * b.x + a.y * b.y;
+		return result;
+	}
+
+	inline float lengthSq(v2 a)
+	{
+		float result = inner(a, a);
+		return result;
+	}
+
+
 
 	inline float lerp(float a, float time, float b)
 	{
@@ -53,34 +74,6 @@ namespace Mon
 		return 1;
 		//return t > target ?
 	}
-	
-	//inline float 
-	// 
-	//inline mat4 translate(mat4& model, v3& pos)
-	//{
-	//	mat4 result = glm::translate(model, pos);
-	//	return result;
-	//}
-
-	//inline mat4 rotate(mat4& model, float angle, v3 pos)
-	//{
-	//	mat4 result = glm::rotate(model, angle, pos);
-	//	return result;
-
-	//}
-	//
-	//inline mat4 scale(mat4& model, v3& scale)
-	//{
-	//	mat4 result = glm::scale(model, scale);
-	//	return result;
-	//}
-
-	//inline float radians(float angle)
-	//{
-	//	float result = glm::radians(angle);
-	//	return result;
-	//}
-
 }
 
 #endif

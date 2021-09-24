@@ -192,9 +192,11 @@ namespace Mon
 	// should velocity be acceleratio?
 	void Game::movePlayer(v3* velocity)
 	{
-		if ((velocity->x != 0.0f) && (velocity->z != 0.0f))
+		// ddPLength
+		float velocityLength = lengthSq(*velocity);
+		if (velocityLength > 1.0f)
 		{
-			*velocity *= 0.707106781187f;
+			*velocity *= (1.0f / squareRoot(velocityLength));
 		}
 		*velocity *= player.particle.speed;
 
@@ -473,7 +475,6 @@ namespace Mon
 			//p->sprite.pos.y = (int)p->pos.y;
 			//p->sprite.pos = p->pos;
 			p->sprite.pos = p->position;
-
 			// TODO(ck): Update camera pos
 			// camera position = player position
 
