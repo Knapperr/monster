@@ -90,11 +90,13 @@ void CameraWindow(bool* p_open, Mon::Game* game)
 	ImGui::Separator();
 
 	ImGui::DragFloat("cam zoom", &game->cam.zoom, 0.1f, -1000.0f, 1000.0f, "%.02f");
-	ImGui::DragFloat("cam speed", &game->cam.speed, 0.01f, 1.0f, 200.0f, "%.02f");
-	
+
 	ImGui::DragFloat("near plane", &game->cam.nearPlane, 0.01f, 0.1f, 100.0f, "%.02f");
 	ImGui::DragFloat("far plane", &game->cam.farPlane, 0.5f, 100.0f, 1000.0f, "%.02f");
-
+	
+	ImGui::SliderFloat("camera angle", &game->cam.angleAroundTarget, -360.0f, 180.0f);
+	ImGui::SliderFloat("camera pitch", &game->cam.pitch, -1.10f, 100.0f, "%1.0f");
+	ImGui::SliderFloat("camera lerp", &game->cam.lerpSpeed, 0.0f, 100.0f);
 
 	ImGui::End();
 }
@@ -102,11 +104,104 @@ void CameraWindow(bool* p_open, Mon::Game* game)
 void EntityWindow(bool* p_open, Mon::Game* game)
 {
 	ImGui::Begin("objects and things", p_open);
-
 	ImGui::DragFloat("player sprite angle", &game->config->angleDegrees, 0.10f, -180.0f, 360.0f, "%.10f");
 
+	static unsigned int selected = 0;
+	ImGui::BeginChild("left pane", ImVec2(150.0f, 0.0f), true);
+	
+	for (unsigned int i = 0; i < game->entities.size(); ++i)
+	{
+		char label[128];
+		sprintf_s(label, "%s %d", game->entities[i].name.c_str(), i);
+		if (ImGui::Selectable(label, selected == i))
+		{
+			selected = i;
+			game->selectedIndex = i;
+		}
+		// TODO(ck): Model loading
+		//ImGui::Separator();
+		//if (ImGui::Button("New Model"))
+		//{
+		//	CreateEmptyObject();
+		//}
+	}
+	
+	ImGui::EndChild();
+	ImGui::SameLine();
+
+	if (game->entities.empty() == false)
+	{
+		ImGui::BeginGroup();
+		ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
+		
+		ImGui::Text("%s", game->entities[selected].name.c_str());
+
+		// TODO(ck): Model loading modal
+		// Modal for loading meshes
+		//if (ImGui::Button("Load Mesh.."))
+		//	ImGui::OpenPopup("Load Mesh");
+		//if (ImGui::BeginPopupModal("Load Mesh", NULL))
+		//{
+		//	for (unsigned int i = 0; i < objPaths.size(); i++)
+		//	{
+		//		if (ImGui::SmallButton(objPaths[i].name.c_str()))
+		//		{
+		//			LOG("Loading mesh...");
+		//			LoadEmptyObject(selected, objPaths[i].name, objPaths[i].path);
+		//			LOG("mesh loaded!");
+		//			ImGui::CloseCurrentPopup();
+		//		}
+		//	}
+
+		//	if (ImGui::Button("Close"))
+		//		ImGui::CloseCurrentPopup();
+		//	ImGui::EndPopup();
+		//}
+		ImGui::Separator();
+		if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
+		{
+			if (ImGui::BeginTabItem("Controls"))
+			{
+				//ImGui::TextWrapped("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ");
+				//ImGui::SliderFloat("scale", &game->entities[selected].data.size.max, 0.0f, 200.0f);
+				//ImGui::DragFloat("fine scale", &game->entities[selected].data.size, 0.0001f, 0.0f, 200.0f, "%.02f");
+
+				ImGui::DragFloat("x", &game->entities[selected].particle.pos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");
+				ImGui::DragFloat("y", &game->entities[selected].particle.pos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
+				ImGui::DragFloat("z", &game->entities[selected].particle.pos.z, 0.1f, -1000.0f, 1000.0f, "%.02f");
+
+				//ImGui::DragFloat("rot x", &g_Game->objects[selected]->orientation.x, 0.05f, -1000.0f, 1000.0f, "%.02f");
+				//ImGui::DragFloat("rot y", &g_Game->objects[selected]->orientation.y, 0.05f, -1000.0f, 1000.0f, "%.02f");
+				//ImGui::DragFloat("rot z", &g_Game->objects[selected]->orientation.z, 0.05f, -1000.0f, 1000.0f, "%.02f");
+
+				//ImGui::Checkbox("show normals", &g_Game->objects[selected]->viewNormals);
+				//ImGui::Checkbox("wire frame", &g_Game->objects[selected]->wireFrame);
+				ImGui::EndTabItem();
+			}
+			if (ImGui::BeginTabItem("Details"))
+			{
+				ImGui::Text("ID: 0123456789");
+				ImGui::EndTabItem();
+			}
+			ImGui::EndTabBar();
+		}
+			
+		// TODO(ck): Delete entities
+		//if (ImGui::SmallButton("DELETE"))
+		//{
+		//	UnloadObject(selected);
+		//	// Selected is greater than size of vector
+		//	// don't move down if empty
+		//	if (selected >= g_Game->objects.size() && !g_Game->objects.empty())
+		//		selected -= 1;
+		//}
+	
+		ImGui::EndChild();
+		ImGui::EndGroup();
+	}
 	ImGui::End();
 }
+	
 
 void StatsWindow(bool* p_open, Mon::Game* game)
 {
@@ -275,15 +370,7 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 		ImGui::SameLine();
 		ImGui::Checkbox("Things", &showEntityWindow);
 
-		ImGui::SliderFloat("camera angle", &game->cam.angleAroundTarget, -360.0f, 180.0f);
-		ImGui::SliderFloat("camera pitch", &game->cam.pitch, -1.10f, 100.0f, "%1.0f");
-		ImGui::SliderFloat("camera lerp", &game->cam.lerpSpeed, 0.0f, 100.0f);
-
-
-		// just make button you press that restarts the camera
-		// pass it a boolean from gui?? no we don't want to keep
-		// track of state
-		//ImGui::Button("debug camera on", )
+		ImGui::DragFloat("cam speed", &game->cam.speed, 0.01f, 1.0f, 200.0f, "%.02f");
 
 		/// 
 		/// Player 
@@ -331,14 +418,6 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 
 
 #endif
-
-	//char dtbuf[64];
-	//snprintf(dtbuf, sizeof(dtbuf), "%f", g_GameState->deltaTime);
-
-	
-	//ImGui::LabelText("player y", ybuffer);
-	//ImGui::LabelText("entities size", entitysizebuf);
-	//ImGui::LabelText("delta time: ", dtbuf);
 
 	ImGui::End();
 }

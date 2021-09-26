@@ -111,6 +111,7 @@ namespace Mon
 		cam = Camera();
 
 		player = {};
+		player.name = "player";
 		MonGL::initQuad(&player.data, shader.id, "res/textures/p1.png");
 		MonGL::initBoundingBox(&player.colliderData);
 		player.particle.pos = v3(40.0f, 0.1f, 10.0);
@@ -129,14 +130,26 @@ namespace Mon
 		for (int i = 0; i < 10; ++i)
 		{
 			Entity tree = {};
+			tree.name = "tree_" + std::to_string(i);
 			MonGL::initQuad(&tree.data, shader.id, "res/textures/tree.png");
-			tree.particle.pos = v3(6.0f * (i + 1), 0.1f, 5.5f * i);
-			trees.push_back(tree);
+			tree.particle.pos = v3(6.0f * (i + 1), 6.80f, 5.5f * i);
+			entities.push_back(tree);
+		}
+
+		for (int i = 0; i < 10; ++i)
+		{
+			Entity flower = {};
+			flower.name = "flower_" + std::to_string(i);
+			MonGL::initQuad(&flower.data, shader.id, "res/textures/sflow_tall.png");
+			flower.particle.pos = v3(10.0f, 0.1f, 6.0f);
+			
+			entities.push_back(flower);
 		}
 
 		for (int i = 0; i < 4; ++i)
 		{
 			Entity entity = {};
+			entity.name = "enemy_" + std::to_string(i);
 			MonGL::initBoundingBox(&entity.colliderData);
 			entity.particle.pos = v3((8.0f * (i + 1)), 0.1f, 1.5f * i);
 			mat4 model = mat4(1.0f);
@@ -183,7 +196,7 @@ namespace Mon
 		MonGL::viewPort(&config->viewPort);
 		config->angleDegrees = -30.0f;
 
-
+		selectedIndex = 0;
 		drawCollisions = true;
 		return true;
 	}
@@ -323,9 +336,10 @@ namespace Mon
 		{
 			MonGL::drawBoundingBox(&e.colliderData, e.particle.pos, cam.pos, proj, view, shader.id);
 		}
-		for (auto& e : trees)
+		for (auto& e : entities)
 		{
-			MonGL::drawQuad(config, &e.data, e.particle.pos, v3(1.0f, 10.0f, 1.0f), cam.pos, shader.id);
+
+			MonGL::drawQuad(config, &e.data, e.particle.pos, v3(16.0f, 16.0f, 1.0f), cam.pos, shader.id);
 		}
 
 

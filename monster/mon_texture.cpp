@@ -5,9 +5,9 @@
 
 #include <string>
 
-namespace MonTexture
+namespace MonGL
 {
-	void Generate2DTexture(Texture* texture, unsigned int width, unsigned int height, int nrChannels, unsigned char* data)
+	void Generate2DTexture(Texture* texture, int width, int height, int nrChannels, unsigned char* data)
 	{
 		glGenTextures(1, &texture->id);
 
@@ -73,15 +73,12 @@ namespace MonTexture
 			}
 		}
 
-		int width;
-		int height;
 		int nrChannels;
-
 		stbi_set_flip_vertically_on_load(flip);
-		unsigned char* image = stbi_load(file, &width, &height, &nrChannels, 0);
+		unsigned char* image = stbi_load(file, &texture->width, &texture->height, &nrChannels, 0);
 		if (image)
 		{
-			Generate2DTexture(texture, width, height, nrChannels, image);
+			Generate2DTexture(texture, texture->width, texture->width, nrChannels, image);
 		}
 		else
 		{
@@ -94,6 +91,7 @@ namespace MonTexture
 	}
 
 	// TODO(ck): Clean up
+	// I THINK I CAN DELETE THIS?
 	unsigned int LoadTextureFile(const char* path, const std::string& directory, bool gamma)
 	{
 		std::string filename = std::string(path);

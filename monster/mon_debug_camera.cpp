@@ -3,7 +3,6 @@
 
 namespace Mon
 {
-
 	Camera::Camera()
 	{
 		worldUp = v3(0.0f, 1.0f, 0.0f);
@@ -94,7 +93,7 @@ namespace Mon
 		}
 		else
 		{
-			keyInput(dt, input);
+			processInput(dt, input);
 			if (input->lMouseBtn.endedDown)
 			{
 				calculateYawPitch(input->mouseOffset, 0.10f, constrainPitch);
@@ -141,10 +140,12 @@ namespace Mon
 		}
 	}
 
-	void Camera::keyInput(double dt, Input* input)
+	void Camera::processInput(double dt, Input* input)
 	{
 		if (input->shift.endedDown)
 			speed *= 2.0f;
+
+		processScroll(input->wheel.y);
 
 		float velocity = speed * (float)dt;
 
@@ -182,25 +183,35 @@ namespace Mon
 		}
 	}
 
+	void Camera::processScroll(int yOffset)
+	{
+		if (speed >= 0)
+			speed += yOffset * 2;
+		else
+			speed = 1;
+	}
+
 	void Camera::followOn()
 	{
 		follow = true;
+		lastDebugPos = pos;
+		lastDebugYaw = yaw;
+		lastDebugPitch = pitch;
+		lastDebugFront = front;
+
 		yaw = 0.0f;
 		pitch = 40.0f;
 		front = v3(0.0f, 0.0f, -1.0f);
+
+		
 	}
 
 	void Camera::followOff()
 	{
 		follow = false;
-		yaw = -80.0f;
-		pitch = -25.0f;
-		right.x = 0.99f;
-		right.y = -0.0f;
-		right.z = 0.05f;
-		front.x = 0.03f;
-		front.y = -0.50f;
-		front.z = -0.75f;
-		up = v3{ 0.0f, 1.0f, 0.0f };
+		yaw = lastDebugYaw;
+		pitch = lastDebugPitch;
+		front = lastDebugFront;
+		pos = lastDebugPos;
 	}
 }

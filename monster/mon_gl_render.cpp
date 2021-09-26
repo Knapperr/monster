@@ -57,8 +57,8 @@ namespace MonGL
 		glBindVertexArray(0);
 
 		std::string textDir = texturePath.substr(0, texturePath.find_last_of('/'));
-		MonTexture::Texture text = {};
-		MonTexture::LoadTextureFile(&text, texturePath.c_str(), false, true, true);
+		Texture text = {};
+		LoadTextureFile(&text, texturePath.c_str(), false, true, true);
 		data->textures.push_back(text);
 
 		glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
@@ -391,9 +391,9 @@ namespace MonGL
 		std::string filename = std::string(path);
 		filename = directory + '/' + filename;
 		*/
-		MonTexture::Texture text = {};
+		Texture text = {};
 		data->textures.push_back(text);
-		MonTexture::LoadTextureFile(&data->textures[0], textPath.c_str(), false, false, false);
+		LoadTextureFile(&data->textures[0], textPath.c_str(), false, false, false);
 
 
 	}

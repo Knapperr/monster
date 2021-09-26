@@ -68,7 +68,7 @@ namespace MonGL
 		// should be initCollider i guess?
 		// this isn't just a position its a MATRIX its ALL of the 
 		// information its the rotation, position the size of it...
-		std::vector<MonTexture::Texture> textures;
+		std::vector<Texture> textures;
 		mat4 worldMatrix;
 		// TODO(ck): More collider specific info
 
@@ -95,7 +95,7 @@ namespace MonGL
 
 	struct RenderData2D
 	{
-		MonTexture::Texture texture;
+		Texture texture;
 		unsigned int VAO;
 		unsigned int VBO;
 		Point pos;

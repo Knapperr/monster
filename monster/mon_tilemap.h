@@ -50,7 +50,7 @@ namespace Mon
 	{
 		Tile* tiles;
 		int tileCount;
-		MonTexture::Texture texture;
+		MonGL::Texture texture;
 		int gridX = TILE_SIZE;
 		int gridY = TILE_SIZE;
 

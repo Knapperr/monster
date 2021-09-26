@@ -4,7 +4,7 @@ namespace Mon
 {
 	void initTileSheet(TileSheet* sheet, const char* fileName)
 	{
-		MonTexture::LoadTextureFile(&sheet->texture, fileName, true, false, true);
+		MonGL::LoadTextureFile(&sheet->texture, fileName, true, false, true);
 
 		// TODO(ck): 
 		// Parse the loaded texture and calculate the tileids

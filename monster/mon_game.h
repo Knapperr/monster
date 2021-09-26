@@ -111,6 +111,7 @@ namespace Mon
 
 	struct Entity
 	{
+		std::string name;
 		Particle particle;
 		MonGL::RenderData data;
 		MonGL::RenderData colliderData;
@@ -159,7 +160,7 @@ namespace Mon
 		//EntityTwo* entites;
 		Entity player;
 		Entity water;
-		std::vector<Entity> trees;
+		std::vector<Entity> entities;
 		std::vector<Entity> enemies;
 		bool simulate;
 		bool drawCollisions;
@@ -167,6 +168,8 @@ namespace Mon
 
 		// Note(ck): Current game state - State::Debug is default
 		int state; 
+		// TODO(ck): Handle Multiple selected IDS i.e: selectedIDs[64]; selectedCount; need to store the count as well
+		int selectedIndex;
 
 		// TODO(ck): 
 		// Shader lives in the opengl renderer

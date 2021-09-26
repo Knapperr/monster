@@ -138,6 +138,7 @@ namespace Mon
 
 		newInput->lMouseBtn.endedDown = oldInput->lMouseBtn.endedDown;
 		newInput->rMouseBtn.endedDown = oldInput->rMouseBtn.endedDown;
+		//newInput->wheel = oldInput->wheel;
 
 		// TODO(ck): Add to loop mouse[] something like that
 		newInput->mouseOffset = oldInput->mouseOffset;
@@ -215,8 +216,8 @@ namespace Mon
 
 					SDL_SetRelativeMouseMode(SDL_TRUE);
 					relativeMouseMode = true;
-					lastXAfterPress = newInput->mouseXScreen;
-					lastYAfterPress = newInput->mouseYScreen;
+					lastXAfterPress = (int)newInput->mouseXScreen;
+					lastYAfterPress = (int)newInput->mouseYScreen;
 				}
 				if (e.button.button == SDL_BUTTON_RIGHT)
 				{
@@ -276,112 +277,18 @@ namespace Mon
 				if (e.jbutton.button == 6) // SELECT 
 					processKeyboard(&newInput->debug, isDown);
 			}
-			// IMPORTANT(ck): Need to always process joystick
+			else if (e.type == SDL_MOUSEWHEEL)
+			{
+				// TODO(ck): Handle X axis and direction
+				newInput->wheel.y = e.wheel.y;
+			}
+			// IMPORTANT(ck): Need to always process joystick at beginning of poll
 			// SDL_CONTROLLERAXISMOTION
 			else if (e.type == SDL_JOYAXISMOTION)
 			{
 				if (e.jaxis.which == 0)
 				{
-
-					
-					//newInput->rightStickAngle = atan2((double)yDir, (double)xDir) * (180.0 / M_PI);
-					//if (xDir == 0 && yDir == 0)
-					//newInput->rightStickValue = 0;
-
-
-					//static int yDir = 0;
-					//static int xDir = 0;
-					//if (e.jaxis.axis == 0)
-					//{
-					//	if (e.jaxis.value < -JOYSTICK_DEAD_ZONE)
-					//	{
-					//		newInput->isAnalog = true;
-
-					//		xDir = -1;
-					//		newInput->stickDir.x = -2;
-					//		//processKeyboard(&newInput->left, true);
-					//	}
-					//	else if (e.jaxis.value > JOYSTICK_DEAD_ZONE)
-					//	{
-					//		newInput->isAnalog = true;
-
-					//		xDir = 1;
-					//		newInput->stickDir.x = 2;
-					//		//processKeyboard(&newInput->right, true);
-					//	}
-					//	else
-					//	{
-					//		xDir = 0;
-					//		newInput->stickDir.x = 0;
-					//		//processKeyboard(&newInput->left, false);
-					//		//processKeyboard(&newInput->right, false);
-
-					//		newInput->isAnalog = false;
-					//	}
-					//}
-					//if (e.jaxis.axis == 1)
-					//{
-					//	if (e.jaxis.value < -JOYSTICK_DEAD_ZONE)
-					//	{
-					//		newInput->isAnalog = true;
-
-					//		yDir = -1;
-					//		newInput->stickDir.y = 2;
-					//		//processKeyboard(&newInput->up, true);
-					//	}
-					//	else if (e.jaxis.value > JOYSTICK_DEAD_ZONE)
-					//	{
-					//		newInput->isAnalog = true;
-
-					//		yDir = 1;
-					//		newInput->stickDir.y = -2;
-					//		processKeyboard(&newInput->down, true);
-					//	}
-					//	else
-					//	{
-					//		yDir = 0;
-					//		newInput->stickDir.y = 0;
-					//		processKeyboard(&newInput->up, false);
-					//		processKeyboard(&newInput->down, false);
-
-					//		newInput->isAnalog = false;
-					//	}
-					//}
-
-					//newInput->rightStickValue = e.jaxis.value / 32767.0f;;
-					//newInput->rightStickAxis = e.jaxis.axis;
-
-					/*
-					TODO(ck): JOYSTICK ANGLE
-
-					//Calculate angle
-					double joystickAngle = atan2((double)yDir, (double)xDir) * (180.0 / M_PI);
-
-					//Correct angle
-					if (xDir == 0 && yDir == 0)
-					{
-						joystickAngle = 0;
-					}
-					*/
-
-					/*
-					else if (event.type == SDL_JOYAXISMOTION)
-					{
-						auto index = find_joystick_index(event.jdevice.which);
-						if (index >= 0)
-						{
-							if (SDL_IsGameController(index) == SDL_FALSE)
-							{
-								float value;
-								if (event.jaxis.value >= 0)
-									value = event.jaxis.value / 32767.0f;
-								else
-									value = event.jaxis.value / 32768.0f;
-								InputBackend::on_axis_move(index, event.jaxis.axis, value);
-							}
-						}
-					}
-					*/
+					// Joystick
 				}
 			}
 			else if (e.type == SDL_JOYBUTTONDOWN || e.type == SDL_JOYBUTTONUP)
@@ -430,7 +337,7 @@ namespace Mon
 
 	void SDLPlatform::setTitle(Settings* settings, const char* title)
 	{
-		// TODO(ck): implement
+		// TODO(ck): implement: change window title
 	}
 
 	void SDLPlatform::cleanUp()

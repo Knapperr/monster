@@ -11,7 +11,6 @@ namespace Mon
 		Camera();
 		void update(double dt, Input* input, v3 pos, v3 orientation, bool constrainPitch = true);
 		void move(v3 tPos, v3 tOrientation, float dt);
-		void getKeyboardInput();
 		void followOn();
 		void followOff();
 		mat4 projection();
@@ -23,7 +22,6 @@ namespace Mon
 		v3 right;
 		float speed;
 		float zoom;
-		bool follow;
 
 		float nearPlane;
 		float farPlane;
@@ -33,6 +31,12 @@ namespace Mon
 		float angleAroundTarget;
 		float lerpSpeed;
 
+		v3 lastDebugPos;
+		v3 lastDebugFront;
+		float lastDebugPitch;
+		float lastDebugYaw;
+
+		bool follow;
 
 	private:
 		v3 target;
@@ -42,7 +46,8 @@ namespace Mon
 
 		float distanceFromTarget;
 
-		void keyInput(double dt, Input* input);
+		void processInput(double dt, Input* input);
+		void processScroll(int yOffset);
 		void calculateYawPitch(v2 offset, float sensitivity, bool constrainPitch);
 		void calculateCameraVectors();
 		void calculateAngleAroundTarget(v2 offset);

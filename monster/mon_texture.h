@@ -3,15 +3,15 @@
 
 #include <string>
 
-namespace MonTexture
+namespace MonGL
 {
 	struct Texture
 	{
 		// id of texture object
 		unsigned int id;
 		// dimensions in pixels
-		unsigned int width;
-		unsigned int height;
+		int width;
+		int height;
 		// format of the texture object and format of loaded image
 		unsigned int internalFormat;
 		unsigned int imageFormat;

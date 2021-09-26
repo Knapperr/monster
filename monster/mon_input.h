@@ -11,6 +11,12 @@ namespace Mon
 		bool endedDown;
 	};
 
+	struct ScrollWheel
+	{
+		int x, y;
+
+	};
+
 	struct Input
 	{
 		bool isConnected;
@@ -18,6 +24,7 @@ namespace Mon
 		// maybe make an array for mouse buttons
 		ButtonState lMouseBtn;
 		ButtonState rMouseBtn;
+		ScrollWheel wheel;
 
 		float stickAverageX;
 		float stickAverageY;
