@@ -56,11 +56,13 @@ namespace MonGL
 		// unbind
 		glBindVertexArray(0);
 
+		// Don't really want to save this
+		data->texturePath = texturePath;
 		std::string textDir = texturePath.substr(0, texturePath.find_last_of('/'));
 		Texture text = {};
 		LoadTextureFile(&text, texturePath.c_str(), false, true, true);
 		data->textures.push_back(text);
-
+		data->selectedTexture = 0;
 		glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
 	}
 
@@ -159,7 +161,7 @@ namespace MonGL
 		glUniform1i(glGetUniformLocation(shaderID, "pixelTexture"), true);
 		// bind textures on corresponding texture units
 		//glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, data->textures[0].id);
+		glBindTexture(GL_TEXTURE_2D, data->textures[data->selectedTexture].id);
 
 		glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
 		glUniform1i(glGetUniformLocation(shaderID, "collider"), false);
@@ -384,8 +386,8 @@ namespace MonGL
 		data->mat.shininess = 32.0f;
 
 		std::string textPath = "res/textures/terrain/1024multi.png";
-		//std::string textPath = "res/textures/terrain/pix_grass.png";
 		std::string textDir = textPath.substr(0, textPath.find_last_of('/'));
+	
 		/*
 		textureIds[0] = MonTexture::LoadTextureFile("1024multi.png", textDir, false);
 		std::string filename = std::string(path);
@@ -395,7 +397,23 @@ namespace MonGL
 		data->textures.push_back(text);
 		LoadTextureFile(&data->textures[0], textPath.c_str(), false, false, false);
 
+		textPath = "res/textures/terrain/grass.jpg";
+		textDir = textPath.substr(0, textPath.find_last_of('/'));
+		Texture text1 = {};
+		data->textures.push_back(text1);
+		LoadTextureFile(&data->textures[1], textPath.c_str(), false, false, false);
 
+		textPath = "res/textures/terrain/pix_grass.png";
+		textDir = textPath.substr(0, textPath.find_last_of('/'));
+		Texture text2 = {};
+		data->textures.push_back(text2);
+		LoadTextureFile(&data->textures[2], textPath.c_str(), false, false, false);
+
+		textPath = "res/textures/terrain/snow.jpg";
+		textDir = textPath.substr(0, textPath.find_last_of('/'));
+		Texture text3 = {};
+		data->textures.push_back(text3);
+		LoadTextureFile(&data->textures[3], textPath.c_str(), false, false, false);
 	}
 
 	void drawTerrain(unsigned int shaderID, RenderData* data, Light* light, mat4 projection, mat4 view, v3 camPos)
@@ -431,7 +449,7 @@ namespace MonGL
 
 
 		//glBindTexture(GL_TEXTURE_2D, terrain->selectedTextureId);
-		glBindTexture(GL_TEXTURE_2D, data->textures[0].id);
+		glBindTexture(GL_TEXTURE_2D, data->textures[data->selectedTexture].id);
 
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
 		glBindVertexArray(data->VAO);

@@ -108,6 +108,7 @@ namespace Mon
 		MonGL::LoadShader(&shader, "res/shaders/vert_colors.glsl", "res/shaders/frag_colors.glsl", NULL);
 		MonGL::LoadShader(&waterShader, "res/shaders/vert_water.glsl", "res/shaders/frag_water.glsl", NULL);
 
+		mainShaderID = shader.id;
 		cam = Camera();
 
 		player = {};
@@ -468,18 +469,23 @@ namespace Mon
 				if (input->up.endedDown)
 				{
 					velocity.y = -1.0f;
+					//p->position.y -= 1.0f * p->speed * dt;
 				}
 				if (input->down.endedDown)
 				{
 					velocity.y = 1.0f;
+					//p->position.y += 1.0f * p->speed * dt;
+
 				}
 				if (input->left.endedDown)
 				{
 					velocity.x = -1.0f;
+					//p->position.x -= 1.0f * p->speed * dt;
 				}
 				if (input->right.endedDown)
 				{
 					velocity.x = 1.0f;
+					//p->position.x += 1.0f * p->speed * dt;
 				}
 			}
 			Mon::movePlayer(p, &velocity, deltaTime);
@@ -495,8 +501,9 @@ namespace Mon
 			//real32 playerGroundPointX = screenCenterX + metersToPixels * diff.dX;
 			//real32 playerGroundPointY = screenCenterY - metersToPixels * diff.dY;
 
+			camera.update(&p->sprite.pos, deltaTime);
 		}
-		camera.update(&world->player->position, deltaTime);
+		//camera.update(&world->player->position, deltaTime);
 	}
 
 	void Game::render()

@@ -22,6 +22,8 @@ namespace Mon
 
 		MonGL::RenderData2D sprite;
 		v2 pos;
+		// NOTE(ck): Need a map position (for drawing) and a velocity for movement
+		// TileMapPosition pos
 		v2 velocity;
 		float speed;
 		float maxSpeed;

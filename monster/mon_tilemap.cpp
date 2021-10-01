@@ -52,6 +52,8 @@ namespace Mon
 
 	void initTileMap(TileMap* map, TileSheet* sheet)
 	{
+		map->tileSideInMeters = 1.6f;
+
 		// NOTE(ck): Sheet must be created first
 #define MAP_SIZE 40
 
@@ -126,5 +128,41 @@ namespace Mon
 			}
 		}
 	}
+
+	void RecanonicalizeCoord(TileMap* tileMap, uint32_t* tile, float* tileRel)
+	{
+		// TODO(casey): Need to do something that doesn't use the divide/multiply method
+		// for recanonicalizing because this can end up rounding back on to the tile 
+		// you just came from.
+
+		// NOTE(casey): tile_map is assumed to be torodial topology, if you step off one end you
+		// come back on the other!
+		int offset = roundReal32ToInt32(*tileRel / tileMap->tileSideInMeters);
+		*tile += offset;
+		*tileRel -= offset * tileMap->tileSideInMeters;
+
+		// TODO(casey): Fix floating point math so this can be <
+		//Assert(*tileRel >= -0.5f * tileMap->tileSideInMeters);
+		//Assert(*tileRel <= 0.5f * tileMap->tileSideInMeters);
+	}
+
+	// NOTE(CK):
+	// Turn something that has been mutated (had its relative x and y messed with) turn it canonical again
+	inline TileMapPosition RecanonicalizePosition(TileMap* tileMap, TileMapPosition pos)
+	{
+		/* NOTE(CK):
+			Because we store the player relative to a tile (in world position)
+			we no longer have to worry about changing the player from pixel location
+			to world location. We can do this for free now its making the code cleaner
+			and way easier to work with.
+		*/
+		TileMapPosition result = pos;
+
+		RecanonicalizeCoord(tileMap, &result.absTileX, &result.offset.x);
+		RecanonicalizeCoord(tileMap, &result.absTileY, &result.offset.y);
+
+		return result;
+	}
+
 
 }

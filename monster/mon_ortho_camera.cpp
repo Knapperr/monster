@@ -38,6 +38,12 @@ namespace Mon
 #endif
 	}
 
+	/*
+	void update_camera(Camera* c) {
+		c->x += (c->target_x - c->x) * 0.12;
+		c->y += (c->target_y - c->y) * 0.12;
+	}*/
+
 	void OrthoCamera::createOrtho()
 	{
 

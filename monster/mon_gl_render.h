@@ -69,6 +69,9 @@ namespace MonGL
 		// this isn't just a position its a MATRIX its ALL of the 
 		// information its the rotation, position the size of it...
 		std::vector<Texture> textures;
+		std::string texturePath;
+		int selectedTexture;
+
 		mat4 worldMatrix;
 		// TODO(ck): More collider specific info
 
@@ -121,7 +124,7 @@ namespace MonGL
 	void generateTerrain(RenderData* data);
 	void drawTerrain(unsigned int shaderID, RenderData* data, Light* light, mat4 projection, mat4 view, v3 camPos);
 
-	
+
 	// 2d
 	void initRenderData2D(RenderData2D* sprite);
 	
@@ -131,6 +134,7 @@ namespace MonGL
 	
 	void drawObject(Shader* shader, RenderData2D* data);
 	void drawMap(Shader* shader, unsigned int textureID);
+
 
 }
 #endif

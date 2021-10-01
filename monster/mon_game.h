@@ -170,6 +170,7 @@ namespace Mon
 		int state; 
 		// TODO(ck): Handle Multiple selected IDS i.e: selectedIDs[64]; selectedCount; need to store the count as well
 		int selectedIndex;
+		int mainShaderID;
 
 		// TODO(ck): 
 		// Shader lives in the opengl renderer

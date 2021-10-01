@@ -29,7 +29,7 @@ namespace Mon
 		entities.push_back(collider);
 
 		Entity2D* ball = new Entity2D();
-		initEntity(ball, "res/textures/p1_.png", true, v2(30, 30));
+		initEntity(ball, "res/textures/sflow.png", true, v2(10, 10));
 		entities.push_back(ball);
 
 		for (int i = 0; i < 5; ++i)

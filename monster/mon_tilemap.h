@@ -10,6 +10,14 @@ namespace Mon
 {
 #define TILE_SIZE 16
 
+	struct TileMapPosition
+	{
+		uint32_t absTileX;
+		uint32_t absTileY;
+		// NOTE(casey): These are the offsets from the tile center
+		v2 offset;
+	};
+
 	struct Tile
 	{
 		float x, y;
@@ -77,10 +85,11 @@ namespace Mon
 	{
 		//MonGL::BatchData* batch;
 		std::vector<Tile> tiles;
+		float tileSideInMeters;
 	};
 
 	void initTileMap(TileMap* map, TileSheet* sheet);
-
+	TileMapPosition RecanonicalizePosition(TileMap* tileMap, TileMapPosition pos);
 }
 
 #endif

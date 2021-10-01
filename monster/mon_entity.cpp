@@ -48,7 +48,7 @@ namespace Mon
 
 		*velocity *= p->speed;
 
-		*velocity += -3.5f * p->velocity;
+		*velocity += -5.0f * p->velocity;
 
 		v2 oldPos = {};
 		oldPos.x = p->position.x;
@@ -60,18 +60,19 @@ namespace Mon
 
 		// TODO(ck): need to set an offest like casey does
 		newPos += delta;
-
+		
 		p->velocity.x = velocity->x * deltaTime + p->velocity.x;
 		p->velocity.y = velocity->y * deltaTime + p->velocity.y;
 
+		// TODO(ck): Remove this we will use tile map positions like handmade hero
 		// NOTE(ck): Get the remaining time 
 		// get the amount we should move, including remainder from the previous frame
 		v2 total = p->remainder + newPos;
 	
-		//// round to integer values since we only move in pixels at a time
+		// round to integer values since we only move in pixels at a time
 		Point toMove = Point{ (int)total.x, (int)total.y };
 
-		//// store remainder floating values for next frame
+		// store remainder floating values for next frame
 		p->remainder.x = total.x - toMove.x;
 		p->remainder.y = total.y - toMove.y;
 

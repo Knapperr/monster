@@ -4,6 +4,62 @@
 
 #define _3D_GUI_
 
+// TODO(ck): Must switch Entity to plain array so i can save their memory to a file cant do it with vector
+// TODO(ck): open files with current platform layer
+// COPY MEMORY TO FILE and read it in
+#include <fstream>
+void writeEntities(std::vector<Mon::Entity>& entities, int shaderID)
+{
+	std::ofstream file;
+	file.open("scene_1.txt");
+
+	for (int i = 0; i < entities.size(); ++i)
+	{
+		file << entities[i].name << "\n"
+			<< entities[i].particle.pos.x << "\n" << entities[i].particle.pos.y << "\n" << entities[i].particle.pos.z << "\n"
+			<< shaderID << "\n"
+			<< entities[i].data.texturePath << "\n";
+
+	}
+
+	file.close();
+}
+
+void loadEntities(Mon::Game* game)
+{
+	// TODO(ck): memory management should probably have something in the list to only reload part of it
+	// READ MEMORY FROM FILE
+	game->entities.clear();
+
+	std::string line;
+	std::ifstream file("scene_1.txt");
+	if (!file.is_open())
+	{
+		printf("Failure to open file!");
+	}
+	while (file >> line)
+	{
+		Mon::Entity e = {};
+		e.name = line;
+		file >> e.particle.pos.x;
+		file >> e.particle.pos.y;
+		file >> e.particle.pos.z;
+
+		// TODO(ck): This is why a raw array needs to be used
+		// the render data needs to be rebuilt. Serialization I think 
+		// will take care of having to reload any rendering data.
+		int shaderID = 0;
+		std::string textPath = "";
+		file >> shaderID;
+		file >> textPath;
+
+		MonGL::initQuad(&e.data, shaderID, textPath);
+		game->entities.push_back(e);
+
+	}
+	
+}
+
 #ifdef USE_SDL
 void InitGui(SDL_Window* window, SDL_GLContext* context)
 {
@@ -39,13 +95,13 @@ void TerrainWindow(bool* p_open, Mon::Game* game)
 
 	ImGui::Text("Texture");
 	ImGui::Separator();
-	if (ImGui::Button("UV")) { game->terrain->selectedTextureId = game->terrain->textureIds[0]; }
+	if (ImGui::Button("UV")) { game->terrain->mesh.selectedTexture = 0; }
 	ImGui::SameLine();
-	if (ImGui::Button("Rock")) { game->terrain->selectedTextureId = game->terrain->textureIds[1]; }
+	if (ImGui::Button("Grass")) { game->terrain->mesh.selectedTexture = 1; }
 	ImGui::SameLine();
-	if (ImGui::Button("Grass")) { game->terrain->selectedTextureId = game->terrain->textureIds[2]; }
+	if (ImGui::Button("Pixel Grass")) { game->terrain->mesh.selectedTexture = 2; }
 	ImGui::SameLine();
-	if (ImGui::Button("Snow")) { game->terrain->selectedTextureId = game->terrain->textureIds[3]; }
+	if (ImGui::Button("Snow")) { game->terrain->mesh.selectedTexture = 3; }
 	ImGui::Separator();
 
 	ImGui::Checkbox("Wireframe", &game->terrain->wireFrame);
@@ -103,8 +159,8 @@ void CameraWindow(bool* p_open, Mon::Game* game)
 
 void EntityWindow(bool* p_open, Mon::Game* game)
 {
-	ImGui::Begin("objects and things", p_open);
-	ImGui::DragFloat("player sprite angle", &game->config->angleDegrees, 0.10f, -180.0f, 360.0f, "%.10f");
+	ImGui::Begin("entities and things", p_open);
+	ImGui::DragFloat("sprite angle", &game->config->angleDegrees, 0.10f, -180.0f, 360.0f, "%.10f");
 
 	static unsigned int selected = 0;
 	ImGui::BeginChild("left pane", ImVec2(150.0f, 0.0f), true);
@@ -322,6 +378,10 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 		ImGui::SameLine();
 		if (ImGui::Button("play")) { game->playMode(); }
 		ImGui::SameLine();
+		if (ImGui::Button("save")) { writeEntities(game->entities, game->mainShaderID); }
+		ImGui::SameLine();
+		if (ImGui::Button("load")) { loadEntities(game); }
+		ImGui::SameLine();
 
 		if (ImGui::Button("Fullscreen"))
 		{
@@ -422,7 +482,7 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 	ImGui::End();
 }
 
-#endif
+#endif // USE_SDL
 
 void RenderGui()
 {

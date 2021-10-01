@@ -74,6 +74,12 @@ namespace Mon
 		return 1;
 		//return t > target ?
 	}
+
+	inline int roundReal32ToInt32(float real)
+	{
+		int result = (int)roundf(real);
+		return result;
+	}
 }
 
 #endif
