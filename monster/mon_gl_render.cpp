@@ -19,7 +19,7 @@ namespace MonGL
 		return translate(mat4(1), GetCenter(size)) * scale(mat4(1), GetSize(size));
 	}
 
-	void initQuad(RenderData* data, int shaderID, std::string texturePath)
+	void initQuad(RenderData* data)
 	{
 		data->vertices.push_back({ v3(0.5f, 0.5f, 0.0f), v3(1.0f, 1.0f, 1.0f), v2(1.0f, 1.0f) });
 		data->vertices.push_back({ v3(0.5f, -0.5f, 0.0f), v3(1.0f, 1.0f, 1.0f), v2(1.0f, 0.0f) });
@@ -56,11 +56,13 @@ namespace MonGL
 		// unbind
 		glBindVertexArray(0);
 
-		// Don't really want to save this
-		data->texturePath = texturePath;
-		std::string textDir = texturePath.substr(0, texturePath.find_last_of('/'));
+	}
+
+	void loadTexture(RenderData* data, int shaderID, std::string path)
+	{
+		data->texturePath = path;
 		Texture text = {};
-		LoadTextureFile(&text, texturePath.c_str(), false, true, true);
+		LoadTextureFile(&text, path.c_str(), false, true, true);
 		data->textures.push_back(text);
 		data->selectedTexture = 0;
 		glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
@@ -179,7 +181,50 @@ namespace MonGL
 	}
 
 
-	void drawWater(RenderData* data, v3 pos, v3 scale, v3 camPos, unsigned int shaderID)
+	void initDistortedWater(RenderData* renderData, WaterDataProgram* waterData)
+	{
+		/*
+		TODO(ck): Can I have some kind of uniform structure. 
+			I dont think I need a uniform abstract. It looks like in handmade hero in
+			handmade_renderer_opengl.cpp / .h 
+			that you use a program.. I'll have to research this because it looks like they
+			hold all of the uniforms and data its just a matching struct to the shader im assuming
+			casey doesn't use any inheritance he just has struct opengl_program_common
+		*/
+
+		// Create a quad first
+		initQuad(renderData);
+
+		waterData->tiling = 5.0f;
+		waterData->speed = 0.3f;
+		waterData->flowStrength = 0.05f;
+		waterData->flowOffset = -0.23f;
+		waterData->heightScale = 0.1f;
+		waterData->heightScaleModulated = 8.0f;
+
+		// CREATE A BASIC SHAPE LOADER replace ASSIMP
+		// WE WILL HAVE TO PUSH THIS TEXTURE TO THE TEXUTES OF THE QUAD 
+		// IN model.h
+		// data->texturePath = texturePath;
+		std::string path = "res/textures/water/water.png";
+		Texture uv = {};
+		LoadTextureFile(&uv, path.c_str(), false, true, false);
+		renderData->textures.push_back(uv);
+
+		path = "res/textures/water/flow-speed-noise.png";
+		Texture flow = {};
+		LoadTextureFile(&flow, path.c_str(), false, true, false);
+		renderData->textures.push_back(flow);
+
+		path = "res/textures/water/water-derivative-height.png";
+		Texture normal = {};
+		LoadTextureFile(&normal, path.c_str(), false, true, false);
+		renderData->textures.push_back(normal);
+	}
+
+
+
+	void drawWater(RenderData* data, WaterDataProgram* waterData, v3 pos, v3 scale, v3 camPos, unsigned int shaderID)
 	{
 
 		// ==============================================================================

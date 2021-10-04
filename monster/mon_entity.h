@@ -1,10 +1,8 @@
 #ifndef MON_ENTITY_H
 #define MON_ENTITY_H
 
-#include "mon_math.h"
-#include "mon_gl_render.h"
+#include "mon_tilemap.h"
 
-#include <vector>
 
 namespace Mon
 {
@@ -31,6 +29,7 @@ namespace Mon
 		float rotation;
 		bool destroyed;
 
+		TileMapPosition mapPos;
 
 		// separate out 
 		Point position;
@@ -40,7 +39,7 @@ namespace Mon
 	void initEntity(Entity2D* e, const char* fileLocation, bool isAlpha, v2 position);
 	// TODO(ck): Should this param be pointer?
 	// should velocity be acceleration?
-	void movePlayer(Entity2D* p, v2* velocity, float deltaTime);
+	void movePlayer(TileMap* map, Entity2D* p, v2* velocity, float deltaTime);
 
 }
 #endif

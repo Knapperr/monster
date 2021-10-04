@@ -82,13 +82,28 @@ namespace MonGL
 		// shader data?
 	};
 
+	struct CommonProgram
+	{
+		// uniforms for basic shader
+	};
+
+	// TODO(ck): Match struct in the shader also make a 
+	struct WaterDataProgram
+	{
+		float tiling;
+		float speed;
+		float flowStrength;
+		float flowOffset;
+		float heightScale;
+		float heightScaleModulated;
+	};
+
 	struct Vertex
 	{
 		v3 position;
 		v3 color;
 		v2 texCoords;
 	};
-
 
 	struct BatchData
 	{
@@ -105,17 +120,18 @@ namespace MonGL
 		v3 color;
 		v2 size;
 		bool wireFrame;
-
 	};
 
 	void beginRender(Config* config, mat4 projection, mat4 view, int shaderID);
 	void viewPort(Rect* port);
-	void initQuad(RenderData* data, int shaderID, std::string texturePath);
+	void initQuad(RenderData* data);
+	void loadTexture(RenderData* data, int shaderID, std::string path);
 	void initBoundingBox(RenderData* data);
 	void drawQuad(Config* config, RenderData* data,
 						 v3 playerPos, v3 scale, v3 camPos,
 						 unsigned int shaderID);
-	void drawWater(RenderData* data, v3 pos, v3 scale, v3 camPos, unsigned int shaderID);
+	void initDistortedWater(RenderData* renderData, WaterDataProgram* waterData);
+	void drawWater(RenderData* data, WaterDataProgram* waterData, v3 pos, v3 scale, v3 camPos, unsigned int shaderID);
 	void drawBoundingBox(RenderData* data,
 					 v3 playerPos, v3 camPos,
 					 mat4 projection, mat4 view,

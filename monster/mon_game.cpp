@@ -113,7 +113,8 @@ namespace Mon
 
 		player = {};
 		player.name = "player";
-		MonGL::initQuad(&player.data, shader.id, "res/textures/p1.png");
+		MonGL::initQuad(&player.data);
+		MonGL::loadTexture(&player.data, shader.id, "res/textures/p1.png");
 		MonGL::initBoundingBox(&player.colliderData);
 		player.particle.pos = v3(40.0f, 0.1f, 10.0);
 		player.particle.inverseMass = 10.0f;
@@ -132,7 +133,8 @@ namespace Mon
 		{
 			Entity tree = {};
 			tree.name = "tree_" + std::to_string(i);
-			MonGL::initQuad(&tree.data, shader.id, "res/textures/tree.png");
+			MonGL::initQuad(&tree.data);
+			MonGL::loadTexture(&tree.data, shader.id, "res/textures/tree.png");
 			tree.particle.pos = v3(6.0f * (i + 1), 6.80f, 5.5f * i);
 			entities.push_back(tree);
 		}
@@ -141,7 +143,8 @@ namespace Mon
 		{
 			Entity flower = {};
 			flower.name = "flower_" + std::to_string(i);
-			MonGL::initQuad(&flower.data, shader.id, "res/textures/sflow_tall.png");
+			MonGL::initQuad(&flower.data);
+			MonGL::loadTexture(&flower.data, shader.id, "res/textures/sflow_tall.png");
 			flower.particle.pos = v3(10.0f, 0.1f, 6.0f);
 			
 			entities.push_back(flower);
@@ -168,15 +171,11 @@ namespace Mon
 
 
 		water = {};
-		MonGL::initQuad(&water.data, waterShader.id, "res/texture/water/uv.png");
+		MonGL::initQuad(&water.data);
+		MonGL::loadTexture(&water.data, shader.id, "res/textures/water/uv.png");
 		MonGL::initBoundingBox(&water.colliderData);
 		water.particle.pos = v3(40.0f, 0.1f, 10.0);
-		water.particle.inverseMass = 10.0f;
-		water.particle.velocity = v3(0.0f, 0.0f, 0.0f); // 35m/s
-		water.particle.acceleration = v3(-40.0f, 0.0f, 0.0f);
 		water.particle.orientation = v3(1.0f, 1.0f, 1.0);
-		water.particle.damping = 0.9f;
-		water.particle.speed = 50.0f;
 
 		// TODO(ck): Memory Allocation
 		terrain = new Terrain(0, 0);
@@ -342,7 +341,8 @@ namespace Mon
 
 			MonGL::drawQuad(config, &e.data, e.particle.pos, v3(16.0f, 16.0f, 1.0f), cam.pos, shader.id);
 		}
-
+		
+		MonGL::drawQuad(config, &water.data, water.particle.pos, v3(5.0f), cam.pos, shader.id);
 
 	}
 
@@ -488,7 +488,7 @@ namespace Mon
 					//p->position.x += 1.0f * p->speed * dt;
 				}
 			}
-			Mon::movePlayer(p, &velocity, deltaTime);
+			Mon::movePlayer(world->map, p, &velocity, deltaTime);
 			// update sprite position 
 			// TODO(ck): I am pretty sure in handmade hero he rounds these values before drawing
 			//p->sprite.pos.x = (int)p->pos.x;

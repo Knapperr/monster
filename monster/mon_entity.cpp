@@ -37,7 +37,7 @@ namespace Mon
 
 	// TODO(ck): Should this param be pointer?
 	// should velocity be acceleration?
-	void movePlayer(Entity2D* p, v2* velocity, float deltaTime)
+	void movePlayer(TileMap* map, Entity2D* p, v2* velocity, float deltaTime)
 	{
 		// ddPLength
 		float velocityLength = lengthSq(*velocity);
@@ -50,33 +50,41 @@ namespace Mon
 
 		*velocity += -5.0f * p->velocity;
 
-		v2 oldPos = {};
-		oldPos.x = p->position.x;
-		oldPos.y = p->position.y;
-		v2 newPos = oldPos;
+		TileMapPosition oldPlayerP = p->mapPos;
+		TileMapPosition newPlayerP = oldPlayerP;
+
+		//v2 oldPos = {};
+		//oldPos.x = p->position.x;
+		//oldPos.y = p->position.y;
+		//v2 newPos = oldPos;
 		float deltaX = (0.5f * velocity->x * square(deltaTime) + p->velocity.x * deltaTime);
 		float deltaY = (0.5f * velocity->y * square(deltaTime) + p->velocity.y * deltaTime);
 		v2 delta = { deltaX, deltaY };
 
 		// TODO(ck): need to set an offest like casey does
-		newPos += delta;
-		
+		newPlayerP.offset += delta;
 		p->velocity.x = velocity->x * deltaTime + p->velocity.x;
 		p->velocity.y = velocity->y * deltaTime + p->velocity.y;
+
+		newPlayerP = RecanonicalizePosition(map, newPlayerP);
+		p->mapPos = newPlayerP;
 
 		// TODO(ck): Remove this we will use tile map positions like handmade hero
 		// NOTE(ck): Get the remaining time 
 		// get the amount we should move, including remainder from the previous frame
-		v2 total = p->remainder + newPos;
+		//p->position.x = newPos.x;
+		//p->position.y = newPos.y;
+
+		//v2 total = p->remainder + newPos;
 	
 		// round to integer values since we only move in pixels at a time
-		Point toMove = Point{ (int)total.x, (int)total.y };
+		//Point toMove = Point{ (int)total.x, (int)total.y };
 
-		// store remainder floating values for next frame
-		p->remainder.x = total.x - toMove.x;
-		p->remainder.y = total.y - toMove.y;
+		//// store remainder floating values for next frame
+		//p->remainder.x = total.x - toMove.x;
+		//p->remainder.y = total.y - toMove.y;
 
-		p->position = toMove;
+		//p->position = toMove;
 
 		
 	}

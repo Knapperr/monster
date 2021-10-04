@@ -2,7 +2,6 @@
 #define MON_WORLD_H
 
 #include "mon_entity.h"
-#include "mon_tilemap.h"
 
 namespace Mon
 {

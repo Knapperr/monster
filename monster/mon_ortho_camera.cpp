@@ -33,8 +33,8 @@ namespace Mon
 		target.x = lerp(target.x, lerpSpeed * dt, pos->x);
 		target.y = lerp(target.y, lerpSpeed * dt, pos->y);
 #else
-		target.x = pos->x;
-		target.y = pos->y;
+		//target.x = pos->x;
+		//target.y = pos->y;
 #endif
 	}
 

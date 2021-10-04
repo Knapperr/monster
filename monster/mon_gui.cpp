@@ -41,7 +41,7 @@ void loadEntities(Mon::Game* game)
 	{
 		Mon::Entity e = {};
 		e.name = line;
-		file >> e.particle.pos.x;
+		file >> e.particle.pos.x; 
 		file >> e.particle.pos.y;
 		file >> e.particle.pos.z;
 
@@ -53,7 +53,8 @@ void loadEntities(Mon::Game* game)
 		file >> shaderID;
 		file >> textPath;
 
-		MonGL::initQuad(&e.data, shaderID, textPath);
+		MonGL::initQuad(&e.data);
+		MonGL::loadTexture(&e.data, shaderID, textPath);
 		game->entities.push_back(e);
 
 	}

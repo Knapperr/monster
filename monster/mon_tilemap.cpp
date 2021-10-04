@@ -148,7 +148,7 @@ namespace Mon
 
 	// NOTE(CK):
 	// Turn something that has been mutated (had its relative x and y messed with) turn it canonical again
-	inline TileMapPosition RecanonicalizePosition(TileMap* tileMap, TileMapPosition pos)
+	TileMapPosition RecanonicalizePosition(TileMap* tileMap, TileMapPosition pos)
 	{
 		/* NOTE(CK):
 			Because we store the player relative to a tile (in world position)
