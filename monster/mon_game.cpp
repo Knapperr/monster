@@ -106,15 +106,16 @@ namespace Mon
 		shader = {};
 		waterShader = {};
 		MonGL::LoadShader(&shader, "res/shaders/vert_colors.glsl", "res/shaders/frag_colors.glsl", NULL);
-		MonGL::LoadShader(&waterShader, "res/shaders/vert_water.glsl", "res/shaders/frag_water.glsl", NULL);
+		MonGL::LoadShader(&waterShader.common, "res/shaders/vert_water.glsl", "res/shaders/frag_water.glsl", NULL);
 
-		mainShaderID = shader.id;
+		mainShaderID = shader.handle;
 		cam = Camera();
 
 		player = {};
 		player.name = "player";
+		player.setup = {};
 		MonGL::initQuad(&player.data);
-		MonGL::loadTexture(&player.data, shader.id, "res/textures/p1.png");
+		MonGL::loadTexture(&player.data, MonGL::Type::Diffuse, shader.handle, "res/textures/p1.png");
 		MonGL::initBoundingBox(&player.colliderData);
 		player.particle.pos = v3(40.0f, 0.1f, 10.0);
 		player.particle.inverseMass = 10.0f;
@@ -132,9 +133,10 @@ namespace Mon
 		for (int i = 0; i < 10; ++i)
 		{
 			Entity tree = {};
+			tree.setup = {};
 			tree.name = "tree_" + std::to_string(i);
 			MonGL::initQuad(&tree.data);
-			MonGL::loadTexture(&tree.data, shader.id, "res/textures/tree.png");
+			MonGL::loadTexture(&tree.data, MonGL::Type::Diffuse, shader.handle, "res/textures/tree.png");
 			tree.particle.pos = v3(6.0f * (i + 1), 6.80f, 5.5f * i);
 			entities.push_back(tree);
 		}
@@ -142,9 +144,10 @@ namespace Mon
 		for (int i = 0; i < 10; ++i)
 		{
 			Entity flower = {};
+			flower.setup = {};
 			flower.name = "flower_" + std::to_string(i);
 			MonGL::initQuad(&flower.data);
-			MonGL::loadTexture(&flower.data, shader.id, "res/textures/sflow_tall.png");
+			MonGL::loadTexture(&flower.data, MonGL::Type::Diffuse, shader.handle, "res/textures/sflow_tall.png");
 			flower.particle.pos = v3(10.0f, 0.1f, 6.0f);
 			
 			entities.push_back(flower);
@@ -153,6 +156,7 @@ namespace Mon
 		for (int i = 0; i < 4; ++i)
 		{
 			Entity entity = {};
+			entity.setup = {};
 			entity.name = "enemy_" + std::to_string(i);
 			MonGL::initBoundingBox(&entity.colliderData);
 			entity.particle.pos = v3((8.0f * (i + 1)), 0.1f, 1.5f * i);
@@ -171,11 +175,13 @@ namespace Mon
 
 
 		water = {};
-		MonGL::initQuad(&water.data);
-		MonGL::loadTexture(&water.data, shader.id, "res/textures/water/uv.png");
-		MonGL::initBoundingBox(&water.colliderData);
-		water.particle.pos = v3(40.0f, 0.1f, 10.0);
-		water.particle.orientation = v3(1.0f, 1.0f, 1.0);
+		MonGL::initDistortedWater(&water.data, &water.setup);
+		//MonGL::initDistortedWater(water.data, wa)
+		//MonGL::initQuad(&water.data);
+		//MonGL::loadTexture(&water.data, MonGL::Type::Diffuse, shader.handle, "res/textures/water/uv.png");
+		//MonGL::initBoundingBox(&water.colliderData);
+		//water.particle.pos = v3(40.0f, 0.1f, 10.0);
+		//water.particle.orientation = v3(1.0f, 1.0f, 1.0);
 
 		// TODO(ck): Memory Allocation
 		terrain = new Terrain(0, 0);
@@ -314,35 +320,35 @@ namespace Mon
 		mat4 proj = cam.projection();
 		mat4 view = cam.viewMatrix();
 
-		MonGL::beginRender(config, proj, view, shader.id);
+		MonGL::beginRender(config, proj, view, shader.handle);
 
-		MonGL::drawTerrain(shader.id, &terrain->mesh, &light, proj, view, cam.pos);
+		MonGL::drawTerrain(shader.handle, &terrain->mesh, &light, proj, view, cam.pos);
 
 		// TODO(ck): use shader
-		glUseProgram(shader.id);
+		glUseProgram(shader.handle);
 		// light & material
-		glUniform3fv(glGetUniformLocation(shader.id, "light.pos"), 1, &light.pos[0]);
-		glUniform3fv(glGetUniformLocation(shader.id, "light.ambient"), 1, &light.ambient[0]);
-		glUniform3fv(glGetUniformLocation(shader.id, "light.diffuse"), 1, &light.diffuse[0]);
-		glUniform3fv(glGetUniformLocation(shader.id, "light.specular"), 1, &light.specular[0]);
+		glUniform3fv(glGetUniformLocation(shader.handle, "light.pos"), 1, &light.pos[0]);
+		glUniform3fv(glGetUniformLocation(shader.handle, "light.ambient"), 1, &light.ambient[0]);
+		glUniform3fv(glGetUniformLocation(shader.handle, "light.diffuse"), 1, &light.diffuse[0]);
+		glUniform3fv(glGetUniformLocation(shader.handle, "light.specular"), 1, &light.specular[0]);
 
 
 		if (drawCollisions)
-			MonGL::drawBoundingBox(&player.colliderData, player.particle.pos, cam.pos, proj, view, shader.id);
+			MonGL::drawBoundingBox(&player.colliderData, player.particle.pos, cam.pos, proj, view, shader.handle);
 
-		MonGL::drawQuad(config, &player.data, player.particle.pos, v3(1.0f), cam.pos, shader.id);
+		MonGL::drawQuad(config, &player.data, player.particle.pos, v3(1.0f), cam.pos, shader.handle);
 
 		for (auto& e : enemies)
 		{
-			MonGL::drawBoundingBox(&e.colliderData, e.particle.pos, cam.pos, proj, view, shader.id);
+			MonGL::drawBoundingBox(&e.colliderData, e.particle.pos, cam.pos, proj, view, shader.handle);
 		}
 		for (auto& e : entities)
 		{
 
-			MonGL::drawQuad(config, &e.data, e.particle.pos, v3(16.0f, 16.0f, 1.0f), cam.pos, shader.id);
+			MonGL::drawQuad(config, &e.data, e.particle.pos, v3(16.0f, 16.0f, 1.0f), cam.pos, shader.handle);
 		}
 		
-		MonGL::drawQuad(config, &water.data, water.particle.pos, v3(5.0f), cam.pos, shader.id);
+		//MonGL::drawQuad(config, &water.data, water.particle.pos, v3(5.0f), cam.pos, shader.handle);
 
 	}
 
@@ -392,7 +398,7 @@ namespace Mon
 		MonGL::LoadShader(&tileShader, "res/shaders/vert_tile.glsl", "res/shaders/frag_tile.glsl", NULL);
 
 		// Set up the shader locations for our objects
-		glUseProgram(shader.id);
+		glUseProgram(shader.handle);
 
 		// TODO(CK): CAMERA
 		// So let's say you want your pixel art scale 2:1
@@ -406,26 +412,26 @@ namespace Mon
 
 		mat4 projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
 
-		int imgLoc = glGetUniformLocation(shader.id, "image");
+		int imgLoc = glGetUniformLocation(shader.handle, "image");
 		glUniform1i(imgLoc, 0);
 
-		int projLoc = glGetUniformLocation(shader.id, "projection");
+		int projLoc = glGetUniformLocation(shader.handle, "projection");
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 
 		// TODO(ck): REMOVE TESTING TILE SHADER
-		glUseProgram(tileShader.id);
-		imgLoc = glGetUniformLocation(tileShader.id, "image");
+		glUseProgram(tileShader.handle);
+		imgLoc = glGetUniformLocation(tileShader.handle, "image");
 		glUniform1i(imgLoc, 0);
 
-		projLoc = glGetUniformLocation(tileShader.id, "projection");
+		projLoc = glGetUniformLocation(tileShader.handle, "projection");
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 		mat4 model = mat4(1.0f);
 		v3 pos = v3(0, 0, 1.0f);
 		model = glm::translate(model, pos);
 		model = glm::scale(model, v3(v2(32, 32), 1.0f));
-		glUniformMatrix4fv(glGetUniformLocation(tileShader.id, "model"), 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(glGetUniformLocation(tileShader.handle, "model"), 1, GL_FALSE, glm::value_ptr(model));
 
 
 
@@ -539,14 +545,14 @@ namespace Mon
 		//projection *= zoom;
 
 		// TEST DRAW
-		glUseProgram(tileShader.id);
-		int projLoc = glGetUniformLocation(tileShader.id, "projection");
+		glUseProgram(tileShader.handle);
+		int projLoc = glGetUniformLocation(tileShader.handle, "projection");
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 		MonGL::drawMap(&tileShader, world->sheet.texture.id);
 
-		glUseProgram(shader.id);
-		projLoc = glGetUniformLocation(shader.id, "projection");
+		glUseProgram(shader.handle);
+		projLoc = glGetUniformLocation(shader.handle, "projection");
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 		for (unsigned int i = 0; i < world->entities.size(); ++i)

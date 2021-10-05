@@ -36,8 +36,9 @@ namespace MonGL
 	}
 
 	// Generates the texture as well
-	void LoadTextureFile(Texture* texture, const char* file, bool alpha, bool flip, bool pixelArtTexture)
+	void LoadTextureFile(Texture* texture, const char* file, Type type, bool alpha, bool flip, bool pixelArtTexture)
 	{
+		texture->type = type;
 		// TODO(CK): Clean up
 		// set wrap and filter here for now same with internal formats
 		if (pixelArtTexture == false)

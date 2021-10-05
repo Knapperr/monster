@@ -6,10 +6,10 @@ namespace Mon
 	{
 
 		// TODO(ck): MEMORY MANAGEMENT - Efficient tile map creation
+		// TODO(ck): Move all of this into the initTileMap
 		map = new TileMap();
 		sheet = {};
-		initTileSheet(&sheet, "res/textures/basic_16.png");
-
+		initTileSheet(&sheet, "res/textures/overworld_tiles.png");
 		initTileMap(map, &sheet);
 		MonGL::initTileMap(map->tiles.size());
 
@@ -19,6 +19,7 @@ namespace Mon
 		}
 
 		MonGL::bindVertices();
+		// ------------------------------------------------------------------
 
 		// TODO(ck): Memory management
 		player = new Entity2D();

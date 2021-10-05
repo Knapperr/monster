@@ -58,11 +58,11 @@ namespace MonGL
 
 	}
 
-	void loadTexture(RenderData* data, int shaderID, std::string path)
+	void loadTexture(RenderData* data, Type type, int shaderID, std::string path)
 	{
 		data->texturePath = path;
 		Texture text = {};
-		LoadTextureFile(&text, path.c_str(), false, true, true);
+		LoadTextureFile(&text, path.c_str(), type, false,  true, true);
 		data->textures.push_back(text);
 		data->selectedTexture = 0;
 		glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
@@ -181,7 +181,7 @@ namespace MonGL
 	}
 
 
-	void initDistortedWater(RenderData* renderData, WaterDataProgram* waterData)
+	void initDistortedWater(RenderData* renderData, RenderSetup* setup)
 	{
 		/*
 		TODO(ck): Can I have some kind of uniform structure. 
@@ -195,36 +195,40 @@ namespace MonGL
 		// Create a quad first
 		initQuad(renderData);
 
-		waterData->tiling = 5.0f;
-		waterData->speed = 0.3f;
-		waterData->flowStrength = 0.05f;
-		waterData->flowOffset = -0.23f;
-		waterData->heightScale = 0.1f;
-		waterData->heightScaleModulated = 8.0f;
+		setup->tiling = 5.0f;
+		setup->speed = 0.3f;
+		setup->flowStrength = 0.05f;
+		setup->flowOffset = -0.23f;
+		setup->heightScale = 0.1f;
+		setup->heightScaleModulated = 8.0f;
 
 		// CREATE A BASIC SHAPE LOADER replace ASSIMP
 		// WE WILL HAVE TO PUSH THIS TEXTURE TO THE TEXUTES OF THE QUAD 
 		// IN model.h
 		// data->texturePath = texturePath;
+
+		// type = "texture_diffuse"
 		std::string path = "res/textures/water/water.png";
 		Texture uv = {};
-		LoadTextureFile(&uv, path.c_str(), false, true, false);
+		LoadTextureFile(&uv, path.c_str(), Type::Diffuse, false, true, false);
 		renderData->textures.push_back(uv);
 
+		// type = "texture_normal"
 		path = "res/textures/water/flow-speed-noise.png";
 		Texture flow = {};
-		LoadTextureFile(&flow, path.c_str(), false, true, false);
+		LoadTextureFile(&flow, path.c_str(), Type::Normal, false, true, false);
 		renderData->textures.push_back(flow);
 
+		// type = "texture_normal"
 		path = "res/textures/water/water-derivative-height.png";
 		Texture normal = {};
-		LoadTextureFile(&normal, path.c_str(), false, true, false);
+		LoadTextureFile(&normal, path.c_str(), Type::Normal, false, true, false);
 		renderData->textures.push_back(normal);
 	}
 
 
 
-	void drawWater(RenderData* data, WaterDataProgram* waterData, v3 pos, v3 scale, v3 camPos, unsigned int shaderID)
+	void drawWater(RenderData* data, RenderSetup* setup, WaterDataProgram* waterData, Light* light, v3 pos, v3 scale, v3 camPos, unsigned int shaderID)
 	{
 
 		// ==============================================================================
@@ -235,9 +239,6 @@ namespace MonGL
 
 		// TODO(ck): Move to begin render. MonGL::beginRender(&cam);
 
-		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), true);
-		
-
 		unsigned int diffuseNr = 1;
 		unsigned int specularNr = 1;
 		unsigned int normalNr = 1;
@@ -245,44 +246,51 @@ namespace MonGL
 
 		// Textures
 		// ==================================================================================
-		//for (unsigned int j = 0; j < water->model->meshes[i].textures.size(); ++j)
-		//{
-		//	glActiveTexture(GL_TEXTURE0 + j); // activate the proper texture unit before binding
+		for (unsigned int i = 0; i < data->textures.size(); ++i)
+		{
+			glActiveTexture(GL_TEXTURE0 + i); // activate the proper texture unit before binding
 		//	// retrieve texture number (the N in diffuse_TextureN)
-		//	std::string number;
-		//	std::string name = water->model->meshes[i].textures[j].type;
+			std::string number;
+			switch (data->textures[i].type)
+			{
+			case Type::Diffuse:
+				number = std::to_string(diffuseNr++);
+				break;
+			case Type::Specular:
+				number = std::to_string(specularNr++);
+				break;
+			case Type::Normal:
+				number = std::to_string(normalNr++);
+				break;
+			case Type::Height:
+				number = std::to_string(heightNr++);
+			default:
+				number = std::to_string(diffuseNr++);
+				break;
+			}
 
-		//	if (name == "texture_diffuse")
-		//		number = std::to_string(diffuseNr++);
-		//	else if (name == "texture_specular")
-		//		number = std::to_string(specularNr++);
-		//	else if (name == "texture_normal")
-		//		number = std::to_string(normalNr++);
-		//	else if (name == "texture_height")
-		//		number = std::to_string(heightNr++);
-
-		//	// now set the sampler to the correct texture unit
-		//	glUniform1i(glGetUniformLocation(waterShader->id, (name + number).c_str()), j);
-		//	// and finally bind the texture		
-		//	glBindTexture(GL_TEXTURE_2D, water->model->meshes[i].textures[j].id);
-		//}
+			std::string name = "texture_" + std::to_string(data->textures[i].type);
+			// now set the sampler to the correct texture unit
+			glUniform1i(glGetUniformLocation(shaderID, (name + number).c_str()), i);
+			// and finally bind the texture		
+			glBindTexture(GL_TEXTURE_2D, data->textures[i].id);
+		}
 
 		// ==================================================================================
 
 		//glUniform1f(GetLoc(waterShader, "time"), (float)glfwGetTime());
-		//glUniform3fv(GetLoc(waterShader, "lightPos"), 1, &g_lamp[0]);
+		glUniform3fv(glGetUniformLocation(shaderID, "lightPos"), 1, &light->pos[0]);
 		glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camPos[0]);
-		//glUniform3fv(GetLoc(waterShader, "viewPos"), 1, &camPos[0]);
 
 		glUniform1f(glGetUniformLocation(shaderID, "uJump"), 0.25f);	// water->uJump
 		glUniform1f(glGetUniformLocation(shaderID, "vJump"), 0.25f);	// water->vJump
-		glUniform1f(glGetUniformLocation(shaderID, "tiling"), 5.0f);	// water->tiling
-		glUniform1f(glGetUniformLocation(shaderID, "speed"), 0.3f);	// water->speed 
-		glUniform1f(glGetUniformLocation(shaderID, "flowStrength"), 0.05f); // water->flowStrength
-		glUniform1f(glGetUniformLocation(shaderID, "flowOffset"), -0.23f);	// water->flowOffset
-		glUniform1f(glGetUniformLocation(shaderID, "heightScale"), 0.10f);	// water->heightScale
-		glUniform1f(glGetUniformLocation(shaderID, "heightScaleModulated"), 8.0f); // water->heightScaleModulated
-		glUniform1f(glGetUniformLocation(shaderID, "waveLength"), 12.0f);	//  water->waveLength
+		glUniform1f(glGetUniformLocation(shaderID, "tiling"), waterData->tiling);	// water->tiling
+		glUniform1f(glGetUniformLocation(shaderID, "speed"), waterData->speed);	// water->speed 
+		glUniform1f(glGetUniformLocation(shaderID, "flowStrength"), waterData->flowStrength); // water->flowStrength
+		glUniform1f(glGetUniformLocation(shaderID, "flowOffset"), waterData->flowOffset);	// water->flowOffset
+		glUniform1f(glGetUniformLocation(shaderID, "heightScale"), waterData->heightScale);	// water->heightScale
+		glUniform1f(glGetUniformLocation(shaderID, "heightScaleModulated"), waterData->heightScaleModulated); // water->heightScaleModulated
+		//glUniform1f(glGetUniformLocation(shaderID, "waveLength"), waterData->waveLength);	//  water->waveLength
 
 
 		glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
@@ -440,25 +448,22 @@ namespace MonGL
 		*/
 		Texture text = {};
 		data->textures.push_back(text);
-		LoadTextureFile(&data->textures[0], textPath.c_str(), false, false, false);
+		LoadTextureFile(&data->textures[0], textPath.c_str(), Type::Diffuse, false, false, false);
 
 		textPath = "res/textures/terrain/grass.jpg";
-		textDir = textPath.substr(0, textPath.find_last_of('/'));
 		Texture text1 = {};
 		data->textures.push_back(text1);
-		LoadTextureFile(&data->textures[1], textPath.c_str(), false, false, false);
+		LoadTextureFile(&data->textures[1], textPath.c_str(), Type::Diffuse, false, false, false);
 
 		textPath = "res/textures/terrain/pix_grass.png";
-		textDir = textPath.substr(0, textPath.find_last_of('/'));
 		Texture text2 = {};
 		data->textures.push_back(text2);
-		LoadTextureFile(&data->textures[2], textPath.c_str(), false, false, false);
+		LoadTextureFile(&data->textures[2], textPath.c_str(), Type::Diffuse, false, false, false);
 
 		textPath = "res/textures/terrain/snow.jpg";
-		textDir = textPath.substr(0, textPath.find_last_of('/'));
 		Texture text3 = {};
 		data->textures.push_back(text3);
-		LoadTextureFile(&data->textures[3], textPath.c_str(), false, false, false);
+		LoadTextureFile(&data->textures[3], textPath.c_str(), Type::Diffuse, false, false, false);
 	}
 
 	void drawTerrain(unsigned int shaderID, RenderData* data, Light* light, mat4 projection, mat4 view, v3 camPos)
@@ -724,7 +729,7 @@ namespace MonGL
 		//_lastVertex = vVertices[vVertices.size() - 1];
 	}
 
-	void drawMap(Shader* shader, unsigned int textureID)
+	void drawMap(CommonProgram* shader, unsigned int textureID)
 	{
 		//glUseProgram(shader->id);
 
@@ -732,7 +737,7 @@ namespace MonGL
 		// IMPORTANT(ck):
 		// NOTE(ck): the reason why you set it to 0 is because thats the base texture slot
 		// its not expecting the textureID thats only for binding
-		glUniform1i(glGetUniformLocation(shader->id, "image"), 0);
+		glUniform1i(glGetUniformLocation(shader->handle, "image"), 0);
 		glBindTexture(GL_TEXTURE_2D, textureID);
 
 		glBindVertexArray(batch->VAO);
@@ -745,7 +750,7 @@ namespace MonGL
 		//_config.iPriority = 0;
 	}
 
-	void drawObject(Shader* shader, RenderData2D* data)
+	void drawObject(CommonProgram* shader, RenderData2D* data)
 	{
 		//glUseProgram(shader->id);
 
@@ -764,11 +769,11 @@ namespace MonGL
 
 		model = glm::scale(model, v3(data->size, 1.0f));
 
-		glUniformMatrix4fv(glGetUniformLocation(shader->id, "model"), 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(glGetUniformLocation(shader->handle, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		
-		glUniform3f(glGetUniformLocation(shader->id, "spriteColor"), data->color.r, data->color.g, data->color.b);
-		glUniform1i(glGetUniformLocation(shader->id, "useTexture"), true);
-		glUniform1i(glGetUniformLocation(shader->id, "pixelTexture"), true);
+		glUniform3f(glGetUniformLocation(shader->handle, "spriteColor"), data->color.r, data->color.g, data->color.b);
+		glUniform1i(glGetUniformLocation(shader->handle, "useTexture"), true);
+		glUniform1i(glGetUniformLocation(shader->handle, "pixelTexture"), true);
 
 		//glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, data->texture.id);

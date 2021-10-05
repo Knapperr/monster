@@ -18,7 +18,7 @@ namespace MonGL
 		return result;
 	}
 
-	void Compile(Shader* shader, const char* vertexSource, const char* fragmentSource, const char* geometrySource)
+	void Compile(CommonProgram* program, const char* vertexSource, const char* fragmentSource, const char* geometrySource)
 	{
 		unsigned int sVertex, sFragment, sGeometry;
 
@@ -28,17 +28,17 @@ namespace MonGL
 			sGeometry = CompileShader(geometrySource, GL_GEOMETRY_SHADER);
 
 		// Shader program
-		shader->id = glCreateProgram();
-		glAttachShader(shader->id, sVertex);
-		glAttachShader(shader->id, sFragment);
+		program->handle = glCreateProgram();
+		glAttachShader(program->handle, sVertex);
+		glAttachShader(program->handle, sFragment);
 
 		if (geometrySource != nullptr)
 		{
-			glAttachShader(shader->id, sGeometry);
+			glAttachShader(program->handle, sGeometry);
 		}
 
-		glLinkProgram(shader->id);
-		CheckCompileErrors(shader->id, ERROR_TYPE::PROGRAM);
+		glLinkProgram(program->handle);
+		CheckCompileErrors(program->handle, ERROR_TYPE::PROGRAM);
 
 		glDeleteShader(sVertex);
 		glDeleteShader(sFragment);
@@ -48,7 +48,7 @@ namespace MonGL
 		}
 	}
 
-	void LoadShader(Shader* shader, const char* vertexFile, const char* fragmentFile, const char* geometryFile)
+	void LoadShader(CommonProgram* program, const char* vertexFile, const char* fragmentFile, const char* geometryFile)
 	{
 		std::string vertexCode;
 		std::string fragmentCode;
@@ -90,7 +90,7 @@ namespace MonGL
 		const char* fShaderCode = fragmentCode.c_str();
 		const char* gShaderCode = geometryCode.c_str();
 
-		Compile(shader, vShaderCode, fShaderCode, geometryFile != nullptr ? gShaderCode : nullptr);
+		Compile(program, vShaderCode, fShaderCode, geometryFile != nullptr ? gShaderCode : nullptr);
 	}
 
 	void CheckCompileErrors(unsigned int object, ERROR_TYPE type)
@@ -121,8 +121,8 @@ namespace MonGL
 		}
 	}
 
-	void DeleteShader(Shader* shader)
+	void DeleteShader(CommonProgram* program)
 	{
-		glDeleteProgram(shader->id);
+		glDeleteProgram(program->handle);
 	}
 }

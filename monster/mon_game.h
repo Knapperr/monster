@@ -114,6 +114,7 @@ namespace Mon
 		std::string name;
 		Particle particle;
 		MonGL::RenderData data;
+		MonGL::RenderSetup setup;
 		MonGL::RenderData colliderData;
 		
 	};
@@ -160,6 +161,7 @@ namespace Mon
 		//EntityTwo* entites;
 		Entity player;
 		Entity water;
+		MonGL::WaterDataProgram waterProgram;
 		std::vector<Entity> entities;
 		std::vector<Entity> enemies;
 		bool simulate;
@@ -175,9 +177,9 @@ namespace Mon
 		// TODO(ck): 
 		// Shader lives in the opengl renderer
 		// Need a shader store or something
-		MonGL::Shader shader;
-		MonGL::Shader waterShader;
-		MonGL::Shader tileShader;
+		MonGL::CommonProgram shader;
+		MonGL::WaterDataProgram waterShader;
+		MonGL::CommonProgram tileShader;
 
 		double deltaTime;
 		MonGL::Light light;

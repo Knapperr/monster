@@ -5,6 +5,14 @@
 
 namespace MonGL
 {
+	enum Type
+	{
+		Diffuse,
+		Normal,
+		Specular,
+		Height
+	};
+
 	struct Texture
 	{
 		// id of texture object
@@ -21,9 +29,11 @@ namespace MonGL
 		unsigned int wrapT;
 		unsigned int filterMin;
 		unsigned int filterMax;
+
+		Type type;
 	};
 
-	void LoadTextureFile(Texture* texture, const char* file, bool alpha, bool flip, bool pixelArtTexture = false);
+	void LoadTextureFile(Texture* texture, const char* file, Type type, bool alpha, bool flip, bool pixelArtTexture = false);
 
 
 }

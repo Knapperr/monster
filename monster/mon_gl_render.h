@@ -53,6 +53,14 @@ namespace MonGL
 		v2 texCoords;
 	};
 
+	// TODO(ck): RenderData is the entities draw data I can
+	// probably get rid of it and have an openGL struct that has the VAO, VBO, IBO 
+	// inside of it. this is holding our textures and stuff i guess that would be part
+	// of the entity?
+	// I guess the opengl struct even keeps the textures and stuff in it too its controlling
+	// and doing everything.
+
+	// for now we need the RenderData to hold our vertices and textures though.
 	struct RenderData
 	{
 		std::vector<Vertex3D> vertices;
@@ -82,14 +90,34 @@ namespace MonGL
 		// shader data?
 	};
 
-	struct CommonProgram
-	{
-		// uniforms for basic shader
-	};
+	//struct render_setup
+	//{
+	//	rectangle2 ClipRect;
+	//	u32 RenderTargetIndex;
+	//	m4x4 Proj;
+	//	v3 CameraP;
+	//	v3 FogDirection;
+	//	v3 FogColor;
+	//	f32 FogStartDistance;
+	//	f32 FogEndDistance;
+	//	f32 ClipAlphaStartDistance;
+	//	f32 ClipAlphaEndDistance;
+	//};
 
-	// TODO(ck): Match struct in the shader also make a 
-	struct WaterDataProgram
+	// TODO(ck): So basically this is going to replace RenderData in a sense.
+	// for now we need the RenderData to hold our vertices and textures though.
+	struct RenderSetup
 	{
+		/*
+			model ??? 
+			viewPosition,
+			cameraPosition,
+
+			
+		
+		*/
+
+		// Water Data
 		float tiling;
 		float speed;
 		float flowStrength;
@@ -125,13 +153,13 @@ namespace MonGL
 	void beginRender(Config* config, mat4 projection, mat4 view, int shaderID);
 	void viewPort(Rect* port);
 	void initQuad(RenderData* data);
-	void loadTexture(RenderData* data, int shaderID, std::string path);
+	void loadTexture(RenderData* data, Type type, int shaderID, std::string path);
 	void initBoundingBox(RenderData* data);
 	void drawQuad(Config* config, RenderData* data,
 						 v3 playerPos, v3 scale, v3 camPos,
 						 unsigned int shaderID);
-	void initDistortedWater(RenderData* renderData, WaterDataProgram* waterData);
-	void drawWater(RenderData* data, WaterDataProgram* waterData, v3 pos, v3 scale, v3 camPos, unsigned int shaderID);
+	void initDistortedWater(RenderData* renderData, RenderSetup* setup);
+	void drawWater(RenderData* data, RenderSetup* setup, WaterDataProgram* waterData, Light* light, v3 pos, v3 scale, v3 camPos, unsigned int shaderID);
 	void drawBoundingBox(RenderData* data,
 					 v3 playerPos, v3 camPos,
 					 mat4 projection, mat4 view,
@@ -148,8 +176,8 @@ namespace MonGL
 	void fillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize);
 	void bindVertices();
 	
-	void drawObject(Shader* shader, RenderData2D* data);
-	void drawMap(Shader* shader, unsigned int textureID);
+	void drawObject(CommonProgram* shader, RenderData2D* data);
+	void drawMap(CommonProgram* shader, unsigned int textureID);
 
 
 }

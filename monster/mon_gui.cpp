@@ -54,7 +54,7 @@ void loadEntities(Mon::Game* game)
 		file >> textPath;
 
 		MonGL::initQuad(&e.data);
-		MonGL::loadTexture(&e.data, shaderID, textPath);
+		MonGL::loadTexture(&e.data, MonGL::Type::Diffuse, shaderID, textPath);
 		game->entities.push_back(e);
 
 	}
