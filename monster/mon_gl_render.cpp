@@ -210,19 +210,19 @@ namespace MonGL
 		// type = "texture_diffuse"
 		std::string path = "res/textures/water/water.png";
 		Texture uv = {};
-		LoadTextureFile(&uv, path.c_str(), Type::Diffuse, false, true, false);
+		LoadTextureFile(&uv, path.c_str(), Type::Diffuse, false, true);
 		renderData->textures.push_back(uv);
 
 		// type = "texture_normal"
 		path = "res/textures/water/flow-speed-noise.png";
 		Texture flow = {};
-		LoadTextureFile(&flow, path.c_str(), Type::Normal, false, true, false);
+		LoadTextureFile(&flow, path.c_str(), Type::Normal, false, true);
 		renderData->textures.push_back(flow);
 
 		// type = "texture_normal"
 		path = "res/textures/water/water-derivative-height.png";
 		Texture normal = {};
-		LoadTextureFile(&normal, path.c_str(), Type::Normal, false, true, false);
+		LoadTextureFile(&normal, path.c_str(), Type::Normal, false, true);
 		renderData->textures.push_back(normal);
 	}
 
@@ -251,25 +251,30 @@ namespace MonGL
 			glActiveTexture(GL_TEXTURE0 + i); // activate the proper texture unit before binding
 		//	// retrieve texture number (the N in diffuse_TextureN)
 			std::string number;
+			std::string name = "texture_";
 			switch (data->textures[i].type)
 			{
 			case Type::Diffuse:
 				number = std::to_string(diffuseNr++);
+				name += "diffuse";
 				break;
 			case Type::Specular:
 				number = std::to_string(specularNr++);
+				name += "specular";
 				break;
 			case Type::Normal:
 				number = std::to_string(normalNr++);
+				name += "normal";
 				break;
 			case Type::Height:
 				number = std::to_string(heightNr++);
+				name += "height";
 			default:
 				number = std::to_string(diffuseNr++);
+				name += "diffuse";
 				break;
 			}
 
-			std::string name = "texture_" + std::to_string(data->textures[i].type);
 			// now set the sampler to the correct texture unit
 			glUniform1i(glGetUniformLocation(shaderID, (name + number).c_str()), i);
 			// and finally bind the texture		

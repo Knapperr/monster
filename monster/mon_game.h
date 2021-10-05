@@ -161,7 +161,6 @@ namespace Mon
 		//EntityTwo* entites;
 		Entity player;
 		Entity water;
-		MonGL::WaterDataProgram waterProgram;
 		std::vector<Entity> entities;
 		std::vector<Entity> enemies;
 		bool simulate;

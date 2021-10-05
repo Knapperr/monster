@@ -348,6 +348,7 @@ namespace Mon
 			MonGL::drawQuad(config, &e.data, e.particle.pos, v3(16.0f, 16.0f, 1.0f), cam.pos, shader.handle);
 		}
 		
+		MonGL::drawWater(&water.data, &water.setup, &waterShader, &light, water.particle.pos, v3(10.0f), cam.pos, waterShader.common.handle);
 		//MonGL::drawQuad(config, &water.data, water.particle.pos, v3(5.0f), cam.pos, shader.handle);
 
 	}
