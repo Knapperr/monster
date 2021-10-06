@@ -320,7 +320,10 @@ namespace Mon
 		mat4 proj = cam.projection();
 		mat4 view = cam.viewMatrix();
 
+		// TODO(ck): pass all shaders to beginRender or they live in the opengl layer and get
+		// activated that way
 		MonGL::beginRender(config, proj, view, shader.handle);
+		MonGL::beginRender(config, proj, view, waterShader.common.handle);
 
 		MonGL::drawTerrain(shader.handle, &terrain->mesh, &light, proj, view, cam.pos);
 
@@ -348,6 +351,7 @@ namespace Mon
 			MonGL::drawQuad(config, &e.data, e.particle.pos, v3(16.0f, 16.0f, 1.0f), cam.pos, shader.handle);
 		}
 		
+		glUseProgram(waterShader.common.handle);
 		MonGL::drawWater(&water.data, &water.setup, &waterShader, &light, water.particle.pos, v3(10.0f), cam.pos, waterShader.common.handle);
 		//MonGL::drawQuad(config, &water.data, water.particle.pos, v3(5.0f), cam.pos, shader.handle);
 

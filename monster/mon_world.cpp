@@ -43,6 +43,11 @@ namespace Mon
 		Entity2D* house = new Entity2D();
 		initEntity(house, "res/textures/acorn_house.png", true, v2(100.0f, 100.0f));
 		entities.push_back(house);
+
+		Entity2D* partner = new Entity2D();
+		initEntity(partner, "res/textures/sRansome.png", true, v2(20.0f, 20.0f));
+		entities.push_back(partner);
+
 	}
 
 	World::~World()

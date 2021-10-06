@@ -53,6 +53,9 @@ namespace MonGL
 		glEnableVertexAttribArray(2);
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, texCoords));
 
+		/*layout(location = 3) in vec3 aTangent;
+		layout(location = 4) in vec3 aBitangent;*/
+
 		// unbind
 		glBindVertexArray(0);
 
@@ -137,6 +140,51 @@ namespace MonGL
 
 	}
 
+	void initDistortedWater(RenderData* renderData, RenderSetup* setup)
+	{
+		/*
+		TODO(ck): Can I have some kind of uniform structure.
+			I dont think I need a uniform abstract. It looks like in handmade hero in
+			handmade_renderer_opengl.cpp / .h
+			that you use a program.. I'll have to research this because it looks like they
+			hold all of the uniforms and data its just a matching struct to the shader im assuming
+			casey doesn't use any inheritance he just has struct opengl_program_common
+		*/
+
+		// Create a quad first
+		initQuad(renderData);
+
+		setup->tiling = 5.0f;
+		setup->speed = 0.3f;
+		setup->flowStrength = 0.05f;
+		setup->flowOffset = -0.23f;
+		setup->heightScale = 0.1f;
+		setup->heightScaleModulated = 8.0f;
+
+		// CREATE A BASIC SHAPE LOADER replace ASSIMP
+		// WE WILL HAVE TO PUSH THIS TEXTURE TO THE TEXUTES OF THE QUAD 
+		// IN model.h
+		// data->texturePath = texturePath;
+
+		// type = "texture_diffuse"
+		std::string path = "res/textures/water/water.png";
+		Texture uv = {};
+		LoadTextureFile(&uv, path.c_str(), Type::Diffuse, false, true);
+		renderData->textures.push_back(uv);
+
+		// type = "texture_normal"
+		path = "res/textures/water/flow-speed-noise.png";
+		Texture flow = {};
+		LoadTextureFile(&flow, path.c_str(), Type::Normal, false, true);
+		renderData->textures.push_back(flow);
+
+		// type = "texture_normal"
+		path = "res/textures/water/water-derivative-height.png";
+		Texture normal = {};
+		LoadTextureFile(&normal, path.c_str(), Type::Normal, false, true);
+		renderData->textures.push_back(normal);
+	}
+
 	void beginRender(Config* config, mat4 projection, mat4 view, int shaderID)
 	{
 		MonGL::viewPort(&config->viewPort);
@@ -179,54 +227,6 @@ namespace MonGL
 		glBindVertexArray(data->VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	}
-
-
-	void initDistortedWater(RenderData* renderData, RenderSetup* setup)
-	{
-		/*
-		TODO(ck): Can I have some kind of uniform structure. 
-			I dont think I need a uniform abstract. It looks like in handmade hero in
-			handmade_renderer_opengl.cpp / .h 
-			that you use a program.. I'll have to research this because it looks like they
-			hold all of the uniforms and data its just a matching struct to the shader im assuming
-			casey doesn't use any inheritance he just has struct opengl_program_common
-		*/
-
-		// Create a quad first
-		initQuad(renderData);
-
-		setup->tiling = 5.0f;
-		setup->speed = 0.3f;
-		setup->flowStrength = 0.05f;
-		setup->flowOffset = -0.23f;
-		setup->heightScale = 0.1f;
-		setup->heightScaleModulated = 8.0f;
-
-		// CREATE A BASIC SHAPE LOADER replace ASSIMP
-		// WE WILL HAVE TO PUSH THIS TEXTURE TO THE TEXUTES OF THE QUAD 
-		// IN model.h
-		// data->texturePath = texturePath;
-
-		// type = "texture_diffuse"
-		std::string path = "res/textures/water/water.png";
-		Texture uv = {};
-		LoadTextureFile(&uv, path.c_str(), Type::Diffuse, false, true);
-		renderData->textures.push_back(uv);
-
-		// type = "texture_normal"
-		path = "res/textures/water/flow-speed-noise.png";
-		Texture flow = {};
-		LoadTextureFile(&flow, path.c_str(), Type::Normal, false, true);
-		renderData->textures.push_back(flow);
-
-		// type = "texture_normal"
-		path = "res/textures/water/water-derivative-height.png";
-		Texture normal = {};
-		LoadTextureFile(&normal, path.c_str(), Type::Normal, false, true);
-		renderData->textures.push_back(normal);
-	}
-
-
 
 	void drawWater(RenderData* data, RenderSetup* setup, WaterDataProgram* waterData, Light* light, v3 pos, v3 scale, v3 camPos, unsigned int shaderID)
 	{
@@ -297,9 +297,6 @@ namespace MonGL
 		glUniform1f(glGetUniformLocation(shaderID, "heightScaleModulated"), waterData->heightScaleModulated); // water->heightScaleModulated
 		//glUniform1f(glGetUniformLocation(shaderID, "waveLength"), waterData->waveLength);	//  water->waveLength
 
-
-		glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
-		glUniform1i(glGetUniformLocation(shaderID, "collider"), false);
 		// ==============================================================================
 
 		// TODO(ck): Does this happen at the end of update. the data gets its mat4 updated 

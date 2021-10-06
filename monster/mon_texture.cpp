@@ -13,7 +13,9 @@ namespace MonGL
 
 		texture->internalFormat = GL_RGB;
 		if (nrChannels == 1)
-			texture->internalFormat = GL_ALPHA;
+			texture->internalFormat = GL_RED;
+		else if (nrChannels == 2)
+			texture->internalFormat = GL_RG;
 		else if (nrChannels == 3)
 			texture->internalFormat = GL_RGB;
 		else if (nrChannels == 4)
@@ -21,17 +23,19 @@ namespace MonGL
 
 		texture->width = width;
 		texture->height = height;
+
 		// Create texture
 		glBindTexture(GL_TEXTURE_2D, texture->id);
 		glTexImage2D(GL_TEXTURE_2D, 0, texture->internalFormat, width, height, 0, texture->internalFormat, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
-		// Set Texture wrap and filter mnodes
+		// Set Texture wrap and filter modes
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, texture->wrapS);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, texture->wrapT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, texture->filterMin);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, texture->filterMax);
-		// Unbind texture
+
+		// unbind after using
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
@@ -43,35 +47,17 @@ namespace MonGL
 		// set wrap and filter here for now same with internal formats
 		if (pixelArtTexture == false)
 		{
-			texture->wrapS = GL_REPEAT; // GL_REPEAT was before
+			texture->wrapS = GL_REPEAT;
 			texture->wrapT = GL_REPEAT;
-			texture->filterMin = GL_LINEAR_MIPMAP_LINEAR; // GL_LINEAR was before
-			texture->filterMax = GL_LINEAR; // GL_LINEAR
-
-			// TODO(ck): REmove this its getting changed in Generate and its also not using ->imageFormat anymore
-			texture->internalFormat = GL_RGB;
-			texture->imageFormat = GL_RGB;
-			if (alpha)
-			{
-				texture->internalFormat = GL_RGBA;
-				texture->imageFormat = GL_RGBA;
-			}
+			texture->filterMin = GL_LINEAR_MIPMAP_LINEAR;
+			texture->filterMax = GL_LINEAR;
 		}
 		else
 		{
-			texture->wrapS = GL_CLAMP_TO_BORDER; // GL_REPEAT was before
+			texture->wrapS = GL_CLAMP_TO_BORDER;
 			texture->wrapT = GL_CLAMP_TO_BORDER;
 			texture->filterMin = GL_NEAREST;
 			texture->filterMax = GL_NEAREST;
-
-			// TODO(ck): REmove this its getting changed in Generate and its also not using ->imageFormat anymore
-			texture->internalFormat = GL_RGB;
-			texture->imageFormat = GL_RGB;
-			if (alpha)
-			{
-				texture->internalFormat = GL_RGBA;
-				texture->imageFormat = GL_RGBA;
-			}
 		}
 
 		int nrChannels;
@@ -79,7 +65,7 @@ namespace MonGL
 		unsigned char* image = stbi_load(file, &texture->width, &texture->height, &nrChannels, 0);
 		if (image)
 		{
-			Generate2DTexture(texture, texture->width, texture->width, nrChannels, image);
+			Generate2DTexture(texture, texture->width, texture->height, nrChannels, image);
 		}
 		else
 		{

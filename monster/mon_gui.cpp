@@ -2,7 +2,7 @@
 
 #include <string>
 
-#define _3D_GUI_
+//#define _3D_GUI_
 
 // TODO(ck): Must switch Entity to plain array so i can save their memory to a file cant do it with vector
 // TODO(ck): open files with current platform layer
@@ -444,6 +444,7 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 			game->player.particle.pos.z = 10.0f;
 		}
 		ImGui::SliderFloat("speed", &game->player.particle.speed, 0.0f, 100.0f);
+		ImGui::SliderFloat3("lightpos", &game->light.pos[0], 0.0f, 500.0f);
 		ImGui::SliderFloat3("color", &game->player.colliderData.color[0], 0.0f, 1.0f);
 		ImGui::SliderFloat3("min", &game->player.colliderData.size.min[0], 0.0f, 50.0f);
 		ImGui::SliderFloat3("max", &game->player.colliderData.size.max[0], 0.0f, 50.0f);

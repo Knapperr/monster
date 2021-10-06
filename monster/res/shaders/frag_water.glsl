@@ -71,8 +71,8 @@ void main()
     vec3 uvwB = FlowUVW(fs_in.TexCoords, flow.xy, jump, flowOffset, tiling, newTime, true);
 
     // NOTE(CK): Using single channel (GL_RED) have to fill the remaining channels with rrrr
-    vec4 texA = texture2D(texture_diffuse1, uvwA.xy).aaaa * uvwA.z;
-    vec4 texB = texture2D(texture_diffuse1, uvwB.xy).aaaa * uvwB.z;
+    vec4 texA = texture2D(texture_diffuse1, uvwA.xy).rrrr * uvwA.z;
+    vec4 texB = texture2D(texture_diffuse1, uvwB.xy).rrrr * uvwB.z;
 
     vec4 _color = vec4(0.3, 0.6, 0.8, 1.0);
     // NOTE(CK): This is the diffuse colour for the normals
