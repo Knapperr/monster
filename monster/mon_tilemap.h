@@ -86,6 +86,8 @@ namespace Mon
 		//MonGL::BatchData* batch;
 		std::vector<Tile> tiles;
 		float tileSideInMeters;
+		float metersToPixels;
+		int tileSideInPixels;
 	};
 
 	void initTileMap(TileMap* map, TileSheet* sheet);

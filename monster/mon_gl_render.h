@@ -51,6 +51,8 @@ namespace MonGL
 		v3 position;
 		v3 normal;
 		v2 texCoords;
+		v3 tangent;
+		v3 bitangent;
 	};
 
 	// TODO(ck): RenderData is the entities draw data I can
@@ -83,7 +85,6 @@ namespace MonGL
 		mat4 worldMatrix;
 		// TODO(ck): More collider specific info
 
-		ColliderSize size;
 		//float pos;
 		// view 
 		// projection
@@ -144,7 +145,8 @@ namespace MonGL
 		Texture texture;
 		unsigned int VAO;
 		unsigned int VBO;
-		Point pos;
+		//Point pos;
+		v2 pos;
 		v3 color;
 		v2 size;
 		bool wireFrame;
@@ -152,15 +154,16 @@ namespace MonGL
 
 	void beginRender(Config* config, mat4 projection, mat4 view, int shaderID);
 	void viewPort(Rect* port);
-	void initQuad(RenderData* data);
+	void initQuad(RenderData* data, bool tangents = false);
 	void loadTexture(RenderData* data, Type type, int shaderID, std::string path);
-	void initBoundingBox(RenderData* data);
+	void initBoundingBox(RenderData* data, ColliderSize* size);
 	void drawQuad(Config* config, RenderData* data,
 						 v3 playerPos, v3 scale, v3 camPos,
-						 unsigned int shaderID);
+						 unsigned int shaderID, int selectedTexture = 0);
 	void initDistortedWater(RenderData* renderData, RenderSetup* setup);
 	void drawWater(RenderData* data, RenderSetup* setup, WaterDataProgram* waterData, Light* light, v3 pos, v3 scale, v3 camPos, unsigned int shaderID);
 	void drawBoundingBox(RenderData* data,
+						 ColliderSize size,
 					 v3 playerPos, v3 camPos,
 					 mat4 projection, mat4 view,
 					 unsigned int shaderID);

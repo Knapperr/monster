@@ -75,6 +75,9 @@ namespace Mon
 	void initTileMap(TileMap* map, TileSheet* sheet)
 	{
 		map->tileSideInMeters = 1.6f;
+		map->tileSideInPixels = 60;
+		map->metersToPixels = (float)map->tileSideInPixels / (float)map->tileSideInMeters;
+
 
 		// NOTE(ck): Sheet must be created first
 #define MAP_SIZE 40
@@ -138,8 +141,8 @@ namespace Mon
 			for (int x = 0; x < MAP_SIZE; ++x)
 			{
 				// this gets the x and y position for the vertice since its screenpos
-				// x = screenX * tilesPerWidth + tileX;
-				// y = screenY * tilesPerHeight + tileY;
+				// absTileX = screenX * tilesPerWidth + tileX;
+				// absTileY = screenY * tilesPerHeight + tileY;
 
 
 				if (testmap[y][x] != 99)

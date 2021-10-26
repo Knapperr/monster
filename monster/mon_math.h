@@ -80,6 +80,13 @@ namespace Mon
 		int result = (int)roundf(real);
 		return result;
 	}
+
+	inline float absoluteValue(float real)
+	{
+		float result = (float)fabs(real);
+		return result;
+	}
+
 }
 
 #endif

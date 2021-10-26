@@ -1,5 +1,7 @@
 #include "sdl_platform.h"
 
+#include "mon_log.h"
+
 namespace Mon
 {
 	const int JOYSTICK_DEAD_ZONE = 7849;
@@ -41,7 +43,7 @@ namespace Mon
 		if (context == nullptr)
 			return false;
 
-		printf("Platform: SDL2\n");
+		Mon::Log::print("Platform: SDL2");
 		gladLoadGLLoader(SDL_GL_GetProcAddress);
 		printf("Vendor:   %s\n", glGetString(GL_VENDOR));
 		printf("Renderer: %s\n", glGetString(GL_RENDERER));

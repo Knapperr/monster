@@ -1,11 +1,12 @@
 #ifndef MON_TEXTURE_H
 #define MON_TEXTURE_H
 
+#include "mon_log.h"
 #include <string>
 
 namespace MonGL
 {
-	enum Type
+	enum class Type
 	{
 		Diffuse,
 		Normal,

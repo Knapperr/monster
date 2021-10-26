@@ -5,6 +5,8 @@
 
 #include <string>
 
+using namespace Mon;
+
 namespace MonGL
 {
 	void Generate2DTexture(Texture* texture, int width, int height, int nrChannels, unsigned char* data)
@@ -69,9 +71,10 @@ namespace MonGL
 		}
 		else
 		{
-			// TODO(ck): Logging
-			printf("Failed to load texture");
-			//std::cout << "Failed to load texture\n";
+			// TODO(ck): no strings
+			std::string fileString = file;
+			std::string msg = "failed to load texture: " + fileString;
+			Mon::Log::warn(msg.c_str());
 		}
 
 		stbi_image_free(image);

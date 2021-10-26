@@ -48,26 +48,30 @@ namespace Mon
 
 		*velocity *= p->speed;
 
-		*velocity += -5.0f * p->velocity;
+		*velocity += -3.0f * p->velocity;
 
-		TileMapPosition oldPlayerP = p->mapPos;
-		TileMapPosition newPlayerP = oldPlayerP;
+		//TileMapPosition oldPlayerP = p->mapPos;
+		//TileMapPosition newPlayerP = oldPlayerP;
 
-		//v2 oldPos = {};
+		v2 oldPos = p->pos;
 		//oldPos.x = p->position.x;
 		//oldPos.y = p->position.y;
-		//v2 newPos = oldPos;
+		
+		v2 newPos = oldPos;
 		float deltaX = (0.5f * velocity->x * square(deltaTime) + p->velocity.x * deltaTime);
 		float deltaY = (0.5f * velocity->y * square(deltaTime) + p->velocity.y * deltaTime);
 		v2 delta = { deltaX, deltaY };
 
 		// TODO(ck): need to set an offest like casey does
-		newPlayerP.offset += delta;
+		//newPlayerP.offset += delta;
+		newPos += delta;
+		
 		p->velocity.x = velocity->x * deltaTime + p->velocity.x;
 		p->velocity.y = velocity->y * deltaTime + p->velocity.y;
 
-		newPlayerP = RecanonicalizePosition(map, newPlayerP);
-		p->mapPos = newPlayerP;
+		p->pos = newPos;
+		//newPlayerP = RecanonicalizePosition(map, newPlayerP);
+		//p->mapPos = newPlayerP;
 
 		// TODO(ck): Remove this we will use tile map positions like handmade hero
 		// NOTE(ck): Get the remaining time 

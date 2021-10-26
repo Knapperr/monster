@@ -2,11 +2,9 @@
 #define GAME_H
 
 
-
-// TODO(ck): Glad and SDL should not be in the game layer
+// TODO(ck): Glad, SDL should not be in the game layer
 #include <glad/glad.h>
 #include <SDL/SDL.h>
-
 
 #include "mon_debug_camera.h"
 #include "mon_ortho_camera.h"
@@ -17,6 +15,8 @@
 #include "mon_terrain.h"
 #include "mon_gl_render.h"
 #include "mon_world.h"
+
+
 
 
 namespace Mon
@@ -109,14 +109,22 @@ namespace Mon
 
 	};
 
+	struct Collider
+	{
+		MonGL::RenderData data;
+		MonGL::ColliderSize size;
+	};
+
+
 	struct Entity
 	{
 		std::string name;
 		Particle particle;
 		MonGL::RenderData data;
 		MonGL::RenderSetup setup;
-		MonGL::RenderData colliderData;
+		Collider collider;
 		
+		int facingDir;
 	};
 
 	enum State
@@ -151,7 +159,7 @@ namespace Mon
 		World* world;
 		Terrain* terrain;
 
-		Camera cam;
+		Camera* cam;
 		OrthoCamera camera;
 		Input input;
 		

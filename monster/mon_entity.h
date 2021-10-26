@@ -30,10 +30,6 @@ namespace Mon
 		bool destroyed;
 
 		TileMapPosition mapPos;
-
-		// separate out 
-		Point position;
-		v2 remainder;
 	};
 
 	void initEntity(Entity2D* e, const char* fileLocation, bool isAlpha, v2 position);

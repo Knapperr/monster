@@ -93,6 +93,9 @@
     <ClCompile Include="mon_ortho_camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="mon_log.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mon_texture.h">
@@ -169,6 +172,9 @@
     </ClInclude>
     <ClInclude Include="mon_tilemap.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mon_log.h">
+      <Filter>Header Files\Engine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,6 +1,8 @@
 #include "mon_debug_camera.h"
 #include <iostream>
 
+#include "mon_log.h"
+
 namespace Mon
 {
 	Camera::Camera()
@@ -26,12 +28,43 @@ namespace Mon
 		lerpSpeed = 7.0f;
 		follow = false;
 
+		aspectRatio = 0;
+		Mon::Log::warn("aspect ratio set to 0");
+
+		calculateCameraVectors();
+	}
+
+	Camera::Camera(Rect viewPort)
+	{
+		worldUp = v3(0.0f, 1.0f, 0.0f);
+
+		pos = v3(29.0f, 17.0f, 46.0f);
+		front = v3(0.0f, 0.0f, -1.0f);
+
+		//direction = glm::normalize(pos - target);
+		//right = v3(1.0f);
+		//up = glm::cross(direction, right);
+		speed = 30.0f;
+		yaw = 0.0f;
+		pitch = -34.0f;
+		zoom = 40.0f;
+
+		nearPlane = 0.1f;
+		farPlane = 1000.0f;
+
+		distanceFromTarget = 10.0f;
+		angleAroundTarget = 180.0f;
+		lerpSpeed = 7.0f;
+		follow = false;
+
+		aspectRatio = viewPort.w / viewPort.h;
+
 		calculateCameraVectors();
 	}
 
 	mat4 Camera::projection()
 	{
-		return glm::perspective(glm::radians(zoom), 960.0f / 540.0f, nearPlane, farPlane);
+		return glm::perspective(glm::radians(zoom), aspectRatio, nearPlane, farPlane);
 	}
 
 	mat4 Camera::viewMatrix()
@@ -82,6 +115,11 @@ namespace Mon
 		pos.x = lerp(pos.x, lerpSpeed * dt, tPos.x - offsetx);
 		pos.z = lerp(pos.z, lerpSpeed * dt, tPos.z - offsetz);
 		pos.y = lerp(pos.y, lerpSpeed * dt, (tPos.y + verticalDistance) + offsety); // need some kind of offset for the target so the camera doesn't point at the floor
+
+		//pos.x = tPos.x - offsetx;
+		//pos.z = tPos.z - offsetz;
+		//pos.y = (tPos.y + verticalDistance) + offsety;
+
 		yaw = 180 - (glm::radians(tOrientation.y) + angleAroundTarget);
 	}
 
@@ -149,7 +187,8 @@ namespace Mon
 
 		float velocity = speed * (float)dt;
 
-		if (input->rMouseBtn.endedDown) {
+		if (input->rMouseBtn.endedDown) 
+		{
 			pos += front * velocity;
 		}
 
@@ -202,8 +241,6 @@ namespace Mon
 		yaw = 0.0f;
 		pitch = 40.0f;
 		front = v3(0.0f, 0.0f, -1.0f);
-
-		
 	}
 
 	void Camera::followOff()

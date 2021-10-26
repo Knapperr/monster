@@ -9,6 +9,7 @@ namespace Mon
 	{
 	public:
 		Camera();
+		Camera(Rect viewPort);
 		void update(double dt, Input* input, v3 pos, v3 orientation, bool constrainPitch = true);
 		void move(v3 tPos, v3 tOrientation, float dt);
 		void followOn();
@@ -30,6 +31,7 @@ namespace Mon
 		float pitch;
 		float angleAroundTarget;
 		float lerpSpeed;
+		float aspectRatio;
 
 		v3 lastDebugPos;
 		v3 lastDebugFront;

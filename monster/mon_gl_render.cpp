@@ -19,12 +19,43 @@ namespace MonGL
 		return translate(mat4(1), GetCenter(size)) * scale(mat4(1), GetSize(size));
 	}
 
-	void initQuad(RenderData* data)
+	void initQuad(RenderData* data, bool tangents)
 	{
 		data->vertices.push_back({ v3(0.5f, 0.5f, 0.0f), v3(1.0f, 1.0f, 1.0f), v2(1.0f, 1.0f) });
 		data->vertices.push_back({ v3(0.5f, -0.5f, 0.0f), v3(1.0f, 1.0f, 1.0f), v2(1.0f, 0.0f) });
 		data->vertices.push_back({ v3(-0.5f,-0.5f, 0.0f), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 0.0f) });
 		data->vertices.push_back({ v3(-0.5f, 0.5f, 0.0f), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 1.0f) });
+
+		// TODO(ck): split out
+		if (tangents)
+		{
+			//data->vertices.clear();
+			v3 pos1(0.5f, 0.5f, 0.0f);
+			v3 pos2(0.5f, -0.5f, 0.0f);
+			v3 pos3(-0.5f, -0.5f, 0.0f);
+			v3 pos4(-0.5f, 0.5f, 0.0f);
+
+			v2 uv1(1.0f, 1.0f);
+			v2 uv2(1.0f, 0.0f);
+			v2 uv3(0.0f, 0.0f);
+			v2 uv4(0.0f, 1.0f);
+
+			v3 normal(1.0f, 1.0f, 1.0f);
+
+			v3 edge1 = pos2 - pos1;
+			v3 edge2 = pos3 - pos1;
+			v2 deltaUV1 = uv2 - uv1;
+			v2 deltaUV2 = uv3 - uv1;
+
+			float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+
+			v3 tangent1, bitangent1;
+			v3 tangent2, bitangent2;
+
+
+			f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+
+		}
 
 		unsigned int indices[] = {
 			0, 1, 3,
@@ -43,7 +74,6 @@ namespace MonGL
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-		
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)0);
 		
@@ -53,12 +83,17 @@ namespace MonGL
 		glEnableVertexAttribArray(2);
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, texCoords));
 
-		/*layout(location = 3) in vec3 aTangent;
-		layout(location = 4) in vec3 aBitangent;*/
+		if (tangents)
+		{
+			glEnableVertexAttribArray(3);
+			glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, tangent));
+
+			glEnableVertexAttribArray(4);
+			glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, bitangent));
+		}
 
 		// unbind
 		glBindVertexArray(0);
-
 	}
 
 	void loadTexture(RenderData* data, Type type, int shaderID, std::string path)
@@ -71,7 +106,7 @@ namespace MonGL
 		glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
 	}
 
-	void initBoundingBox(RenderData* data)
+	void initBoundingBox(RenderData* data, ColliderSize* size)
 	{
 		data->lineWidth = 2;
 		data->color = v3(1.0f, 0.0f, 1.0f);
@@ -115,9 +150,8 @@ namespace MonGL
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 
-		data->size = {};
-		data->size.min = v3(0.0f, 0.0f, 0.0f);
-		data->size.max = v3(1.0f, 1.0f, 1.0f);
+		size->min = v3(0.0f, 0.0f, 0.0f);
+		size->max = v3(1.0f, 1.0f, 1.0f);
 		// Set world matrix to be the same size as the bounding box
 		//data->worldMatrix = GetTransform(&data->size);
 
@@ -152,7 +186,7 @@ namespace MonGL
 		*/
 
 		// Create a quad first
-		initQuad(renderData);
+		initQuad(renderData, true);
 
 		setup->tiling = 5.0f;
 		setup->speed = 0.3f;
@@ -195,7 +229,7 @@ namespace MonGL
 
 	void drawQuad(Config* config, RenderData* data,
 						v3 playerPos, v3 scale, v3 camPos,
-						unsigned int shaderID)
+						unsigned int shaderID, int selectedTexture)
 	{
 
 		// ==============================================================================
@@ -211,7 +245,7 @@ namespace MonGL
 		glUniform1i(glGetUniformLocation(shaderID, "pixelTexture"), true);
 		// bind textures on corresponding texture units
 		//glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, data->textures[data->selectedTexture].id);
+		glBindTexture(GL_TEXTURE_2D, data->textures[selectedTexture].id);
 
 		glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
 		glUniform1i(glGetUniformLocation(shaderID, "collider"), false);
@@ -223,6 +257,7 @@ namespace MonGL
 		model = glm::translate(model, playerPos);
 		model = glm::rotate(model, glm::radians(config->angleDegrees), v3{ 1.0f, 0.0f, 0.0f });
 		model = glm::scale(model, scale);
+		
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		glBindVertexArray(data->VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -318,7 +353,8 @@ namespace MonGL
 
 	// TODO(ck): gl_DrawBoundingBox(size) 
 	// the collider will have a size
-	void drawBoundingBox(RenderData* data, 
+	void drawBoundingBox(RenderData* data,
+					 ColliderSize size,
 					 v3 playerPos, v3 camPos,
 					 mat4 projection, mat4 view, 
 					 unsigned int shaderID)
@@ -341,7 +377,7 @@ namespace MonGL
 		glUniform1i(glGetUniformLocation(shaderID, "collider"), true);
 		// ==============================================================================
 
-		mat4 model = data->worldMatrix * GetTransform(&data->size);
+		mat4 model = data->worldMatrix * GetTransform(&size);
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		glBindVertexArray(data->VAO);
 

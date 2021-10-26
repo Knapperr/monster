@@ -109,14 +109,18 @@ namespace Mon
 		MonGL::LoadShader(&waterShader.common, "res/shaders/vert_water.glsl", "res/shaders/frag_water.glsl", NULL);
 
 		mainShaderID = shader.handle;
-		cam = Camera();
-
+		
 		player = {};
 		player.name = "player";
 		player.setup = {};
 		MonGL::initQuad(&player.data);
+		MonGL::loadTexture(&player.data, MonGL::Type::Diffuse, shader.handle, "res/textures/p1SIDERIGHT.png");
 		MonGL::loadTexture(&player.data, MonGL::Type::Diffuse, shader.handle, "res/textures/p1.png");
-		MonGL::initBoundingBox(&player.colliderData);
+		MonGL::loadTexture(&player.data, MonGL::Type::Diffuse, shader.handle, "res/textures/p1SIDE.png");
+		MonGL::loadTexture(&player.data, MonGL::Type::Diffuse, shader.handle, "res/textures/p1BACK.png");
+		player.facingDir = 0;
+		
+		MonGL::initBoundingBox(&player.collider.data, &player.collider.size);
 		player.particle.pos = v3(40.0f, 0.1f, 10.0);
 		player.particle.inverseMass = 10.0f;
 		player.particle.velocity = v3(0.0f, 0.0f, 0.0f); // 35m/s
@@ -158,11 +162,11 @@ namespace Mon
 			Entity entity = {};
 			entity.setup = {};
 			entity.name = "enemy_" + std::to_string(i);
-			MonGL::initBoundingBox(&entity.colliderData);
+			MonGL::initBoundingBox(&entity.collider.data, &entity.collider.size); 
 			entity.particle.pos = v3((8.0f * (i + 1)), 0.1f, 1.5f * i);
 			mat4 model = mat4(1.0f);
-			entity.colliderData.worldMatrix = glm::translate(model, entity.particle.pos);
-			entity.colliderData.color = v3(0.0f, 0.0f, 0.0f);
+			entity.collider.data.worldMatrix = glm::translate(model, entity.particle.pos);
+			entity.collider.data.color = v3(0.0f, 0.0f, 0.0f);
 			enemies.push_back(entity);
 		}
 
@@ -200,7 +204,11 @@ namespace Mon
 		config->viewPort.w = portWidth;
 		config->viewPort.h = portHeight;
 		MonGL::viewPort(&config->viewPort);
+
 		config->angleDegrees = -30.0f;
+
+		// TODO(ck): Memory management
+		cam = new Camera(config->viewPort);
 
 		selectedIndex = 0;
 		drawCollisions = true;
@@ -236,6 +244,35 @@ namespace Mon
 
 		player.particle.pos = newPos;
 
+
+		if ((player.particle.velocity.x == 0.0f) && (player.particle.velocity.z == 0.0f))
+		{
+			// NOTE(ck): Leave facingDirection whatever it was 
+		}
+		else if (absoluteValue(player.particle.velocity.x) > absoluteValue(player.particle.velocity.z))
+		{
+			if (player.particle.velocity.x > 0)
+			{
+				player.facingDir = 0; // right
+			}
+			else
+			{
+				player.facingDir = 2; // left
+			}
+		}
+		else
+		{
+			if (player.particle.velocity.z > 0)
+			{
+				player.facingDir = 1; // back
+
+			}
+			else
+			{
+				player.facingDir = 3; // front
+			}
+
+		}
 	}
 
 	void Game::update(double dt, Input* newInput)
@@ -301,7 +338,7 @@ namespace Mon
 		//float y = (2.0f * (mouseY - yOffset)) / (float)displayHeight - 1.0f;
 		//input.mouseOffset.x -= config->viewPort.x;
 		//input.mouseOffset.y -= config->viewPort.y;
-		cam.update(deltaTime, &input, player.particle.pos, player.particle.orientation, true);
+		cam->update(deltaTime, &input, player.particle.pos, player.particle.orientation, true);
 
 		//if (simulate == true)
 			//player.particle.integrate(deltaTime);
@@ -311,21 +348,21 @@ namespace Mon
 		mat4 model = mat4(1.0f);
 		float colliderPosX = player.particle.pos.x - (0.5f);
 		float colliderPosZ = player.particle.pos.z - (0.5f);
-		player.colliderData.worldMatrix = translate(model, v3(colliderPosX, -0.2f, colliderPosZ));
+		player.collider.data.worldMatrix = translate(model, v3(colliderPosX, -0.2f, colliderPosZ));
 	}
 
 	void Game::render(double dt)
 	{
 		//projection = glm::perspective(glm::radians(cam.zoom), 1440.0f / 720.0f, 0.1f, 100.0f);
-		mat4 proj = cam.projection();
-		mat4 view = cam.viewMatrix();
+		mat4 proj = cam->projection();
+		mat4 view = cam->viewMatrix();
 
 		// TODO(ck): pass all shaders to beginRender or they live in the opengl layer and get
 		// activated that way
 		MonGL::beginRender(config, proj, view, shader.handle);
 		MonGL::beginRender(config, proj, view, waterShader.common.handle);
 
-		MonGL::drawTerrain(shader.handle, &terrain->mesh, &light, proj, view, cam.pos);
+		MonGL::drawTerrain(shader.handle, &terrain->mesh, &light, proj, view, cam->pos);
 
 		// TODO(ck): use shader
 		glUseProgram(shader.handle);
@@ -337,22 +374,22 @@ namespace Mon
 
 
 		if (drawCollisions)
-			MonGL::drawBoundingBox(&player.colliderData, player.particle.pos, cam.pos, proj, view, shader.handle);
+			MonGL::drawBoundingBox(&player.collider.data, player.collider.size, player.particle.pos, cam->pos, proj, view, shader.handle);
 
-		MonGL::drawQuad(config, &player.data, player.particle.pos, v3(1.0f), cam.pos, shader.handle);
+		MonGL::drawQuad(config, &player.data, player.particle.pos, v3(1.0f), cam->pos, shader.handle, player.facingDir);
 
 		for (auto& e : enemies)
 		{
-			MonGL::drawBoundingBox(&e.colliderData, e.particle.pos, cam.pos, proj, view, shader.handle);
+			MonGL::drawBoundingBox(&e.collider.data, e.collider.size, e.particle.pos, cam->pos, proj, view, shader.handle);
 		}
 		for (auto& e : entities)
 		{
 
-			MonGL::drawQuad(config, &e.data, e.particle.pos, v3(16.0f, 16.0f, 1.0f), cam.pos, shader.handle);
+			MonGL::drawQuad(config, &e.data, e.particle.pos, v3(16.0f, 16.0f, 1.0f), cam->pos, shader.handle);
 		}
 		
 		glUseProgram(waterShader.common.handle);
-		MonGL::drawWater(&water.data, &water.setup, &waterShader, &light, water.particle.pos, v3(10.0f), cam.pos, waterShader.common.handle);
+		MonGL::drawWater(&water.data, &water.setup, &waterShader, &light, water.particle.pos, v3(10.0f), cam->pos, waterShader.common.handle);
 		//MonGL::drawQuad(config, &water.data, water.particle.pos, v3(5.0f), cam.pos, shader.handle);
 
 	}
@@ -373,19 +410,19 @@ namespace Mon
 
 	bool Game::playing()
 	{
-		return (state == State::Play && cam.follow == true);
+		return (state == State::Play && cam->follow == true);
 	}
 
 	void Game::playMode()
 	{
 		state = State::Play;
-		cam.followOn();
+		cam->followOn();
 	}
 
 	void Game::debugMode()
 	{
 		state = State::Debug;
-		cam.followOff();
+		cam->followOff();
 	}
 
 	/// 
@@ -480,41 +517,32 @@ namespace Mon
 				if (input->up.endedDown)
 				{
 					velocity.y = -1.0f;
-					//p->position.y -= 1.0f * p->speed * dt;
 				}
 				if (input->down.endedDown)
 				{
 					velocity.y = 1.0f;
-					//p->position.y += 1.0f * p->speed * dt;
-
 				}
 				if (input->left.endedDown)
 				{
 					velocity.x = -1.0f;
-					//p->position.x -= 1.0f * p->speed * dt;
 				}
 				if (input->right.endedDown)
 				{
 					velocity.x = 1.0f;
-					//p->position.x += 1.0f * p->speed * dt;
 				}
 			}
 			Mon::movePlayer(world->map, p, &velocity, deltaTime);
 			// update sprite position 
-			// TODO(ck): I am pretty sure in handmade hero he rounds these values before drawing
-			//p->sprite.pos.x = (int)p->pos.x;
-			//p->sprite.pos.y = (int)p->pos.y;
-			//p->sprite.pos = p->pos;
-			p->sprite.pos = p->position;
+			p->sprite.pos = p->pos;
 			// TODO(ck): Update camera pos
 			// camera position = player position
 
 			//real32 playerGroundPointX = screenCenterX + metersToPixels * diff.dX;
 			//real32 playerGroundPointY = screenCenterY - metersToPixels * diff.dY;
 
-			camera.update(&p->sprite.pos, deltaTime);
+		
+			camera.update(&p->pos, deltaTime);
 		}
-		//camera.update(&world->player->position, deltaTime);
 	}
 
 	void Game::render()
