@@ -473,7 +473,8 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 	snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.y);
 	ImGui::LabelText("player y", buffer);
 	
-	ImGui::SliderInt("Tile 0 ID: ", &game->world->map->tiles[0].tileId, 0, 3, NULL);
+	ImGui::DragFloat("cam zoom", &game->camera.zoom, 0.1f, 1.0f, 200.0f, "%.02f");
+	//ImGui::SliderInt("Tile 0 ID: ", &game->world->map->tiles[0].tileId, 0, 3, NULL);
 	
 	char entitysizebuf[64];
 	snprintf(entitysizebuf, sizeof(entitysizebuf), "%f", (float)game->world->entities.size());

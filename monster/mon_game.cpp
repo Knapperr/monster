@@ -212,6 +212,7 @@ namespace Mon
 
 		selectedIndex = 0;
 		drawCollisions = true;
+
 		return true;
 	}
 
@@ -476,7 +477,6 @@ namespace Mon
 		glUniformMatrix4fv(glGetUniformLocation(tileShader.handle, "model"), 1, GL_FALSE, glm::value_ptr(model));
 
 
-
 		int screenWidth = 1440;
 		int screenHeight = 900;
 		int portWidth = 960;
@@ -489,7 +489,7 @@ namespace Mon
 		config->viewPort.h = portHeight;
 		MonGL::viewPort(&config->viewPort);
 
-		camera = OrthoCamera(world->player->pos);
+		camera = OrthoCamera(world->player->pos, &config->viewPort);
 
 		return true;
 	}
@@ -547,46 +547,18 @@ namespace Mon
 
 	void Game::render()
 	{
-		// TODO(ck): Clean up --- camera
-		//float left = 0.0f;
-
 		MonGL::viewPort(&config->viewPort);
-
-		// 640.0f = window.x
-		// 360.0f = window.y
-		// TODO(ck): my camera isn't deciding the projection that gets sent to the renderer
-		// this might be a good thing because i can separate that off here
-		v2 target = camera.target;
-		float width = 960.0f;
-		float height = 540.0f;
-
-#if 1
-		float half = 4.0f;
-		float left = target.x - width / half;
-		float right = target.x + width / half;
-		float top = target.y - height / half;
-		float bottom = target.y + height / half;
-#else
-		float left = 0.0f;
-		float right = 960.0f;
-		float top = 0.0f;
-		float bottom = 540.0f;
-#endif
-
-		mat4 projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
-		//mat4 zoom = glm::scale(mat4(1.0f), v3(camera.zoom, camera.zoom, camera.zoom));
-		//projection *= zoom;
 
 		// TEST DRAW
 		glUseProgram(tileShader.handle);
 		int projLoc = glGetUniformLocation(tileShader.handle, "projection");
-		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(camera.projectionMatrix()));
 
 		MonGL::drawMap(&tileShader, world->sheet.texture.id);
 
 		glUseProgram(shader.handle);
 		projLoc = glGetUniformLocation(shader.handle, "projection");
-		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(camera.projectionMatrix()));
 
 		for (unsigned int i = 0; i < world->entities.size(); ++i)
 		{
@@ -597,7 +569,6 @@ namespace Mon
 
 	
 		MonGL::drawObject(&shader, &world->player->sprite);
-		
 	}
 
 }

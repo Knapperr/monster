@@ -27,7 +27,7 @@ namespace Mon
 		Entity2D* collider = new Entity2D();
 		initEntity(collider, "res/textures/p1.png", true, v2(50, 50));
 		collider->sprite.wireFrame = true;
-		entities.push_back(collider);
+		//entities.push_back(collider);
 
 		Entity2D* ball = new Entity2D();
 		initEntity(ball, "res/textures/sflow.png", true, v2(10, 10));

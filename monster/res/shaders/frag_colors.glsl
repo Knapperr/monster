@@ -57,11 +57,20 @@ void main()
         // FragColor = texture(texture_diffuse1, TexCoords);
         if (pixelTexture)
         {
-            vec2 vres = textureSize(texture_diffuse1, 0);
-            FragColor = texture(texture_diffuse1, vec2(
-		        sharpen(TexCoords.x * vres.x) / vres.x,
-		        sharpen(TexCoords.y * vres.y) / vres.y
-            )); 
+            vec2 textureSize = textureSize(texture_diffuse1, 0);
+            vec2 pixel = TexCoords * textureSize;
+            vec2 duDv = fwidth(pixel);
+            vec2 seam = floor(pixel + 0.5);
+            pixel = seam + clamp((pixel - seam)/duDv, -0.5, 0.5);
+            vec2 modifiedTextCoordinate = pixel / textureSize;
+            vec4 tex = texture2D(texture_diffuse1, modifiedTextCoordinate);
+            FragColor = tex;
+            return;
+            // vec2 vres = textureSize(texture_diffuse1, 0);
+            // FragColor = texture(texture_diffuse1, vec2(
+		    //     sharpen(TexCoords.x * vres.x) / vres.x,
+		    //     sharpen(TexCoords.y * vres.y) / vres.y
+            // )); 
         }
         
         return;

@@ -10,7 +10,7 @@ float4 ps(PS_INPUT input) : SV_TARGET
       // seam not too sure its the 
       float2 Seam = floor(Pixel + 0.5);
       float2 DuDv = fwidth(Pixel);
-      Pixel = Seam + clamp((Pixel - Seam)/DuDv -0.5, 0.5);
+      Pixel = Seam + clamp((Pixel - Seam)/DuDv, -0.5, 0.5);
       float2 ModifiedTextureCoordinate = Pixel/TextureSize;
       float4 tex = texture0.Sample(sampler0, float4(ModifiedTextureCoordinate, input.textureID));
       tex = float4(tex[0], tex[1], tex[2], input.alpha*tex[3]);

@@ -51,8 +51,8 @@ namespace MonGL
 		v3 position;
 		v3 normal;
 		v2 texCoords;
-		v3 tangent;
-		v3 bitangent;
+		//v3 tangent;
+		//v3 bitangent;
 	};
 
 	// TODO(ck): RenderData is the entities draw data I can

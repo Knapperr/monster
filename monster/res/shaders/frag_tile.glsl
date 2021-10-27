@@ -19,11 +19,22 @@ float sharpen(float pix_coord) {
 
 void main()
 {
-	vec2 vres = textureSize(image, 0);
-	FragColor = texture(image, vec2(
-		sharpen(TexCoord.x * vres.x) / vres.x,
-		sharpen(TexCoord.y * vres.y) / vres.y
-	));
+	// TODO(ck): new pixel shader
+	vec2 textureSize = textureSize(image, 0);
+	vec2 pixel = TexCoord * textureSize;
+	vec2 duDv = fwidth(pixel);
+	vec2 seam = floor(pixel + 0.5);
+	pixel = seam + clamp((pixel - seam)/duDv, -0.5, 0.5);
+	vec2 modifiedTextCoordinate = pixel / textureSize;
+	vec4 tex = texture2D(image, modifiedTextCoordinate);
+	FragColor = tex;
+
+	// NOTE(ck): old pixel shader
+	// vec2 vres = textureSize(image, 0);
+	// FragColor = texture(image, vec2(
+	// 	sharpen(TexCoord.x * vres.x) / vres.x,
+	// 	sharpen(TexCoord.y * vres.y) / vres.y
+	// ));
 
 	// NOTE(ck): only line in shader
 	//FragColor = texture(image, TexCoord);
