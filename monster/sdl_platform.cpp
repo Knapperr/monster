@@ -269,6 +269,8 @@ namespace Mon
 						processKeyboard(&newInput->shift, isDown);
 					if (keyCode == SDLK_ESCAPE)
 						processKeyboard(&newInput->quit, isDown);
+					if (keyCode == SDLK_SPACE)
+						processKeyboard(&newInput->space, isDown);
 				}
 			}
 			else if (e.type == SDL_JOYBUTTONDOWN || e.type == SDL_JOYBUTTONUP)

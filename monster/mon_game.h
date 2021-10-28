@@ -124,6 +124,7 @@ namespace Mon
 		MonGL::RenderSetup setup;
 		Collider collider;
 		
+		
 		int facingDir;
 	};
 

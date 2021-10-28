@@ -9,7 +9,7 @@ namespace Mon
 		// TODO(ck): Move all of this into the initTileMap
 		map = new TileMap();
 		sheet = {};
-		initTileSheet(&sheet, "res/textures/overworld_tiles.png");
+		initTileSheet(&sheet, "res/textures/basic_16.png");
 		initTileMap(map, &sheet);
 		MonGL::initTileMap(map->tiles.size());
 
@@ -23,7 +23,7 @@ namespace Mon
 
 		// TODO(ck): Memory management
 		player = new Entity2D();
-		initEntity(player, "res/textures/p1.png", true, v2(0, 0));
+		initEntity(player, "res/textures/sPlayerRPG.png", true, v2(0, 0));
 		Entity2D* collider = new Entity2D();
 		initEntity(collider, "res/textures/p1.png", true, v2(50, 50));
 		collider->sprite.wireFrame = true;

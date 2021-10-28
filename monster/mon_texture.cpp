@@ -56,8 +56,8 @@ namespace MonGL
 		}
 		else
 		{
-			texture->wrapS = GL_CLAMP_TO_BORDER;
-			texture->wrapT = GL_CLAMP_TO_BORDER;
+			texture->wrapS = GL_CLAMP_TO_EDGE; // GL_CLAMP_TO_BORDER 
+			texture->wrapT = GL_CLAMP_TO_EDGE; // GL_CLAMP_TO_BORDER
 			texture->filterMin = GL_NEAREST;
 			texture->filterMax = GL_NEAREST;
 		}

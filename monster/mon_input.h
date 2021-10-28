@@ -52,6 +52,7 @@ namespace Mon
 				ButtonState lower;
 				ButtonState select;
 				ButtonState shift;
+				ButtonState space;
 				ButtonState rightStickUp;
 				ButtonState rightStickdown;
 				ButtonState rightStickleft;
