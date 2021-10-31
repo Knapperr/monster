@@ -10,6 +10,7 @@ namespace Mon
 		worldUp = v3(0.0f, 1.0f, 0.0f);
 
 		pos = v3(29.0f, 17.0f, 46.0f);
+		vel = v3(0.0f);
 		front = v3(0.0f, 0.0f, -1.0f);
 
 		//direction = glm::normalize(pos - target);
@@ -25,6 +26,7 @@ namespace Mon
 
 		distanceFromTarget = 10.0f;
 		angleAroundTarget = 180.0f;
+		smoothness = 0.30f;
 		lerpSpeed = 7.0f;
 		follow = false;
 
@@ -39,6 +41,7 @@ namespace Mon
 		worldUp = v3(0.0f, 1.0f, 0.0f);
 
 		pos = v3(29.0f, 17.0f, 46.0f);
+		vel = v3(0.0f);
 		front = v3(0.0f, 0.0f, -1.0f);
 
 		//direction = glm::normalize(pos - target);
@@ -55,6 +58,7 @@ namespace Mon
 		distanceFromTarget = 10.0f;
 		angleAroundTarget = 180.0f;
 		lerpSpeed = 7.0f;
+		smoothness = 0.30f;
 		follow = false;
 
 		aspectRatio = viewPort.w / viewPort.h;
@@ -112,9 +116,10 @@ namespace Mon
 		float offsetz = horizontalDistance * cosf(glm::radians(theta));
 		
 		// NOTE(ck): Lerp for now
-		pos.x = lerp(pos.x, lerpSpeed * dt, tPos.x - offsetx);
-		pos.z = lerp(pos.z, lerpSpeed * dt, tPos.z - offsetz);
-		pos.y = lerp(pos.y, lerpSpeed * dt, (tPos.y + verticalDistance) + offsety); // need some kind of offset for the target so the camera doesn't point at the floor
+		pos.x = smoothDamp(pos.x, tPos.x - offsetx, vel.x, smoothness, dt);
+		pos.z = smoothDamp(pos.z, tPos.z - offsetz, vel.z, smoothness, dt);
+		pos.y = smoothDamp(pos.y, (tPos.y + verticalDistance) + offsety, vel.y, smoothness, dt);
+
 
 		//pos.x = tPos.x - offsetx;
 		//pos.z = tPos.z - offsetz;

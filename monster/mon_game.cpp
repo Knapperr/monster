@@ -124,6 +124,7 @@ namespace Mon
 		player.particle.pos = v3(40.0f, 0.1f, 10.0);
 		player.particle.inverseMass = 10.0f;
 		player.particle.velocity = v3(0.0f, 0.0f, 0.0f); // 35m/s
+		player.particle.gravity = 10.0f;
 		player.particle.acceleration = v3(-40.0f, 0.0f, 0.0f);
 		player.particle.orientation = v3(1.0f, 1.0f, 1.0);
 		player.particle.damping = 0.9f;
@@ -230,11 +231,14 @@ namespace Mon
 
 		*velocity += -7.0f * player.particle.velocity;
 
+		
 		v3 oldPos = player.particle.pos;
 		v3 newPos = oldPos;
 		float deltaX = (0.5f * velocity->x * square(deltaTime) + player.particle.velocity.x * deltaTime);
+		float deltaY = player.particle.velocity.y;
+		//float deltaY = velocity->y * square(deltaTime) + player.particle.velocity.y * deltaTime);
 		float deltaZ = (0.5f * velocity->z * square(deltaTime) + player.particle.velocity.z * deltaTime);
-		v3 delta = { deltaX, 0.0f, deltaZ };
+		v3 delta = { deltaX, deltaY, deltaZ };
 
 		// TODO(ck): need to set an offest like casey does
 		newPos += delta;
@@ -322,6 +326,8 @@ namespace Mon
 					velocity.x = -1.0f;
 				if (input.right.endedDown)
 					velocity.x = 1.0f;
+				if (input.space.endedDown)
+					velocity.y = 1.0f;
 			}
 			// PIPE velocity to function
 			movePlayer(&velocity);

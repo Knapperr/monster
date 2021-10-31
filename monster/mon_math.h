@@ -60,14 +60,37 @@ namespace Mon
 		return result;
 	}
 
-
-
 	inline float lerp(float a, float time, float b)
 	{
 		float result = (1.0f - time) * a + time * b;
 		return result;
 	}
-	
+
+	// smooth damping from Game Engine Gems 4. Critically Damped Ease-In/Ease Out Smoothing - [Thomas Lowe, Krome Studios]
+	// critically damped
+	inline float smoothDamp(float from, float to, float &vel, float smoothTime, float time)
+	{
+		float omega = 2.0f / smoothTime;
+		float x = omega * time;
+		float exp = 1.0f / (1.0f + x + 0.48f*x*x + 0.235f*x*x*x);
+
+		// adding a maximum smooth speed
+		// float maxChange = maxSpeed*smoothTime;
+		// float change = min(max(-maxChange, change), maxChange);
+		float change = from - to;
+		float temp = (vel + omega * change)*time;
+		vel = (vel - omega * temp)*exp; // equation 5
+		return to + (change + temp)*exp; // equation 4
+
+	}
+
+	inline float sCurve(float a, float time, float b)
+	{
+		// a = location, b = desired location
+		float result = a + (b - a) * 0.1f * time;
+		return result;
+	}
+
 	// TODO(ck): Figure this out is it ease in
 	inline float approach(float t, float target, float delta)
 	{

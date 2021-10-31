@@ -5,16 +5,20 @@ namespace Mon
 	OrthoCamera::OrthoCamera()
 	{
 		lerpSpeed = 7.0f;
-		pos = v2(0.0f, 0.0f);
-		target = v2(0.0f,0.0f);
+		smoothness = 0.1f;
+		pos = v2(0.0f);
+		target = v2(0.0f);
+		vel = v2(0.0f);
 		zoom = 1.0f;
 	}
 
 	OrthoCamera::OrthoCamera(v2 position, Rect* viewPort)
 	{
 		lerpSpeed = 7.0f;
+		smoothness = 0.1f;
 		pos = position;
 		target = position;
+		vel = v2(0.0f);
 		zoom = 1.0f;
 		
 	}
@@ -22,11 +26,11 @@ namespace Mon
 	void OrthoCamera::update(v2 *pos, float dt)
 	{
 #if 0
-		target.x = lerp(target.x, lerpSpeed * dt, pos->x);
-		target.y = lerp(target.y, lerpSpeed * dt, pos->y);
-#else
 		target.x = pos->x;
 		target.y = pos->y;
+#else 
+		target.x = smoothDamp(target.x, pos->x, vel.x, smoothness, dt);
+		target.y = smoothDamp(target.y, pos->y, vel.y, smoothness, dt);
 #endif
 	}
 
@@ -40,12 +44,6 @@ namespace Mon
 		//target.y = pos->y;
 #endif
 	}
-
-	/*
-	void update_camera(Camera* c) {
-		c->x += (c->target_x - c->x) * 0.12;
-		c->y += (c->target_y - c->y) * 0.12;
-	}*/
 
 	void OrthoCamera::createOrtho()
 	{

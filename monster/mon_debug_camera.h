@@ -19,6 +19,7 @@ namespace Mon
 		mat4 debugViewMatrix();
 		mat4 followViewMatrix();
 		v3 pos;
+		v3 vel;
 		v3 front;
 		v3 right;
 		float speed;
@@ -31,6 +32,7 @@ namespace Mon
 		float pitch;
 		float angleAroundTarget;
 		float lerpSpeed;
+		float smoothness;
 		float aspectRatio;
 
 		v3 lastDebugPos;

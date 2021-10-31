@@ -95,6 +95,7 @@ namespace Mon
 		v3 velocity;
 		v3 acceleration;
 		v3 orientation;
+		float gravity;
 
 		Direction dir = Direction::FORWARD;
 

@@ -45,10 +45,15 @@ namespace Mon
 
 		Mon::Log::print("Platform: SDL2");
 		gladLoadGLLoader(SDL_GL_GetProcAddress);
-		printf("Vendor:   %s\n", glGetString(GL_VENDOR));
-		printf("Renderer: %s\n", glGetString(GL_RENDERER));
-		printf("Version:  %s\n", glGetString(GL_VERSION));
-		printf("PID: %d\n", _getpid());
+		
+		unsigned char* info[3] = {};
+		info[0] = (unsigned char*)glGetString(GL_VENDOR);
+		info[1] = (unsigned char*)glGetString(GL_RENDERER);
+		info[2] = (unsigned char*)glGetString(GL_VERSION);
+		Mon::Log::print("Vendor", (char*)info[0]);
+		Mon::Log::print("Renderer", (char*)info[1]);
+		Mon::Log::print("Version", (char*)info[2]);
+		Mon::Log::print("PID", _getpid());
 
 		// Use v-sync
 		// https://wiki.libsdl.org/SDL_GL_SetSwapInterval
@@ -69,14 +74,14 @@ namespace Mon
 		// ------------------
 		if (SDL_NumJoysticks() < 1)
 		{
-			printf("PLATFORM: No joystick connected\n");
+			Mon::Log::print("PLATFORM", "No joystick connected");
 		}
 		else
 		{
 			joyStick = SDL_JoystickOpen(0);
 			if (joyStick == NULL)
 			{
-				printf("PLATFORM: Unable to open game controller! SDL Error: %s\n", SDL_GetError());
+				Mon::Log::print("Unabled to open game controller SDL Error:", SDL_GetError());
 			}
 		}
 

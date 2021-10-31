@@ -2,7 +2,7 @@
 
 #include <string>
 
-//#define _3D_GUI_
+#define _3D_GUI_
 
 // TODO(ck): Must switch Entity to plain array so i can save their memory to a file cant do it with vector
 // TODO(ck): open files with current platform layer
@@ -124,7 +124,7 @@ void CameraWindow(bool* p_open, Mon::Game* game)
 {
 	ImGui::Begin("Cammy", p_open);
 
-	float velocity = game->cam->speed * game->deltaTime;
+	//float velocity = game->cam->speed * game->deltaTime;
 	
 	ImGui::PushButtonRepeat(true);
 	ImGui::Indent(32);
@@ -151,9 +151,10 @@ void CameraWindow(bool* p_open, Mon::Game* game)
 	ImGui::DragFloat("near plane", &game->cam->nearPlane, 0.01f, 0.1f, 100.0f, "%.02f");
 	ImGui::DragFloat("far plane", &game->cam->farPlane, 0.5f, 100.0f, 1000.0f, "%.02f");
 	
-	ImGui::SliderFloat("camera angle", &game->cam->angleAroundTarget, -360.0f, 180.0f);
-	ImGui::SliderFloat("camera pitch", &game->cam->pitch, -1.10f, 100.0f, "%1.0f");
-	ImGui::SliderFloat("camera lerp", &game->cam->lerpSpeed, 0.0f, 100.0f);
+	ImGui::SliderFloat("angle", &game->cam->angleAroundTarget, -360.0f, 180.0f);
+	ImGui::SliderFloat("pitch", &game->cam->pitch, -1.10f, 100.0f, "%1.0f");
+	ImGui::SliderFloat("lerp", &game->cam->lerpSpeed, 0.0f, 100.0f);
+	ImGui::SliderFloat("smooth", &game->cam->smoothness, 0.1f, 10.0f);
 
 	ImGui::End();
 }
@@ -466,6 +467,7 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 
 	ImGui::SliderFloat("Player Speed", &game->world->player->speed, 0.0f, 1000.0f);
 	ImGui::SliderFloat("camera lerp", &game->camera.lerpSpeed, 0.0f, 100.0f);
+	ImGui::SliderFloat("camera smooth", &game->camera.smoothness, 0.1f, 10.0f);
 
 	char buffer[64];
 	snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.x);
