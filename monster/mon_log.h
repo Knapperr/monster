@@ -3,6 +3,7 @@
 
 #include <ostream>
 #include <sstream>
+#include <fstream>
 
 namespace Mon 
 {
@@ -19,14 +20,18 @@ namespace Mon
 	class Log
 	{
 	public:
-		static void init();
+		Log();
+
+		static void shutdown();
+
 		static void print(const char* msg);
 		static void print(const char* title, const char* msg);
 		static void print(const char* title, int msg);
 		static void print(const char* title, int a, int b);
 		static void print(const char* msg, Severity severity);
 		static void warn(const char* msg);
-
+	private:
+		static std::ofstream file;
 	};
 }
 

@@ -3,9 +3,15 @@
 
 namespace Mon
 {
-	void Log::init()
+	std::ofstream Log::file;
+	Log::Log()
 	{
-		// TODO(CK): Init file stream?
+		file = std::ofstream("logger.txt");
+	}
+
+	void Log::shutdown()
+	{
+		file.close();
 		return;
 	}
 
@@ -30,28 +36,31 @@ namespace Mon
 	void Log::print(const char* msg)
 	{
 		printf("[INFO]: %s\n", msg);
+		file << "[INFO]:" << msg << '\n';
 	}
 
 	void Log::print(const char* title, const char* msg)
 	{
 		printf("[INFO]: %s: %s\n", title, msg);
+		file << "[INFO]:" << title << ' ' << msg <<  '\n';
 	}
 
 	void Log::print(const char* title, int msg)
 	{
 		printf("[INFO]: %s: %d\n", title, msg);
+		file << "[INFO]:" << title << ': ' << msg << '\n';
 	}
 	
 	void Log::print(const char* title, int a, int b)
 	{
 		printf("[INFO]: %s: %d, %d\n", title, a, b);
+		file << "[INFO]:" << title << ' ' << a <<  ', ' << b << '\n';
+
 	}
 
 	void Log::warn(const char* msg)
 	{
 		printf("[WARN]: %s\n", msg);
+		file << "[WARN]:" << msg << '\n';
 	}
-
-
-	// TODO(ck): Log
 }

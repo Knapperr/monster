@@ -17,6 +17,7 @@ bool App::init()
 {
 
 	// TODO(ck): Memory Allocation
+	Mon::Log::Log();
 	platform = new Mon::SDLPlatform();
 	settings = {};
 	settings.title = "Monster";
@@ -199,6 +200,8 @@ void App::run()
 		// TODO(ck): Platform->swapWindow()
 		SDL_GL_SwapWindow(platform->window);
 	}
+	Mon::Log::print("Shutting down...");
+	Mon::Log::shutdown();
 	game->cleanUp();
 	ShutdownGui();
 	platform->cleanUp();
