@@ -99,7 +99,7 @@ namespace Mon
 
 	*/
 
-	bool Game::init()
+	bool Game::init(int windowWidth, int windowHeight)
 	{
 		state = State::Debug;
 
@@ -196,15 +196,14 @@ namespace Mon
 		simulate = false;
 		
 		config = new MonGL::Config();
-		int screenWidth = 1440;
-		int screenHeight = 900;
 		int portWidth = 960;
 		int portHeight = 540;
-		config->viewPort.x = (screenWidth - portWidth) / 2;
-		config->viewPort.y = (screenHeight - portHeight) / 2;
+		config->viewPort.x = (windowWidth - portWidth) / 2;
+		config->viewPort.y = (windowHeight - portHeight) / 2;
 		config->viewPort.w = portWidth;
 		config->viewPort.h = portHeight;
 		MonGL::viewPort(&config->viewPort);
+		Mon::Log::print("port width, height", portWidth, portHeight);
 
 		config->angleDegrees = -30.0f;
 

@@ -138,7 +138,7 @@ namespace Mon
 	class Game
 	{
 	public:
-		bool init();
+		bool init(int windowWidth, int windowHeight);
 		void movePlayer(v3* velocity);
 		void update(double dt, Input* newInput);
 		void render(double dt);

@@ -380,9 +380,18 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 		ImGui::SameLine();
 		if (ImGui::Button("play")) { game->playMode(); }
 		ImGui::SameLine();
-		if (ImGui::Button("save")) { writeEntities(game->entities, game->mainShaderID); }
+		if (ImGui::Button("save")) 
+		{ 
+			writeEntities(game->entities, game->mainShaderID); 
+			Mon::Log::print("Saved game to master file");
+			Mon::Log::warn("Only one master save file active!!!");
+		}
 		ImGui::SameLine();
-		if (ImGui::Button("load")) { loadEntities(game); }
+		if (ImGui::Button("load")) 
+		{ 
+			loadEntities(game); 
+			Mon::Log::print("Loaded last saved scene");
+		}
 		ImGui::SameLine();
 
 		if (ImGui::Button("Fullscreen"))

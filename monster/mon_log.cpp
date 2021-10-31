@@ -41,6 +41,11 @@ namespace Mon
 	{
 		printf("[INFO]: %s: %d\n", title, msg);
 	}
+	
+	void Log::print(const char* title, int a, int b)
+	{
+		printf("[INFO]: %s: %d, %d\n", title, a, b);
+	}
 
 	void Log::warn(const char* msg)
 	{

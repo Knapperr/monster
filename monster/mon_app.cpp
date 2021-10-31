@@ -22,6 +22,10 @@ bool App::init()
 	settings.title = "Monster";
 	settings.width = 1440;
 	settings.height = 900;
+	Mon::Log::print("Title", settings.title);
+	Mon::Log::print("Window Width", settings.width);
+	Mon::Log::print("Window Height", settings.height);
+
 
 	if (!platform->init(&settings))
 		return false;
@@ -38,7 +42,7 @@ bool App::init()
 	game = new Mon::Game();
 
 #ifdef _3D_
-	if (!game->init())
+	if (!game->init(settings.width, settings.height))
 		return false;
 #else
 	if (!game->init(1))
