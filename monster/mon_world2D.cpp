@@ -1,8 +1,8 @@
-#include "mon_world.h"
+#include "mon_world2D.h"
 
 namespace Mon
 {
-	World::World()
+	World2D::World2D()
 	{
 
 		// TODO(ck): MEMORY MANAGEMENT - Efficient tile map creation
@@ -11,14 +11,7 @@ namespace Mon
 		sheet = {};
 		initTileSheet(&sheet, "res/textures/basic_16.png");
 		initTileMap(map, &sheet);
-		MonGL::initTileMap(map->tiles.size());
 
-		for (int i = 0; i < map->tiles.size(); ++i)
-		{
-			MonGL::fillBatch(map->tiles[i].offsetX, map->tiles[i].offsetY, map->tiles[i].x, map->tiles[i].y, 16);
-		}
-
-		MonGL::bindVertices();
 		// ------------------------------------------------------------------
 
 		// TODO(ck): Memory management
@@ -50,7 +43,7 @@ namespace Mon
 
 	}
 
-	World::~World()
+	World2D::~World2D()
 	{
 		for (size_t i = 0; i < entities.size(); ++i)
 		{

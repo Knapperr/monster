@@ -181,6 +181,7 @@ namespace MonGL
 	
 	void drawObject(CommonProgram* shader, RenderData2D* data);
 	void drawMap(CommonProgram* shader, unsigned int textureID);
+	void drawMap(CommonProgram* shader, unsigned int textureID, int batchThing);
 
 
 }

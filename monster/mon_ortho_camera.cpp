@@ -5,9 +5,9 @@ namespace Mon
 	OrthoCamera::OrthoCamera()
 	{
 		lerpSpeed = 7.0f;
-		smoothness = 0.1f;
+		smoothness = 0.24f;
 		pos = v2(0.0f);
-		target = v2(0.0f);
+		//target = v2(0.0f);
 		vel = v2(0.0f);
 		zoom = 1.0f;
 	}
@@ -15,22 +15,24 @@ namespace Mon
 	OrthoCamera::OrthoCamera(v2 position, Rect* viewPort)
 	{
 		lerpSpeed = 7.0f;
-		smoothness = 0.1f;
+		smoothness = 0.24f;
 		pos = position;
-		target = position;
+		//target = position;
 		vel = v2(0.0f);
 		zoom = 1.0f;
 		
 	}
 
-	void OrthoCamera::update(v2 *pos, float dt)
+	void OrthoCamera::update(v2 *target, float dt)
 	{
 #if 0
 		target.x = pos->x;
 		target.y = pos->y;
 #else 
-		target.x = smoothDamp(target.x, pos->x, vel.x, smoothness, dt);
-		target.y = smoothDamp(target.y, pos->y, vel.y, smoothness, dt);
+
+
+		pos.x = smoothDamp(pos.x, target->x, vel.x, smoothness, dt);
+		pos.y = smoothDamp(pos.y, target->y, vel.y, smoothness, dt);
 #endif
 	}
 
@@ -61,10 +63,10 @@ namespace Mon
 #if 1
 		// TODO(ck): Remove half prefer zoom
 		float half = 6.0f;
-		float left = target.x - width / half;
-		float right = target.x + width / half;
-		float top = target.y - height / half;
-		float bottom = target.y + height / half;
+		float left = pos.x - width / half;
+		float right = pos.x + width / half;
+		float top = pos.y - height / half;
+		float bottom = pos.y + height / half;
 #else
 		float left = 0.0f;
 		float right = 960.0f;

@@ -36,6 +36,7 @@ namespace Mon
 		float rightStickAngle;
 		float mouseXScreen;
 		float mouseYScreen;
+		v2 mouseScreen;
 		v2 mouseOffset;
 		v2 stickDir;
 

@@ -1,41 +1,58 @@
 #ifndef MON_ENTITY_H
 #define MON_ENTITY_H
 
-#include "mon_tilemap.h"
+#include "mon_math.h"
+#include "mon_gl_render.h"
 
+namespace Mon {
 
-namespace Mon
-{
-	// TODO(ck): Component?
-	struct Movement
+	// Use this for now
+	enum class Direction
 	{
-		v2 pos;
-		float speed;
-		
+		LEFT,
+		RIGHT,
+		FORWARD,
+		BACKWARD
 	};
 
-	struct Entity2D
+	// Get to this starts pg49 Ian Millington
+	struct Particle
 	{
-	public:
+		v3 pos;
+		v3 velocity;
+		v3 acceleration;
+		v3 orientation;
+		float gravity;
 
-		MonGL::RenderData2D sprite;
-		v2 pos;
-		// NOTE(ck): Need a map position (for drawing) and a velocity for movement
-		// TileMapPosition pos
-		v2 velocity;
+		Direction dir = Direction::FORWARD;
+
+		float damping;
+		float inverseMass;
+
+		void integrate(float duration);
+		void clearAccumulator();
+
+		// TODO(ck): TEST REMOVE
 		float speed;
-		float maxSpeed;
-		float weight;
-		float rotation;
-		bool destroyed;
 
-		TileMapPosition mapPos;
 	};
 
-	void initEntity(Entity2D* e, const char* fileLocation, bool isAlpha, v2 position);
-	// TODO(ck): Should this param be pointer?
-	// should velocity be acceleration?
-	void movePlayer(TileMap* map, Entity2D* p, v2* velocity, float deltaTime);
+	struct Collider
+	{
+		MonGL::RenderData data;
+		MonGL::ColliderSize size;
+	};
 
+
+	struct Entity
+	{
+		std::string name;
+		Particle particle;
+		MonGL::RenderData data;
+		MonGL::RenderSetup setup;
+		Collider collider;
+
+		int facingDir;
+	};
 }
 #endif

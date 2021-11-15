@@ -161,10 +161,11 @@
     <ClCompile Include="include\imgui\imgui_widgets.cpp" />
     <ClCompile Include="include\stb_image\stb_image.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="mon_entity.cpp" />
     <ClCompile Include="mon_game.cpp" />
     <ClCompile Include="mon_app.cpp" />
     <ClCompile Include="mon_debug_camera.cpp" />
-    <ClCompile Include="mon_entity.cpp" />
+    <ClCompile Include="mon_entity2D.cpp" />
     <ClCompile Include="mon_gui.cpp" />
     <ClCompile Include="mon_gl_render.cpp" />
     <ClCompile Include="mon_log.cpp" />
@@ -173,7 +174,7 @@
     <ClCompile Include="mon_terrain.cpp" />
     <ClCompile Include="mon_texture.cpp" />
     <ClCompile Include="mon_tilemap.cpp" />
-    <ClCompile Include="mon_world.cpp" />
+    <ClCompile Include="mon_world2D.cpp" />
     <ClCompile Include="sdl_platform.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -186,10 +187,11 @@
     <ClInclude Include="include\imgui\imstb_rectpack.h" />
     <ClInclude Include="include\imgui\imstb_textedit.h" />
     <ClInclude Include="include\imgui\imstb_truetype.h" />
+    <ClInclude Include="mon_entity.h" />
     <ClInclude Include="mon_game.h" />
     <ClInclude Include="mon_app.h" />
     <ClInclude Include="mon_debug_camera.h" />
-    <ClInclude Include="mon_entity.h" />
+    <ClInclude Include="mon_entity2D.h" />
     <ClInclude Include="mon_gui.h" />
     <ClInclude Include="mon_gl_render.h" />
     <ClInclude Include="mon_input.h" />
@@ -202,6 +204,7 @@
     <ClInclude Include="mon_texture.h" />
     <ClInclude Include="mon_tilemap.h" />
     <ClInclude Include="mon_world.h" />
+    <ClInclude Include="mon_world2D.h" />
     <ClInclude Include="sdl_platform.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

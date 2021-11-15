@@ -20,9 +20,6 @@ public:
 	bool init();
 	void run();
 	// Gui stuff in here too
-	// Input
-	// Running
-	// Run
 	// Exit
 	// Fullscreen
 	// updateRate

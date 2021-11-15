@@ -5,6 +5,9 @@
 #include <sstream>
 #include <fstream>
 
+#include <thread>
+#include <mutex>
+
 namespace Mon 
 {
 	enum class Severity
@@ -32,6 +35,12 @@ namespace Mon
 		static void warn(const char* msg);
 	private:
 		static std::ofstream file;
+
+		// TODO(ck): Logger on separate thread
+		//std::thread logThread;
+		//std::mutex writeMtx;
+		//std::vector<std::thread> threads;
+		//std::queue<TaskData> tasks;
 	};
 }
 

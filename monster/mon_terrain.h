@@ -23,11 +23,9 @@ public:
 	Terrain(int gridX, int gridZ);
 	~Terrain();
 
-	//float barryCentric(v3 p1, v3 p2, v3 p3, v2 pos);
-	//float getHeight(int x, int z);
-	//float lookUpHeight(int x, int z);
-	//void generate();
-	//void GenerateGrass();
+	float barryCentric(Mon::v3 p1, Mon::v3 p2, Mon::v3 p3, Mon::v2 pos);
+	float getHeight(int x, int z);
+	float lookUpHeight(int x, int z);
 };
 
 

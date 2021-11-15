@@ -112,6 +112,7 @@ namespace Mon
 
 		newInput->mouseXScreen = (float)winX;
 		newInput->mouseYScreen = (float)winY;
+		newInput->mouseScreen = v2((float)winX, (float)winY);
 
 		lastX = newInput->mouseOffset.x;
 		lastY = newInput->mouseOffset.y;
@@ -151,6 +152,7 @@ namespace Mon
 		newInput->mouseOffset = oldInput->mouseOffset;
 		newInput->mouseXScreen = oldInput->mouseXScreen;
 		newInput->mouseYScreen = oldInput->mouseYScreen;
+		newInput->mouseScreen = oldInput->mouseScreen;
 		newInput->rightStickValue = oldInput->rightStickValue;
 		newInput->rightStickAxis = oldInput->rightStickAxis;
 		newInput->rightStickAngle = oldInput->rightStickAngle;

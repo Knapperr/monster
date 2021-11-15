@@ -5,49 +5,6 @@
 namespace Mon
 {
 
-#define real_pow powf
-	void Particle::integrate(float duration)
-	{
-		if (inverseMass <= 0.0f)
-			return;
-
-		// assert(duration > 0.0);
-		/*
-			x += vector.x * scale;
-			y += vector.y * scale;
-			z += vector.z * scale;
-		*/
-		pos += velocity * duration;
-
-		// update linear pos
-		v3 resultingAcc = acceleration;
-
-		// work out the acceleration from the force
-		velocity += resultingAcc * duration;
-
-		// impose drag
-		velocity *= real_pow(damping, duration);
-
-		// TODO(ck): TEMP FOR TESTING
-		if (velocity.x < -15.0f)
-			velocity.x = -15.0f;
-		if (velocity.x > 15.0f)
-			velocity.x = 15.0f;
-
-		if (velocity.z < -15.0f)
-			velocity.z = -15.0f;
-		if (velocity.z > 15.0f)
-			velocity.z = 15.0f;
-
-		clearAccumulator();
-	}
-
-	void Particle::clearAccumulator()
-	{
-		return;
-	}
-
-
 	/*
 	GenerateShader("waterDis",
 			"shaders/waterdistortion_vert.glsl",
@@ -214,6 +171,20 @@ namespace Mon
 		drawCollisions = true;
 
 		return true;
+	}
+
+	v2 getNormalizedDeviceCoords(v2 mouse, Rect viewPort, v2 window)
+	{
+		v2 port = v2(viewPort.w, viewPort.h);
+		v2 offset = (window - port) / 2.0f;
+		float x = (2.0f * (mouse.x + offset.x)) / (float)viewPort.w - 1.0f;
+		float y = (2.0f * (mouse.y - offset.y)) / (float)viewPort.h - 1.0f;
+		return v2(x, -y);
+	}
+
+	void updateMousePicker()
+	{
+
 	}
 
 	// TODO(ck): Should this param be pointer?
@@ -440,7 +411,8 @@ namespace Mon
 		state = State::Play;
 
 		// TODO(ck): Memory management
-		world = new World();
+#ifndef _3D_
+		world2D = new World2D();
 		MonGL::LoadShader(&shader, "res/shaders/vert_sprite.glsl", "res/shaders/frag_sprite.glsl", NULL);
 		// TODO(ck): REMOVE TESTING TILE SHADER
 		MonGL::LoadShader(&tileShader, "res/shaders/vert_tile.glsl", "res/shaders/frag_tile.glsl", NULL);
@@ -494,8 +466,8 @@ namespace Mon
 		config->viewPort.h = portHeight;
 		MonGL::viewPort(&config->viewPort);
 
-		camera = OrthoCamera(world->player->pos, &config->viewPort);
-
+		camera = OrthoCamera(world2D->player->pos, &config->viewPort);
+#endif
 		return true;
 	}
 
@@ -504,12 +476,14 @@ namespace Mon
 		if (dt > deltaTime || dt < deltaTime)
 			printf("dt: %f\n", dt);
 
+#ifndef _3D_
+
 		deltaTime = dt;
 		this->input = *input;
 		
 		if (state == State::Play)
 		{
-			Entity2D* p = world->player;
+			Entity2D* p = world2D->player;
 			v2 velocity = {};
 
 			if (input->isAnalog)
@@ -521,37 +495,97 @@ namespace Mon
 
 				if (input->up.endedDown)
 				{
+#if 0
 					velocity.y = -1.0f;
+#else
+					p->pos.y -= 1.0f * p->speed * dt;
+#endif
 				}
 				if (input->down.endedDown)
 				{
+#if 0
 					velocity.y = 1.0f;
+#else
+					p->pos.y += 1.0f * p->speed * dt;
+#endif
 				}
 				if (input->left.endedDown)
 				{
+#if 0
 					velocity.x = -1.0f;
+#else
+					p->pos.x -= 1.0f * p->speed * dt;
+#endif
 				}
 				if (input->right.endedDown)
 				{
+#if 0
 					velocity.x = 1.0f;
+#else
+					p->pos.x += 1.0f * p->speed * dt;
+#endif
+				}
+				if (input->space.endedDown)
+				{
+
+					// GetTileChunk tile_map *tileMap, uint32 tileChunkX, uint32 tileChunkY, uint32 tileChunkZ
+//					tile_chunk* tileChunk = GetTileChunk(tileMap, chunkPos.tileChunkX, chunkPos.tileChunkY, chunkPos.tileChunkZ);
+
+					/*tileChunk = &tileMap->tileChunks[
+						tileChunkZ * tileMap->tileChunkCountY * tileMap->tileChunkCountX +
+							tileChunkY * tileMap->tileChunkCountX +
+							tileChunkX];*/
+					int chunkCountY = 0;
+					int tileIndex = 500;
+
+					if (world2D->map->tiles[tileIndex]->id == 3)
+						updateTile(world2D->map, &world2D->sheet, 500, 9);
+					else if (world2D->map->tiles[tileIndex]->id == 9)
+						updateTile(world2D->map, &world2D->sheet, 500, 3);
 				}
 			}
-			Mon::movePlayer(world->map, p, &velocity, deltaTime);
+			Mon::movePlayer(world2D->map, p, &velocity, deltaTime);
+			 
+			// TODO(ck): link sprite position to camera...  
+			// https://www.reddit.com/r/gamedev/comments/7cnqpg/lerping_camera_position_causes_jitters_as_it/
 			// update sprite position 
-			p->sprite.pos = p->pos;
-			// TODO(ck): Update camera pos
-			// camera position = player position
+			
+			// this one is better explanation for why you shouldn't tie camera to player position and only to an offset
+			//https://gamedev.stackexchange.com/questions/2642/scrolling-2d-sprites-on-a-map-with-a-camera
 
-			//real32 playerGroundPointX = screenCenterX + metersToPixels * diff.dX;
-			//real32 playerGroundPointY = screenCenterY - metersToPixels * diff.dY;
-
-		
+			// positions should be relative to the map the camera shouldn't come into play with real positions..
 			camera.update(&p->pos, deltaTime);
+
+
+
+			// TODO(ck): These do not work but they prove that the camera is causing the jitter to happen.
+			// the player must be drawn relative to camera same with everything else
+			p->sprite.pos = p->pos;
+			
+			v2 windowSize = v2{ config->viewPort.w, config->viewPort.h };
+
+			// screenCoord(worldCoord) .. not working
+			//p->sprite.pos = v2{ p->pos.x - camera.pos.x, camera.pos.y - p->pos.y } + windowSize / 2.0f;
+			
+			//TODO(ck): This seems to be working??? I think the camera.update needs to process this though 
+			// it seems that its trying the sprite position to the camera position but the camera is still "looking" at the old player position?
+			// worldCoord(screenCoord) ???
+			//v2 q = p->pos - windowSize / 2.0f;
+			//p->sprite.pos = v2{ q.x + camera.pos.x, (q.y + camera.pos.y) };
+
+			// Get screen coords 
+			// world coord = screen coord - windowsize / 2
+			// worldcoord + cam.x, -(worldcoord.y - cam.y);
+			// mapping a world coordinate to 
+			
 		}
+#endif
+		// ending Game::update
 	}
 
 	void Game::render()
 	{
+#ifndef _3D_
 		MonGL::viewPort(&config->viewPort);
 
 		// TEST DRAW
@@ -559,21 +593,26 @@ namespace Mon
 		int projLoc = glGetUniformLocation(tileShader.handle, "projection");
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(camera.projectionMatrix()));
 
-		MonGL::drawMap(&tileShader, world->sheet.texture.id);
+		//MonGL::drawMap(&tileShader, world->sheet.texture.id);
+		drawTileMap(world2D->map, &tileShader, world2D->sheet.texture.id);
+
 
 		glUseProgram(shader.handle);
 		projLoc = glGetUniformLocation(shader.handle, "projection");
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(camera.projectionMatrix()));
 
-		for (unsigned int i = 0; i < world->entities.size(); ++i)
+		for (unsigned int i = 0; i < world2D->entities.size(); ++i)
 		{
 			//state->world->entities[i]->pos.x *= time;
 			//state->world->entities[i]->pos.y *= time;
-			MonGL::drawObject(&shader, &world->entities[i]->sprite);
+			MonGL::drawObject(&shader, &world2D->entities[i]->sprite);
 		}
 
 	
-		MonGL::drawObject(&shader, &world->player->sprite);
+		MonGL::drawObject(&shader, &world2D->player->sprite);
+
+#endif
+
 	}
 
 }

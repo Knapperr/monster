@@ -2,6 +2,19 @@
 
 namespace Mon
 {
+	void setTile(Tile* tile, int tileId, int offsetX, int offsetY)
+	{
+		tile->id = tileId;
+		tile->offsetX = offsetX;
+		tile->offsetY = offsetY;
+	}
+
+	void setTile(Tile* tile, Tile* newTile)
+	{
+		setTile(tile, newTile->id, newTile->offsetX, newTile->offsetY);
+	}
+
+
 	void initTileSheet(TileSheet* sheet, const char* fileName)
 	{
 		MonGL::LoadTextureFile(&sheet->texture, fileName, MonGL::Type::Diffuse, true, false, true);
@@ -15,69 +28,82 @@ namespace Mon
 		// need a way to save the map and all of that as well
 		// possibly have a lighter weight tilemap for when the game is actually running 
 		// that just reads off of a text file and instantly loads
+
+		// TODO(ck):
+		// SPLICE the tilesheet and figure out the offsets manually 
 		sheet->tileCount = 11;
 		sheet->tiles = new Tile[sheet->tileCount];
 
-		sheet->tiles[0].tileId = 0; // top
+		sheet->tiles[0].id = 0; // top
 		sheet->tiles[0].offsetX = 4;
 		sheet->tiles[0].offsetY = 2;
 
-		sheet->tiles[1].tileId = 1; // left
+		sheet->tiles[1].id = 1; // left
 		sheet->tiles[1].offsetX = 0;
 		sheet->tiles[1].offsetY = 4;
 
-		sheet->tiles[2].tileId = 2; // right
+		sheet->tiles[2].id = 2; // right
 		sheet->tiles[2].offsetX = 5;
 		sheet->tiles[2].offsetY = 5;
 
-		sheet->tiles[3].tileId = 3; // field
+		sheet->tiles[3].id = 3; // field
 		sheet->tiles[3].offsetX = 1;
 		sheet->tiles[3].offsetY = 0;
 
-		sheet->tiles[4].tileId = 4; // bottom left
+		sheet->tiles[4].id = 4; // bottom left
 		sheet->tiles[4].offsetX = 0;
 		sheet->tiles[4].offsetY = 7;
 
-		sheet->tiles[5].tileId = 5; // bottom right
+		sheet->tiles[5].id = 5; // bottom right
 		sheet->tiles[5].offsetX = 5;
 		sheet->tiles[5].offsetY = 7;
 
-		sheet->tiles[6].tileId = 6; // top right
+		sheet->tiles[6].id = 6; // top right
 		sheet->tiles[6].offsetX = 5;
 		sheet->tiles[6].offsetY = 2;
 
-		sheet->tiles[7].tileId = 7; // top left
+		sheet->tiles[7].id = 7; // top left
 		sheet->tiles[7].offsetX = 0;
 		sheet->tiles[7].offsetY = 2;
 
-		sheet->tiles[8].tileId = 8; // bottom
+		sheet->tiles[8].id = 8; // bottom
 		sheet->tiles[8].offsetX = 3;
 		sheet->tiles[8].offsetY = 6;
 
 
-		sheet->tiles[9].tileId = 9; // bush
+		sheet->tiles[9].id = 9; // bush
 		sheet->tiles[9].offsetX = 0;
 		sheet->tiles[9].offsetY = 1;
 
-		sheet->tiles[10].tileId = 10; // rock
+		sheet->tiles[10].id = 10; // rock
 		sheet->tiles[10].offsetX = 1;
 		sheet->tiles[10].offsetY = 1;
 
 	}
 
 	// TODO(ck): MEMORY MANAGEMENT
-	Tile* TileSheet::createTile(int tileId, int x, int y)
+	Tile* TileSheet::createTile(int tileId)
 	{
 		for (int i = 0; i < tileCount; ++i)
 		{
-			if (tiles[i].tileId == tileId)
+			if (tiles[i].id == tileId)
 			{
+
+				// TODO(ck): NOTE(ck): a Tile and a TileSheet can not be the same thing... all of the pointers are pointing to the same x and y coordinates
+				// this is because there is only ONE of that kind in the tile sheet so when you update the x and y its updating it to that which is fine for
+				// the sheet because we are just using the x and y of the new tile we grabbed it just always sets that old tile to the last one...
+				// this could have caused huge bugs later IMPORTANT(ck):
+				// newTile.x = x, newTile.y = y
 				Tile* newTile = &tiles[i];
-				newTile->x = x;
-				newTile->y = y;
 				return newTile;
 			}
 		}
+	}
+
+	Tile* TileSheet::getTile(int tileId)
+	{
+		Tile* newTile = &tiles[tileId];
+		return newTile;
 	}
 
 	void initTileMap(TileMap* map, TileSheet* sheet)
@@ -144,6 +170,7 @@ namespace Mon
 
 		int width = 16;
 		int height = 16;
+		
 		for (int y = 0; y < MAP_SIZE; ++y)
 		{
 			for (int x = 0; x < MAP_SIZE; ++x)
@@ -155,11 +182,43 @@ namespace Mon
 
 				if (testmap[y][x] != 99)
 				{
-					Tile tile = *sheet->createTile(testmap[y][x], x * width, y * height);
-					map->tiles.push_back(tile);
+					// TODO(ck): NOTE(ck): a Tile and a TileSheet can not be the same thing... all of the pointers are pointing to the same x and y coordinates
+					// this is because there is only ONE of that kind in the tile sheet so when you update the x and y its updating it to that which is fine for
+					// the sheet because we are just using the x and y of the new tile we grabbed it just always sets that old tile to the last one...
+					// this could have caused huge bugs later IMPORTANT(ck):
+					Tile sheetTile = *sheet->createTile(testmap[y][x]);
+					// TODO(ck): Copy constructor
+					Tile* newTile = new Tile();
+					newTile->id = sheetTile.id;
+					newTile->width = sheetTile.width;
+					newTile->height = sheetTile.height;
+					newTile->offsetX = sheetTile.offsetX;
+					newTile->offsetY = sheetTile.offsetY;
+					newTile->x = x * width;
+					newTile->y = y * width;
+					map->tiles.push_back(newTile);
 				}
 			}
 		}
+
+		MonGL::initTileMap(map->tiles.size());
+	}
+
+	void updateTile(TileMap* map, TileSheet* sheet, int tileIndex, int newTileId)
+	{
+		setTile(map->tiles[tileIndex], sheet->getTile(newTileId));
+	}
+
+	void drawTileMap(TileMap* map, MonGL::CommonProgram* shader, int textureID)
+	{
+		for (int i = 0; i < map->tiles.size(); ++i)
+		{
+			MonGL::fillBatch(map->tiles[i]->offsetX, map->tiles[i]->offsetY, map->tiles[i]->x, map->tiles[i]->y, 16);
+		}
+
+		MonGL::bindVertices();
+
+		MonGL::drawMap(shader, textureID);
 	}
 
 	void RecanonicalizeCoord(TileMap* tileMap, uint32_t* tile, float* tileRel)

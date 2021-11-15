@@ -1,6 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
+#define _3D_
 
 // TODO(ck): Glad, SDL should not be in the game layer
 #include <glad/glad.h>
@@ -14,7 +15,12 @@
 // the app just takes 
 #include "mon_terrain.h"
 #include "mon_gl_render.h"
+
+#ifndef _3D_
+#include "mon_world2D.h"
+#else 
 #include "mon_world.h"
+#endif
 
 
 
@@ -57,6 +63,7 @@ namespace Mon
 
 	//};
 
+	// TODO(ck): Extra data is irrelevant now because of the Shader Configs
 	struct extraData
 	{
 		float uJump = 0.25f;
@@ -78,56 +85,6 @@ namespace Mon
 		float waveLength = 12.0f;
 	};
 
-
-	// Use this for now
-	enum class Direction
-	{
-		LEFT,
-		RIGHT,
-		FORWARD,
-		BACKWARD
-	};
-
-	// Get to this starts pg49 Ian Millington
-	struct Particle
-	{
-		v3 pos;
-		v3 velocity;
-		v3 acceleration;
-		v3 orientation;
-		float gravity;
-
-		Direction dir = Direction::FORWARD;
-
-		float damping;
-		float inverseMass;
-
-		void integrate(float duration);
-		void clearAccumulator();
-
-		// TODO(ck): TEST REMOVE
-		float speed;
-
-	};
-
-	struct Collider
-	{
-		MonGL::RenderData data;
-		MonGL::ColliderSize size;
-	};
-
-
-	struct Entity
-	{
-		std::string name;
-		Particle particle;
-		MonGL::RenderData data;
-		MonGL::RenderSetup setup;
-		Collider collider;
-		
-		
-		int facingDir;
-	};
 
 	enum State
 	{
@@ -158,7 +115,9 @@ namespace Mon
 		// TODO(ck):
 		// DO NOT KEEP the shaders in the game and renderer like you did last time... 
 		// keep them in a structure that can be accessed globally instead keep it clean
-		World* world;
+#ifndef _3D_
+		World2D* world2D;
+#endif
 		Terrain* terrain;
 
 		Camera* cam;

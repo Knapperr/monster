@@ -289,6 +289,11 @@ void StatsWindow(bool* p_open, Mon::Game* game)
 	snprintf(buffer, sizeof(buffer), "%d", game->input.lMouseBtn.endedDown);
 	ImGui::LabelText(buffer, "left mouse down");
 
+	snprintf(buffer, sizeof(buffer), "%f", game->camera.pos.x);
+	ImGui::LabelText(buffer, "cam x");
+	snprintf(buffer, sizeof(buffer), "%f", game->camera.pos.y);
+	ImGui::LabelText(buffer, "cam y");
+	
 	//snprintf(buffer, sizeof(buffer), "%d", GuiActive(false));
 	//ImGui::LabelText(buffer, "gui active");
 
@@ -474,21 +479,21 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 
 #ifndef _3D_GUI_
 
-	ImGui::SliderFloat("Player Speed", &game->world->player->speed, 0.0f, 1000.0f);
+	ImGui::SliderFloat("Player Speed", &game->world2D->player->speed, 0.0f, 1000.0f);
 	ImGui::SliderFloat("camera lerp", &game->camera.lerpSpeed, 0.0f, 100.0f);
 	ImGui::SliderFloat("camera smooth", &game->camera.smoothness, 0.1f, 10.0f);
 
 	char buffer[64];
-	snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.x);
+	snprintf(buffer, sizeof(buffer), "%f", game->world2D->player->pos.x);
 	ImGui::LabelText("player x", buffer);
-	snprintf(buffer, sizeof(buffer), "%f", game->world->player->pos.y);
+	snprintf(buffer, sizeof(buffer), "%f", game->world2D->player->pos.y);
 	ImGui::LabelText("player y", buffer);
 	
 	ImGui::DragFloat("cam zoom", &game->camera.zoom, 0.1f, 1.0f, 200.0f, "%.02f");
-	//ImGui::SliderInt("Tile 0 ID: ", &game->world->map->tiles[0].tileId, 0, 3, NULL);
+	//ImGui::SliderInt("Tile 0 ID: ", &game->world2D->map->tiles[0].tileId, 0, 3, NULL);
 	
 	char entitysizebuf[64];
-	snprintf(entitysizebuf, sizeof(entitysizebuf), "%f", (float)game->world->entities.size());
+	snprintf(entitysizebuf, sizeof(entitysizebuf), "%f", (float)game->world2D->entities.size());
 
 
 #endif

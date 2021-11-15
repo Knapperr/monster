@@ -31,7 +31,7 @@ namespace Mon
 		// tile from the tile sheet to use
 		// The tile should actully just have offsets to draw the right tile from the 
 		// texture atlas or tile texture atlas
-		int tileId; // this links to the sprite
+		int id; // this links to the sprite
 
 		Tile()
 		{
@@ -39,20 +39,23 @@ namespace Mon
 			y = 0;
 			height = TILE_SIZE;
 			width = TILE_SIZE;
-			tileId = 0;
+			id = 0;
 			offsetX = 0;
 			offsetY = 0;
 		}
 
-		Tile(int id, float x, float y) : x(x), y(y)
+		Tile(int tileId, float x, float y) : x(x), y(y)
 		{
 			height = TILE_SIZE;
 			width = TILE_SIZE;
-			tileId = id;
+			id = tileId;
 			offsetX = 0;
 			offsetY = 0;
 		}
 	};
+
+	void setTile(Tile* tile, int tileId, int offsetX, int offsetY, float x, float y, int width, int height);
+	void setTile(Tile* tile);
 
 	struct TileSheet
 	{
@@ -62,8 +65,8 @@ namespace Mon
 		int gridX = TILE_SIZE;
 		int gridY = TILE_SIZE;
 
-		Tile* createTile(int tileId, int x, int y);
-
+		Tile* createTile(int tileId);
+		Tile* getTile(int tileId);
 		// this is the tile and the ones that get created for
 		// everytthing else the tile sheet creates tiles for the
 		// map that way we can also manipulate the tile sheet
@@ -81,17 +84,20 @@ namespace Mon
 
 	void initTileSheet(TileSheet* sheet, const char* fileName);
 
+
 	struct TileMap
 	{
 		//MonGL::BatchData* batch;
-		std::vector<Tile> tiles;
+		std::vector<Tile*> tiles;
 		float tileSideInMeters;
 		float metersToPixels;
 		int tileSideInPixels;
 	};
 
 	void initTileMap(TileMap* map, TileSheet* sheet);
+	void drawTileMap(TileMap* map, MonGL::CommonProgram* shader, int textureID);
 	TileMapPosition RecanonicalizePosition(TileMap* tileMap, TileMapPosition pos);
+	void updateTile(TileMap* map, TileSheet* sheet, int tileIndex, int newTileId);
 }
 
 #endif
