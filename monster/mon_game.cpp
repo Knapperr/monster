@@ -67,66 +67,13 @@ namespace Mon
 
 		mainShaderID = shader.handle;
 		
-		player = {};
-		player.name = "player";
-		player.setup = {};
-		MonGL::initQuad(&player.data);
-		MonGL::loadTexture(&player.data, MonGL::Type::Diffuse, shader.handle, "res/textures/p1SIDERIGHT.png");
-		MonGL::loadTexture(&player.data, MonGL::Type::Diffuse, shader.handle, "res/textures/p1.png");
-		MonGL::loadTexture(&player.data, MonGL::Type::Diffuse, shader.handle, "res/textures/p1SIDE.png");
-		MonGL::loadTexture(&player.data, MonGL::Type::Diffuse, shader.handle, "res/textures/p1BACK.png");
-		player.facingDir = 0;
-		
-		MonGL::initBoundingBox(&player.collider.data, &player.collider.size);
-		player.particle.pos = v3(40.0f, 0.1f, 10.0);
-		player.particle.inverseMass = 10.0f;
-		player.particle.velocity = v3(0.0f, 0.0f, 0.0f); // 35m/s
-		player.particle.gravity = 10.0f;
-		player.particle.acceleration = v3(-40.0f, 0.0f, 0.0f);
-		player.particle.orientation = v3(1.0f, 1.0f, 1.0);
-		player.particle.damping = 0.9f;
-		player.particle.speed = 50.0f;
 
-		player.data.mat.ambient = v3(1.0f, 0.5f, 0.6f);
-		player.data.mat.diffuse = v3(1.0f, 0.5f, 0.31f);
-		player.data.mat.specular = v3(0.5f, 0.5f, 0.5f);
-		player.data.mat.shininess = 32.0f;
 
-		for (int i = 0; i < 10; ++i)
-		{
-			Entity tree = {};
-			tree.setup = {};
-			tree.name = "tree_" + std::to_string(i);
-			MonGL::initQuad(&tree.data);
-			MonGL::loadTexture(&tree.data, MonGL::Type::Diffuse, shader.handle, "res/textures/tree.png");
-			tree.particle.pos = v3(6.0f * (i + 1), 6.80f, 5.5f * i);
-			entities.push_back(tree);
-		}
 
-		for (int i = 0; i < 10; ++i)
-		{
-			Entity flower = {};
-			flower.setup = {};
-			flower.name = "flower_" + std::to_string(i);
-			MonGL::initQuad(&flower.data);
-			MonGL::loadTexture(&flower.data, MonGL::Type::Diffuse, shader.handle, "res/textures/sflow_tall.png");
-			flower.particle.pos = v3(10.0f, 0.1f, 6.0f);
-			
-			entities.push_back(flower);
-		}
-
-		for (int i = 0; i < 4; ++i)
-		{
-			Entity entity = {};
-			entity.setup = {};
-			entity.name = "enemy_" + std::to_string(i);
-			MonGL::initBoundingBox(&entity.collider.data, &entity.collider.size); 
-			entity.particle.pos = v3((8.0f * (i + 1)), 0.1f, 1.5f * i);
-			mat4 model = mat4(1.0f);
-			entity.collider.data.worldMatrix = glm::translate(model, entity.particle.pos);
-			entity.collider.data.color = v3(0.0f, 0.0f, 0.0f);
-			enemies.push_back(entity);
-		}
+		// TODO(ck): MEMORY MANAGEMENT
+		world = new World();
+		initWorld(world, shader.handle);
+		initPlayer(world, shader.handle);
 
 		light = {};
 		v3 lightColor = v3(0.2f, 0.3f, 0.6f);
@@ -136,8 +83,9 @@ namespace Mon
 		light.pos = v3(16.0f, 10.0f, 16.0f);
 
 
-		water = {};
-		MonGL::initDistortedWater(&water.data, &water.setup);
+		//water = {};
+		//MonGL::initDistortedWater(&water.data, &water.setup);
+		
 		//MonGL::initDistortedWater(water.data, wa)
 		//MonGL::initQuad(&water.data);
 		//MonGL::loadTexture(&water.data, MonGL::Type::Diffuse, shader.handle, "res/textures/water/uv.png");
@@ -197,54 +145,54 @@ namespace Mon
 		{
 			*velocity *= (1.0f / squareRoot(velocityLength));
 		}
-		*velocity *= player.particle.speed;
+		*velocity *= world->player->particle.speed;
 
-		*velocity += -7.0f * player.particle.velocity;
+		*velocity += -7.0f * world->player->particle.velocity;
 
 		
-		v3 oldPos = player.particle.pos;
+		v3 oldPos = world->player->particle.pos;
 		v3 newPos = oldPos;
-		float deltaX = (0.5f * velocity->x * square(deltaTime) + player.particle.velocity.x * deltaTime);
-		float deltaY = player.particle.velocity.y;
+		float deltaX = (0.5f * velocity->x * square(deltaTime) + world->player->particle.velocity.x * deltaTime);
+		float deltaY = world->player->particle.velocity.y;
 		//float deltaY = velocity->y * square(deltaTime) + player.particle.velocity.y * deltaTime);
-		float deltaZ = (0.5f * velocity->z * square(deltaTime) + player.particle.velocity.z * deltaTime);
+		float deltaZ = (0.5f * velocity->z * square(deltaTime) + world->player->particle.velocity.z * deltaTime);
 		v3 delta = { deltaX, deltaY, deltaZ };
 
 		// TODO(ck): need to set an offest like casey does
 		newPos += delta;
 
 
-		player.particle.velocity.x = velocity->x * deltaTime + player.particle.velocity.x;
-		player.particle.velocity.z = velocity->z * deltaTime + player.particle.velocity.z;
+		world->player->particle.velocity.x = velocity->x * deltaTime + world->player->particle.velocity.x;
+		world->player->particle.velocity.z = velocity->z * deltaTime + world->player->particle.velocity.z;
 
-		player.particle.pos = newPos;
+		world->player->particle.pos = newPos;
 
 
-		if ((player.particle.velocity.x == 0.0f) && (player.particle.velocity.z == 0.0f))
+		if ((world->player->particle.velocity.x == 0.0f) && (world->player->particle.velocity.z == 0.0f))
 		{
 			// NOTE(ck): Leave facingDirection whatever it was 
 		}
-		else if (absoluteValue(player.particle.velocity.x) > absoluteValue(player.particle.velocity.z))
+		else if (absoluteValue(world->player->particle.velocity.x) > absoluteValue(world->player->particle.velocity.z))
 		{
-			if (player.particle.velocity.x > 0)
+			if (world->player->particle.velocity.x > 0)
 			{
-				player.facingDir = 0; // right
+				world->player->facingDir = 0; // right
 			}
 			else
 			{
-				player.facingDir = 2; // left
+				world->player->facingDir = 2; // left
 			}
 		}
 		else
 		{
-			if (player.particle.velocity.z > 0)
+			if (world->player->particle.velocity.z > 0)
 			{
-				player.facingDir = 1; // back
+				world->player->facingDir = 1; // back
 
 			}
 			else
 			{
-				player.facingDir = 3; // front
+				world->player->facingDir = 3; // front
 			}
 
 		}
@@ -315,7 +263,7 @@ namespace Mon
 		//float y = (2.0f * (mouseY - yOffset)) / (float)displayHeight - 1.0f;
 		//input.mouseOffset.x -= config->viewPort.x;
 		//input.mouseOffset.y -= config->viewPort.y;
-		cam->update(deltaTime, &input, player.particle.pos, player.particle.orientation, true);
+		cam->update(deltaTime, &input, world->player->particle.pos, world->player->particle.orientation, true);
 
 		//if (simulate == true)
 			//player.particle.integrate(deltaTime);
@@ -323,9 +271,9 @@ namespace Mon
 
 		// TODO(ck): Give player pos matrix
 		mat4 model = mat4(1.0f);
-		float colliderPosX = player.particle.pos.x - (0.5f);
-		float colliderPosZ = player.particle.pos.z - (0.5f);
-		player.collider.data.worldMatrix = translate(model, v3(colliderPosX, -0.2f, colliderPosZ));
+		float colliderPosX = world->player->particle.pos.x - (0.5f);
+		float colliderPosZ = world->player->particle.pos.z - (0.5f);
+		world->player->collider.data.worldMatrix = translate(model, v3(colliderPosX, -0.2f, colliderPosZ));
 	}
 
 	void Game::render(double dt)
@@ -351,22 +299,23 @@ namespace Mon
 
 
 		if (drawCollisions)
-			MonGL::drawBoundingBox(&player.collider.data, player.collider.size, player.particle.pos, cam->pos, proj, view, shader.handle);
+			MonGL::drawBoundingBox(&world->player->collider.data, world->player->collider.size, world->player->particle.pos, cam->pos, proj, view, shader.handle);
 
-		MonGL::drawQuad(config, &player.data, player.particle.pos, v3(1.0f), cam->pos, shader.handle, player.facingDir);
+		MonGL::drawQuad(config, &world->player->data, world->player->particle.pos, v3(1.0f), cam->pos, shader.handle, world->player->facingDir);
 
-		for (auto& e : enemies)
+		//for (auto& e : enemies)
+		//{
+		//	MonGL::drawBoundingBox(&e.collider.data, e.collider.size, e.particle.pos, cam->pos, proj, view, shader.handle);
+		//}
+
+		for (int i = 1; i < world->entityCount; ++i)
 		{
-			MonGL::drawBoundingBox(&e.collider.data, e.collider.size, e.particle.pos, cam->pos, proj, view, shader.handle);
-		}
-		for (auto& e : entities)
-		{
-
+			Entity e = world->entities[i];
 			MonGL::drawQuad(config, &e.data, e.particle.pos, v3(16.0f, 16.0f, 1.0f), cam->pos, shader.handle);
 		}
 		
-		glUseProgram(waterShader.common.handle);
-		MonGL::drawWater(&water.data, &water.setup, &waterShader, &light, water.particle.pos, v3(10.0f), cam->pos, waterShader.common.handle);
+		//glUseProgram(waterShader.common.handle);
+		//MonGL::drawWater(&water.data, &water.setup, &waterShader, &light, water.particle.pos, v3(10.0f), cam->pos, waterShader.common.handle);
 		//MonGL::drawQuad(config, &water.data, water.particle.pos, v3(5.0f), cam.pos, shader.handle);
 
 	}
@@ -374,8 +323,8 @@ namespace Mon
 	void Game::cleanUp()
 	{
 		// TODO(ck): clean up render data 
-		glDeleteVertexArrays(1, &player.data.VAO);
-		glDeleteBuffers(1, &player.data.VBO);
+		glDeleteVertexArrays(1, &world->player->data.VAO);
+		glDeleteBuffers(1, &world->player->data.VBO);
 
 		MonGL::DeleteShader(&shader);
 	}

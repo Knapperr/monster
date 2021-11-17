@@ -21,10 +21,31 @@ namespace MonGL
 
 	void initQuad(RenderData* data, bool tangents)
 	{
-		data->vertices.push_back({ v3(0.5f, 0.5f, 0.0f), v3(1.0f, 1.0f, 1.0f), v2(1.0f, 1.0f) });
+		
+
+		/*data->vertices.push_back({ v3(0.5f, 0.5f, 0.0f), v3(1.0f, 1.0f, 1.0f), v2(1.0f, 1.0f) });
 		data->vertices.push_back({ v3(0.5f, -0.5f, 0.0f), v3(1.0f, 1.0f, 1.0f), v2(1.0f, 0.0f) });
 		data->vertices.push_back({ v3(-0.5f,-0.5f, 0.0f), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 0.0f) });
-		data->vertices.push_back({ v3(-0.5f, 0.5f, 0.0f), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 1.0f) });
+		data->vertices.push_back({ v3(-0.5f, 0.5f, 0.0f), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 1.0f) });*/
+		data->vertices[0] = {};
+		data->vertices[0].position = v3(0.5f, 0.5f, 0.0f);
+		data->vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[0].texCoords = v2(1.0f, 1.0f);
+
+		data->vertices[1] = {};
+		data->vertices[1].position = v3(0.5f, -0.5f, 0.0f);
+		data->vertices[1].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[1].texCoords = v2(1.0f, 0.0f);
+
+		data->vertices[2] = {};
+		data->vertices[2].position = v3(-0.5f, -0.5f, 0.0f); 
+		data->vertices[2].normal = v3(1.0f, 1.0f, 1.0f); 
+		data->vertices[2].texCoords = v2(0.0f, 0.0f);
+		
+		data->vertices[3] = {};
+		data->vertices[3].position = v3(-0.5f, 0.5f, 0.0f);
+		data->vertices[3].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[3].texCoords = v2(0.0f, 1.0f);
 
 		// TODO(ck): split out
 		if (tangents)
@@ -69,7 +90,8 @@ namespace MonGL
 
 		glBindVertexArray(data->VAO);
 		glBindBuffer(GL_ARRAY_BUFFER, data->VBO);
-		glBufferData(GL_ARRAY_BUFFER, data->vertices.size() * sizeof(Vertex3D), &data->vertices[0], GL_STATIC_DRAW);
+		//glBufferData(GL_ARRAY_BUFFER, data->vertices.size() * sizeof(Vertex3D), &data->vertices[0], GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(data->vertices), data->vertices, GL_STATIC_DRAW);
 		
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
@@ -113,23 +135,41 @@ namespace MonGL
 		data->lineWidth = 2;
 		data->color = v3(1.0f, 0.0f, 1.0f);
 
-		data->vertices.push_back({ v3(-0.5, -0.5, -0.5), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 0.0f) });
-		data->vertices.push_back({ v3(0.5, -0.5, -0.5), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 0.0f) });
-		data->vertices.push_back({ v3(0.5, 0.5, -0.5), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 0.0f) });
-		data->vertices.push_back({ v3(-0.5, 0.5, -0.5), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 0.0f) });
-		
-		data->vertices.push_back({ v3(-0.5, -0.5, 0.5), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 0.0f) });
-		data->vertices.push_back({ v3(0.5, -0.5, 0.5), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 0.0f) });
-		data->vertices.push_back({ v3(0.5, 0.5, 0.5), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 0.0f) });
-		data->vertices.push_back({ v3(-0.5, 0.5, 0.5), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 0.0f) });
+		Vertex3D vertices[8];
+		vertices[0].position = v3(-0.5, -0.5, -0.5);
+		vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[0].texCoords = v2(0.0f, 0.0f);
+		vertices[1].position  = v3(0.5, -0.5, -0.5);
+		vertices[1].normal    = v3(1.0f, 1.0f, 1.0f);
+		vertices[1].texCoords = v2(0.0f, 0.0f);
+		vertices[2].position = v3(0.5, 0.5, -0.5);
+		vertices[2].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[2].texCoords = v2(0.0f, 0.0f);
+		vertices[3].position = v3(-0.5, 0.5, -0.5);
+		vertices[3].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[3].texCoords = v2(0.0f, 0.0f);
 
+		vertices[4].position = v3(-0.5, -0.5, 0.5);
+		vertices[4].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[4].texCoords = v2(0.0f, 0.0f);
+		vertices[5].position = v3(0.5, -0.5, 0.5);
+		vertices[5].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[5].texCoords = v2(0.0f, 0.0f);
+		vertices[6].position = v3(0.5, 0.5, 0.5);
+		vertices[6].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[6].texCoords = v2(0.0f, 0.0f);
+		vertices[7].position = v3(-0.5, 0.5, 0.5);
+		vertices[7].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[7].texCoords = v2(0.0f, 0.0f);
+	
 		glGenVertexArrays(1, &data->VAO);
 		glGenBuffers(1, &data->VBO);
 		glBindBuffer(GL_ARRAY_BUFFER, data->VBO);
 #if 0
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(data->vertices), data->vertices, GL_STATIC_DRAW);
 #endif
-		glBufferData(GL_ARRAY_BUFFER, data->vertices.size() * sizeof(Vertex3D), &data->vertices[0], GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 		glBindVertexArray(data->VAO);
 		
 		GLushort elements[] = {
@@ -403,7 +443,12 @@ namespace MonGL
 		const int SIZE = 64;
 		const int VERTEX_COUNT = 16;
 		
-		data->vertices.resize(VERTEX_COUNT * VERTEX_COUNT);
+		//Vertex3D vertices[VERTEX_COUNT * VERTEX_COUNT];
+		Vertex3D* vertices = new Vertex3D[VERTEX_COUNT * VERTEX_COUNT];
+		int verticeLength = VERTEX_COUNT * VERTEX_COUNT;
+		
+
+		//data->vertices.resize(VERTEX_COUNT * VERTEX_COUNT);
 
 		// TODO(ck): Memory Allocation
 		int* indices = new int[6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1)];
@@ -415,18 +460,19 @@ namespace MonGL
 		{
 			for (int j = 0; j < VERTEX_COUNT; ++j)
 			{
-				data->vertices[index].position.x = (float)j / ((float)VERTEX_COUNT - 1) * SIZE;
+				vertices[index] = {};
+				vertices[index].position.x = (float)j / ((float)VERTEX_COUNT - 1) * SIZE;
 
-				data->vertices[index].position.y = -0.3f;
+				vertices[index].position.y = -0.3f;
 
-				data->vertices[index].position.z = (float)i / ((float)VERTEX_COUNT - 1) * SIZE;
+				vertices[index].position.z = (float)i / ((float)VERTEX_COUNT - 1) * SIZE;
 
-				data->vertices[index].normal.x = 0;
-				data->vertices[index].normal.y = 1;
-				data->vertices[index].normal.z = 0;
+				vertices[index].normal.x = 0;
+				vertices[index].normal.y = 1;
+				vertices[index].normal.z = 0;
 				
-				data->vertices[index].texCoords.x = (float)j / ((float)VERTEX_COUNT - 1);
-				data->vertices[index].texCoords.y = (float)i / ((float)VERTEX_COUNT - 1);
+				vertices[index].texCoords.x = (float)j / ((float)VERTEX_COUNT - 1);
+				vertices[index].texCoords.y = (float)i / ((float)VERTEX_COUNT - 1);
 				++index;
 			}
 		}
@@ -457,7 +503,9 @@ namespace MonGL
 
 		glBindVertexArray(data->VAO);
 		glBindBuffer(GL_ARRAY_BUFFER, data->VBO);
-		glBufferData(GL_ARRAY_BUFFER, data->vertices.size() *sizeof(Vertex3D), &data->vertices[0], GL_STATIC_DRAW);
+		//glBufferData(GL_ARRAY_BUFFER, data->vertices.size() * sizeof(Vertex3D), &data->vertices[0], GL_STATIC_DRAW);
+		//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, verticesLength * sizeof(Vertex3D), vertices, GL_STATIC_DRAW);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, data->elementLength * sizeof(int), indices, GL_STATIC_DRAW);
@@ -474,6 +522,7 @@ namespace MonGL
 
 		// unbind
 		glBindVertexArray(0);
+		delete[] vertices;
 		delete[] indices;
 
 		data->mat = {};

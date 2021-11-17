@@ -71,7 +71,8 @@ float Terrain::lookUpHeight(int x, int z)
 	// NOTE(ck): Mine should be different than this
 	// int i = (x + 1) + ((z + 1) * (VERTEX_COUNT + 3));
 	int i = (x + 1) + ((z + 1) * (VERTEX_COUNT));
-	return mesh.vertices[i].position.y;
+	return 0.0f;
+	//return mesh.vertices[i].position.y;
 }
 
 /*

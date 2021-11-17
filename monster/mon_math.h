@@ -10,6 +10,8 @@
 
 namespace Mon
 {
+#define ArrayCount(Array) (sizeof(Array) / sizeof((Array)[0]))
+
 	// TODO(ck): Slowly remove glm
 	typedef glm::vec2 v2;
 	typedef glm::vec3 v3;

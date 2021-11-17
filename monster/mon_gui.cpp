@@ -8,12 +8,12 @@
 // TODO(ck): open files with current platform layer
 // COPY MEMORY TO FILE and read it in
 #include <fstream>
-void writeEntities(std::vector<Mon::Entity>& entities, int shaderID)
+void writeEntities(Mon::Entity* entities, int shaderID)
 {
 	std::ofstream file;
 	file.open("scene_1.txt");
 
-	for (int i = 0; i < entities.size(); ++i)
+	for (int i = 0; i < ArrayCount(entities); ++i)
 	{
 		file << entities[i].name << "\n"
 			<< entities[i].particle.pos.x << "\n" << entities[i].particle.pos.y << "\n" << entities[i].particle.pos.z << "\n"
@@ -29,7 +29,7 @@ void loadEntities(Mon::Game* game)
 {
 	// TODO(ck): memory management should probably have something in the list to only reload part of it
 	// READ MEMORY FROM FILE
-	game->entities.clear();
+	//game->entities.clear();
 
 	std::string line;
 	std::ifstream file("scene_1.txt");
@@ -55,7 +55,7 @@ void loadEntities(Mon::Game* game)
 
 		MonGL::initQuad(&e.data);
 		MonGL::loadTexture(&e.data, MonGL::Type::Diffuse, shaderID, textPath);
-		game->entities.push_back(e);
+		//game->entities.push_back(e);
 
 	}
 	
@@ -167,10 +167,10 @@ void EntityWindow(bool* p_open, Mon::Game* game)
 	static unsigned int selected = 0;
 	ImGui::BeginChild("left pane", ImVec2(150.0f, 0.0f), true);
 	
-	for (unsigned int i = 0; i < game->entities.size(); ++i)
+	for (unsigned int i = 0; i < ArrayCount(game->world->entities); ++i)
 	{
 		char label[128];
-		sprintf_s(label, "%s %d", game->entities[i].name.c_str(), i);
+		sprintf_s(label, "%s %d", game->world->entities[i].name.c_str(), i);
 		if (ImGui::Selectable(label, selected == i))
 		{
 			selected = i;
@@ -187,12 +187,12 @@ void EntityWindow(bool* p_open, Mon::Game* game)
 	ImGui::EndChild();
 	ImGui::SameLine();
 
-	if (game->entities.empty() == false)
+	if (ArrayCount(game->world->entities) > 0)
 	{
 		ImGui::BeginGroup();
 		ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
 		
-		ImGui::Text("%s", game->entities[selected].name.c_str());
+		ImGui::Text("%s", game->world->entities[selected].name.c_str());
 
 		// TODO(ck): Model loading modal
 		// Modal for loading meshes
@@ -224,9 +224,9 @@ void EntityWindow(bool* p_open, Mon::Game* game)
 				//ImGui::SliderFloat("scale", &game->entities[selected].data.size.max, 0.0f, 200.0f);
 				//ImGui::DragFloat("fine scale", &game->entities[selected].data.size, 0.0001f, 0.0f, 200.0f, "%.02f");
 
-				ImGui::DragFloat("x", &game->entities[selected].particle.pos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");
-				ImGui::DragFloat("y", &game->entities[selected].particle.pos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
-				ImGui::DragFloat("z", &game->entities[selected].particle.pos.z, 0.1f, -1000.0f, 1000.0f, "%.02f");
+				ImGui::DragFloat("x", &game->world->entities[selected].particle.pos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");
+				ImGui::DragFloat("y", &game->world->entities[selected].particle.pos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
+				ImGui::DragFloat("z", &game->world->entities[selected].particle.pos.z, 0.1f, -1000.0f, 1000.0f, "%.02f");
 
 				//ImGui::DragFloat("rot x", &g_Game->objects[selected]->orientation.x, 0.05f, -1000.0f, 1000.0f, "%.02f");
 				//ImGui::DragFloat("rot y", &g_Game->objects[selected]->orientation.y, 0.05f, -1000.0f, 1000.0f, "%.02f");
@@ -301,17 +301,17 @@ void StatsWindow(bool* p_open, Mon::Game* game)
 // 3D STATS
 //
 #ifdef _3D_GUI_
-	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.x);
-	ImGui::LabelText(buffer, "player x");
-	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.y);
-	ImGui::LabelText(buffer, "player y");
-	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.z);
-	ImGui::LabelText(buffer, "player z");
+	//snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.x);
+	//ImGui::LabelText(buffer, "player x");
+	//snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.y);
+	//ImGui::LabelText(buffer, "player y");
+	//snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.z);
+	//ImGui::LabelText(buffer, "player z");
 
-	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.velocity.x);
-	ImGui::LabelText(buffer, "player velocity");
-	snprintf(buffer, sizeof(buffer), "%f", game->player.particle.acceleration.x);
-	ImGui::LabelText(buffer, "player acc");
+	//snprintf(buffer, sizeof(buffer), "%f", game->player.particle.velocity.x);
+	//ImGui::LabelText(buffer, "player velocity");
+	//snprintf(buffer, sizeof(buffer), "%f", game->player.particle.acceleration.x);
+	//ImGui::LabelText(buffer, "player acc");
 
 	snprintf(buffer, sizeof(buffer), "%f", game->cam->pos.x);
 	ImGui::LabelText(buffer, "cam x");
@@ -383,11 +383,11 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 	ImGui::Separator();
 		if (ImGui::Button("debug")) { game->debugMode(); }
 		ImGui::SameLine();
-		if (ImGui::Button("play")) { game->playMode(); }
+		if (ImGui::Button("play") && game->state != Mon::State::Play) { game->playMode(); }
 		ImGui::SameLine();
 		if (ImGui::Button("save")) 
 		{ 
-			writeEntities(game->entities, game->mainShaderID); 
+			writeEntities(game->world->entities, game->mainShaderID); 
 			Mon::Log::print("Saved game to master file");
 			Mon::Log::warn("Only one master save file active!!!");
 		}
@@ -454,15 +454,15 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 		ImGui::LabelText("", "Player");
 		if (ImGui::SmallButton("reset Pos"))
 		{
-			game->player.particle.pos.y = 0.1f;
-			game->player.particle.pos.x = 10.0f;
-			game->player.particle.pos.z = 10.0f;
+			//game->player.particle.pos.y = 0.1f;
+			//game->player.particle.pos.x = 10.0f;
+			//game->player.particle.pos.z = 10.0f;
 		}
-		ImGui::SliderFloat("speed", &game->player.particle.speed, 0.0f, 100.0f);
-		ImGui::SliderFloat3("lightpos", &game->light.pos[0], 0.0f, 500.0f);
-		ImGui::SliderFloat3("color", &game->player.collider.data.color[0], 0.0f, 1.0f);
-		ImGui::SliderFloat3("min", &game->player.collider.size.min[0], 0.0f, 50.0f);
-		ImGui::SliderFloat3("max", &game->player.collider.size.max[0], 0.0f, 50.0f);
+		//ImGui::SliderFloat("speed", &game->player.particle.speed, 0.0f, 100.0f);
+		//ImGui::SliderFloat3("lightpos", &game->light.pos[0], 0.0f, 500.0f);
+		//ImGui::SliderFloat3("color", &game->player.collider.data.color[0], 0.0f, 1.0f);
+		//ImGui::SliderFloat3("min", &game->player.collider.size.min[0], 0.0f, 50.0f);
+		//ImGui::SliderFloat3("max", &game->player.collider.size.max[0], 0.0f, 50.0f);
 	
 
 		ImGui::Checkbox("simulate", &game->simulate);

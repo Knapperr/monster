@@ -65,7 +65,8 @@ namespace MonGL
 	// for now we need the RenderData to hold our vertices and textures though.
 	struct RenderData
 	{
-		std::vector<Vertex3D> vertices;
+		//std::vector<Vertex3D> vertices;
+		Vertex3D vertices[4];
 
 		unsigned int VAO;
 		unsigned int VBO;

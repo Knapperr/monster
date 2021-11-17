@@ -64,26 +64,26 @@ namespace Mon
 	//};
 
 	// TODO(ck): Extra data is irrelevant now because of the Shader Configs
-	struct extraData
-	{
-		float uJump = 0.25f;
-		float vJump = 0.25f;
-		float tiling = 1.0f;
-		float speed = 0.2f;
-		float flowStrength = 0.07f;
-		float flowOffset = -0.207f;
-		float heightScale = 0.1f;
-		float heightScaleModulated = 9.0f;
-		float gridResolution = 10.0f;
-		float tilingModulated = 50.0f;
-		bool dualGrid = false;
+	//struct extraData
+	//{
+	//	float uJump = 0.25f;
+	//	float vJump = 0.25f;
+	//	float tiling = 1.0f;
+	//	float speed = 0.2f;
+	//	float flowStrength = 0.07f;
+	//	float flowOffset = -0.207f;
+	//	float heightScale = 0.1f;
+	//	float heightScaleModulated = 9.0f;
+	//	float gridResolution = 10.0f;
+	//	float tilingModulated = 50.0f;
+	//	bool dualGrid = false;
 
-	};
+	//};
 
-	struct WaterData : extraData
-	{
-		float waveLength = 12.0f;
-	};
+	//struct WaterData : extraData
+	//{
+	//	float waveLength = 12.0f;
+	//};
 
 
 	enum State
@@ -117,6 +117,8 @@ namespace Mon
 		// keep them in a structure that can be accessed globally instead keep it clean
 #ifndef _3D_
 		World2D* world2D;
+#else
+		World* world;
 #endif
 		Terrain* terrain;
 
@@ -127,10 +129,8 @@ namespace Mon
 		MonGL::Config* config;
 
 		// TODO(ck): Use one container
-		//EntityTwo* entites;
-		Entity player;
-		Entity water;
-		std::vector<Entity> entities;
+		//Entity player;
+		//Entity water;
 		std::vector<Entity> enemies;
 		bool simulate;
 		bool drawCollisions;
