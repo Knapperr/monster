@@ -4,14 +4,17 @@
 #include "sdl_platform.h"
 #include <iostream>
 
-// TODO(ck): include gui instead of sdl_platform
-
 class App
 {
 public:
 	Settings settings;
 	Mon::Platform* platform; /* SDLPlatform */
+
+#ifdef _3D_
 	Mon::Game* game;
+#else 
+	Mon::Game2D* game2D;
+#endif
 	Mon::Input* oldInput;
 	Mon::Input* newInput;
 	bool running = true;

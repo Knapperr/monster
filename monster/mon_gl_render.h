@@ -65,25 +65,22 @@ namespace MonGL
 	// for now we need the RenderData to hold our vertices and textures though.
 	struct RenderData
 	{
-		//std::vector<Vertex3D> vertices;
 		Vertex3D vertices[4];
 
 		unsigned int VAO;
 		unsigned int VBO;
 		unsigned int IBO;
 		int elementLength;
-		Material mat;
 		int lineWidth;
-		v3 color;
-		// TODO(ck): Shouldn't be here? 
-		// should be initCollider i guess?
-		// this isn't just a position its a MATRIX its ALL of the 
-		// information its the rotation, position the size of it...
-		std::vector<Texture> textures;
-		std::string texturePath;
-		int selectedTexture;
 
+		v3 color;
 		mat4 worldMatrix;
+
+		std::string texturePath;
+		Texture textures[4];
+		int selectedTexture;
+		Material mat;
+
 		// TODO(ck): More collider specific info
 
 		//float pos;
@@ -153,36 +150,39 @@ namespace MonGL
 		bool wireFrame;
 	};
 
-	void beginRender(Config* config, mat4 projection, mat4 view, int shaderID);
-	void viewPort(Rect* port);
-	void initQuad(RenderData* data, bool tangents = false);
-	void loadTexture(RenderData* data, Type type, int shaderID, std::string path);
-	void initBoundingBox(RenderData* data, ColliderSize* size);
-	void drawQuad(Config* config, RenderData* data,
+	void BeginRender(Config* config, mat4 projection, mat4 view, int shaderID);
+	void ViewPort(Rect* port);
+	
+	void InitQuad(RenderData* data, bool tangents = false);
+	void InitBoundingBox(RenderData* data, ColliderSize* size);
+	void InitDistortedWater(RenderData* renderData, RenderSetup* setup);
+	void GenerateTerrain(RenderData* data);
+	void LoadTexture(RenderData* data, int index, Type type, int shaderID, std::string path);
+	
+	void DrawQuad(Config* config, RenderData* data,
 						 v3 playerPos, v3 scale, v3 camPos,
 						 unsigned int shaderID, int selectedTexture = 0);
-	void initDistortedWater(RenderData* renderData, RenderSetup* setup);
-	void drawWater(RenderData* data, RenderSetup* setup, WaterDataProgram* waterData, Light* light, v3 pos, v3 scale, v3 camPos, unsigned int shaderID);
-	void drawBoundingBox(RenderData* data,
-						 ColliderSize size,
+	void DrawWater(RenderData* data, RenderSetup* setup, WaterDataProgram* waterData, Light* light, v3 pos, v3 scale, v3 camPos, unsigned int shaderID);
+	void DrawBoundingBox(RenderData* data, ColliderSize size,
 					 v3 playerPos, v3 camPos,
 					 mat4 projection, mat4 view,
 					 unsigned int shaderID);
-
-	void generateTerrain(RenderData* data);
-	void drawTerrain(unsigned int shaderID, RenderData* data, Light* light, mat4 projection, mat4 view, v3 camPos);
+	void DrawTerrain(unsigned int shaderID, RenderData* data, Light* light, mat4 projection, mat4 view, v3 camPos);
 
 
+
+	//
 	// 2d
-	void initRenderData2D(RenderData2D* sprite);
+	//
+	void InitRenderData2D(RenderData2D* sprite);
 	
-	void initTileMap(int tileAmount);
-	void fillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize);
-	void bindVertices();
+	void InitTileMap(int tileAmount);
+	void FillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize);
+	void BindVertices();
 	
-	void drawObject(CommonProgram* shader, RenderData2D* data);
-	void drawMap(CommonProgram* shader, unsigned int textureID);
-	void drawMap(CommonProgram* shader, unsigned int textureID, int batchThing);
+	void DrawObject(CommonProgram* shader, RenderData2D* data);
+	void DrawMap(CommonProgram* shader, unsigned int textureID);
+	void DrawMap(CommonProgram* shader, unsigned int textureID, int batchThing);
 
 
 }

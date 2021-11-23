@@ -58,6 +58,19 @@ namespace Mon
 
 	}
 
+	void Log::print(const char* title, float msg)
+	{
+		printf("[INFO]: %s: %f\n", title, msg);
+		file << "[INFO]:" << title << ': ' << msg << '\n';
+	}
+
+	void Log::print(const char* title, float a, float b)
+	{
+		printf("[INFO]: %s: %f, %f\n", title, a, b);
+		file << "[INFO]:" << title << ' ' << a << ', ' << b << '\n';
+
+	}
+
 	void Log::warn(const char* msg)
 	{
 		printf("[WARN]: %s\n", msg);

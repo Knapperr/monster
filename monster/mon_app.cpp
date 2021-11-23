@@ -1,8 +1,5 @@
 #include "mon_app.h"
 
-
-#define ArrayCount(Array) (sizeof(Array) / sizeof((Array)[0]))
-
 struct Timer
 {
 	uint64_t diff;
@@ -40,13 +37,14 @@ bool App::init()
 	newInput = new Mon::Input();
 	//oldInput = &input[0];
 	//newInput = &input[1];
+#ifdef _3D_
 	game = new Mon::Game();
 
-#ifdef _3D_
 	if (!game->init(settings.width, settings.height))
 		return false;
 #else
-	if (!game->init(1))
+	game2D = new Mon::Game2D();
+	if (!game2D->init(1))
 		return false;
 #endif
 
@@ -169,7 +167,7 @@ void App::run()
 				// TODO(ck): I think I need to reset my inputs here like switch between states
 				// that means I would have to remove the resetting of states to be in here 
 				// maybe platform->clear() or something like that
-				game->update(delta, newInput, 1);
+				game2D->update(delta, newInput, 1);
 #endif
 			}
 		}
@@ -188,12 +186,16 @@ void App::run()
 #ifdef _3D_
 		game->render(1);
 #else
-		game->render(); // NOTE(ck): 2D
+		game2D->render();
 #endif
 
 		if (showGUI)
 		{ 
+#ifdef _3D_
 			UpdateGui(platform->window, &settings, game);
+#else
+			UpdateGui(platform->window, &settings, game2D);
+#endif
 			RenderGui();
 		}
 
@@ -202,7 +204,11 @@ void App::run()
 	}
 	Mon::Log::print("Shutting down...");
 	Mon::Log::shutdown();
+#ifdef _3D_
 	game->cleanUp();
+#else
+	game2D->cleanUp();
+#endif
 	ShutdownGui();
 	platform->cleanUp();
 }

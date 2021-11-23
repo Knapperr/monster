@@ -54,8 +54,8 @@ namespace Mon
 		}
 	};
 
-	void setTile(Tile* tile, int tileId, int offsetX, int offsetY, float x, float y, int width, int height);
-	void setTile(Tile* tile);
+	void SetTile(Tile* tile, int tileId, int offsetX, int offsetY, float x, float y, int width, int height);
+	void SetTile(Tile* tile);
 
 	struct TileSheet
 	{
@@ -82,7 +82,7 @@ namespace Mon
 		//	ids (1, 2, 3, 4 ,5 )
 	};
 
-	void initTileSheet(TileSheet* sheet, const char* fileName);
+	void InitTileSheet(TileSheet* sheet, const char* fileName);
 
 
 	struct TileMap
@@ -94,10 +94,10 @@ namespace Mon
 		int tileSideInPixels;
 	};
 
-	void initTileMap(TileMap* map, TileSheet* sheet);
-	void drawTileMap(TileMap* map, MonGL::CommonProgram* shader, int textureID);
+	void InitTileMap(TileMap* map, TileSheet* sheet);
+	void DrawTileMap(TileMap* map, MonGL::CommonProgram* shader, int textureID);
 	TileMapPosition RecanonicalizePosition(TileMap* tileMap, TileMapPosition pos);
-	void updateTile(TileMap* map, TileSheet* sheet, int tileIndex, int newTileId);
+	void UpdateTile(TileMap* map, TileSheet* sheet, int tileIndex, int newTileId);
 }
 
 #endif

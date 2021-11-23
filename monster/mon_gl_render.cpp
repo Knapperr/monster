@@ -19,7 +19,7 @@ namespace MonGL
 		return translate(mat4(1), GetCenter(size)) * scale(mat4(1), GetSize(size));
 	}
 
-	void initQuad(RenderData* data, bool tangents)
+	void InitQuad(RenderData* data, bool tangents)
 	{
 		
 
@@ -120,17 +120,17 @@ namespace MonGL
 		glBindVertexArray(0);
 	}
 
-	void loadTexture(RenderData* data, Type type, int shaderID, std::string path)
+	void LoadTexture(RenderData* data, int index, Type type, int shaderID, std::string path)
 	{
 		data->texturePath = path;
 		Texture text = {};
 		LoadTextureFile(&text, path.c_str(), type, false,  true, true);
-		data->textures.push_back(text);
+		data->textures[index] = text;
 		data->selectedTexture = 0;
 		glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
 	}
 
-	void initBoundingBox(RenderData* data, ColliderSize* size)
+	void InitBoundingBox(RenderData* data, ColliderSize* size)
 	{
 		data->lineWidth = 2;
 		data->color = v3(1.0f, 0.0f, 1.0f);
@@ -207,7 +207,7 @@ namespace MonGL
 	}
 
 
-	void initCube(RenderData* data, int shaderID, std::string texturePath)
+	void InitCube(RenderData* data, int shaderID, std::string texturePath)
 	{
 		// Load from .vt file (need to do efficient as possible)
 		// maybe dont need to do this but?? tilemap does a quad and its a huge
@@ -218,7 +218,7 @@ namespace MonGL
 		// need initQuad() with a way to choose vertices this is why people use defines? cause its a big mess
 	}
 
-	void initDistortedWater(RenderData* renderData, RenderSetup* setup)
+	void InitDistortedWater(RenderData* renderData, RenderSetup* setup)
 	{
 		/*
 		TODO(ck): Can I have some kind of uniform structure.
@@ -230,7 +230,7 @@ namespace MonGL
 		*/
 
 		// Create a quad first
-		initQuad(renderData, true);
+		InitQuad(renderData, true);
 
 		setup->tiling = 5.0f;
 		setup->speed = 0.3f;
@@ -248,30 +248,34 @@ namespace MonGL
 		std::string path = "res/textures/water/water.png";
 		Texture uv = {};
 		LoadTextureFile(&uv, path.c_str(), Type::Diffuse, false, true);
-		renderData->textures.push_back(uv);
+		
+
+		renderData->textures[0] = uv;
 
 		// type = "texture_normal"
 		path = "res/textures/water/flow-speed-noise.png";
 		Texture flow = {};
 		LoadTextureFile(&flow, path.c_str(), Type::Normal, false, true);
-		renderData->textures.push_back(flow);
+		
+		renderData->textures[1] = flow;
 
 		// type = "texture_normal"
 		path = "res/textures/water/water-derivative-height.png";
 		Texture normal = {};
 		LoadTextureFile(&normal, path.c_str(), Type::Normal, false, true);
-		renderData->textures.push_back(normal);
+		renderData->textures[2] = normal;
+		
 	}
 
-	void beginRender(Config* config, mat4 projection, mat4 view, int shaderID)
+	void BeginRender(Config* config, mat4 projection, mat4 view, int shaderID)
 	{
-		MonGL::viewPort(&config->viewPort);
+		MonGL::ViewPort(&config->viewPort);
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
 	}
 
-	void drawQuad(Config* config, RenderData* data,
+	void DrawQuad(Config* config, RenderData* data,
 						v3 playerPos, v3 scale, v3 camPos,
 						unsigned int shaderID, int selectedTexture)
 	{
@@ -285,7 +289,7 @@ namespace MonGL
 		// TODO(ck): Move to begin render. MonGL::beginRender(&cam);
 		glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camPos[0]);
 
-		bool useTexture = !data->textures.empty();
+		bool useTexture = (ArrayCount(data->textures) > 0);
 		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), useTexture);
 		glUniform1i(glGetUniformLocation(shaderID, "pixelTexture"), useTexture);
 		
@@ -309,7 +313,7 @@ namespace MonGL
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	}
 
-	void drawWater(RenderData* data, RenderSetup* setup, WaterDataProgram* waterData, Light* light, v3 pos, v3 scale, v3 camPos, unsigned int shaderID)
+	void DrawWater(RenderData* data, RenderSetup* setup, WaterDataProgram* waterData, Light* light, v3 pos, v3 scale, v3 camPos, unsigned int shaderID)
 	{
 
 		// ==============================================================================
@@ -327,7 +331,7 @@ namespace MonGL
 
 		// Textures
 		// ==================================================================================
-		for (unsigned int i = 0; i < data->textures.size(); ++i)
+		for (unsigned int i = 0; i < ArrayCount(data->textures); ++i)
 		{
 			glActiveTexture(GL_TEXTURE0 + i); // activate the proper texture unit before binding
 		//	// retrieve texture number (the N in diffuse_TextureN)
@@ -399,7 +403,7 @@ namespace MonGL
 
 	// TODO(ck): gl_DrawBoundingBox(size) 
 	// the collider will have a size
-	void drawBoundingBox(RenderData* data,
+	void DrawBoundingBox(RenderData* data,
 					 ColliderSize size,
 					 v3 playerPos, v3 camPos,
 					 mat4 projection, mat4 view, 
@@ -435,7 +439,7 @@ namespace MonGL
 	}
 
 
-	void generateTerrain(RenderData* data)
+	void GenerateTerrain(RenderData* data)
 	{
 		data->VAO = 0;
 		data->VBO = 0;
@@ -540,26 +544,26 @@ namespace MonGL
 		filename = directory + '/' + filename;
 		*/
 		Texture text = {};
-		data->textures.push_back(text);
+		data->textures[0] = text;
 		LoadTextureFile(&data->textures[0], textPath.c_str(), Type::Diffuse, false, false, false);
 
 		textPath = "res/textures/terrain/grass.jpg";
 		Texture text1 = {};
-		data->textures.push_back(text1);
+		data->textures[1] = text1;
 		LoadTextureFile(&data->textures[1], textPath.c_str(), Type::Diffuse, false, false, false);
 
 		textPath = "res/textures/terrain/pix_grass.png";
 		Texture text2 = {};
-		data->textures.push_back(text2);
+		data->textures[2] = text2;
 		LoadTextureFile(&data->textures[2], textPath.c_str(), Type::Diffuse, false, false, false);
 
 		textPath = "res/textures/terrain/snow.jpg";
 		Texture text3 = {};
-		data->textures.push_back(text3);
+		data->textures[3] = text3;
 		LoadTextureFile(&data->textures[3], textPath.c_str(), Type::Diffuse, false, false, false);
 	}
 
-	void drawTerrain(unsigned int shaderID, RenderData* data, Light* light, mat4 projection, mat4 view, v3 camPos)
+	void DrawTerrain(unsigned int shaderID, RenderData* data, Light* light, mat4 projection, mat4 view, v3 camPos)
 	{
 		glUseProgram(shaderID);
 
@@ -611,7 +615,7 @@ namespace MonGL
 
 	// ==================================================================
 
-	void viewPort(Rect* port)
+	void ViewPort(Rect* port)
 	{		
 		glViewport(port->x, port->y, port->w, port->h);
 		return;
@@ -642,31 +646,63 @@ namespace MonGL
 	int usedIndices = 0;
 
 
-	void initRenderData2D(RenderData2D* sprite)
+	void InitRenderData2D(RenderData2D* sprite)
 	{
+		// TODO(ck): Switch to fill batch for this... can not rely on model matrix anymore if using a batch
+		// need to update the positions and the texture coordinates manually each frame.
+		int size = 32;
 
-#if 1
-		GLfloat vertices[] =
-		{
-			// Pos          Tex
-			0.0f, 1.0f, 0.0f, 1.0f,
-			1.0f, 0.0f, 1.0f, 0.0f,
-			0.0f, 0.0f, 0.0f, 0.0f,
+		int x = 0;
+		int y = 0;
 
-			0.0f, 1.0f, 0.0f, 1.0f,
-			1.0f, 1.0f, 1.0f, 1.0f,
-			1.0f, 0.0f, 1.0f, 0.0f
+		Vertex vertices[4];
+		vertices[0] = {};
+		vertices[0].position = v3(x, y, 0.0f);
+		vertices[0].color = v3(1.0f, 0.0f, 0.0f);
+		vertices[0].texCoords = v2(0.0f, 0.0f);
+
+		vertices[1] = {};
+		vertices[1].position = v3(x + size, y, 0.0f);
+		vertices[1].color = v3(1.0f, 0.0, 0.0f);
+		vertices[1].texCoords = v2(1.0f, 0.0f);
+
+		vertices[2] = {};
+		vertices[2].position = v3(x + size, y + size, 0.0f);
+		vertices[2].color = v3(1.0f, 1.0f, 1.0f);
+		vertices[2].texCoords = v2(1.0f, 1.0f);
+
+		vertices[3] = {};
+		vertices[3].position = v3(x, y + size, 0.0f);
+		vertices[3].color = v3(1.0f, 1.0f, 1.0f);
+		vertices[3].texCoords = v2(0.0f, 1.0f);
+
+		unsigned int indices[] = {
+			0, 1, 3,
+			1, 2, 3
 		};
-#endif
+
+		unsigned int EBO;
 		glGenVertexArrays(1, &sprite->VAO);
 		glGenBuffers(1, &sprite->VBO);
+		glGenBuffers(1, &EBO);
 
+		glBindVertexArray(sprite->VAO);
 		glBindBuffer(GL_ARRAY_BUFFER, sprite->VBO);
 
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-		glBindVertexArray(sprite->VAO);
+		
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,  sizeof(Vertex), (GLvoid*)0);
+
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
+
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
+
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 
@@ -675,7 +711,7 @@ namespace MonGL
 	}
 
 	
-	void initTileMap(int tileAmount)
+	void InitTileMap(int tileAmount)
 	{
 		// These will be figured out after looping our tilemap and pushing quads
 		// TODO(ck): Need to be able to choose amount of vertices and indices
@@ -731,7 +767,7 @@ namespace MonGL
 	};
 
 	// This isn't draw this is fill
-	void fillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize)
+	void FillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize)
 	{		
 		float sheetSize = 256.0f;
 		int spriteSize = 16;
@@ -781,7 +817,7 @@ namespace MonGL
 		tileVertices.push_back(vec3);
 	}
 
-	void bindVertices()
+	void BindVertices()
 	{
 		// 2 extra vertices are needed for degenerate triangles between each strip 
 		//unsigned uNumExtraVertices = ( GL_TRIANGLE_STRIP == _config.uRenderType && _uNumUsedVertices > 0 ? 2 : 0 ); 
@@ -822,7 +858,7 @@ namespace MonGL
 		//_lastVertex = vVertices[vVertices.size() - 1];
 	}
 
-	void drawMap(CommonProgram* shader, unsigned int textureID)
+	void DrawMap(CommonProgram* shader, unsigned int textureID)
 	{
 		// TODO(ck): If we want the ability to change the map at runtime we need to constantly
 		// be filling and binding the batch (if things have changed)
@@ -851,7 +887,7 @@ namespace MonGL
 		tileVertices.clear();
 	}
 
-	void drawObject(CommonProgram* shader, RenderData2D* data)
+	void DrawObject(CommonProgram* shader, RenderData2D* data)
 	{
 		//glUseProgram(shader->id);
 
@@ -868,49 +904,33 @@ namespace MonGL
 		//model = glm::rotate(model, obj->rotation, v3(0.0f, 0.0f, 1.0f));
 		//model = glm::translate(model, v3(-0.5f * obj->size.x, -0.5f * obj->size.y, 0.0f));
 
-		model = glm::scale(model, v3(data->size, 1.0f));
+		//model = glm::scale(model, v3(data->size, 1.0f));
 
 		glUniformMatrix4fv(glGetUniformLocation(shader->handle, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		
-		glUniform3f(glGetUniformLocation(shader->handle, "spriteColor"), data->color.r, data->color.g, data->color.b);
-		glUniform1i(glGetUniformLocation(shader->handle, "useTexture"), true);
-		glUniform1i(glGetUniformLocation(shader->handle, "pixelTexture"), true);
+		//glUniform3f(glGetUniformLocation(shader->handle, "spriteColor"), data->color.r, data->color.g, data->color.b);
 
 		//glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, data->texture.id);
 
 		glBindVertexArray(data->VAO);
 
-		if (data->wireFrame)
-			glDrawArrays(GL_LINES, 0, 6);
-		else 
-			glDrawArrays(GL_TRIANGLES, 0, 6);
-		
+		//if (data->wireFrame)
+		//	glDrawArrays(GL_LINES, 0, 6);
+		//else 
+		//	glDrawArrays(GL_TRIANGLES, 0, 6);
+
+
+		//glDrawElements(GL_TRIANGLES, indices, GL_UNSIGNED_INT, (void*)(2 * 0));
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 
-		//glUseProgram(shader->id);
 
-		//// TODO(ck): We don't calculate the matrix here
-		//// we calc it in the game and send the matrix to the
-		//// renderer 
-		//// CONVERT World matrix to drawing position
-		//mat4 model = mat4(1.0f);
-		//model * -data->pos;
-
-		////glUniformMatrix4fv(glGetUniformLocation(shader->id, "model"), 1, GL_FALSE, glm::value_ptr(model));
-		////glUniform3f(glGetUniformLocation(shader->id, "spriteColor"), obj->color.r, obj->color.g, obj->color.b);
-
-		////glActiveTexture(GL_TEXTURE0);
-		////glBindTexture(GL_TEXTURE_2D, obj->sprite.texture.id);
-
-		//glBindVertexArray(data->VAO);
-		//glDrawArrays(GL_TRIANGLES, 0, 6);
-		//glBindVertexArray(0);
 	}
 
 
 
-	void drawMap(CommonProgram* shader, unsigned int textureID, int batchThing)
+	void DrawMap(CommonProgram* shader, unsigned int textureID, int batchThing)
 	{
 		//
 		// Fill batch 
@@ -920,7 +940,7 @@ namespace MonGL
 		//
 		// bind vertices
 		// 
-		bindVertices();
+		BindVertices();
 
 		// 2 extra vertices are needed for degenerate triangles between each strip 
 		//unsigned uNumExtraVertices = ( GL_TRIANGLE_STRIP == _config.uRenderType && _uNumUsedVertices > 0 ? 2 : 0 ); 

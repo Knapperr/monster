@@ -9,8 +9,8 @@ namespace Mon
 		// TODO(ck): Move all of this into the initTileMap
 		map = new TileMap();
 		sheet = {};
-		initTileSheet(&sheet, "res/textures/basic_16.png");
-		initTileMap(map, &sheet);
+		InitTileSheet(&sheet, "res/textures/basic_16.png");
+		InitTileMap(map, &sheet);
 
 		// ------------------------------------------------------------------
 
@@ -32,10 +32,6 @@ namespace Mon
 			initEntity(e, "res/textures/p1_.png", true,v2(30 * i, 5 * i));
 			//entities.push_back(e);
 		}
-
-		Entity2D* house = new Entity2D();
-		initEntity(house, "res/textures/acorn_house.png", true, v2(100.0f, 100.0f));
-		entities.push_back(house);
 
 		Entity2D* partner = new Entity2D();
 		initEntity(partner, "res/textures/sRansome.png", true, v2(20.0f, 20.0f));

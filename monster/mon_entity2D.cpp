@@ -8,7 +8,7 @@ namespace Mon
 		e->sprite = {};
 		// TODO(ck): Don't automatically make opengl data... figure out what renderer we are using
 		// TODO(ck): Texture load in renderer we need the sprite size from the texture
-		MonGL::initRenderData2D(&e->sprite);
+		MonGL::InitRenderData2D(&e->sprite);
 		LoadTextureFile(&e->sprite.texture, fileLocation, MonGL::Type::Diffuse, isAlpha, false, true);
 
 		e->pos = position;
@@ -70,6 +70,8 @@ namespace Mon
 		p->velocity.y = velocity->y * deltaTime + p->velocity.y;
 
 		p->pos = newPos;
+		//p->pos.x = roundf(newPos.x);
+		//p->pos.x = roundf(newPos.y);
 		//newPlayerP = RecanonicalizePosition(map, newPlayerP);
 		//p->mapPos = newPlayerP;
 

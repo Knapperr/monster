@@ -2,35 +2,33 @@
 
 #include <string>
 
-#define _3D_GUI_
-
 // TODO(ck): Must switch Entity to plain array so i can save their memory to a file cant do it with vector
 // TODO(ck): open files with current platform layer
 // COPY MEMORY TO FILE and read it in
 #include <fstream>
+#ifdef _3D_GUI_
 void writeEntities(Mon::Entity* entities, int shaderID)
 {
 	std::ofstream file;
 	file.open("scene_1.txt");
 
-	for (int i = 0; i < ArrayCount(entities); ++i)
+	for (int i = 0; i < ArrayCount(&entities); ++i)
 	{
 		file << entities[i].name << "\n"
 			<< entities[i].particle.pos.x << "\n" << entities[i].particle.pos.y << "\n" << entities[i].particle.pos.z << "\n"
 			<< shaderID << "\n"
 			<< entities[i].data.texturePath << "\n";
-
 	}
 
 	file.close();
 }
+
 
 void loadEntities(Mon::Game* game)
 {
 	// TODO(ck): memory management should probably have something in the list to only reload part of it
 	// READ MEMORY FROM FILE
 	//game->entities.clear();
-
 	std::string line;
 	std::ifstream file("scene_1.txt");
 	if (!file.is_open())
@@ -41,7 +39,7 @@ void loadEntities(Mon::Game* game)
 	{
 		Mon::Entity e = {};
 		e.name = line;
-		file >> e.particle.pos.x; 
+		file >> e.particle.pos.x;
 		file >> e.particle.pos.y;
 		file >> e.particle.pos.z;
 
@@ -53,15 +51,15 @@ void loadEntities(Mon::Game* game)
 		file >> shaderID;
 		file >> textPath;
 
-		MonGL::initQuad(&e.data);
-		MonGL::loadTexture(&e.data, MonGL::Type::Diffuse, shaderID, textPath);
+		MonGL::InitQuad(&e.data);
+		MonGL::LoadTexture(&e.data, 0, MonGL::Type::Diffuse, shaderID, textPath);
 		//game->entities.push_back(e);
-
 	}
-	
 }
+#endif
 
 #ifdef USE_SDL
+
 void InitGui(SDL_Window* window, SDL_GLContext* context)
 {
 	const char* glsl_version = "#version 130";
@@ -90,6 +88,8 @@ void InitGui(SDL_Window* window, SDL_GLContext* context)
 	ImGui_ImplOpenGL3_Init(glsl_version);
 }
 
+
+#ifdef _3D_GUI_
 void TerrainWindow(bool* p_open, Mon::Game* game)
 {
 	ImGui::Begin("Terrain", p_open);
@@ -156,6 +156,18 @@ void CameraWindow(bool* p_open, Mon::Game* game)
 	ImGui::SliderFloat("lerp", &game->cam->lerpSpeed, 0.0f, 100.0f);
 	ImGui::SliderFloat("smooth", &game->cam->smoothness, 0.1f, 10.0f);
 
+
+	if (ImGui::Button("Log")) 
+	{ 
+		Mon::Log::print("cam zoom", game->cam->zoom);
+		Mon::Log::print("near plane", game->cam->nearPlane);
+		Mon::Log::print("far plane", game->cam->farPlane);
+		Mon::Log::print("angle around target", game->cam->angleAroundTarget);
+		Mon::Log::print("pitch", game->cam->pitch);
+		Mon::Log::print("lerp speed", game->cam->lerpSpeed);
+		Mon::Log::print("smoothness", game->cam->smoothness);
+	}
+
 	ImGui::End();
 }
 
@@ -166,7 +178,7 @@ void EntityWindow(bool* p_open, Mon::Game* game)
 
 	static unsigned int selected = 0;
 	ImGui::BeginChild("left pane", ImVec2(150.0f, 0.0f), true);
-	
+
 	for (unsigned int i = 0; i < ArrayCount(game->world->entities); ++i)
 	{
 		char label[128];
@@ -289,18 +301,8 @@ void StatsWindow(bool* p_open, Mon::Game* game)
 	snprintf(buffer, sizeof(buffer), "%d", game->input.lMouseBtn.endedDown);
 	ImGui::LabelText(buffer, "left mouse down");
 
-	snprintf(buffer, sizeof(buffer), "%f", game->camera.pos.x);
-	ImGui::LabelText(buffer, "cam x");
-	snprintf(buffer, sizeof(buffer), "%f", game->camera.pos.y);
-	ImGui::LabelText(buffer, "cam y");
-	
-	//snprintf(buffer, sizeof(buffer), "%d", GuiActive(false));
-	//ImGui::LabelText(buffer, "gui active");
 
-//
-// 3D STATS
-//
-#ifdef _3D_GUI_
+
 	//snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.x);
 	//ImGui::LabelText(buffer, "player x");
 	//snprintf(buffer, sizeof(buffer), "%f", game->player.particle.pos.y);
@@ -339,7 +341,7 @@ void StatsWindow(bool* p_open, Mon::Game* game)
 	ImGui::LabelText(buffer, "pitch");
 	snprintf(buffer, sizeof(buffer), "%f", game->cam->yaw);
 	ImGui::LabelText(buffer, "yaw");
-#endif
+
 	ImGui::End();
 }
 
@@ -386,7 +388,7 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 		if (ImGui::Button("play") && game->state != Mon::State::Play) { game->playMode(); }
 		ImGui::SameLine();
 		if (ImGui::Button("save")) 
-		{ 
+		{
 			writeEntities(game->world->entities, game->mainShaderID); 
 			Mon::Log::print("Saved game to master file");
 			Mon::Log::warn("Only one master save file active!!!");
@@ -438,8 +440,6 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 		ImGui::SameLine();
 		ImGui::Checkbox("stats", &showStatsWindow);
 
-#ifdef _3D_GUI_
-
 		ImGui::Checkbox("Terrain", &showTerrainWindow);
 		ImGui::SameLine();
 		ImGui::Checkbox("Camera", &showCameraWindow);
@@ -469,39 +469,186 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 		ImGui::Checkbox("draw collisions", &game->drawCollisions);
 
 	ImGui::Separator();
-
-#endif
 	
+	ImGui::End();
+}
 
-	// 2D // 
-	// -------------
-	// TODO(CK): put player at the 0th index for now
+#else 
+///
+/// 2D
+/// 
 
-#ifndef _3D_GUI_
-
-	ImGui::SliderFloat("Player Speed", &game->world2D->player->speed, 0.0f, 1000.0f);
-	ImGui::SliderFloat("camera lerp", &game->camera.lerpSpeed, 0.0f, 100.0f);
-	ImGui::SliderFloat("camera smooth", &game->camera.smoothness, 0.1f, 10.0f);
+void StatsWindow(bool* p_open, Mon::Game2D* game)
+{
+	ImGui::Begin("stats for me", p_open);
 
 	char buffer[64];
-	snprintf(buffer, sizeof(buffer), "%f", game->world2D->player->pos.x);
-	ImGui::LabelText("player x", buffer);
-	snprintf(buffer, sizeof(buffer), "%f", game->world2D->player->pos.y);
-	ImGui::LabelText("player y", buffer);
-	
-	ImGui::DragFloat("cam zoom", &game->camera.zoom, 0.1f, 1.0f, 200.0f, "%.02f");
-	//ImGui::SliderInt("Tile 0 ID: ", &game->world2D->map->tiles[0].tileId, 0, 3, NULL);
-	
-	char entitysizebuf[64];
-	snprintf(entitysizebuf, sizeof(entitysizebuf), "%f", (float)game->world2D->entities.size());
 
+	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseOffset.x);
+	ImGui::LabelText(buffer, "mouse x");
+	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseOffset.y);
+	ImGui::LabelText(buffer, "mouse y");
+	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseXScreen);
+	ImGui::LabelText(buffer, "win x");
+	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseYScreen);
+	ImGui::LabelText(buffer, "win y");
 
-#endif
+	snprintf(buffer, sizeof(buffer), "%f", game->input.stickAverageX);
+	ImGui::LabelText(buffer, "stick average X:");
+	snprintf(buffer, sizeof(buffer), "%f", (float)game->input.stickAverageY);
+	ImGui::LabelText(buffer, "stick average Y:");
+
+	snprintf(buffer, sizeof(buffer), "%f", game->input.stickAvgRX);
+	ImGui::LabelText(buffer, "right stick average X:");
+	snprintf(buffer, sizeof(buffer), "%f", (float)game->input.stickAvgRY);
+	ImGui::LabelText(buffer, "right stick average Y:");
+
+	snprintf(buffer, sizeof(buffer), "%d", game->input.lMouseBtn.endedDown);
+	ImGui::LabelText(buffer, "left mouse down");
+
+	snprintf(buffer, sizeof(buffer), "%f", game->camera.pos.x);
+	ImGui::LabelText(buffer, "cam x");
+	snprintf(buffer, sizeof(buffer), "%f", game->camera.pos.y);
+	ImGui::LabelText(buffer, "cam y");
+
+	snprintf(buffer, sizeof(buffer), "%d", GuiActive(false));
+	ImGui::LabelText(buffer, "gui active");
 
 	ImGui::End();
 }
 
+void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game2D* game2D)
+{
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplSDL2_NewFrame(window);
+	ImGui::NewFrame();
+
+	static bool showDemoWindow = false;
+	static bool showTerrainWindow = false;
+	static bool showCameraWindow = false;
+	static bool showStatsWindow = false;
+	static bool showEntityWindow = false;
+	if (showDemoWindow)
+		ImGui::ShowDemoWindow(&showDemoWindow);
+	//if (showTerrainWindow)
+	//	TerrainWindow(&showTerrainWindow, game);
+	//if (showCameraWindow)
+	//	CameraWindow(&showCameraWindow, game);
+	if (showStatsWindow)
+		StatsWindow(&showStatsWindow, game2D);
+	//if (showEntityWindow)
+	//	EntityWindow(&showEntityWindow, game);
+
+	ImGui::Begin("DEBUG MENU");
+
+	/* - Color buttons, demonstrate using PushID() to add unique identifier in the ID stack, and changing style.
+	for (int i = 0; i < 7; i++)
+	{
+		if (i > 0)
+			ImGui::SameLine();
+		ImGui::PushID(i);
+		ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(i / 7.0f, 0.6f, 0.6f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(i / 7.0f, 0.7f, 0.7f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(i / 7.0f, 0.8f, 0.8f));
+		ImGui::Button("Click");
+		ImGui::PopStyleColor(3);
+		ImGui::PopID();
+	}*/
+	ImGui::Separator();
+	if (ImGui::Button("debug")) { game2D->debugMode(); }
+	ImGui::SameLine();
+	if (ImGui::Button("play") && game2D->state != Mon::State::Play) { game2D->playMode(); }
+	ImGui::SameLine();
+	if (ImGui::Button("save"))
+	{
+#ifdef _3D_GUI_
+		writeEntities(game->world->entities, game->mainShaderID);
+		Mon::Log::print("Saved game to master file");
+		Mon::Log::warn("Only one master save file active!!!");
+#endif
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("load"))
+	{
+		//loadEntities(game);
+		Mon::Log::print("Loaded last saved scene");
+	}
+	ImGui::SameLine();
+
+	if (ImGui::Button("Fullscreen"))
+	{
+		SDL_DisplayMode dm;
+		SDL_GetCurrentDisplayMode(0, &dm);
+		SDL_SetWindowSize(window, dm.w, dm.h);
+		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+		game2D->setViewPort(dm.w, dm.h);
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Exit"))
+	{
+		SDL_SetWindowSize(window, settings->width, settings->height);
+		SDL_SetWindowFullscreen(window, 0);
+		game2D->setViewPort(960.0f, 540.0f);
+	}
+
+	if (ImGui::Button("720"))
+	{
+		settings->width = 1280;
+		settings->height = 720;
+		SDL_SetWindowSize(window, settings->width, settings->height);
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("1440"))
+	{
+		settings->width = 1440;
+		settings->height = 900;
+		SDL_SetWindowSize(window, settings->width, settings->height);
+	}
+
+	ImGui::SliderFloat2("port", (float*)&game2D->config->viewPort, 0.0f, 477.0f);
+	ImGui::Separator();
+
+	ImGui::LabelText(std::to_string(game2D->deltaTime).c_str(), "dt:");
+
+	ImGui::Checkbox("Demo", &showDemoWindow);
+	ImGui::SameLine();
+	ImGui::Checkbox("stats", &showStatsWindow);
+
+	// 2D
+	// -------------
+	// TODO(CK): put player at the 0th index for now
+
+
+	ImGui::SliderFloat("Player Speed", &game2D->world->player->speed, 0.0f, 1000.0f);
+	ImGui::SliderFloat("camera lerp", &game2D->camera.lerpSpeed, 0.0f, 100.0f);
+	ImGui::SliderFloat("camera smooth", &game2D->camera.smoothness, 0.1f, 10.0f);
+
+	char buffer[64];
+	snprintf(buffer, sizeof(buffer), "%f", game2D->world->player->pos.x);
+	ImGui::LabelText("player x", buffer);
+	snprintf(buffer, sizeof(buffer), "%f", game2D->world->player->pos.y);
+	ImGui::LabelText("player y", buffer);
+
+	ImGui::DragFloat("cam zoom", &game2D->camera.zoom, 0.1f, 1.0f, 200.0f, "%.02f");
+	//ImGui::SliderInt("Tile 0 ID: ", &game->world2D->map->tiles[0].tileId, 0, 3, NULL);
+
+	char entitysizebuf[64];
+	snprintf(entitysizebuf, sizeof(entitysizebuf), "%f", (float)game2D->world->entities.size());
+
+	ImGui::End();
+}
+
+
+#endif // _3D_GUI_
 #endif // USE_SDL
+
+
+
+
+
+/// 
+/// Generic gui functions 
+/// 
 
 void RenderGui()
 {

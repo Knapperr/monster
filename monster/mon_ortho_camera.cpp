@@ -18,7 +18,7 @@ namespace Mon
 		smoothness = 0.24f;
 		pos = position;
 		//target = position;
-		vel = v2(0.0f);
+		vel = v2(1.0f);
 		zoom = 1.0f;
 		
 	}
@@ -26,24 +26,11 @@ namespace Mon
 	void OrthoCamera::update(v2 *target, float dt)
 	{
 #if 0
-		target.x = pos->x;
-		target.y = pos->y;
+		pos.x = target->x;
+		pos.y = target->y;
 #else 
-
-
 		pos.x = smoothDamp(pos.x, target->x, vel.x, smoothness, dt);
 		pos.y = smoothDamp(pos.y, target->y, vel.y, smoothness, dt);
-#endif
-	}
-
-	void OrthoCamera::update(Point* pos, float dt)
-	{
-#if 0
-		target.x = lerp(target.x, lerpSpeed * dt, pos->x);
-		target.y = lerp(target.y, lerpSpeed * dt, pos->y);
-#else
-		//target.x = pos->x;
-		//target.y = pos->y;
 #endif
 	}
 
@@ -60,24 +47,23 @@ namespace Mon
 		// this might be a good thing because i can separate that off here
 		float width = 960.0f;
 		float height = 540.0f;
+		float half = 6.0f;
 #if 1
 		// TODO(ck): Remove half prefer zoom
-		float half = 6.0f;
 		float left = pos.x - width / half;
 		float right = pos.x + width / half;
 		float top = pos.y - height / half;
 		float bottom = pos.y + height / half;
 #else
 		float left = 0.0f;
-		float right = 960.0f;
+		float right = 960.0f / 4;
 		float top = 0.0f;
-		float bottom = 540.0f;
+		float bottom = 540.0f / 4;
 #endif
-
 		mat4 projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
 		mat4 zoomMatrix = glm::scale(v3(zoom));
-		projection *= zoomMatrix;
+		//projection = projection * zoomMatrix;
 
-		return projection;
+		return projection * zoomMatrix;
 	}
 }

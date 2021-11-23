@@ -2,20 +2,20 @@
 
 namespace Mon
 {
-	void setTile(Tile* tile, int tileId, int offsetX, int offsetY)
+	void SetTile(Tile* tile, int tileId, int offsetX, int offsetY)
 	{
 		tile->id = tileId;
 		tile->offsetX = offsetX;
 		tile->offsetY = offsetY;
 	}
 
-	void setTile(Tile* tile, Tile* newTile)
+	void SetTile(Tile* tile, Tile* newTile)
 	{
-		setTile(tile, newTile->id, newTile->offsetX, newTile->offsetY);
+		SetTile(tile, newTile->id, newTile->offsetX, newTile->offsetY);
 	}
 
 
-	void initTileSheet(TileSheet* sheet, const char* fileName)
+	void InitTileSheet(TileSheet* sheet, const char* fileName)
 	{
 		MonGL::LoadTextureFile(&sheet->texture, fileName, MonGL::Type::Diffuse, true, false, true);
 
@@ -106,8 +106,10 @@ namespace Mon
 		return newTile;
 	}
 
-	void initTileMap(TileMap* map, TileSheet* sheet)
+	void InitTileMap(TileMap* map, TileSheet* sheet)
 	{
+		assert(sheet->tileCount > 0);
+
 		map->tileSideInMeters = 1.6f;
 		map->tileSideInPixels = 60;
 		map->metersToPixels = (float)map->tileSideInPixels / (float)map->tileSideInMeters;
@@ -201,24 +203,24 @@ namespace Mon
 			}
 		}
 
-		MonGL::initTileMap(map->tiles.size());
+		MonGL::InitTileMap(map->tiles.size());
 	}
 
-	void updateTile(TileMap* map, TileSheet* sheet, int tileIndex, int newTileId)
+	void UpdateTile(TileMap* map, TileSheet* sheet, int tileIndex, int newTileId)
 	{
-		setTile(map->tiles[tileIndex], sheet->getTile(newTileId));
+		SetTile(map->tiles[tileIndex], sheet->getTile(newTileId));
 	}
 
-	void drawTileMap(TileMap* map, MonGL::CommonProgram* shader, int textureID)
+	void DrawTileMap(TileMap* map, MonGL::CommonProgram* shader, int textureID)
 	{
 		for (int i = 0; i < map->tiles.size(); ++i)
 		{
-			MonGL::fillBatch(map->tiles[i]->offsetX, map->tiles[i]->offsetY, map->tiles[i]->x, map->tiles[i]->y, 16);
+			MonGL::FillBatch(map->tiles[i]->offsetX, map->tiles[i]->offsetY, map->tiles[i]->x, map->tiles[i]->y, 16);
 		}
 
-		MonGL::bindVertices();
+		MonGL::BindVertices();
 
-		MonGL::drawMap(shader, textureID);
+		MonGL::DrawMap(shader, textureID);
 	}
 
 	void RecanonicalizeCoord(TileMap* tileMap, uint32_t* tile, float* tileRel)

@@ -1,10 +1,11 @@
 #version 420
-in vec2 TexCoords;
-in vec2 Pixel;
-out vec4 color;
+out vec4 FragColor;
 
+in vec3 ourColor;
+in vec2 TexCoord;
+
+// texture samplers
 uniform sampler2D image;
-uniform vec3 spriteColor;
 
 // https://gist.github.com/Beefster09/7264303ee4b4b2086f372f1e70e8eddd
 // This method is working for making the pixel art look nice
@@ -20,13 +21,13 @@ void main()
 {
 	// TODO(ck): new pixel shader
 	vec2 textureSize = textureSize(image, 0);
-	vec2 pixel = TexCoords * textureSize;
+	vec2 pixel = TexCoord * textureSize;
 	vec2 duDv = fwidth(pixel);
 	vec2 seam = floor(pixel + 0.5);
 	pixel = seam + clamp((pixel - seam)/duDv, -0.5, 0.5);
 	vec2 modifiedTextCoordinate = pixel / textureSize;
 	vec4 tex = texture2D(image, modifiedTextCoordinate);
-	color = tex;
+	FragColor = tex;
 
 
 	// NOTE(ck): OLD method

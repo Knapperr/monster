@@ -1,7 +1,8 @@
 #ifndef MON_PLATFORM_H
 #define MON_PLATFORM_H
 
-#define _3D_
+// IMPORTANT(ck): Defines for 3D game
+//#define _3D_
 
 // TODO: IMPORTANT(ck): Fix this
 #include "mon_gui.h"

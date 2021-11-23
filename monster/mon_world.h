@@ -43,14 +43,14 @@ namespace Mon {
 		world->player = new Entity();
 		world->player->name = "player";
 		world->player->setup = {};
-		MonGL::initQuad(&world->player->data);
-		MonGL::loadTexture(&world->player->data, MonGL::Type::Diffuse, shaderHandle, "res/textures/p1SIDERIGHT.png");
-		MonGL::loadTexture(&world->player->data, MonGL::Type::Diffuse, shaderHandle, "res/textures/p1.png");
-		MonGL::loadTexture(&world->player->data, MonGL::Type::Diffuse, shaderHandle, "res/textures/p1SIDE.png");
-		MonGL::loadTexture(&world->player->data, MonGL::Type::Diffuse, shaderHandle, "res/textures/p1BACK.png");
+		MonGL::InitQuad(&world->player->data);
+		MonGL::LoadTexture(&world->player->data, 0, MonGL::Type::Diffuse, shaderHandle, "res/textures/p1SIDERIGHT.png");
+		MonGL::LoadTexture(&world->player->data, 1, MonGL::Type::Diffuse, shaderHandle, "res/textures/p1.png");
+		MonGL::LoadTexture(&world->player->data, 2, MonGL::Type::Diffuse, shaderHandle, "res/textures/p1SIDE.png");
+		MonGL::LoadTexture(&world->player->data, 3, MonGL::Type::Diffuse, shaderHandle, "res/textures/p1BACK.png");
 		world->player->facingDir = 0;
 
-		MonGL::initBoundingBox(&world->player->collider.data, &world->player->collider.size);
+		MonGL::InitBoundingBox(&world->player->collider.data, &world->player->collider.size);
 		world->player->particle.pos = v3(40.0f, 0.1f, 10.0);
 		world->player->particle.inverseMass = 10.0f;
 		world->player->particle.velocity = v3(0.0f, 0.0f, 0.0f); // 35m/s
@@ -78,8 +78,8 @@ namespace Mon {
 
 			tree->setup = {};
 			tree->name = "tree_" + std::to_string(i);
-			MonGL::initQuad(&tree->data);
-			MonGL::loadTexture(&tree->data, MonGL::Type::Diffuse, shaderHandle, "res/textures/tree.png");
+			MonGL::InitQuad(&tree->data);
+			MonGL::LoadTexture(&tree->data, 0, MonGL::Type::Diffuse, shaderHandle, "res/textures/tree.png");
 			tree->particle.pos = v3(6.0f * (i + 1), 6.80f, 5.5f * i);
 		}
 
@@ -91,8 +91,8 @@ namespace Mon {
 
 			flower->setup = {};
 			flower->name = "flower_" + std::to_string(i);
-			MonGL::initQuad(&flower->data);
-			MonGL::loadTexture(&flower->data, MonGL::Type::Diffuse, shaderHandle, "res/textures/sflow_tall.png");
+			MonGL::InitQuad(&flower->data);
+			MonGL::LoadTexture(&flower->data, 0, MonGL::Type::Diffuse, shaderHandle, "res/textures/sflow_tall.png");
 			flower->particle.pos = v3(10.0f, 0.1f, 6.0f);
 		}
 
