@@ -68,7 +68,7 @@ namespace Mon {
 
 	static void initWorld(World* world, int shaderHandle)
 	{
-		// reserve slot 0 for null enttiy
+		// reserve slot 0 for null entity
 		addEntity(world);
 
 		for (int i = 1; i < 10; ++i)

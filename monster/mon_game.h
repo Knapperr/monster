@@ -47,8 +47,9 @@ namespace Mon
 
 		Input input;
 		
-		Camera cameras[2];
+		Camera cameras[5];
 		int currCameraIndex = 0;
+		int cameraCount = 0;
 
 		MonGL::Config* config;
 
@@ -75,6 +76,16 @@ namespace Mon
 		MonGL::Light light;
 	};
 	
+	static unsigned int addCamera(Game* game)
+	{
+		unsigned int cameraIndex = game->cameraCount++;
+
+		Camera* c = &game->cameras[game->cameraCount];
+		c = {};
+
+		return cameraIndex;
+	}
+
 	static Camera* getCamera(Game* game, unsigned int index)
 	{
 		Camera* c = 0;

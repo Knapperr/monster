@@ -59,9 +59,13 @@ namespace Mon
 		config->angleDegrees = -30.0f;
 
 		// TODO(ck): Memory management
-		InitCamera(&cameras[0], CameraType::Fly, config->viewPort);
-		InitCamera(&cameras[1], CameraType::Follow, config->viewPort);
-		currCameraIndex = 0;
+		// reserve slot 0 for NULL camera
+		addCamera(this);
+		int debugCamIndex = addCamera(this);
+		InitCamera(&cameras[debugCamIndex], CameraType::Fly, config->viewPort);
+		int followCamIndex = addCamera(this);
+		InitCamera(&cameras[followCamIndex], CameraType::Follow, config->viewPort);
+		currCameraIndex = debugCamIndex;
 
 
 		selectedIndex = 0;
@@ -238,11 +242,16 @@ namespace Mon
 		mat4 proj = cam->projection();
 		mat4 view = cam->viewMatrix();
 #else
+		Camera* cam = getCamera(this, currCameraIndex);
 
-
-		mat4 proj = Projection(&cameras[currCameraIndex]);
+		/*mat4 proj = Projection(&cameras[currCameraIndex]);
 		mat4 view = ViewMatrix(&cameras[currCameraIndex]);
-		v3 cameraPos = cameras[currCameraIndex].pos;
+		v3 cameraPos = cameras[currCameraIndex].pos;*/
+
+
+		mat4 proj = Projection(cam);
+		mat4 view = ViewMatrix(cam);
+		v3 cameraPos = cam->pos;
 		//mat4 view = FollowViewMatrix(&cameras[0]);
 #endif
 
@@ -310,13 +319,13 @@ namespace Mon
 
 	void Game::playMode()
 	{
-		currCameraIndex = 1;
+		currCameraIndex = 2;
 		state = State::Play;
 	}
 
 	void Game::debugMode()
 	{
-		currCameraIndex = 0;
+		currCameraIndex = 1;
 		state = State::Debug;
 	}
 }
