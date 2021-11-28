@@ -5,7 +5,7 @@
 #include <glad/glad.h>
 #include <SDL/SDL.h>
 
-#include "mon_debug_camera.h"
+#include "mon_camera.h"
 // should not be in this layer either
 // the app just takes 
 #include "mon_terrain.h"
@@ -47,8 +47,9 @@ namespace Mon
 
 		Input input;
 		
-		Camera* cam;
-		//OrthoCamera camera;
+		Camera cameras[2];
+		int currCameraIndex = 0;
+
 		MonGL::Config* config;
 
 		// TODO(ck): Use one container
@@ -73,5 +74,15 @@ namespace Mon
 		MonGL::CommonProgram tileShader;
 		MonGL::Light light;
 	};
+	
+	static Camera* getCamera(Game* game, unsigned int index)
+	{
+		Camera* c = 0;
+		if ((index > 0) && (index < ArrayCount(game->cameras)))
+		{
+			c = &game->cameras[index];
+		}
+		return c;
+	}
 }
 #endif

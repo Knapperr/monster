@@ -164,7 +164,7 @@
     <ClCompile Include="mon_entity.cpp" />
     <ClCompile Include="mon_game.cpp" />
     <ClCompile Include="mon_app.cpp" />
-    <ClCompile Include="mon_debug_camera.cpp" />
+    <ClCompile Include="mon_camera.cpp" />
     <ClCompile Include="mon_entity2D.cpp" />
     <ClCompile Include="mon_game2D.cpp" />
     <ClCompile Include="mon_gui.cpp" />
@@ -177,6 +177,7 @@
     <ClCompile Include="mon_tilemap.cpp" />
     <ClCompile Include="mon_world2D.cpp" />
     <ClCompile Include="sdl_platform.cpp" />
+    <ClCompile Include="win32_platform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="handmade_random.h" />
@@ -191,7 +192,7 @@
     <ClInclude Include="mon_entity.h" />
     <ClInclude Include="mon_game.h" />
     <ClInclude Include="mon_app.h" />
-    <ClInclude Include="mon_debug_camera.h" />
+    <ClInclude Include="mon_camera.h" />
     <ClInclude Include="mon_entity2D.h" />
     <ClInclude Include="mon_game2D.h" />
     <ClInclude Include="mon_gui.h" />
@@ -208,6 +209,7 @@
     <ClInclude Include="mon_world.h" />
     <ClInclude Include="mon_world2D.h" />
     <ClInclude Include="sdl_platform.h" />
+    <ClInclude Include="win32_platform.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

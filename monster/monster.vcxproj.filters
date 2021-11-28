@@ -51,7 +51,7 @@
     <ClCompile Include="include\imgui\imgui_widgets.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="mon_debug_camera.cpp">
+    <ClCompile Include="mon_camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
@@ -102,6 +102,9 @@
     <ClCompile Include="mon_game2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="win32_platform.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mon_texture.h">
@@ -134,7 +137,7 @@
     <ClInclude Include="include\imgui\imstb_truetype.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="mon_debug_camera.h">
+    <ClInclude Include="mon_camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="mon_ortho_camera.h">
@@ -190,6 +193,9 @@
     </ClInclude>
     <ClInclude Include="mon_game2D.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="win32_platform.h">
+      <Filter>Header Files\Engine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

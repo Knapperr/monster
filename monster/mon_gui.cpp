@@ -146,26 +146,26 @@ void CameraWindow(bool* p_open, Mon::Game* game)
 
 	ImGui::Separator();
 
-	ImGui::DragFloat("cam zoom", &game->cam->zoom, 0.1f, -1000.0f, 1000.0f, "%.02f");
+	ImGui::DragFloat("cam zoom", &game->cameras[game->currCameraIndex].zoom, 0.1f, -1000.0f, 1000.0f, "%.02f");
 
-	ImGui::DragFloat("near plane", &game->cam->nearPlane, 0.01f, 0.1f, 100.0f, "%.02f");
-	ImGui::DragFloat("far plane", &game->cam->farPlane, 0.5f, 100.0f, 1000.0f, "%.02f");
+	ImGui::DragFloat("near plane", &game->cameras[game->currCameraIndex].nearPlane, 0.01f, 0.1f, 100.0f, "%.02f");
+	ImGui::DragFloat("far plane", &game->cameras[game->currCameraIndex].farPlane, 0.5f, 100.0f, 1000.0f, "%.02f");
 	
-	ImGui::SliderFloat("angle", &game->cam->angleAroundTarget, -360.0f, 180.0f);
-	ImGui::SliderFloat("pitch", &game->cam->pitch, -1.10f, 100.0f, "%1.0f");
-	ImGui::SliderFloat("lerp", &game->cam->lerpSpeed, 0.0f, 100.0f);
-	ImGui::SliderFloat("smooth", &game->cam->smoothness, 0.1f, 10.0f);
+	ImGui::SliderFloat("pitch", &game->cameras[game->currCameraIndex].pitch, -1.10f, 100.0f, "%1.0f");
+	//ImGui::SliderFloat("angle", &game->cameras[game->currCameraIndex].angleAroundTarget, -360.0f, 180.0f);
+	//ImGui::SliderFloat("lerp", &game->cameras[game->currCameraIndex].lerpSpeed, 0.0f, 100.0f);
+	//ImGui::SliderFloat("smooth", &game->cameras[game->currCameraIndex].smoothness, 0.1f, 10.0f);
 
 
 	if (ImGui::Button("Log")) 
 	{ 
-		Mon::Log::print("cam zoom", game->cam->zoom);
-		Mon::Log::print("near plane", game->cam->nearPlane);
-		Mon::Log::print("far plane", game->cam->farPlane);
-		Mon::Log::print("angle around target", game->cam->angleAroundTarget);
-		Mon::Log::print("pitch", game->cam->pitch);
-		Mon::Log::print("lerp speed", game->cam->lerpSpeed);
-		Mon::Log::print("smoothness", game->cam->smoothness);
+		Mon::Log::print("cam zoom", game->cameras[game->currCameraIndex].zoom);
+		Mon::Log::print("near plane", game->cameras[game->currCameraIndex].nearPlane);
+		Mon::Log::print("far plane", game->cameras[game->currCameraIndex].farPlane);
+		Mon::Log::print("pitch", game->cameras[game->currCameraIndex].pitch);
+		//Mon::Log::print("angle around target", game->cameras[game->currCameraIndex].angleAroundTarget);
+		//Mon::Log::print("lerp speed", game->cameras[game->currCameraIndex].lerpSpeed);
+		//Mon::Log::print("smoothness", game->cameras[game->currCameraIndex].smoothness);
 	}
 
 	ImGui::End();
@@ -315,31 +315,31 @@ void StatsWindow(bool* p_open, Mon::Game* game)
 	//snprintf(buffer, sizeof(buffer), "%f", game->player.particle.acceleration.x);
 	//ImGui::LabelText(buffer, "player acc");
 
-	snprintf(buffer, sizeof(buffer), "%f", game->cam->pos.x);
+	snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].pos.x);
 	ImGui::LabelText(buffer, "cam x");
-	snprintf(buffer, sizeof(buffer), "%f", game->cam->pos.y);
+	snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].pos.y);
 	ImGui::LabelText(buffer, "cam y");
-	snprintf(buffer, sizeof(buffer), "%f", game->cam->pos.z);
+	snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].pos.z);
 	ImGui::LabelText(buffer, "cam z");
 
-	snprintf(buffer, sizeof(buffer), "%f", game->cam->right.x);
+	snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].right.x);
 	ImGui::LabelText(buffer, "right x");
-	snprintf(buffer, sizeof(buffer), "%f", game->cam->right.y);
+	snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].right.y);
 	ImGui::LabelText(buffer, "right y");
-	snprintf(buffer, sizeof(buffer), "%f", game->cam->right.z);
+	snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].right.z);
 	ImGui::LabelText(buffer, "right z");
 
 
-	snprintf(buffer, sizeof(buffer), "%f", game->cam->front.x);
+	snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].front.x);
 	ImGui::LabelText(buffer, "front x");
-	snprintf(buffer, sizeof(buffer), "%f", game->cam->front.y);
+	snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].front.y);
 	ImGui::LabelText(buffer, "front y");
-	snprintf(buffer, sizeof(buffer), "%f", game->cam->front.z);
+	snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].front.z);
 	ImGui::LabelText(buffer, "front z");
 
-	snprintf(buffer, sizeof(buffer), "%f", game->cam->pitch);
+	snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].pitch);
 	ImGui::LabelText(buffer, "pitch");
-	snprintf(buffer, sizeof(buffer), "%f", game->cam->yaw);
+	snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].yaw);
 	ImGui::LabelText(buffer, "yaw");
 
 	ImGui::End();
@@ -446,7 +446,7 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 		ImGui::SameLine();
 		ImGui::Checkbox("Things", &showEntityWindow);
 
-		ImGui::DragFloat("cam speed", &game->cam->speed, 0.01f, 1.0f, 200.0f, "%.02f");
+		ImGui::DragFloat("cam speed", &game->cameras[game->currCameraIndex].speed, 0.01f, 1.0f, 200.0f, "%.02f");
 
 		/// 
 		/// Player 

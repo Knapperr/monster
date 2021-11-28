@@ -31,6 +31,15 @@ namespace Mon
 #else 
 		pos.x = smoothDamp(pos.x, target->x, vel.x, smoothness, dt);
 		pos.y = smoothDamp(pos.y, target->y, vel.y, smoothness, dt);
+
+		if (pos.x < 0.0f)
+			pos.x = 0.0f;
+		if (pos.y < 0.0f)
+			pos.y = 0.0f;
+		if (pos.y > 960.0f)
+			pos.y = 0.0f;
+		if (pos.y < 0.0f)
+			pos.y = 0.0f;
 #endif
 	}
 
@@ -49,6 +58,7 @@ namespace Mon
 		float height = 540.0f;
 		float half = 6.0f;
 #if 1
+		// TODO(ck): compute in update?
 		// TODO(ck): Remove half prefer zoom
 		float left = pos.x - width / half;
 		float right = pos.x + width / half;
@@ -56,14 +66,14 @@ namespace Mon
 		float bottom = pos.y + height / half;
 #else
 		float left = 0.0f;
-		float right = 960.0f / 4;
+		float right = 960.0f;
 		float top = 0.0f;
-		float bottom = 540.0f / 4;
+		float bottom = 540.0f;
 #endif
 		mat4 projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
 		mat4 zoomMatrix = glm::scale(v3(zoom));
-		//projection = projection * zoomMatrix;
+		projection = projection * zoomMatrix;
 
-		return projection * zoomMatrix;
+		return projection;
 	}
 }

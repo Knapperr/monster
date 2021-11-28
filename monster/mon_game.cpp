@@ -59,10 +59,13 @@ namespace Mon
 		config->angleDegrees = -30.0f;
 
 		// TODO(ck): Memory management
-		cam = new Camera(config->viewPort);
+		InitCamera(&cameras[0], config->viewPort);
+		//InitFollowCamera(&cameras[1], config->viewPort);
 
 		selectedIndex = 0;
 		drawCollisions = true;
+
+		state = State::Debug;
 
 		return true;
 	}
@@ -209,8 +212,9 @@ namespace Mon
 		//float y = (2.0f * (mouseY - yOffset)) / (float)displayHeight - 1.0f;
 		//input.mouseOffset.x -= config->viewPort.x;
 		//input.mouseOffset.y -= config->viewPort.y;
-		cam->update(deltaTime, &input, world->player->particle.pos, world->player->particle.orientation, true);
-
+		//cam->update(deltaTime, &input, world->player->particle.pos, world->player->particle.orientation, true);
+		
+		Update(&cameras[0], deltaTime, &input, world->player->particle.pos, world->player->particle.orientation, true);
 		//if (simulate == true)
 			//player.particle.integrate(deltaTime);
 
@@ -224,16 +228,31 @@ namespace Mon
 
 	void Game::render(double dt)
 	{
+		// TODO(ck): get the correct camera
+		// camera = GetCurrentCamera(); // grabs whatever is being used follow or debug?
+
+
 		//projection = glm::perspective(glm::radians(cam.zoom), 1440.0f / 720.0f, 0.1f, 100.0f);
+#if 0
 		mat4 proj = cam->projection();
 		mat4 view = cam->viewMatrix();
+#else
+		mat4 proj = Projection(&cameras[0]);
+		mat4 view = ViewMatrix(&cameras[0]);
+		//mat4 view = FollowViewMatrix(&cameras[0]);
+		v3 cameraPos = cameras[0].pos;
+#endif
 
 		// TODO(ck): pass all shaders to beginRender or they live in the opengl layer and get
 		// activated that way
 		MonGL::BeginRender(config, proj, view, shader.handle);
 		MonGL::BeginRender(config, proj, view, waterShader.common.handle);
 
+#if 0 
 		MonGL::DrawTerrain(shader.handle, &terrain->mesh, &light, proj, view, cam->pos);
+#else
+		MonGL::DrawTerrain(shader.handle, &terrain->mesh, &light, proj, view, cameras[0].pos);
+#endif
 
 		// TODO(ck): use shader
 		glUseProgram(shader.handle);
@@ -244,9 +263,9 @@ namespace Mon
 		glUniform3fv(glGetUniformLocation(shader.handle, "light.specular"), 1, &light.specular[0]);
 
 		if (drawCollisions)
-			MonGL::DrawBoundingBox(&world->player->collider.data, world->player->collider.size, world->player->particle.pos, cam->pos, proj, view, shader.handle);
+			MonGL::DrawBoundingBox(&world->player->collider.data, world->player->collider.size, world->player->particle.pos, cameras[0].pos, proj, view, shader.handle);
 
-		MonGL::DrawQuad(config, &world->player->data, world->player->particle.pos, v3(1.0f), cam->pos, shader.handle, world->player->facingDir);
+		MonGL::DrawQuad(config, &world->player->data, world->player->particle.pos, v3(1.0f), cameras[0].pos, shader.handle, world->player->facingDir);
 
 		//for (auto& e : enemies)
 		//{
@@ -256,7 +275,7 @@ namespace Mon
 		for (int i = 1; i < world->entityCount; ++i)
 		{
 			Entity e = world->entities[i];
-			MonGL::DrawQuad(config, &e.data, e.particle.pos, v3(16.0f, 16.0f, 1.0f), cam->pos, shader.handle);
+			MonGL::DrawQuad(config, &e.data, e.particle.pos, v3(16.0f, 16.0f, 1.0f), cameras[0].pos, shader.handle);
 		}
 		
 		//glUseProgram(waterShader.common.handle);
@@ -283,18 +302,18 @@ namespace Mon
 
 	bool Game::playing()
 	{
-		return (state == State::Play && cam->follow == true);
+		return (state == State::Play);
 	}
 
 	void Game::playMode()
 	{
 		state = State::Play;
-		cam->followOn();
+		FollowOn(&cameras[currCameraIndex]);
 	}
 
 	void Game::debugMode()
 	{
 		state = State::Debug;
-		cam->followOff();
+		FollowOff(&cameras[currCameraIndex]);
 	}
 }

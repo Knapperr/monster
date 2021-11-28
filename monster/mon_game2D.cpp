@@ -86,7 +86,7 @@ namespace Mon {
 
 				if (input->up.endedDown)
 				{
-#if 1
+#if 0
 					velocity.y = -1.0f;
 #else
 					p->pos.y -= 1.0f * p->speed * dt;
@@ -94,7 +94,7 @@ namespace Mon {
 				}
 				if (input->down.endedDown)
 				{
-#if 1
+#if 0
 					velocity.y = 1.0f;
 #else
 					p->pos.y += 1.0f * p->speed * dt;
@@ -102,7 +102,7 @@ namespace Mon {
 				}
 				if (input->left.endedDown)
 				{
-#if 1
+#if 0
 					velocity.x = -1.0f;
 #else
 					p->pos.x -= 1.0f * p->speed * dt;
@@ -110,7 +110,7 @@ namespace Mon {
 				}
 				if (input->right.endedDown)
 				{
-#if 1
+#if 0
 					velocity.x = 1.0f;
 #else
 					p->pos.x += 1.0f * p->speed * dt;
@@ -135,7 +135,7 @@ namespace Mon {
 						UpdateTile(world->map, &world->sheet, 500, 3);
 				}
 			}
-			Mon::movePlayer(world->map, p, &velocity, deltaTime);
+			//Mon::movePlayer(world->map, p, &velocity, deltaTime);
 
 			// TODO(ck): link sprite position to camera...  
 			// https://www.reddit.com/r/gamedev/comments/7cnqpg/lerping_camera_position_causes_jitters_as_it/
