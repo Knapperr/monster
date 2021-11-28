@@ -6,6 +6,12 @@
 namespace Mon
 {
 
+	enum class CameraType
+	{
+		Fly,
+		Follow
+	};
+
 	struct Camera
 	{
 		v3 pos;
@@ -21,41 +27,38 @@ namespace Mon
 		float yaw;
 		float pitch;
 		float aspectRatio;
-	};
-	
-	/*
-	v3 lastDebugPos;
-	v3 lastDebugFront;
-	float lastDebugPitch;
-	float lastDebugYaw;
-	*/
 
-	struct FollowCamera : Camera
-	{
+		// Follow attributes
 		v3 target;
 		v3 velocity;
 		float lerpSpeed;
 		float smoothness;
 		float distanceFromTarget;
 		float angleAroundTarget;
-	};
 
-	void InitCamera(Camera* camera, Rect viewPort);
+		CameraType type;
+	};
+	
+	void InitCamera(Camera* camera, CameraType type, Rect viewPort);
+	mat4 ViewMatrix(Camera* camera);
 	void Update(Camera* camera, double dt, Input* input, v3 pos, v3 orientation, bool constrainPitch = true);
+
+
+	void InitFlyCamera(Camera* camera, Rect viewPort);
+	void UpdateFlyCamera(Camera* camera, double dt, Input* input, v3 pos, v3 orientation, bool constrainPitch = true);
 	void ProcessInput(Camera* camera, double dt, Input* input);
 	void ProcessScroll(Camera* camera, int yOffset);
 	mat4 Projection(Camera* camera);
 	void CalculateYawPitch(Camera* camera, v2 offset, float sensitivity, bool constrainPitch);
 	void CalculateCameraVectors(Camera* camera);
-	mat4 ViewMatrix(Camera* camera);
+	mat4 FlyViewMatrix(Camera* camera);
 	
-	void InitFollowCamera(FollowCamera* camera, Rect viewPort);
-	mat4 FollowViewMatrix(FollowCamera* camera);
-	void Update(FollowCamera* camera, double dt, Input* input, v3 pos, v3 orientation, bool constrainPitch = true);
-	void CalculateAngleAroundTarget(FollowCamera* camera, v2 offset);
+	void InitFollowCamera(Camera* camera, Rect viewPort);
+	mat4 FollowViewMatrix(Camera* camera);
+	void UpdateFollowCamera(Camera* camera, double dt, Input* input, v3 pos, v3 orientation, bool constrainPitch = true);
+	void CalculateAngleAroundTarget(Camera* camera, v2 offset);
 
 	void FollowOn(Camera* camera);
-	void FollowOff(Camera* camera);
 }
 
 #endif // MON_CAMERA_H

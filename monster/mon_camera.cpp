@@ -5,10 +5,60 @@
 
 namespace Mon
 {
+	void InitCamera(Camera* camera, CameraType type, Rect viewPort)
+	{
+		switch (type)
+		{
+		case CameraType::Fly:
+			camera->type = CameraType::Fly;
+			InitFlyCamera(camera, viewPort);
+			break;
+		case CameraType::Follow:
+			camera->type = CameraType::Follow;
+			InitFollowCamera(camera, viewPort);
+			break;
+		default:
+			Mon::Log::print("Camera type not specified. Creating fly camera");
+			camera->type = CameraType::Fly;
+			InitFlyCamera(camera, viewPort);
+			break;
+		}
+	}
+
+	// TODO(ck): Do not like switch for retrieving view matrix
+	mat4 ViewMatrix(Camera* camera)
+	{
+		switch (camera->type)
+		{
+		case CameraType::Fly:
+			return FlyViewMatrix(camera);
+		case CameraType::Follow:
+			return FollowViewMatrix(camera);
+		default:
+			return FlyViewMatrix(camera);
+		}
+	}
+
+	void Update(Camera* camera, double dt, Input* input, v3 pos, v3 orientation, bool constrainPitch)
+	{
+		switch (camera->type)
+		{
+		case CameraType::Fly:
+			UpdateFlyCamera(camera, dt, input, pos, orientation, constrainPitch);
+			break;
+		case CameraType::Follow:
+			UpdateFollowCamera(camera, dt, input, pos, orientation, constrainPitch);
+			break;
+		default:
+			UpdateFlyCamera(camera, dt, input, pos, orientation, constrainPitch);
+			break;
+		}
+	}
+
 	/// 
 	/// Standard Fly Camera
 	///
-	void InitCamera(Camera* camera, Rect viewPort)
+	void InitFlyCamera(Camera* camera, Rect viewPort)
 	{
 		camera->worldUp = v3(0.0f, 1.0f, 0.0f);
 		camera->pos = v3(29.0f, 17.0f, 0.0f);
@@ -25,11 +75,10 @@ namespace Mon
 		//direction = glm::normalize(pos - target);
 		//right = v3(1.0f);
 		//up = glm::cross(direction, right);
-
 		CalculateCameraVectors(camera);
 	}
 
-	mat4 ViewMatrix(Camera* camera)
+	mat4 FlyViewMatrix(Camera* camera)
 	{
 		return glm::lookAt(camera->pos, camera->pos + camera->front, camera->up);
 	}
@@ -39,12 +88,8 @@ namespace Mon
 		return glm::perspective(glm::radians(camera->zoom), camera->aspectRatio, camera->nearPlane, camera->farPlane);
 	}
 
-	void Update(Camera* camera, double dt, Input* input, v3 pos, v3 orientation, bool constrainPitch)
+	void UpdateFlyCamera(Camera* camera, double dt, Input* input, v3 pos, v3 orientation, bool constrainPitch)
 	{
-		// TODO(ck):
-		// switch update method on type
-
-
 		ProcessInput(camera, dt, input);
 		if (input->lMouseBtn.endedDown)
 		{
@@ -138,9 +183,9 @@ namespace Mon
 	/// Follow Camera 
 	///
 
-	void InitFollowCamera(FollowCamera* camera, Rect viewPort)
+	void InitFollowCamera(Camera* camera, Rect viewPort)
 	{
-		InitCamera(camera, viewPort);
+		InitFlyCamera(camera, viewPort);
 
 		camera->yaw = 0.0f;
 		camera->pitch = 40.0f;
@@ -152,7 +197,7 @@ namespace Mon
 		camera->lerpSpeed = 7.0f;
 	}
 
-	mat4 FollowViewMatrix(FollowCamera* camera)
+	mat4 FollowViewMatrix(Camera* camera)
 	{
 		glm::mat4 viewMatrix = glm::mat4(1.0f);
 		viewMatrix = glm::rotate(viewMatrix, glm::radians(camera->pitch), glm::vec3(1, 0, 0));
@@ -165,7 +210,7 @@ namespace Mon
 		return viewMatrix;
 	}
 
-	void Update(FollowCamera* camera, double dt, Input* input, v3 pos, v3 orientation, bool constrainPitch)
+	void UpdateFollowCamera(Camera* camera, double dt, Input* input, v3 pos, v3 orientation, bool constrainPitch)
 	{
 		// these are being done every frame.....
 		// calczoom 
@@ -196,7 +241,7 @@ namespace Mon
 		camera->yaw = 180 - (glm::radians(orientation.y) + camera->angleAroundTarget);
 	}
 
-	void CalculateAngleAroundTarget(FollowCamera* camera, v2 offset)
+	void CalculateAngleAroundTarget(Camera* camera, v2 offset)
 	{
 		//if (g_Game->leftMousePressed)
 		//{
@@ -207,28 +252,10 @@ namespace Mon
 
 	void FollowOn(Camera* camera)
 	{
-		//follow = true;
-		/*lastDebugPos = pos;
-		lastDebugYaw = yaw;
-		lastDebugPitch = pitch;
-		lastDebugFront = front;*/
-
 		camera->yaw = 0.0f;
 		camera->pitch = 40.0f;
 		camera->front = v3(0.0f, 0.0f, -1.0f);
 	}
-
-	void FollowOff(Camera* camera)
-	{
-		//follow = false;
-		//camera->yaw = lastDebugYaw;
-		//camera->pitch = lastDebugPitch;
-		//camera->front = lastDebugFront;
-		//camera->pos = lastDebugPos;
-	}
-
-	
-
 
 
 }
