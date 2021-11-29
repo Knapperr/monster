@@ -233,38 +233,13 @@ namespace Mon
 
 	void Game::render(double dt)
 	{
-		// TODO(ck): get the correct camera
-		// camera = GetCurrentCamera(); // grabs whatever is being used follow or debug?
-
-
-		//projection = glm::perspective(glm::radians(cam.zoom), 1440.0f / 720.0f, 0.1f, 100.0f);
-#if 0
-		mat4 proj = cam->projection();
-		mat4 view = cam->viewMatrix();
-#else
 		Camera* cam = getCamera(this, currCameraIndex);
-
-		/*mat4 proj = Projection(&cameras[currCameraIndex]);
-		mat4 view = ViewMatrix(&cameras[currCameraIndex]);
-		v3 cameraPos = cameras[currCameraIndex].pos;*/
-
-
-		mat4 proj = Projection(cam);
-		mat4 view = ViewMatrix(cam);
-		v3 cameraPos = cam->pos;
-		//mat4 view = FollowViewMatrix(&cameras[0]);
-#endif
-
 		// TODO(ck): pass all shaders to beginRender or they live in the opengl layer and get
 		// activated that way
-		MonGL::BeginRender(config, proj, view, shader.handle);
-		MonGL::BeginRender(config, proj, view, waterShader.common.handle);
+		MonGL::BeginRender(config, Projection(cam), ViewMatrix(cam), shader.handle);
+		MonGL::BeginRender(config, Projection(cam), ViewMatrix(cam), waterShader.common.handle);
 
-#if 0 
-		MonGL::DrawTerrain(shader.handle, &terrain->mesh, &light, proj, view, cam->pos);
-#else
-		MonGL::DrawTerrain(shader.handle, &terrain->mesh, &light, proj, view, cameraPos);
-#endif
+		MonGL::DrawTerrain(shader.handle, &terrain->mesh, &light, cam);
 
 		// TODO(ck): use shader
 		glUseProgram(shader.handle);
@@ -275,9 +250,9 @@ namespace Mon
 		glUniform3fv(glGetUniformLocation(shader.handle, "light.specular"), 1, &light.specular[0]);
 
 		if (drawCollisions)
-			MonGL::DrawBoundingBox(&world->player->collider.data, world->player->collider.size, world->player->particle.pos, cameraPos, proj, view, shader.handle);
+			MonGL::DrawBoundingBox(&world->player->collider.data, world->player->collider.size, world->player->particle.pos, cam, shader.handle);
 
-		MonGL::DrawQuad(config, &world->player->data, world->player->particle.pos, v3(1.0f), cameraPos, shader.handle, world->player->facingDir);
+		MonGL::DrawQuad(config, &world->player->data, world->player->particle.pos, v3(1.0f), cam, shader.handle, world->player->facingDir);
 
 		//for (auto& e : enemies)
 		//{
@@ -287,7 +262,7 @@ namespace Mon
 		for (int i = 1; i < world->entityCount; ++i)
 		{
 			Entity e = world->entities[i];
-			MonGL::DrawQuad(config, &e.data, e.particle.pos, v3(16.0f, 16.0f, 1.0f), cameraPos, shader.handle);
+			MonGL::DrawQuad(config, &e.data, e.particle.pos, v3(16.0f, 16.0f, 1.0f), cam, shader.handle);
 		}
 		
 		//glUseProgram(waterShader.common.handle);

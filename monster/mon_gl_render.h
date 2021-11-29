@@ -3,7 +3,7 @@
 
 #include "mon_shader.h"
 #include "mon_texture.h"
-#include "mon_math.h"
+#include "mon_camera.h"
 
 #include <vector>
 
@@ -160,14 +160,13 @@ namespace MonGL
 	void LoadTexture(RenderData* data, int index, Type type, int shaderID, std::string path);
 	
 	void DrawQuad(Config* config, RenderData* data,
-						 v3 playerPos, v3 scale, v3 camPos,
-						 unsigned int shaderID, int selectedTexture = 0);
+					v3 playerPos, v3 scale, Camera* camera,
+					unsigned int shaderID, int selectedTexture = 0);
 	void DrawWater(RenderData* data, RenderSetup* setup, WaterDataProgram* waterData, Light* light, v3 pos, v3 scale, v3 camPos, unsigned int shaderID);
 	void DrawBoundingBox(RenderData* data, ColliderSize size,
-					 v3 playerPos, v3 camPos,
-					 mat4 projection, mat4 view,
+					 v3 playerPos, Camera* camera,
 					 unsigned int shaderID);
-	void DrawTerrain(unsigned int shaderID, RenderData* data, Light* light, mat4 projection, mat4 view, v3 camPos);
+	void DrawTerrain(unsigned int shaderID, RenderData* data, Light* light, Camera* camera);
 
 
 

@@ -144,6 +144,31 @@ void CameraWindow(bool* p_open, Mon::Game* game)
 	ImGui::Unindent(32);
 	ImGui::PopButtonRepeat();
 
+	char buffer[64];
+	snprintf(buffer, sizeof(buffer), "%d", game->currCameraIndex);
+	ImGui::LabelText(buffer, "Current Camera");
+	if (ImGui::ArrowButton("##left", ImGuiDir_Left))
+	{
+		if (game->currCameraIndex > 1)
+			game->currCameraIndex--;
+
+		if (game->cameras[game->currCameraIndex].type == Mon::CameraType::Follow)
+			game->playMode();
+		else
+			game->debugMode();
+	}
+	ImGui::SameLine();
+	if (ImGui::ArrowButton("##right", ImGuiDir_Right))
+	{
+		if (game->currCameraIndex < (game->cameraCount-1))
+			game->currCameraIndex++;
+
+		if (game->cameras[game->currCameraIndex].type == Mon::CameraType::Follow)
+			game->playMode();
+		else
+			game->debugMode();
+	}
+
 	ImGui::Separator();
 
 	ImGui::DragFloat("cam zoom", &game->cameras[game->currCameraIndex].zoom, 0.1f, -1000.0f, 1000.0f, "%.02f");
@@ -369,24 +394,23 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 
 	ImGui::Begin("DEBUG MENU");
 
-	/* - Color buttons, demonstrate using PushID() to add unique identifier in the ID stack, and changing style.
-    for (int i = 0; i < 7; i++)
-    {
-        if (i > 0)
-            ImGui::SameLine();
-        ImGui::PushID(i);
-        ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(i / 7.0f, 0.6f, 0.6f));
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(i / 7.0f, 0.7f, 0.7f));
-        ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(i / 7.0f, 0.8f, 0.8f));
-        ImGui::Button("Click");
-        ImGui::PopStyleColor(3);
-        ImGui::PopID();
-    }*/
 	ImGui::Separator();
-		if (ImGui::Button("debug")) { game->debugMode(); }
+		ImGui::PushID(0);
+			ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::ImColor(170, 40, 44));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::ImColor(105, 24, 27));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::ImColor(66, 15, 16));
+			if (ImGui::Button("debug")) { game->debugMode(); }
+			ImGui::PopStyleColor(3);
+		ImGui::PopID();
 		ImGui::SameLine();
-		if (ImGui::Button("play") && game->state != Mon::State::Play) { game->playMode(); }
-		ImGui::SameLine();
+
+		ImGui::PushID(0);
+			ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::ImColor(16, 169, 35));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::ImColor(31, 80, 18));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::ImColor(34, 64, 35));
+			if (ImGui::Button("play") && game->state != Mon::State::Play) { game->playMode(); }
+			ImGui::PopStyleColor(3);
+		ImGui::PopID();
 		if (ImGui::Button("save")) 
 		{
 			writeEntities(game->world->entities, game->mainShaderID); 

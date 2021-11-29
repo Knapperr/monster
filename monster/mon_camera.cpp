@@ -26,6 +26,9 @@ namespace Mon
 	}
 
 	// TODO(ck): Do not like switch for retrieving view matrix
+	// IMPORTANT(ck): Can I use an update and viewmatrix function pointer? just set the func the 
+	// camera is going to use?
+	// that way can call camera->update(); and it will call the assigned update method
 	mat4 ViewMatrix(Camera* camera)
 	{
 		switch (camera->type)
@@ -38,7 +41,9 @@ namespace Mon
 			return FlyViewMatrix(camera);
 		}
 	}
-
+	// TODO(ck): Do not like switch for update
+	// IMPORTANT(ck): Can I use an update and viewmatrix function pointer? just set the func the 
+	// camera is going to use?
 	void Update(Camera* camera, double dt, Input* input, v3 pos, v3 orientation, bool constrainPitch)
 	{
 		switch (camera->type)
@@ -202,8 +207,7 @@ namespace Mon
 		glm::mat4 viewMatrix = glm::mat4(1.0f);
 		viewMatrix = glm::rotate(viewMatrix, glm::radians(camera->pitch), glm::vec3(1, 0, 0));
 		viewMatrix = glm::rotate(viewMatrix, glm::radians(camera->yaw), glm::vec3(0, 1, 0));
-		glm::vec3 cameraPos = camera->pos;
-		glm::vec3 negativeCameraPos = glm::vec3(-cameraPos.x, -cameraPos.y, -cameraPos.z);
+		glm::vec3 negativeCameraPos = glm::vec3(-camera->pos.x, -camera->pos.y, -camera->pos.z);
 		glm::mat4 translate = glm::translate(glm::mat4(1.0f), negativeCameraPos);
 		viewMatrix = viewMatrix * translate;
 

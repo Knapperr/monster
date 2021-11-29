@@ -5,7 +5,6 @@
 #include <glad/glad.h>
 #include <SDL/SDL.h>
 
-#include "mon_camera.h"
 // should not be in this layer either
 // the app just takes 
 #include "mon_terrain.h"
@@ -47,6 +46,7 @@ namespace Mon
 
 		Input input;
 		
+		// TODO(ck): Camera Manager
 		Camera cameras[5];
 		int currCameraIndex = 0;
 		int cameraCount = 0;
@@ -56,7 +56,6 @@ namespace Mon
 		// TODO(ck): Use one container
 		//Entity player;
 		//Entity water;
-		//std::vector<Entity> enemies;
 		bool simulate;
 		bool drawCollisions;
 
@@ -76,6 +75,8 @@ namespace Mon
 		MonGL::Light light;
 	};
 	
+
+	// TODO(ck): Camera manager
 	static unsigned int addCamera(Game* game)
 	{
 		unsigned int cameraIndex = game->cameraCount++;
@@ -86,6 +87,7 @@ namespace Mon
 		return cameraIndex;
 	}
 
+	// TODO(ck): Camera manager
 	static Camera* getCamera(Game* game, unsigned int index)
 	{
 		Camera* c = 0;

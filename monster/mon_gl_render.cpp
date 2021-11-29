@@ -276,7 +276,7 @@ namespace MonGL
 	}
 
 	void DrawQuad(Config* config, RenderData* data,
-						v3 playerPos, v3 scale, v3 camPos,
+						v3 playerPos, v3 scale, Camera* camera,
 						unsigned int shaderID, int selectedTexture)
 	{
 
@@ -287,7 +287,7 @@ namespace MonGL
 		//glUniform1f(glGetUniformLocation(shaderID, "material.shininess"), data->mat.shininess);
 
 		// TODO(ck): Move to begin render. MonGL::beginRender(&cam);
-		glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camPos[0]);
+		glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camera->pos[0]);
 
 		bool useTexture = (ArrayCount(data->textures) > 0);
 		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), useTexture);
@@ -405,8 +405,7 @@ namespace MonGL
 	// the collider will have a size
 	void DrawBoundingBox(RenderData* data,
 					 ColliderSize size,
-					 v3 playerPos, v3 camPos,
-					 mat4 projection, mat4 view, 
+					 v3 playerPos, Camera* camera, 
 					 unsigned int shaderID)
 	{
 
@@ -416,10 +415,10 @@ namespace MonGL
 		glUniform3fv(glGetUniformLocation(shaderID, "material.specular"), 1, &data->mat.specular[0]);
 		glUniform1f(glGetUniformLocation(shaderID, "material.shininess"), data->mat.shininess);
 
-		glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camPos[0]);
+		glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camera->pos[0]);
 
-		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(view));
+		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(Projection(camera)));
+		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(ViewMatrix(camera)));
 
 		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), false);
 
@@ -563,12 +562,12 @@ namespace MonGL
 		LoadTextureFile(&data->textures[3], textPath.c_str(), Type::Diffuse, false, false, false);
 	}
 
-	void DrawTerrain(unsigned int shaderID, RenderData* data, Light* light, mat4 projection, mat4 view, v3 camPos)
+	void DrawTerrain(unsigned int shaderID, RenderData* data, Light* light, Camera* camera)
 	{
 		glUseProgram(shaderID);
 
-		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(view));
+		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(Projection(camera)));
+		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(ViewMatrix(camera)));
 
 		glUniform3fv(glGetUniformLocation(shaderID, "light.pos"), 1, &light->pos[0]);
 		glUniform3fv(glGetUniformLocation(shaderID, "light.ambient"), 1, &light->ambient[0]);
@@ -580,7 +579,7 @@ namespace MonGL
 		glUniform3fv(glGetUniformLocation(shaderID, "material.specular"), 1, &data->mat.specular[0]);
 		glUniform1f(glGetUniformLocation(shaderID, "material.shininess"), data->mat.shininess);
 
-		glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camPos[0]);
+		glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camera->pos[0]);
 
 
 		mat4 matModel = mat4(1.0f);
