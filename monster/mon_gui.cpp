@@ -199,10 +199,10 @@ void EntityWindow(bool* p_open, Mon::Game* game)
 	ImGui::Begin("entities and things", p_open);
 	ImGui::DragFloat("sprite angle", &game->config->angleDegrees, 0.10f, -180.0f, 360.0f, "%.10f");
 
-	static unsigned int selected = 0;
+	static unsigned int selected = 1;
 	ImGui::BeginChild("left pane", ImVec2(150.0f, 0.0f), true);
 
-	for (unsigned int i = 0; i < ArrayCount(game->world->entities); ++i)
+	for (unsigned int i = 1; i < game->world->entityCount; ++i)
 	{
 		char label[128];
 		sprintf_s(label, "%s %d", game->world->entities[i].name.c_str(), i);
@@ -222,7 +222,7 @@ void EntityWindow(bool* p_open, Mon::Game* game)
 	ImGui::EndChild();
 	ImGui::SameLine();
 
-	if (ArrayCount(game->world->entities) > 0)
+	if (game->world->entityCount > 1)
 	{
 		ImGui::BeginGroup();
 		ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
@@ -384,9 +384,9 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 
 	static bool showDemoWindow = false;
 	static bool showTerrainWindow = false;
-	static bool showCameraWindow = false;
+	static bool showCameraWindow = true;
 	static bool showStatsWindow = false;
-	static bool showEntityWindow = false;
+	static bool showEntityWindow = true;
 	if (showDemoWindow)
 		ImGui::ShowDemoWindow(&showDemoWindow);
 	if (showTerrainWindow)

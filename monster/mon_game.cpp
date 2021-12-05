@@ -69,7 +69,7 @@ namespace Mon
 		InitCamera(&cameras[debugCamIndex2], CameraType::Fly, "Debug 2", config->viewPort);
 		
 		currCameraIndex = debugCamIndex;
-		selectedIndex = 0;
+		selectedIndex = 1;
 		drawCollisions = true;
 
 		state = State::Debug;
