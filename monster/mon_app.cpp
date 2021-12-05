@@ -27,7 +27,6 @@ bool App::init()
 	Mon::Log::print("Window Height", settings.windowHeight);
 	Mon::Log::print("port width, height", settings.portWidth, settings.portHeight);
 
-
 	if (!platform->init(&settings))
 		return false;
 

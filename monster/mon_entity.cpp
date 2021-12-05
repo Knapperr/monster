@@ -12,11 +12,15 @@ namespace Mon {
 		return v3((c->size.min.x + c->size.max.x) / 2, (c->size.min.y + c->size.max.y) / 2, (c->size.min.z + c->size.max.z) / 2);
 	}
 
-	mat4 GetTransform(Collider* c)
+	// TODO(ck): need an offset from the entity so that the bounding box will properly
+	// go around the object 
+	mat4 GetTransform(Collider* c, v3 entityPos, v3 entityScale)
 	{
-		return translate(mat4(1), GetCenter(c)) * scale(mat4(1), GetSize(c));
-	}
+		mat4 translateMatrix = translate(mat4(1.0f), entityPos);		
+		//mat4 scaleMatrix = scale(mat4(1.0f), entityScale);
 
+		return translate(translateMatrix, GetCenter(c)) * scale(mat4(1.0f), GetSize(c));
+	}
 
 
 #define real_pow powf

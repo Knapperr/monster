@@ -254,20 +254,15 @@ namespace Mon
 		//
 		// UPDATE COLLIDERS
 		// 
-		// TODO(ck): Give player pos matrix
-		mat4 model = mat4(1.0f);
-		float colliderPosX = world->player->particle.pos.x - (0.5f);
-		float colliderPosZ = world->player->particle.pos.z - (0.5f);
-		world->player->collider.data.worldMatrix = translate(model, v3(colliderPosX, -0.2f, colliderPosZ));
-		world->player->collider.data.worldMatrix *= GetTransform(&world->player->collider);
+		v3 colliderPos = { world->player->particle.pos.x - (0.5f), -0.2f, world->player->particle.pos.z - (0.5f) };
+		world->player->collider.data.worldMatrix = GetTransform(&world->player->collider, colliderPos, world->player->data.scale);
 	
 		for (int i = 1; i < world->entityCount; ++i)
 		{
-			mat4 model = mat4(1.0f);
-			v3 colliderPos = { world->entities[i].particle.pos.x - (0.5f), -0.2f,
+			v3 colliderPos = { world->entities[i].particle.pos.x - (0.5f),
+								world->entities[i].particle.pos.y - (0.5),
 								world->entities[i].particle.pos.z - (0.5f) };
-			world->entities[i].collider.data.worldMatrix = translate(model, colliderPos);
-			world->entities[i].collider.data.worldMatrix *= GetTransform(&world->entities[i].collider);
+			world->entities[i].collider.data.worldMatrix = GetTransform(&world->entities[i].collider, colliderPos, world->entities[i].data.scale);
 		}
 	}
 

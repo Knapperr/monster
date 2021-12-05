@@ -453,15 +453,15 @@ namespace MonGL
 
 		// TODO(ck): Does this happen at the end of update. the data gets its mat4 updated 
 	// and then we can just call glUniformMatrix on this
-		mat4 model = mat4(1.0f);
-		model = glm::translate(model, pos);
+		data->worldMatrix = mat4(1.0f);
+		data->worldMatrix = glm::translate(data->worldMatrix, pos);
 		if (data->indiceCount > 0)
 		{
-			model = glm::rotate(model, glm::radians(config->angleDegrees), v3{ 1.0f, 0.0f, 0.0f });
+			data->worldMatrix = glm::rotate(data->worldMatrix, glm::radians(config->angleDegrees), v3{ 1.0f, 0.0f, 0.0f });
 		}
-		model = glm::scale(model, data->scale);
+		data->worldMatrix = glm::scale(data->worldMatrix, data->scale);
 		
-		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(data->worldMatrix));
 
 		glBindVertexArray(data->VAO);
 		if (data->indiceCount > 0)
@@ -472,6 +472,36 @@ namespace MonGL
 		{
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}	
+	}
+
+	void DrawBoundingBox(RenderData* data, Camera* camera, unsigned int shaderID)
+	{
+
+		// ==============================================================================
+		glUniform3fv(glGetUniformLocation(shaderID, "material.ambient"), 1, &data->mat.ambient[0]);
+		glUniform3fv(glGetUniformLocation(shaderID, "material.diffuse"), 1, &data->mat.diffuse[0]);
+		glUniform3fv(glGetUniformLocation(shaderID, "material.specular"), 1, &data->mat.specular[0]);
+		glUniform1f(glGetUniformLocation(shaderID, "material.shininess"), data->mat.shininess);
+
+		glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camera->pos[0]);
+
+		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(Projection(camera)));
+		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(ViewMatrix(camera)));
+
+		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), false);
+
+		glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
+		glUniform1i(glGetUniformLocation(shaderID, "collider"), true);
+		// ==============================================================================
+
+		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(data->worldMatrix));
+		glBindVertexArray(data->VAO);
+
+		glEnable(GL_LINE_SMOOTH);
+		glLineWidth(data->lineWidth);
+		glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, 0);
+		glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, (GLvoid*)(4 * sizeof(GLushort)));
+		glDrawElements(GL_LINES, 8, GL_UNSIGNED_SHORT, (GLvoid*)(8 * sizeof(GLushort)));
 	}
 
 	void DrawWater(RenderData* data, RenderSetup* setup, WaterDataProgram* waterData, Light* light, v3 pos, v3 scale, v3 camPos, unsigned int shaderID)
@@ -560,38 +590,6 @@ namespace MonGL
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
-
-	void DrawBoundingBox(RenderData* data, Camera* camera, unsigned int shaderID)
-	{
-
-		// ==============================================================================
-		glUniform3fv(glGetUniformLocation(shaderID, "material.ambient"), 1, &data->mat.ambient[0]);
-		glUniform3fv(glGetUniformLocation(shaderID, "material.diffuse"), 1, &data->mat.diffuse[0]);
-		glUniform3fv(glGetUniformLocation(shaderID, "material.specular"), 1, &data->mat.specular[0]);
-		glUniform1f(glGetUniformLocation(shaderID, "material.shininess"), data->mat.shininess);
-
-		glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camera->pos[0]);
-
-		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(Projection(camera)));
-		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(ViewMatrix(camera)));
-
-		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), false);
-
-		glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
-		glUniform1i(glGetUniformLocation(shaderID, "collider"), true);
-		// ==============================================================================
-
-		mat4 model = data->worldMatrix;
-		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(model));
-		glBindVertexArray(data->VAO);
-
-		glEnable(GL_LINE_SMOOTH);
-		glLineWidth(data->lineWidth);
-		glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, 0);
-		glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, (GLvoid*)(4 * sizeof(GLushort)));
-		glDrawElements(GL_LINES, 8, GL_UNSIGNED_SHORT, (GLvoid*)(8 * sizeof(GLushort)));
-	}
-
 
 	void GenerateTerrain(RenderData* data)
 	{

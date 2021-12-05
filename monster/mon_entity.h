@@ -51,7 +51,7 @@ namespace Mon {
 
 	v3 GetSize(Collider* c);
 	v3 GetCenter(Collider* c);
-	mat4 GetTransform(Collider* c);
+	mat4 GetTransform(Collider* c, v3 entityPos, v3 entityScale);
 
 
 	struct Entity
