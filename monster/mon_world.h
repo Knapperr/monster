@@ -12,7 +12,7 @@ namespace Mon {
 		Entity* player;
 	};
 
-	static unsigned int addEntity(World* world)
+	static unsigned int AddEntity(World* world)
 	{
 		unsigned int entityIndex = world->entityCount++;
 
@@ -22,7 +22,7 @@ namespace Mon {
 		return entityIndex;
 	}
 
-	static Entity* getEntity(World* world, unsigned int index)
+	static Entity* GetEntity(World* world, unsigned int index)
 	{
 		Entity* entity = 0;
 		if ((index > 0) && (index < ArrayCount(world->entities)))
@@ -32,12 +32,12 @@ namespace Mon {
 		return entity;
 	}
 
-	static void initEntity(World* world, unsigned int index)
+	static void InitEntity(World* world, unsigned int index)
 	{
 
 	}
 
-	static void initPlayer(World* world, int shaderHandle)
+	static void InitPlayer(World* world, int shaderHandle)
 	{
 		// TODO(ck): MEMORY MANAGEMENT
 		world->player = new Entity();
@@ -50,7 +50,7 @@ namespace Mon {
 		MonGL::LoadTexture(&world->player->data, 3, MonGL::Type::Diffuse, shaderHandle, "res/textures/p1BACK.png");
 		world->player->facingDir = 0;
 
-		MonGL::InitBoundingBox(&world->player->collider.data, &world->player->collider.size);
+		MonGL::InitBoundingBox(&world->player->collider.data);
 		world->player->particle.pos = v3(40.0f, 0.1f, 10.0);
 		world->player->particle.inverseMass = 10.0f;
 		world->player->particle.velocity = v3(0.0f, 0.0f, 0.0f); // 35m/s
@@ -66,36 +66,48 @@ namespace Mon {
 		world->player->data.mat.shininess = 32.0f;
 	}
 
-	static void initWorld(World* world, int shaderHandle)
+	static void InitWorld(World* world, int shaderHandle)
 	{
 		// reserve slot 0 for null entity
-		addEntity(world);
+		AddEntity(world);
 
 		for (int i = 1; i < 10; ++i)
 		{
-			addEntity(world);
-			Entity* tree = getEntity(world, i);
+			AddEntity(world);
+			Entity* tree = GetEntity(world, i);
 
 			tree->setup = {};
 			tree->name = "tree_" + std::to_string(i);
 			MonGL::InitQuad(&tree->data);
 			MonGL::LoadTexture(&tree->data, 0, MonGL::Type::Diffuse, shaderHandle, "res/textures/tree.png");
 			tree->particle.pos = v3(6.0f * (i + 1), 6.80f, 5.5f * i);
+			tree->data.scale = v3(16.0f, 16.0f, 16.0f);
+			MonGL::InitBoundingBox(&tree->collider.data);
 		}
 
 		int length = world->entityCount + 5;
 		for (int i = world->entityCount; i < length; ++i)
 		{
-			addEntity(world);
-			Entity* flower = getEntity(world, i);
+			AddEntity(world);
+			Entity* flower = GetEntity(world, i);
 
 			flower->setup = {};
 			flower->name = "flower_" + std::to_string(i);
 			MonGL::InitQuad(&flower->data);
 			MonGL::LoadTexture(&flower->data, 0, MonGL::Type::Diffuse, shaderHandle, "res/textures/sflow_tall.png");
 			flower->particle.pos = v3(10.0f, 0.1f, 6.0f);
-		}
+			MonGL::InitBoundingBox(&flower->collider.data);
 
+		}
+		
+		AddEntity(world);
+		Entity* cube = GetEntity(world, world->entityCount - 1);
+		cube->setup = {};
+		cube->name = "cube_1";
+		MonGL::InitCube(&cube->data);
+		MonGL::LoadTexture(&cube->data, 0, MonGL::Type::Diffuse, shaderHandle, "res/textures/container2.png");
+		cube->particle.pos = v3(80.0f, 0.3f, 20.0f);
+		MonGL::InitBoundingBox(&cube->collider.data);
 
 		//for (int i = 0; i < 4; ++i)
 		//{
@@ -110,6 +122,18 @@ namespace Mon {
 		//	
 		//	//enemies.push_back(entity);
 		//}
+	}
+
+	static void AddCube(World* world, int shaderHandle)
+	{
+		AddEntity(world);
+		Entity* cube = GetEntity(world, world->entityCount - 1);
+		cube->setup = {};
+		cube->name = "cube_" + std::to_string(world->entityCount-1);
+		MonGL::InitCube(&cube->data);
+		MonGL::LoadTexture(&cube->data, 0, MonGL::Type::Diffuse, shaderHandle, "res/textures/container2.png");
+		cube->particle.pos = v3(10.0f, 0.3f, 20.0f);
+		MonGL::InitBoundingBox(&cube->collider.data);
 	}
 	
 }

@@ -36,10 +36,11 @@ namespace Mon
 		float distanceFromTarget;
 		float angleAroundTarget;
 
+		const char* name;
 		CameraType type;
 	};
 	
-	void InitCamera(Camera* camera, CameraType type, Rect viewPort);
+	void InitCamera(Camera* camera, CameraType type, const char* name, Rect viewPort);
 	mat4 ViewMatrix(Camera* camera);
 	void Update(Camera* camera, double dt, Input* input, v3 pos, v3 orientation, bool constrainPitch = true);
 

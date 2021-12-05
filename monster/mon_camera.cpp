@@ -5,8 +5,9 @@
 
 namespace Mon
 {
-	void InitCamera(Camera* camera, CameraType type, Rect viewPort)
+	void InitCamera(Camera* camera, CameraType type, const char* name, Rect viewPort)
 	{
+		camera->name = name;
 		switch (type)
 		{
 		case CameraType::Fly:

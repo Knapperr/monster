@@ -4,25 +4,18 @@
 
 namespace MonGL
 {
-	v3 GetSize(ColliderSize* size)
+	void LoadTexture(RenderData *data, int index, Type type, int shaderID, std::string path)
 	{
-		return v3(size->max.x - size->min.x, size->max.y - size->min.y, size->max.z - size->min.z);
-	}
-
-	v3 GetCenter(ColliderSize* size)
-	{
-		return v3((size->min.x + size->max.x) / 2, (size->min.y + size->max.y) / 2, (size->min.z + size->max.z) / 2);
-	}
-
-	mat4 GetTransform(ColliderSize* size)
-	{
-		return translate(mat4(1), GetCenter(size)) * scale(mat4(1), GetSize(size));
+		data->texturePath = path;
+		Texture text = {};
+		LoadTextureFile(&text, path.c_str(), type, false, true, true);
+		data->textures[index] = text;
+		data->selectedTexture = 0;
+		glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
 	}
 
 	void InitQuad(RenderData* data, bool tangents)
 	{
-		
-
 		/*data->vertices.push_back({ v3(0.5f, 0.5f, 0.0f), v3(1.0f, 1.0f, 1.0f), v2(1.0f, 1.0f) });
 		data->vertices.push_back({ v3(0.5f, -0.5f, 0.0f), v3(1.0f, 1.0f, 1.0f), v2(1.0f, 0.0f) });
 		data->vertices.push_back({ v3(-0.5f,-0.5f, 0.0f), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 0.0f) });
@@ -82,6 +75,7 @@ namespace MonGL
 			0, 1, 3,
 			1, 2, 3
 		};
+		data->indiceCount = 6;
 
 		unsigned int EBO;
 		glGenVertexArrays(1, &data->VAO);
@@ -118,19 +112,12 @@ namespace MonGL
 
 		// unbind
 		glBindVertexArray(0);
+
+
+		data->scale = v3(1.0f);
 	}
 
-	void LoadTexture(RenderData* data, int index, Type type, int shaderID, std::string path)
-	{
-		data->texturePath = path;
-		Texture text = {};
-		LoadTextureFile(&text, path.c_str(), type, false,  true, true);
-		data->textures[index] = text;
-		data->selectedTexture = 0;
-		glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
-	}
-
-	void InitBoundingBox(RenderData* data, ColliderSize* size)
+	void InitBoundingBox(RenderData* data)
 	{
 		data->lineWidth = 2;
 		data->color = v3(1.0f, 0.0f, 1.0f);
@@ -177,7 +164,7 @@ namespace MonGL
 			4, 5, 6, 7, // back
 			0, 4, 1, 5, 2, 6, 3, 7 // back
 		};
-		data->elementLength = sizeof(elements) / sizeof(elements[0]);
+		data->indiceCount = sizeof(elements) / sizeof(elements[0]);
 
 		glGenBuffers(1, &data->IBO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, data->IBO);
@@ -191,9 +178,6 @@ namespace MonGL
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
-
-		size->min = v3(0.0f, 0.0f, 0.0f);
-		size->max = v3(1.0f, 1.0f, 1.0f);
 		// Set world matrix to be the same size as the bounding box
 		//data->worldMatrix = GetTransform(&data->size);
 
@@ -207,15 +191,188 @@ namespace MonGL
 	}
 
 
-	void InitCube(RenderData* data, int shaderID, std::string texturePath)
+	void InitCube(RenderData* data)
 	{
 		// Load from .vt file (need to do efficient as possible)
 		// maybe dont need to do this but?? tilemap does a quad and its a huge
 		// cubes can just be created with a macro PUSH_CUBE PUSH_QUAD x4?
+		Vertex3D vertices[36];
+		vertices[0] = {};
+		vertices[0].position = v3(-0.5f, -0.5f, -0.5f);
+		vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[0].texCoords = v2(0.0f, 0.0f);
+		vertices[1] = {};
+		vertices[1].position = v3(0.5f, -0.5f, -0.5f);
+		vertices[1].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[1].texCoords = v2(1.0f, 0.0f);
+		vertices[2] = {};
+		vertices[2].position = v3(0.5f, 0.5f, -0.5f);
+		vertices[2].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[2].texCoords = v2(1.0f, 1.0f);
+		vertices[3] = {};
+		vertices[3].position = v3(0.5f, 0.5f, -0.5f);
+		vertices[3].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[3].texCoords = v2(1.0f, 1.0f);
+		vertices[4] = {};
+		vertices[4].position = v3(-0.5f, 0.5f, -0.5f);
+		vertices[4].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[4].texCoords = v2(0.0f, 1.0f);
+		vertices[5] = {};
+		vertices[5].position = v3(-0.5f, -0.5f, -0.5f);
+		vertices[5].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[5].texCoords = v2(0.0f, 0.0f);
 
+		vertices[6] = {};
+		vertices[6].position = v3(-0.5f, -0.5f, 0.5f);
+		vertices[6].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[6].texCoords = v2(0.0f, 0.0f);
+		vertices[7] = {};
+		vertices[7].position = v3(0.5f, -0.5f, 0.5f);
+		vertices[7].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[7].texCoords = v2(1.0f, 0.0f);
+		vertices[8] = {};
+		vertices[8].position = v3(0.5f, 0.5f, 0.5f);
+		vertices[8].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[8].texCoords = v2(1.0f, 1.0f);
+		vertices[9] = {};
+		vertices[9].position = v3(0.5f, 0.5f, 0.5f);
+		vertices[9].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[9].texCoords = v2(1.0f, 1.0f);
+		vertices[10] = {};
+		vertices[10].position = v3(-0.5f, 0.5f, 0.5f);
+		vertices[10].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[10].texCoords = v2(0.0f, 1.0f);
+		vertices[11] = {};
+		vertices[11].position = v3(-0.5f, -0.5f, 0.5f);
+		vertices[11].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[11].texCoords = v2(0.0f, 0.0f);
 
+		vertices[12] = {};
+		vertices[12].position = v3(-0.5f, 0.5f, 0.5f);
+		vertices[12].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[12].texCoords = v2(1.0f, 0.0f);
+		vertices[13] = {};
+		vertices[13].position = v3(-0.5f, 0.5f, -0.5f);
+		vertices[13].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[13].texCoords = v2(1.0f, 1.0f);
+		vertices[14] = {};
+		vertices[14].position = v3(-0.5f, -0.5f, -0.5f);
+		vertices[14].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[14].texCoords = v2(0.0f, 1.0f);
+		vertices[15] = {};
+		vertices[15].position = v3(-0.5f, -0.5f, -0.5f);
+		vertices[15].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[15].texCoords = v2(0.0f, 1.0f);
+		vertices[16] = {};
+		vertices[16].position = v3(-0.5f, -0.5f, 0.5f);
+		vertices[16].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[16].texCoords = v2(0.0f, 0.0f);
+		vertices[17] = {};
+		vertices[17].position = v3(-0.5f, 0.5f, 0.5f);
+		vertices[17].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[17].texCoords = v2(1.0f, 0.0f);
 
-		// need initQuad() with a way to choose vertices this is why people use defines? cause its a big mess
+		vertices[18] = {};
+		vertices[18].position = v3(0.5f, 0.5f, 0.5f);
+		vertices[18].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[18].texCoords = v2(1.0f, 0.0f);
+		vertices[19] = {};
+		vertices[19].position = v3(0.5f, 0.5f, -0.5f);
+		vertices[19].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[19].texCoords = v2(1.0f, 1.0f);
+		vertices[20] = {};
+		vertices[20].position = v3(0.5f, -0.5f, -0.5f);
+		vertices[20].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[20].texCoords = v2(0.0f, 1.0f);
+		vertices[21] = {};
+		vertices[21].position = v3(0.5f, -0.5f, -0.5f);
+		vertices[21].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[21].texCoords = v2(0.0f, 1.0f);
+		vertices[22] = {};
+		vertices[22].position = v3(0.5f, -0.5f, 0.5f);
+		vertices[22].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[22].texCoords = v2(0.0f, 0.0f);
+		vertices[23] = {};
+		vertices[23].position = v3(0.5f, 0.5f, 0.5f);
+		vertices[23].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[23].texCoords = v2(1.0f, 0.0f);
+
+		vertices[24] = {};
+		vertices[24].position = v3(-0.5f, -0.5f, -0.5f);
+		vertices[24].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[24].texCoords = v2(0.0f, 1.0f);
+		vertices[25] = {};
+		vertices[25].position = v3(0.5f, -0.5f, -0.5f);
+		vertices[25].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[25].texCoords = v2(1.0f, 1.0f);
+		vertices[26] = {};
+		vertices[26].position = v3(0.5f, -0.5f, 0.5f);
+		vertices[26].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[26].texCoords = v2(1.0f, 0.0f);
+		vertices[27] = {};
+		vertices[27].position = v3(0.5f, -0.5f, 0.5f);
+		vertices[27].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[27].texCoords = v2(1.0f, 0.0f);
+		vertices[28] = {};
+		vertices[28].position = v3(-0.5f, -0.5f, 0.5f);
+		vertices[28].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[28].texCoords = v2(0.0f, 0.0f);
+		vertices[29] = {};
+		vertices[29].position = v3(-0.5f, -0.5f, -0.5f);
+		vertices[29].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[29].texCoords = v2(0.0f, 1.0f);
+
+		vertices[30] = {};
+		vertices[30].position = v3(-0.5f, 0.5f, -0.5f);
+		vertices[30].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[30].texCoords = v2(0.0f, 1.0f);
+		vertices[31] = {};
+		vertices[31].position = v3(0.5f, 0.5f, -0.5f);
+		vertices[31].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[31].texCoords = v2(1.0f, 1.0f);
+		vertices[32] = {};
+		vertices[32].position = v3(0.5f, 0.5f, 0.5f);
+		vertices[32].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[32].texCoords = v2(1.0f, 0.0f);
+		vertices[33] = {};
+		vertices[33].position = v3(0.5f, 0.5f, 0.5f);
+		vertices[33].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[33].texCoords = v2(1.0f, 0.0f);
+		vertices[34] = {};
+		vertices[34].position = v3(-0.5f, 0.5f, 0.5f);
+		vertices[34].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[34].texCoords = v2(0.0f, 0.0f);
+		vertices[35] = {};
+		vertices[35].position = v3(-0.5f, 0.5f, -0.5f);
+		vertices[35].normal = v3(1.0f, 1.0f, 1.0f);
+		vertices[35].texCoords = v2(0.0f, 1.0f);
+
+		glGenVertexArrays(1, &data->VAO);
+		glGenBuffers(1, &data->VBO);
+		glBindVertexArray(data->VAO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, data->VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+		//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+		
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)0);
+
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, normal));
+
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, texCoords));
+
+		// TODO(ck): Check for no texture?
+		// load a texture onto the cube
+		data->indiceCount = 0;
+
+		// unbind
+		glBindVertexArray(0);
+
+		data->scale = v3(1.0f);
 	}
 
 	void InitDistortedWater(RenderData* renderData, RenderSetup* setup)
@@ -275,42 +432,46 @@ namespace MonGL
 
 	}
 
-	void DrawQuad(Config* config, RenderData* data,
-						v3 playerPos, v3 scale, Camera* camera,
-						unsigned int shaderID, int selectedTexture)
+	void Draw(Config* config, RenderData* data, v3 pos, Camera* camera,
+			  unsigned int shaderID, int selectedTexture)
 	{
-
-		// ==============================================================================
-		//glUniform3fv(glGetUniformLocation(shaderID, "material.ambient"), 1, &data->mat.ambient[0]);
-		//glUniform3fv(glGetUniformLocation(shaderID, "material.diffuse"), 1, &data->mat.diffuse[0]);
-		//glUniform3fv(glGetUniformLocation(shaderID, "material.specular"), 1, &data->mat.specular[0]);
-		//glUniform1f(glGetUniformLocation(shaderID, "material.shininess"), data->mat.shininess);
-
-		// TODO(ck): Move to begin render. MonGL::beginRender(&cam);
-		glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camera->pos[0]);
+	
+		// NOTE(ck): Lighting information
+		//glUniform3fv(glGetUniformLocation(shaderID, "lightPos"), 1, &light->pos[0]);
+		//glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camPos[0]);
 
 		bool useTexture = (ArrayCount(data->textures) > 0);
 		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), useTexture);
 		glUniform1i(glGetUniformLocation(shaderID, "pixelTexture"), useTexture);
-		
+
 		// bind textures on corresponding texture units
 		//glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, data->textures[selectedTexture].id);
 
 		glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
 		glUniform1i(glGetUniformLocation(shaderID, "collider"), false);
-		// ==============================================================================
 
 		// TODO(ck): Does this happen at the end of update. the data gets its mat4 updated 
-		// and then we can just call glUniformMatrix on this
+	// and then we can just call glUniformMatrix on this
 		mat4 model = mat4(1.0f);
-		model = glm::translate(model, playerPos);
-		model = glm::rotate(model, glm::radians(config->angleDegrees), v3{ 1.0f, 0.0f, 0.0f });
-		model = glm::scale(model, scale);
+		model = glm::translate(model, pos);
+		if (data->indiceCount > 0)
+		{
+			model = glm::rotate(model, glm::radians(config->angleDegrees), v3{ 1.0f, 0.0f, 0.0f });
+		}
+		model = glm::scale(model, data->scale);
 		
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+
 		glBindVertexArray(data->VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		if (data->indiceCount > 0)
+		{
+			glDrawElements(GL_TRIANGLES, data->indiceCount, GL_UNSIGNED_INT, 0);
+		}
+		else
+		{
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}	
 	}
 
 	void DrawWater(RenderData* data, RenderSetup* setup, WaterDataProgram* waterData, Light* light, v3 pos, v3 scale, v3 camPos, unsigned int shaderID)
@@ -400,13 +561,9 @@ namespace MonGL
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-
 	// TODO(ck): gl_DrawBoundingBox(size) 
 	// the collider will have a size
-	void DrawBoundingBox(RenderData* data,
-					 ColliderSize size,
-					 v3 playerPos, Camera* camera, 
-					 unsigned int shaderID)
+	void DrawBoundingBox(RenderData* data, Camera* camera, unsigned int shaderID)
 	{
 
 		// ==============================================================================
@@ -426,7 +583,7 @@ namespace MonGL
 		glUniform1i(glGetUniformLocation(shaderID, "collider"), true);
 		// ==============================================================================
 
-		mat4 model = data->worldMatrix * GetTransform(&size);
+		mat4 model = data->worldMatrix;
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		glBindVertexArray(data->VAO);
 
@@ -456,7 +613,7 @@ namespace MonGL
 		// TODO(ck): Memory Allocation
 		int* indices = new int[6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1)];
 		int verticesLength = VERTEX_COUNT * VERTEX_COUNT;
-		data->elementLength = 6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1);
+		data->indiceCount = 6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1);
 
 		int index = 0;
 		for (int i = 0; i < VERTEX_COUNT; ++i)
@@ -511,7 +668,7 @@ namespace MonGL
 		glBufferData(GL_ARRAY_BUFFER, verticesLength * sizeof(Vertex3D), vertices, GL_STATIC_DRAW);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, data->elementLength * sizeof(int), indices, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, data->indiceCount * sizeof(int), indices, GL_STATIC_DRAW);
 		
 		// pos
 		glEnableVertexAttribArray(0);
@@ -603,7 +760,7 @@ namespace MonGL
 		//terrain->wireFrame ?
 		//	glDrawElements(GL_LINES, terrain->indicesLength, GL_UNSIGNED_INT, 0)
 		//	: glDrawElements(GL_TRIANGLES, terrain->indicesLength, GL_UNSIGNED_INT, 0);
-		glDrawElements(GL_TRIANGLES, data->elementLength, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, data->indiceCount, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 		// Always good practice to set everything back to defaults once configured
 		// NOTE(CK): bind texture must be AFTER glActiveTexture or it will not unbind properly

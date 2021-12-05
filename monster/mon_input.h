@@ -59,6 +59,9 @@ namespace Mon
 				ButtonState rightStickleft;
 				ButtonState rightStickright;
 				ButtonState debug;
+				ButtonState num1;
+				ButtonState num2;
+				ButtonState num3;
 				ButtonState quit;
 			};
 		};

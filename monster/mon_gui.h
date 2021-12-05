@@ -12,6 +12,7 @@
 
 // IMPORTANT(ck): Defines for 3D game
 #define _3D_GUI_
+
 #ifndef _3D_GUI_
 #include "mon_game2D.h"
 #else
@@ -22,8 +23,10 @@ struct Settings
 {
 	const char* title;
 	//Context* context;
-	int width;
-	int height;
+	int windowWidth;
+	int windowHeight;
+	int portWidth;
+	int portHeight;
 };
 
 #ifdef USE_SDL

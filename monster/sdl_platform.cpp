@@ -32,7 +32,7 @@ namespace Mon
 		int flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI;
 		window = SDL_CreateWindow(settings->title,
 								  SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-								  settings->width, settings->height,
+								  settings->windowWidth, settings->windowHeight,
 								  flags);
 
 		if (window == nullptr)
@@ -278,6 +278,13 @@ namespace Mon
 						processKeyboard(&newInput->quit, isDown);
 					if (keyCode == SDLK_SPACE)
 						processKeyboard(&newInput->space, isDown);
+
+					if (keyCode == SDLK_1)
+						processKeyboard(&newInput->num1, isDown);
+					if (keyCode == SDLK_2)
+						processKeyboard(&newInput->num2, isDown);
+					if (keyCode == SDLK_3)
+						processKeyboard(&newInput->num3, isDown);
 				}
 			}
 			else if (e.type == SDL_JOYBUTTONDOWN || e.type == SDL_JOYBUTTONUP)

@@ -18,11 +18,14 @@ bool App::init()
 	platform = new Mon::SDLPlatform();
 	settings = {};
 	settings.title = "Monster";
-	settings.width = 1440;
-	settings.height = 900;
+	settings.windowWidth = 1440;
+	settings.windowHeight = 900;
+	settings.portWidth = 960;
+	settings.portHeight = 540;
 	Mon::Log::print("Title", settings.title);
-	Mon::Log::print("Window Width", settings.width);
-	Mon::Log::print("Window Height", settings.height);
+	Mon::Log::print("Window Width", settings.windowWidth);
+	Mon::Log::print("Window Height", settings.windowHeight);
+	Mon::Log::print("port width, height", settings.portWidth, settings.portHeight);
 
 
 	if (!platform->init(&settings))
@@ -40,7 +43,7 @@ bool App::init()
 #ifdef _3D_
 	game = new Mon::Game();
 
-	if (!game->init(settings.width, settings.height))
+	if (!game->init(settings.windowWidth, settings.windowHeight, settings.portWidth, settings.portHeight))
 		return false;
 #else
 	game2D = new Mon::Game2D();

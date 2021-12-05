@@ -144,9 +144,7 @@ void CameraWindow(bool* p_open, Mon::Game* game)
 	ImGui::Unindent(32);
 	ImGui::PopButtonRepeat();
 
-	char buffer[64];
-	snprintf(buffer, sizeof(buffer), "%d", game->currCameraIndex);
-	ImGui::LabelText(buffer, "Current Camera");
+	ImGui::LabelText(game->cameras[game->currCameraIndex].name, "Current Camera");
 	if (ImGui::ArrowButton("##left", ImGuiDir_Left))
 	{
 		if (game->currCameraIndex > 1)
@@ -231,6 +229,11 @@ void EntityWindow(bool* p_open, Mon::Game* game)
 		
 		ImGui::Text("%s", game->world->entities[selected].name.c_str());
 
+		if (ImGui::Button("Add Cube"))
+		{
+			Mon::AddCube(game->world, game->shader.handle);
+		}
+
 		// TODO(ck): Model loading modal
 		// Modal for loading meshes
 		//if (ImGui::Button("Load Mesh.."))
@@ -265,6 +268,9 @@ void EntityWindow(bool* p_open, Mon::Game* game)
 				ImGui::DragFloat("y", &game->world->entities[selected].particle.pos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
 				ImGui::DragFloat("z", &game->world->entities[selected].particle.pos.z, 0.1f, -1000.0f, 1000.0f, "%.02f");
 
+
+				ImGui::SliderFloat3("scale", &game->world->entities[selected].data.scale[0], 0.0f, 100.0f);
+				
 				//ImGui::DragFloat("rot x", &g_Game->objects[selected]->orientation.x, 0.05f, -1000.0f, 1000.0f, "%.02f");
 				//ImGui::DragFloat("rot y", &g_Game->objects[selected]->orientation.y, 0.05f, -1000.0f, 1000.0f, "%.02f");
 				//ImGui::DragFloat("rot z", &g_Game->objects[selected]->orientation.z, 0.05f, -1000.0f, 1000.0f, "%.02f");
@@ -436,23 +442,23 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 		ImGui::SameLine();
 		if (ImGui::Button("Exit"))
 		{
-			SDL_SetWindowSize(window, settings->width, settings->height);
+			SDL_SetWindowSize(window, settings->windowWidth, settings->windowHeight);
 			SDL_SetWindowFullscreen(window, 0);
 			game->setViewPort(960.0f, 540.0f);
 		}
 
 		if (ImGui::Button("720"))
 		{
-			settings->width = 1280;
-			settings->height = 720;
-			SDL_SetWindowSize(window, settings->width, settings->height);
+			settings->windowWidth = 1280;
+			settings->windowHeight = 720;
+			SDL_SetWindowSize(window, settings->windowWidth, settings->windowHeight);
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("1440"))
 		{
-			settings->width = 1440;
-			settings->height = 900;
-			SDL_SetWindowSize(window, settings->width, settings->height);
+			settings->windowWidth = 1440;
+			settings->windowHeight = 900;
+			SDL_SetWindowSize(window, settings->windowWidth, settings->windowHeight);
 		}
 	
 		ImGui::SliderFloat2("port", (float*)&game->config->viewPort, 0.0f, 477.0f);

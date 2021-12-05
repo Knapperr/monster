@@ -27,15 +27,8 @@ namespace MonGL
 		float shininess;
 	};
 
-	struct ColliderSize
-	{
-		v3 min;
-		v3 max;
-	};
 
-	v3 GetSize(ColliderSize* size);
-	v3 GetCenter(ColliderSize* size);
-	mat4 GetTransform(ColliderSize* size);
+
 
 	//v3 center = v3((min_x + max_x) / 2, (min_y + max_y) / 2, (min_z + max_z) / 2);
 	//mat4 transform = 
@@ -63,6 +56,7 @@ namespace MonGL
 	// and doing everything.
 
 	// for now we need the RenderData to hold our vertices and textures though.
+
 	struct RenderData
 	{
 		Vertex3D vertices[4];
@@ -70,11 +64,12 @@ namespace MonGL
 		unsigned int VAO;
 		unsigned int VBO;
 		unsigned int IBO;
-		int elementLength;
+		int indiceCount;
 		int lineWidth;
 
 		v3 color;
 		mat4 worldMatrix;
+		v3 scale;
 
 		std::string texturePath;
 		Texture textures[4];
@@ -154,19 +149,18 @@ namespace MonGL
 	void ViewPort(Rect* port);
 	
 	void InitQuad(RenderData* data, bool tangents = false);
-	void InitBoundingBox(RenderData* data, ColliderSize* size);
+	void InitCube(RenderData* data);
+	void InitBoundingBox(RenderData* data);
 	void InitDistortedWater(RenderData* renderData, RenderSetup* setup);
 	void GenerateTerrain(RenderData* data);
 	void LoadTexture(RenderData* data, int index, Type type, int shaderID, std::string path);
 	
-	void DrawQuad(Config* config, RenderData* data,
-					v3 playerPos, v3 scale, Camera* camera,
-					unsigned int shaderID, int selectedTexture = 0);
-	void DrawWater(RenderData* data, RenderSetup* setup, WaterDataProgram* waterData, Light* light, v3 pos, v3 scale, v3 camPos, unsigned int shaderID);
-	void DrawBoundingBox(RenderData* data, ColliderSize size,
-					 v3 playerPos, Camera* camera,
-					 unsigned int shaderID);
+	void Draw(Config* config, RenderData* data, v3 pos, Camera* camera,
+			  unsigned int shaderID, int selectedTexture = 0);	
+	void DrawBoundingBox(RenderData* data, Camera* camera, unsigned int shaderID);
 	void DrawTerrain(unsigned int shaderID, RenderData* data, Light* light, Camera* camera);
+	
+	void DrawWater(RenderData* data, RenderSetup* setup, WaterDataProgram* waterData, Light* light, v3 pos, v3 scale, v3 camPos, unsigned int shaderID);
 
 
 

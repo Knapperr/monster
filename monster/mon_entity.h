@@ -39,9 +39,19 @@ namespace Mon {
 
 	struct Collider
 	{
+		struct Size
+		{
+			v3 min = v3(0.0f, 0.0f, 0.0f);
+			v3 max = v3(1.0f, 1.0f, 1.0f);;
+		};
+
 		MonGL::RenderData data;
-		MonGL::ColliderSize size;
+		Size size;
 	};
+
+	v3 GetSize(Collider* c);
+	v3 GetCenter(Collider* c);
+	mat4 GetTransform(Collider* c);
 
 
 	struct Entity

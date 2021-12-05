@@ -30,7 +30,7 @@ namespace Mon
 	class Game
 	{
 	public:
-		bool init(int windowWidth, int windowHeight);
+		bool init(int windowWidth, int windowHeight, int portWidth, int portHeight);
 		void movePlayer(v3* velocity);
 		void update(double dt, Input* newInput);
 		void render(double dt);

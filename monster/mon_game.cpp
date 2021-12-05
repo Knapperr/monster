@@ -4,7 +4,7 @@
 
 namespace Mon
 {
-	bool Game::init(int windowWidth, int windowHeight)
+	bool Game::init(int windowWidth, int windowHeight, int portWidth, int portHeight)
 	{
 		state = State::Debug;
 
@@ -15,11 +15,10 @@ namespace Mon
 
 		mainShaderID = shader.handle;
 		
-
 		// TODO(ck): MEMORY MANAGEMENT
 		world = new World();
-		initWorld(world, shader.handle);
-		initPlayer(world, shader.handle);
+		InitWorld(world, shader.handle);
+		InitPlayer(world, shader.handle);
 
 		light = {};
 		v3 lightColor = v3(0.2f, 0.3f, 0.6f);
@@ -47,32 +46,33 @@ namespace Mon
 		simulate = false;
 		
 		config = new MonGL::Config();
-		int portWidth = 960;
-		int portHeight = 540;
-		config->viewPort.x = (windowWidth - portWidth) / 2;
-		config->viewPort.y = (windowHeight - portHeight) / 2;
-		config->viewPort.w = portWidth;
-		config->viewPort.h = portHeight;
+		config->viewPort = {
+			5.0f,
+			5.0f,
+			(float)portWidth,
+			(float)portHeight
+		};
 		MonGL::ViewPort(&config->viewPort);
-		Mon::Log::print("port width, height", portWidth, portHeight);
 
 		config->angleDegrees = -30.0f;
 
 		// TODO(ck): Memory management
 		// reserve slot 0 for NULL camera
 		addCamera(this);
-		int debugCamIndex = addCamera(this);
-		InitCamera(&cameras[debugCamIndex], CameraType::Fly, config->viewPort);
+
 		int followCamIndex = addCamera(this);
-		InitCamera(&cameras[followCamIndex], CameraType::Follow, config->viewPort);
+		InitCamera(&cameras[followCamIndex], CameraType::Follow, "Follow", config->viewPort);
+
+		int debugCamIndex = addCamera(this);
+		InitCamera(&cameras[debugCamIndex], CameraType::Fly, "Debug 1", config->viewPort);
+		int debugCamIndex2 = addCamera(this);
+		InitCamera(&cameras[debugCamIndex2], CameraType::Fly, "Debug 2", config->viewPort);
+		
 		currCameraIndex = debugCamIndex;
-
-
 		selectedIndex = 0;
 		drawCollisions = true;
 
 		state = State::Debug;
-
 		return true;
 	}
 
@@ -178,6 +178,25 @@ namespace Mon
 			}
 		}
 		
+
+		//
+		// CAMERA
+		//
+		if (input.num1.endedDown) 
+		{ 
+			currCameraIndex = 1;
+			playMode();
+		}
+		if (input.num2.endedDown) 
+		{ 
+			currCameraIndex = 2; 
+			debugMode();
+		}
+		if (input.num3.endedDown) 
+		{ 
+			currCameraIndex = 3; 
+			debugMode();
+		}
 		
 		bool enabled = (state == State::Play);
 		if (enabled)
@@ -219,16 +238,37 @@ namespace Mon
 		//input.mouseOffset.y -= config->viewPort.y;
 		//cam->update(deltaTime, &input, world->player->particle.pos, world->player->particle.orientation, true);
 		
+
+		//
+		//	ENTITIES UPDATE
+		//
+
+
+
+		// 
+		// CAMERA UPDATE
+		//
+
 		Update(&cameras[currCameraIndex], deltaTime, &input, world->player->particle.pos, world->player->particle.orientation, true);
-		//if (simulate == true)
-			//player.particle.integrate(deltaTime);
 
-
+		//
+		// UPDATE COLLIDERS
+		// 
 		// TODO(ck): Give player pos matrix
 		mat4 model = mat4(1.0f);
 		float colliderPosX = world->player->particle.pos.x - (0.5f);
 		float colliderPosZ = world->player->particle.pos.z - (0.5f);
 		world->player->collider.data.worldMatrix = translate(model, v3(colliderPosX, -0.2f, colliderPosZ));
+		world->player->collider.data.worldMatrix *= GetTransform(&world->player->collider);
+	
+		for (int i = 1; i < world->entityCount; ++i)
+		{
+			mat4 model = mat4(1.0f);
+			v3 colliderPos = { world->entities[i].particle.pos.x - (0.5f), -0.2f,
+								world->entities[i].particle.pos.z - (0.5f) };
+			world->entities[i].collider.data.worldMatrix = translate(model, colliderPos);
+			world->entities[i].collider.data.worldMatrix *= GetTransform(&world->entities[i].collider);
+		}
 	}
 
 	void Game::render(double dt)
@@ -249,20 +289,29 @@ namespace Mon
 		glUniform3fv(glGetUniformLocation(shader.handle, "light.diffuse"), 1, &light.diffuse[0]);
 		glUniform3fv(glGetUniformLocation(shader.handle, "light.specular"), 1, &light.specular[0]);
 
+		//
+		// COLLIDERS DRAW
+		//
 		if (drawCollisions)
-			MonGL::DrawBoundingBox(&world->player->collider.data, world->player->collider.size, world->player->particle.pos, cam, shader.handle);
+		{
+			MonGL::DrawBoundingBox(&world->player->collider.data, cam, shader.handle);
+			for (int i = 1; i < world->entityCount; ++i)
+				MonGL::DrawBoundingBox(&world->entities[i].collider.data, cam, shader.handle);
 
-		MonGL::DrawQuad(config, &world->player->data, world->player->particle.pos, v3(1.0f), cam, shader.handle, world->player->facingDir);
+		}
+		
+		//
+		// PLAYER DRAW
+		//
+		MonGL::Draw(config, &world->player->data, world->player->particle.pos, cam, shader.handle, world->player->facingDir);
 
-		//for (auto& e : enemies)
-		//{
-		//	MonGL::drawBoundingBox(&e.collider.data, e.collider.size, e.particle.pos, cameraPos, proj, view, shader.handle);
-		//}
-
+		//
+		// ENTITIES DRAW
+		//
 		for (int i = 1; i < world->entityCount; ++i)
 		{
 			Entity e = world->entities[i];
-			MonGL::DrawQuad(config, &e.data, e.particle.pos, v3(16.0f, 16.0f, 1.0f), cam, shader.handle);
+			MonGL::Draw(config, &e.data, e.particle.pos, cam, shader.handle);
 		}
 		
 		//glUseProgram(waterShader.common.handle);
@@ -294,13 +343,13 @@ namespace Mon
 
 	void Game::playMode()
 	{
-		currCameraIndex = 2;
+		currCameraIndex = 1;
 		state = State::Play;
 	}
 
 	void Game::debugMode()
 	{
-		currCameraIndex = 1;
-		state = State::Debug;
+		if (currCameraIndex != 1)
+			state = State::Debug;
 	}
 }
