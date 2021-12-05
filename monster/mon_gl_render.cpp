@@ -561,8 +561,6 @@ namespace MonGL
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	// TODO(ck): gl_DrawBoundingBox(size) 
-	// the collider will have a size
 	void DrawBoundingBox(RenderData* data, Camera* camera, unsigned int shaderID)
 	{
 
