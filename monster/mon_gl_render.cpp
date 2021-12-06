@@ -120,7 +120,7 @@ namespace MonGL
 	void InitBoundingBox(RenderData* data)
 	{
 		data->lineWidth = 2;
-		data->color = v3(1.0f, 0.0f, 1.0f);
+		data->color = v3(0.7f, 0.15f, 0.4f);
 
 		Vertex3D vertices[8];
 		vertices[0].position = v3(-0.5, -0.5, -0.5);
@@ -452,7 +452,7 @@ namespace MonGL
 		glUniform1i(glGetUniformLocation(shaderID, "collider"), false);
 
 		// TODO(ck): Does this happen at the end of update. the data gets its mat4 updated 
-	// and then we can just call glUniformMatrix on this
+		// and then we can just call glUniformMatrix on this
 		data->worldMatrix = mat4(1.0f);
 		data->worldMatrix = glm::translate(data->worldMatrix, pos);
 		if (data->indiceCount > 0)

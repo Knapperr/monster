@@ -106,7 +106,7 @@ namespace Mon {
 		cube->name = "cube_1";
 		MonGL::InitCube(&cube->data);
 		MonGL::LoadTexture(&cube->data, 0, MonGL::Type::Diffuse, shaderHandle, "res/textures/container2.png");
-		cube->particle.pos = v3(80.0f, 0.3f, 20.0f);
+		cube->particle.pos = v3(50.0f, 0.3f, 20.0f);
 		MonGL::InitBoundingBox(&cube->collider.data);
 
 		//for (int i = 0; i < 4; ++i)

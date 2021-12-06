@@ -270,8 +270,8 @@ void EntityWindow(bool* p_open, Mon::Game* game)
 
 
 				ImGui::SliderFloat3("scale", &game->world->entities[selected].data.scale[0], 0.0f, 100.0f);
-				ImGui::SliderFloat3("collider min", &game->world->entities[selected].collider.size.min[0], 0.0f, 50.0f);
-				ImGui::SliderFloat3("collider max", &game->world->entities[selected].collider.size.max[0], 0.0f, 50.0f);
+				ImGui::SliderFloat3("collider min", &game->world->entities[selected].collider.size.min[0], 0.0f, 100.0f);
+				ImGui::SliderFloat3("collider max", &game->world->entities[selected].collider.size.max[0], 0.0f, 100.0f);
 				//ImGui::DragFloat("rot x", &g_Game->objects[selected]->orientation.x, 0.05f, -1000.0f, 1000.0f, "%.02f");
 				//ImGui::DragFloat("rot y", &g_Game->objects[selected]->orientation.y, 0.05f, -1000.0f, 1000.0f, "%.02f");
 				//ImGui::DragFloat("rot z", &g_Game->objects[selected]->orientation.z, 0.05f, -1000.0f, 1000.0f, "%.02f");
