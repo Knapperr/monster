@@ -57,8 +57,9 @@ namespace Mon
 
 		// Use v-sync
 		// https://wiki.libsdl.org/SDL_GL_SetSwapInterval
-		// 0 for immediate updates, 1 for updates synchronized with the vertical retrace, -1 for adaptive vsync
+		// 0 for immediate updates, 1 for updates synchronized with the vertical retrace, -1 for adaptive 
 		SDL_GL_SetSwapInterval(1);
+		settings->vsync = SDL_GL_GetSwapInterval();
 
 		//glEnable(GL_CULL_FACE);
 		//glDepthFunc(GL_LESS);
@@ -323,8 +324,8 @@ namespace Mon
 
 	void SDLPlatform::sleep(int milliseconds)
 	{
-		if (milliseconds > 0)
-			Sleep(milliseconds);
+		//if (milliseconds > 0)
+			//Sleep(milliseconds);
 	}
 
 	uint64_t SDLPlatform::ticks()

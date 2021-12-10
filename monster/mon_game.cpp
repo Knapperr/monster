@@ -258,13 +258,11 @@ namespace Mon
 		//
 		//	ENTITIES UPDATE
 		//
-
-
+		
 
 		// 
 		// CAMERA UPDATE
 		//
-
 		Update(&cameras[currCameraIndex], deltaTime, &input, world->player->particle.pos, world->player->particle.orientation, true);
 
 		//
@@ -279,7 +277,7 @@ namespace Mon
 		// TODO(ck): pass all shaders to beginRender or they live in the opengl layer and get
 		// activated that way
 		MonGL::BeginRender(config, Projection(cam), ViewMatrix(cam), shader.handle);
-		MonGL::BeginRender(config, Projection(cam), ViewMatrix(cam), waterShader.common.handle);
+		//MonGL::BeginRender(config, Projection(cam), ViewMatrix(cam), waterShader.common.handle);
 
 		MonGL::DrawTerrain(shader.handle, &terrain->mesh, &light, cam);
 
@@ -290,20 +288,14 @@ namespace Mon
 		glUniform3fv(glGetUniformLocation(shader.handle, "light.ambient"), 1, &light.ambient[0]);
 		glUniform3fv(glGetUniformLocation(shader.handle, "light.diffuse"), 1, &light.diffuse[0]);
 		glUniform3fv(glGetUniformLocation(shader.handle, "light.specular"), 1, &light.specular[0]);
-
-		//
-		// COLLIDERS DRAW
-		//
-		if (drawCollisions)
-		{
-			MonGL::DrawBoundingBox(&world->player->collider.data, cam, shader.handle);
-			for (int i = 1; i < world->entityCount; ++i)
-				MonGL::DrawBoundingBox(&world->entities[i].collider.data, cam, shader.handle);
-		}
 		
 		//
 		// PLAYER DRAW
 		//
+		if (drawCollisions)
+		{
+			MonGL::DrawBoundingBox(&world->player->collider.data, cam, shader.handle);
+		}
 		MonGL::Draw(config, &world->player->data, world->player->particle.pos, cam, shader.handle, world->player->facingDir);
 
 		//
@@ -312,9 +304,14 @@ namespace Mon
 		for (int i = 1; i < world->entityCount; ++i)
 		{
 			Entity e = world->entities[i];
+
+			if (drawCollisions)
+				MonGL::DrawBoundingBox(&e.collider.data, cam, shader.handle);
+			
 			MonGL::Draw(config, &e.data, e.particle.pos, cam, shader.handle);
 		}
 		
+		MonGL::EndRender();
 		//glUseProgram(waterShader.common.handle);
 		//MonGL::drawWater(&water.data, &water.setup, &waterShader, &light, water.particle.pos, v3(10.0f), cam->pos, waterShader.common.handle);
 		//MonGL::drawQuad(config, &water.data, water.particle.pos, v3(5.0f), cam.pos, shader.handle);

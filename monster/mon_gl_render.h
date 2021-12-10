@@ -27,11 +27,6 @@ namespace MonGL
 		float shininess;
 	};
 
-
-
-
-	//v3 center = v3((min_x + max_x) / 2, (min_y + max_y) / 2, (min_z + max_z) / 2);
-	//mat4 transform = 
 	struct Config
 	{
 		float angleDegrees;
@@ -145,6 +140,11 @@ namespace MonGL
 		bool wireFrame;
 	};
 
+
+	// TODO(ck): TODO(ck): Somehow put into game so we can call from gui
+	// can have a getter method that retrieves the globalDrawCalls from here
+	extern int globalDrawCalls;
+
 	void BeginRender(Config* config, mat4 projection, mat4 view, int shaderID);
 	void ViewPort(Rect* port);
 	
@@ -162,6 +162,7 @@ namespace MonGL
 	
 	void DrawWater(RenderData* data, RenderSetup* setup, WaterDataProgram* waterData, Light* light, v3 pos, v3 scale, v3 camPos, unsigned int shaderID);
 
+	void EndRender();
 
 
 	//

@@ -9,7 +9,8 @@ namespace Mon
 	enum class CameraType
 	{
 		Fly,
-		Follow
+		Follow,
+		Ortho
 	};
 
 	struct Camera

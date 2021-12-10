@@ -2,9 +2,7 @@
 
 #include <string>
 
-// TODO(ck): Must switch Entity to plain array so i can save their memory to a file cant do it with vector
 // TODO(ck): open files with current platform layer
-// COPY MEMORY TO FILE and read it in
 #include <fstream>
 #ifdef _3D_GUI_
 void writeEntities(Mon::Entity* entities, int shaderID)
@@ -22,7 +20,6 @@ void writeEntities(Mon::Entity* entities, int shaderID)
 
 	file.close();
 }
-
 
 void loadEntities(Mon::Game* game)
 {
@@ -59,6 +56,21 @@ void loadEntities(Mon::Game* game)
 #endif
 
 #ifdef USE_SDL
+
+const char* GetSwapInterval()
+{
+	switch (SDL_GL_GetSwapInterval())
+	{
+	case 0:
+		return "off";
+	case 1:
+		return "synchronized";
+	case -1:
+		return "adaptive";
+	}
+	return "not found";
+}
+
 
 void InitGui(SDL_Window* window, SDL_GLContext* context)
 {
@@ -176,8 +188,8 @@ void CameraWindow(bool* p_open, Mon::Game* game)
 	
 	ImGui::SliderFloat("pitch", &game->cameras[game->currCameraIndex].pitch, -1.10f, 100.0f, "%1.0f");
 	//ImGui::SliderFloat("angle", &game->cameras[game->currCameraIndex].angleAroundTarget, -360.0f, 180.0f);
-	//ImGui::SliderFloat("lerp", &game->cameras[game->currCameraIndex].lerpSpeed, 0.0f, 100.0f);
-	//ImGui::SliderFloat("smooth", &game->cameras[game->currCameraIndex].smoothness, 0.1f, 10.0f);
+	ImGui::SliderFloat("lerp", &game->cameras[game->currCameraIndex].lerpSpeed, 0.0f, 100.0f);
+	ImGui::SliderFloat("smooth", &game->cameras[game->currCameraIndex].smoothness, 0.1f, 10.0f);
 
 
 	if (ImGui::Button("Log")) 
@@ -197,7 +209,13 @@ void CameraWindow(bool* p_open, Mon::Game* game)
 void EntityWindow(bool* p_open, Mon::Game* game)
 {
 	ImGui::Begin("entities and things", p_open);
+	
 	ImGui::DragFloat("sprite angle", &game->config->angleDegrees, 0.10f, -180.0f, 360.0f, "%.10f");
+	if (ImGui::Button("Add Cube"))
+	{
+		Mon::AddCube(game->world, game->shader.handle);
+	}
+
 
 	static unsigned int selected = 1;
 	ImGui::BeginChild("left pane", ImVec2(150.0f, 0.0f), true);
@@ -211,12 +229,6 @@ void EntityWindow(bool* p_open, Mon::Game* game)
 			selected = i;
 			game->selectedIndex = i;
 		}
-		// TODO(ck): Model loading
-		//ImGui::Separator();
-		//if (ImGui::Button("New Model"))
-		//{
-		//	CreateEmptyObject();
-		//}
 	}
 	
 	ImGui::EndChild();
@@ -228,11 +240,6 @@ void EntityWindow(bool* p_open, Mon::Game* game)
 		ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
 		
 		ImGui::Text("%s", game->world->entities[selected].name.c_str());
-
-		if (ImGui::Button("Add Cube"))
-		{
-			Mon::AddCube(game->world, game->shader.handle);
-		}
 
 		// TODO(ck): Model loading modal
 		// Modal for loading meshes
@@ -463,9 +470,31 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 		}
 	
 		ImGui::SliderFloat2("port", (float*)&game->config->viewPort, 0.0f, 477.0f);
+
+		// NOTE(ck): SDL Vsync https://wiki.libsdl.org/SDL_GL_SetSwapInterval
+		// 0 for immediate updates, 1 for updates synchronized with the vertical retrace, -1 for adaptive 
+		if (ImGui::RadioButton("off", settings->vsync == 0)) 
+		{
+			SDL_GL_SetSwapInterval(0);
+			settings->vsync = SDL_GL_GetSwapInterval();
+		}
+		ImGui::SameLine();
+		if (ImGui::RadioButton("vertical retrace", settings->vsync == 1))
+		{
+			SDL_GL_SetSwapInterval(1);
+			settings->vsync = SDL_GL_GetSwapInterval();
+
+		}
+		ImGui::SameLine();
+		if (ImGui::RadioButton("adaptive", settings->vsync == -1))
+		{
+			SDL_GL_SetSwapInterval(-1);
+			settings->vsync = SDL_GL_GetSwapInterval();
+		}
 	ImGui::Separator();
 
 		ImGui::LabelText(std::to_string(game->deltaTime).c_str(), "dt:");
+		ImGui::LabelText(std::to_string(MonGL::globalDrawCalls).c_str(), "draw calls:");
 
 		ImGui::Checkbox("Demo", &showDemoWindow);
 		ImGui::SameLine();
@@ -617,23 +646,23 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game2D* game2D)
 	ImGui::SameLine();
 	if (ImGui::Button("Exit"))
 	{
-		SDL_SetWindowSize(window, settings->width, settings->height);
+		SDL_SetWindowSize(window, settings->windowWidth, settings->windowHeight);
 		SDL_SetWindowFullscreen(window, 0);
 		game2D->setViewPort(960.0f, 540.0f);
 	}
 
 	if (ImGui::Button("720"))
 	{
-		settings->width = 1280;
-		settings->height = 720;
-		SDL_SetWindowSize(window, settings->width, settings->height);
+		settings->windowWidth = 1280;
+		settings->windowHeight = 720;
+		SDL_SetWindowSize(window, settings->windowWidth, settings->windowHeight);
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("1440"))
 	{
-		settings->width = 1440;
-		settings->height = 900;
-		SDL_SetWindowSize(window, settings->width, settings->height);
+		settings->windowWidth = 1440;
+		settings->windowHeight = 900;
+		SDL_SetWindowSize(window, settings->windowWidth, settings->windowHeight);
 	}
 
 	ImGui::SliderFloat2("port", (float*)&game2D->config->viewPort, 0.0f, 477.0f);

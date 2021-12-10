@@ -83,7 +83,7 @@ void App::run()
 
 	int target_framerate = 60;
 	uint64_t ticks_per_second = 1000000;
-	int max_updates = 5;
+	int max_updates = 3;
 
 	while (running)
 	{

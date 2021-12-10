@@ -27,6 +27,8 @@ struct Settings
 	int windowHeight;
 	int portWidth;
 	int portHeight;
+
+	int vsync;
 };
 
 #ifdef USE_SDL

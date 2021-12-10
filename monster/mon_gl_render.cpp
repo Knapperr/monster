@@ -4,6 +4,10 @@
 
 namespace MonGL
 {
+	// TODO(ck): TODO(ck): Somehow put into game so we can call from gui
+	// can have a getter method that retrieves the globalDrawCalls from here
+	int globalDrawCalls = 0;
+
 	void LoadTexture(RenderData *data, int index, Type type, int shaderID, std::string path)
 	{
 		data->texturePath = path;
@@ -430,6 +434,7 @@ namespace MonGL
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
+		globalDrawCalls = 0;
 	}
 
 	void Draw(Config* config, RenderData* data, v3 pos, Camera* camera,
@@ -443,7 +448,8 @@ namespace MonGL
 		bool useTexture = (ArrayCount(data->textures) > 0);
 		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), useTexture);
 		glUniform1i(glGetUniformLocation(shaderID, "pixelTexture"), useTexture);
-
+		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), true);
+		glUniform1i(glGetUniformLocation(shaderID, "pixelTexture"), true);
 		// bind textures on corresponding texture units
 		//glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, data->textures[selectedTexture].id);
@@ -471,7 +477,10 @@ namespace MonGL
 		else
 		{
 			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}	
+		}
+
+
+		globalDrawCalls++;
 	}
 
 	void DrawBoundingBox(RenderData* data, Camera* camera, unsigned int shaderID)
@@ -502,6 +511,8 @@ namespace MonGL
 		glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, 0);
 		glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, (GLvoid*)(4 * sizeof(GLushort)));
 		glDrawElements(GL_LINES, 8, GL_UNSIGNED_SHORT, (GLvoid*)(8 * sizeof(GLushort)));
+
+		globalDrawCalls++;
 	}
 
 	void DrawWater(RenderData* data, RenderSetup* setup, WaterDataProgram* waterData, Light* light, v3 pos, v3 scale, v3 camPos, unsigned int shaderID)
@@ -763,6 +774,13 @@ namespace MonGL
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
+
+		globalDrawCalls++;
+	}
+
+	void EndRender()
+	{
+		assert(globalDrawCalls > 0);
 	}
 
 	// ==================================================================
