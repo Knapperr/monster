@@ -2,7 +2,7 @@
 #define MON_TERRAIN_H
 
 #include "mon_shader.h"
-#include "mon_gl_render.h"
+#include "mon_entity.h"
 
 class Terrain
 {
@@ -14,12 +14,9 @@ public:
 	bool wireFrame;
 	bool drawTexture;
 
-	//Grass grass;
-	MonGL::CommonProgram shader;
 	MonGL::RenderData mesh;
-	// Shader* grassShader;
-	int* textureIds;
-
+	Mon::Collider collider;
+	
 	Terrain(int gridX, int gridZ);
 	~Terrain();
 

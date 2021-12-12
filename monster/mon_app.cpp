@@ -174,7 +174,6 @@ void App::run()
 			}
 		}
 
-		
 		// TODO(ck): Platform->Renderer->clearColor 
 		glClearColor(0.126f, 0.113f, 0.165f, 1.0f);
 

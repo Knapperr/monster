@@ -54,6 +54,7 @@ namespace Mon {
 	v3 GetCenter(Collider* c);
 	mat4 GetTransform(Collider* c, v3 entityPos, v3 entityScale);
 	void SetTransform(Collider* c, v3 entityPos, v3 entityScale);
+	void UpdateWorldPosToWorldMatrix(Collider* c);
 
 
 	struct Entity

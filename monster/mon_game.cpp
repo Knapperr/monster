@@ -9,9 +9,9 @@ namespace Mon
 		state = State::Debug;
 
 		shader = {};
-		waterShader = {};
+		//waterShader = {};
 		MonGL::LoadShader(&shader, "res/shaders/vert_colors.glsl", "res/shaders/frag_colors.glsl", NULL);
-		MonGL::LoadShader(&waterShader.common, "res/shaders/vert_water.glsl", "res/shaders/frag_water.glsl", NULL);
+		//MonGL::LoadShader(&waterShader.common, "res/shaders/vert_water.glsl", "res/shaders/frag_water.glsl", NULL);
 
 		mainShaderID = shader.handle;
 		
@@ -159,12 +159,20 @@ namespace Mon
 		// the entity?
 		v3 colliderPos = { world->player->particle.pos.x - (0.5f), -0.2f, world->player->particle.pos.z - (0.5f) };
 		SetTransform(&world->player->collider, colliderPos, world->player->data.scale);
+
+
 		for (int i = 1; i < world->entityCount; ++i)
 		{
 			v3 colliderPos = { world->entities[i].particle.pos.x - (0.5f),
 								world->entities[i].particle.pos.y - (0.5),
 								world->entities[i].particle.pos.z - (0.5f) };
 			SetTransform(&world->entities[i].collider, colliderPos, world->entities[i].data.scale);
+			UpdateWorldPosToWorldMatrix(&world->entities[i].collider);
+
+			// TODO(ck): Broad Phase Collision Check
+
+			// TODO(ck): Precise Collision check
+
 		}
 	}
 
@@ -208,9 +216,9 @@ namespace Mon
 			currCameraIndex = 2; 
 			debugMode();
 		}
-		if (input.num3.endedDown) 
+		if (input.num3.endedDown)
 		{ 
-			currCameraIndex = 3; 
+			currCameraIndex = 3;
 			debugMode();
 		}
 		
@@ -274,12 +282,8 @@ namespace Mon
 	void Game::render(double dt)
 	{
 		Camera* cam = getCamera(this, currCameraIndex);
-		// TODO(ck): pass all shaders to beginRender or they live in the opengl layer and get
-		// activated that way
+		
 		MonGL::BeginRender(config, Projection(cam), ViewMatrix(cam), shader.handle);
-		//MonGL::BeginRender(config, Projection(cam), ViewMatrix(cam), waterShader.common.handle);
-
-		MonGL::DrawTerrain(shader.handle, &terrain->mesh, &light, cam);
 
 		// TODO(ck): use shader
 		glUseProgram(shader.handle);
@@ -294,8 +298,10 @@ namespace Mon
 		//
 		if (drawCollisions)
 		{
+			MonGL::DrawBoundingBox(&terrain->collider.data, cam, shader.handle);
 			MonGL::DrawBoundingBox(&world->player->collider.data, cam, shader.handle);
 		}
+		MonGL::DrawTerrain(shader.handle, &terrain->mesh, &light, cam);
 		MonGL::Draw(config, &world->player->data, world->player->particle.pos, cam, shader.handle, world->player->facingDir);
 
 		//

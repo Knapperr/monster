@@ -18,6 +18,10 @@ namespace MonGL
 		glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
 	}
 
+	/// 
+	/// Init RenderData
+	/// 
+
 	void InitQuad(RenderData* data, bool tangents)
 	{
 		/*data->vertices.push_back({ v3(0.5f, 0.5f, 0.0f), v3(1.0f, 1.0f, 1.0f), v2(1.0f, 1.0f) });
@@ -117,7 +121,7 @@ namespace MonGL
 		// unbind
 		glBindVertexArray(0);
 
-
+		data->visible = true;
 		data->scale = v3(1.0f);
 	}
 
@@ -192,6 +196,8 @@ namespace MonGL
 
 		//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 		//glEnableVertexAttribArray(2);
+
+		data->visible = true;
 	}
 
 
@@ -376,8 +382,134 @@ namespace MonGL
 		// unbind
 		glBindVertexArray(0);
 
+		data->visible = true;
 		data->scale = v3(1.0f);
 	}
+
+	void GenerateTerrain(RenderData* data)
+	{
+		data->VAO = 0;
+		data->VBO = 0;
+
+		const int SIZE = 128;
+		const int VERTEX_COUNT = 16;
+
+		//Vertex3D vertices[VERTEX_COUNT * VERTEX_COUNT];
+		Vertex3D* vertices = new Vertex3D[VERTEX_COUNT * VERTEX_COUNT];
+		int verticeLength = VERTEX_COUNT * VERTEX_COUNT;
+
+
+		//data->vertices.resize(VERTEX_COUNT * VERTEX_COUNT);
+
+		// TODO(ck): Memory Allocation
+		int* indices = new int[6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1)];
+		int verticesLength = VERTEX_COUNT * VERTEX_COUNT;
+		data->indiceCount = 6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1);
+
+		int index = 0;
+		for (int i = 0; i < VERTEX_COUNT; ++i)
+		{
+			for (int j = 0; j < VERTEX_COUNT; ++j)
+			{
+				vertices[index] = {};
+				vertices[index].position.x = (float)j / ((float)VERTEX_COUNT - 1) * SIZE;
+
+				vertices[index].position.y = -0.3f;
+
+				vertices[index].position.z = (float)i / ((float)VERTEX_COUNT - 1) * SIZE;
+
+				vertices[index].normal.x = 0;
+				vertices[index].normal.y = 1;
+				vertices[index].normal.z = 0;
+
+				vertices[index].texCoords.x = (float)j / ((float)VERTEX_COUNT - 1);
+				vertices[index].texCoords.y = (float)i / ((float)VERTEX_COUNT - 1);
+				++index;
+			}
+		}
+
+		index = 0;
+		for (int gz = 0; gz < VERTEX_COUNT - 1; ++gz)
+		{
+			for (int gx = 0; gx < VERTEX_COUNT - 1; ++gx)
+			{
+				int topLeft = (gz * VERTEX_COUNT) + gx;
+				int topRight = topLeft + 1;
+				int bottomLeft = ((gz + 1) * VERTEX_COUNT) + gx;
+				int bottomRight = bottomLeft + 1;
+
+				indices[index++] = topLeft;
+				indices[index++] = bottomLeft;
+				indices[index++] = topRight;
+				indices[index++] = topRight;
+				indices[index++] = bottomLeft;
+				indices[index++] = bottomRight;
+			}
+		}
+
+		unsigned int ebo;
+		glGenVertexArrays(1, &data->VAO);
+		glGenBuffers(1, &data->VBO);
+		glGenBuffers(1, &ebo);
+
+		glBindVertexArray(data->VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, data->VBO);
+		//glBufferData(GL_ARRAY_BUFFER, data->vertices.size() * sizeof(Vertex3D), &data->vertices[0], GL_STATIC_DRAW);
+		//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, verticesLength * sizeof(Vertex3D), vertices, GL_STATIC_DRAW);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, data->indiceCount * sizeof(int), indices, GL_STATIC_DRAW);
+
+		// pos
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)0);
+		// normals
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, normal));
+		// tex coords
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, texCoords));
+
+		// unbind
+		glBindVertexArray(0);
+		delete[] vertices;
+		delete[] indices;
+
+		data->mat = {};
+		data->mat.ambient = v3(1.0f, 0.5f, 0.6f);
+		data->mat.diffuse = v3(1.0f, 0.5f, 0.31f);
+		data->mat.specular = v3(0.5f, 0.5f, 0.5f);
+		data->mat.shininess = 32.0f;
+
+		std::string textPath = "res/textures/terrain/1024multi.png";
+		std::string textDir = textPath.substr(0, textPath.find_last_of('/'));
+
+		/*
+		textureIds[0] = MonTexture::LoadTextureFile("1024multi.png", textDir, false);
+		std::string filename = std::string(path);
+		filename = directory + '/' + filename;
+		*/
+		Texture text = {};
+		data->textures[0] = text;
+		LoadTextureFile(&data->textures[0], textPath.c_str(), Type::Diffuse, false, false, false);
+
+		textPath = "res/textures/terrain/grass.jpg";
+		Texture text1 = {};
+		data->textures[1] = text1;
+		LoadTextureFile(&data->textures[1], textPath.c_str(), Type::Diffuse, false, false, false);
+
+		textPath = "res/textures/terrain/pix_grass.png";
+		Texture text2 = {};
+		data->textures[2] = text2;
+		LoadTextureFile(&data->textures[2], textPath.c_str(), Type::Diffuse, false, false, false);
+
+		textPath = "res/textures/terrain/snow.jpg";
+		Texture text3 = {};
+		data->textures[3] = text3;
+		LoadTextureFile(&data->textures[3], textPath.c_str(), Type::Diffuse, false, false, false);
+	}
+
 
 	void InitDistortedWater(RenderData* renderData, RenderSetup* setup)
 	{
@@ -437,6 +569,10 @@ namespace MonGL
 		globalDrawCalls = 0;
 	}
 
+	///
+	/// Draw RenderData  
+	///
+
 	void Draw(Config* config, RenderData* data, v3 pos, Camera* camera,
 			  unsigned int shaderID, int selectedTexture)
 	{
@@ -485,7 +621,10 @@ namespace MonGL
 
 	void DrawBoundingBox(RenderData* data, Camera* camera, unsigned int shaderID)
 	{
+		if (false == data->visible)
+			return;
 
+		
 		// ==============================================================================
 		glUniform3fv(glGetUniformLocation(shaderID, "material.ambient"), 1, &data->mat.ambient[0]);
 		glUniform3fv(glGetUniformLocation(shaderID, "material.diffuse"), 1, &data->mat.diffuse[0]);
@@ -600,130 +739,6 @@ namespace MonGL
 		// NOTE(CK): bind texture must be AFTER glActiveTexture or it will not unbind properly
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, 0);
-	}
-
-	void GenerateTerrain(RenderData* data)
-	{
-		data->VAO = 0;
-		data->VBO = 0;
-
-		const int SIZE = 64;
-		const int VERTEX_COUNT = 16;
-		
-		//Vertex3D vertices[VERTEX_COUNT * VERTEX_COUNT];
-		Vertex3D* vertices = new Vertex3D[VERTEX_COUNT * VERTEX_COUNT];
-		int verticeLength = VERTEX_COUNT * VERTEX_COUNT;
-		
-
-		//data->vertices.resize(VERTEX_COUNT * VERTEX_COUNT);
-
-		// TODO(ck): Memory Allocation
-		int* indices = new int[6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1)];
-		int verticesLength = VERTEX_COUNT * VERTEX_COUNT;
-		data->indiceCount = 6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1);
-
-		int index = 0;
-		for (int i = 0; i < VERTEX_COUNT; ++i)
-		{
-			for (int j = 0; j < VERTEX_COUNT; ++j)
-			{
-				vertices[index] = {};
-				vertices[index].position.x = (float)j / ((float)VERTEX_COUNT - 1) * SIZE;
-
-				vertices[index].position.y = -0.3f;
-
-				vertices[index].position.z = (float)i / ((float)VERTEX_COUNT - 1) * SIZE;
-
-				vertices[index].normal.x = 0;
-				vertices[index].normal.y = 1;
-				vertices[index].normal.z = 0;
-				
-				vertices[index].texCoords.x = (float)j / ((float)VERTEX_COUNT - 1);
-				vertices[index].texCoords.y = (float)i / ((float)VERTEX_COUNT - 1);
-				++index;
-			}
-		}
-
-		index = 0;
-		for (int gz = 0; gz < VERTEX_COUNT - 1; ++gz)
-		{
-			for (int gx = 0; gx < VERTEX_COUNT - 1; ++gx)
-			{
-				int topLeft = (gz * VERTEX_COUNT) + gx;
-				int topRight = topLeft + 1;
-				int bottomLeft = ((gz + 1) * VERTEX_COUNT) + gx;
-				int bottomRight = bottomLeft + 1;
-
-				indices[index++] = topLeft;
-				indices[index++] = bottomLeft;
-				indices[index++] = topRight;
-				indices[index++] = topRight;
-				indices[index++] = bottomLeft;
-				indices[index++] = bottomRight;
-			}
-		}
-
-		unsigned int ebo;
-		glGenVertexArrays(1, &data->VAO);
-		glGenBuffers(1, &data->VBO);
-		glGenBuffers(1, &ebo);
-
-		glBindVertexArray(data->VAO);
-		glBindBuffer(GL_ARRAY_BUFFER, data->VBO);
-		//glBufferData(GL_ARRAY_BUFFER, data->vertices.size() * sizeof(Vertex3D), &data->vertices[0], GL_STATIC_DRAW);
-		//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-		glBufferData(GL_ARRAY_BUFFER, verticesLength * sizeof(Vertex3D), vertices, GL_STATIC_DRAW);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, data->indiceCount * sizeof(int), indices, GL_STATIC_DRAW);
-		
-		// pos
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)0);
-		// normals
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, normal));
-		// tex coords
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, texCoords));
-
-		// unbind
-		glBindVertexArray(0);
-		delete[] vertices;
-		delete[] indices;
-
-		data->mat = {};
-		data->mat.ambient = v3(1.0f, 0.5f, 0.6f);
-		data->mat.diffuse = v3(1.0f, 0.5f, 0.31f);
-		data->mat.specular = v3(0.5f, 0.5f, 0.5f);
-		data->mat.shininess = 32.0f;
-
-		std::string textPath = "res/textures/terrain/1024multi.png";
-		std::string textDir = textPath.substr(0, textPath.find_last_of('/'));
-	
-		/*
-		textureIds[0] = MonTexture::LoadTextureFile("1024multi.png", textDir, false);
-		std::string filename = std::string(path);
-		filename = directory + '/' + filename;
-		*/
-		Texture text = {};
-		data->textures[0] = text;
-		LoadTextureFile(&data->textures[0], textPath.c_str(), Type::Diffuse, false, false, false);
-
-		textPath = "res/textures/terrain/grass.jpg";
-		Texture text1 = {};
-		data->textures[1] = text1;
-		LoadTextureFile(&data->textures[1], textPath.c_str(), Type::Diffuse, false, false, false);
-
-		textPath = "res/textures/terrain/pix_grass.png";
-		Texture text2 = {};
-		data->textures[2] = text2;
-		LoadTextureFile(&data->textures[2], textPath.c_str(), Type::Diffuse, false, false, false);
-
-		textPath = "res/textures/terrain/snow.jpg";
-		Texture text3 = {};
-		data->textures[3] = text3;
-		LoadTextureFile(&data->textures[3], textPath.c_str(), Type::Diffuse, false, false, false);
 	}
 
 	void DrawTerrain(unsigned int shaderID, RenderData* data, Light* light, Camera* camera)

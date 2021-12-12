@@ -117,6 +117,29 @@ void TerrainWindow(bool* p_open, Mon::Game* game)
 	if (ImGui::Button("Snow")) { game->terrain->mesh.selectedTexture = 3; }
 	ImGui::Separator();
 
+	ImGui::Checkbox("collider visible", &game->terrain->collider.data.visible);
+
+	if (ImGui::SliderFloat3("collider min", &game->terrain->collider.size.min[0], 0.0f, 500.0f))
+	{
+		Mon::SetTransform(&game->terrain->collider, game->terrain->collider.worldPos, Mon::v3(1.0f));
+	}
+	if (ImGui::SliderFloat3("collider max", &game->terrain->collider.size.max[0], 0.0f, 500.0f))
+	{
+		Mon::SetTransform(&game->terrain->collider, game->terrain->collider.worldPos, Mon::v3(1.0f));
+	}
+	if (ImGui::DragFloat("collider x", &game->terrain->collider.worldPos.x, 0.1f, -1000.0f, 1000.0f, "%.02f"))
+	{
+		Mon::SetTransform(&game->terrain->collider, game->terrain->collider.worldPos, Mon::v3(1.0f));
+	}
+	if (ImGui::DragFloat("collider y", &game->terrain->collider.worldPos.y, 0.1f, -1000.0f, 1000.0f, "%.02f"))
+	{
+		Mon::SetTransform(&game->terrain->collider, game->terrain->collider.worldPos, Mon::v3(1.0f));
+	}
+	if (ImGui::DragFloat("collider z", &game->terrain->collider.worldPos.z, 0.1f, -1000.0f, 1000.0f, "%.02f"))
+	{
+		Mon::SetTransform(&game->terrain->collider, game->terrain->collider.worldPos, Mon::v3(1.0f));
+	}
+
 	ImGui::Checkbox("Wireframe", &game->terrain->wireFrame);
 
 	ImGui::PushItemWidth(100.0f);
@@ -192,7 +215,7 @@ void CameraWindow(bool* p_open, Mon::Game* game)
 	ImGui::SliderFloat("smooth", &game->cameras[game->currCameraIndex].smoothness, 0.1f, 10.0f);
 
 
-	if (ImGui::Button("Log")) 
+	if (ImGui::Button("Log"))
 	{ 
 		Mon::Log::print("cam zoom", game->cameras[game->currCameraIndex].zoom);
 		Mon::Log::print("near plane", game->cameras[game->currCameraIndex].nearPlane);
@@ -391,7 +414,7 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 	ImGui::NewFrame();
 
 	static bool showDemoWindow = false;
-	static bool showTerrainWindow = false;
+	static bool showTerrainWindow = true;
 	static bool showCameraWindow = true;
 	static bool showStatsWindow = false;
 	static bool showEntityWindow = true;
@@ -442,10 +465,10 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 		if (ImGui::Button("Fullscreen"))
 		{
 			SDL_DisplayMode dm;
-			SDL_GetCurrentDisplayMode(0, &dm);		
+			SDL_GetCurrentDisplayMode(0, &dm);
 			SDL_SetWindowSize(window, dm.w, dm.h);
 			SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
-			game->setViewPort(dm.w, dm.h); 
+			game->setViewPort(dm.w, dm.h);
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("Exit"))
@@ -493,8 +516,8 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 		}
 	ImGui::Separator();
 
-		ImGui::LabelText(std::to_string(game->deltaTime).c_str(), "dt:");
-		ImGui::LabelText(std::to_string(MonGL::globalDrawCalls).c_str(), "draw calls:");
+		ImGui::LabelText("dt", std::to_string(game->deltaTime).c_str());
+		ImGui::LabelText("draw calls", std::to_string(MonGL::globalDrawCalls).c_str());
 
 		ImGui::Checkbox("Demo", &showDemoWindow);
 		ImGui::SameLine();

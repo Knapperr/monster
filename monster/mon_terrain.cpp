@@ -15,14 +15,17 @@ Terrain::Terrain(int gridX, int gridZ)
 	mesh = {};
 	wireFrame = false;
 	drawTexture = true;
+
+	MonGL::InitBoundingBox(&collider.data);
+	collider.data.color = Mon::v3(0.1f, 0.4f, 0.95f);
+	collider.worldPos = Mon::v3(-2.0f, -6.40f, -1.10f);
+	collider.size.max = Mon::v3(133.00f, 6.10f, 131.0f);
+	Mon::SetTransform(&collider, collider.worldPos, Mon::v3(1.0f));
 }
 
 Terrain::~Terrain()
 {
-	// TODO(ck): Move
-	// delete[] grass.matrices;
-	delete[] textureIds;
-	// TODO(ck): delete index buffer too?
+	// 
 }
 
 float Terrain::getHeight(int x, int z)
@@ -74,87 +77,3 @@ float Terrain::lookUpHeight(int x, int z)
 	return 0.0f;
 	//return mesh.vertices[i].position.y;
 }
-
-/*
-void Terrain::GenerateGrass()
-{
-
-	if (this->grass.matrices == NULL)
-	{
-		this->grass = {};
-		this->grass.model = Model("content/objects/grass_star/Grass.obj");
-		// TODO(CK): Need a getter for texture id
-		this->grass.textureId = this->grass.model.textures_loaded[0].id;
-		grass.matrices = new glm::mat4[this->grass.amount];
-	}
-	else
-	{
-		delete[] grass.matrices;
-		grass.matrices = new glm::mat4[this->grass.amount];
-	}
-
-	srand(time(NULL));
-	// TODO(CK): Shouldn't increment by 3 this is buggy
-	for (unsigned int i = 0; i < this->grass.amount; i += 3)
-	{
-		glm::mat4 model = glm::mat4(1.0f);
-		// 1. translation: displace along circle with 'radius' in range [-offset, offset]
-
-		// TODO(ck): Use blue noise for this
-		float x = rand() % 380 + 10;
-		float y = 0;
-		float z = rand() % 380 + 10;
-		model = glm::translate(model, v3(x, y, z));
-
-		// 2. scale: Scale between 0.05 and 0.25f
-		float scale = 1.0f;
-		model = glm::scale(model, glm::vec3(scale));
-
-		// 4. now add to list of matrices
-		this->grass.matrices[i] = model;
-
-		if (i < (this->grass.amount - 3))
-		{
-			float rotAngle = 40.0f;
-			model = glm::rotate(model, rotAngle, glm::vec3(0.0f, 1.0f, 0.0f));
-			assert((i + 1) < this->grass.amount);
-			this->grass.matrices[i + 1] = model;
-
-			rotAngle = 135.0f;
-			model = glm::rotate(model, rotAngle, glm::vec3(0.0f, -1.0f, 0.0f));
-			assert((i + 2) < this->grass.amount);
-			this->grass.matrices[i + 2] = model;
-		}
-	}
-
-	// configure instanced array
-	unsigned int buffer;
-	glGenBuffers(1, &buffer);
-	glBindBuffer(GL_ARRAY_BUFFER, buffer);
-	glBufferData(GL_ARRAY_BUFFER, this->grass.amount * sizeof(glm::mat4), &this->grass.matrices[0], GL_STATIC_DRAW);
-
-	for (unsigned int i = 0; i < this->grass.model.meshes.size(); i++)
-	{
-		unsigned int VAO = grass.model.meshes[i].VAO;
-		glBindVertexArray(VAO);
-		glEnableVertexAttribArray(3);
-		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
-
-		glEnableVertexAttribArray(4);
-		glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
-
-		glEnableVertexAttribArray(5);
-		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
-
-		glEnableVertexAttribArray(6);
-		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
-
-		glVertexAttribDivisor(3, 1);
-		glVertexAttribDivisor(4, 1);
-		glVertexAttribDivisor(5, 1);
-		glVertexAttribDivisor(6, 1);
-
-		glBindVertexArray(0);
-	}
-}
-*/

@@ -71,6 +71,7 @@ namespace MonGL
 		int selectedTexture;
 		Material mat;
 
+		bool visible;
 		// TODO(ck): More collider specific info
 
 		//float pos;
@@ -144,6 +145,17 @@ namespace MonGL
 	// TODO(ck): TODO(ck): Somehow put into game so we can call from gui
 	// can have a getter method that retrieves the globalDrawCalls from here
 	extern int globalDrawCalls;
+
+	// Some kind of shader manager for accessing shaders from the render layer
+	// dont think i need some kind of manager for generic shaders.
+	// ill have few shaders i need to focus on the render layer instead and 
+	// get frame buffers all of that stuff going. learn open gl weekend?
+	//class ShaderManager
+	//{
+	//public:
+	//	
+	//	//CommonProgram programs[];
+	//};
 
 	void BeginRender(Config* config, mat4 projection, mat4 view, int shaderID);
 	void ViewPort(Rect* port);

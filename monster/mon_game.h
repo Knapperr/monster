@@ -7,7 +7,6 @@
 
 // should not be in this layer either
 // the app just takes 
-#include "mon_terrain.h"
 #include "mon_gl_render.h"
 #include "mon_world.h"
 
@@ -60,7 +59,7 @@ namespace Mon
 		bool drawCollisions;
 
 		// Note(ck): Current game state - State::Debug is default
-		int state; 
+		int state;
 		// TODO(ck): Handle Multiple selected IDS i.e: selectedIDs[64]; selectedCount; need to store the count as well
 		int selectedIndex;
 		int mainShaderID;
@@ -70,8 +69,7 @@ namespace Mon
 		// Shader lives in the opengl renderer
 		// Need a shader store or something
 		MonGL::CommonProgram shader;
-		MonGL::WaterDataProgram waterShader;
-		MonGL::CommonProgram tileShader;
+		//MonGL::WaterDataProgram waterShader;
 		MonGL::Light light;
 	};
 	
