@@ -102,6 +102,60 @@ void InitGui(SDL_Window* window, SDL_GLContext* context)
 
 
 #ifdef _3D_GUI_
+static void TerrainColliderWindow(Terrain* terrain)
+{
+	if (ImGui::TreeNode("Colliders"))
+	{
+
+		ImGui::Checkbox("draw collider", &terrain->collider.data.visible);
+
+
+		if (ImGui::SliderFloat3("collider min", &terrain->collider.size.min[0], 0.0f, 500.0f))
+		{
+			Mon::SetTransform(&terrain->collider, terrain->collider.worldPos, Mon::v3(1.0f));
+		}
+		if (ImGui::SliderFloat3("collider max", &terrain->collider.size.max[0], 0.0f, 500.0f))
+		{
+			Mon::SetTransform(&terrain->collider, terrain->collider.worldPos, Mon::v3(1.0f));
+		}
+		if (ImGui::DragFloat("collider x", &terrain->collider.worldPos.x, 0.1f, -1000.0f, 1000.0f, "%.02f"))
+		{
+			Mon::SetTransform(&terrain->collider, terrain->collider.worldPos, Mon::v3(1.0f));
+		}
+		if (ImGui::DragFloat("collider y", &terrain->collider.worldPos.y, 0.1f, -1000.0f, 1000.0f, "%.02f"))
+		{
+			Mon::SetTransform(&terrain->collider, terrain->collider.worldPos, Mon::v3(1.0f));
+		}
+		if (ImGui::DragFloat("collider z", &terrain->collider.worldPos.z, 0.1f, -1000.0f, 1000.0f, "%.02f"))
+		{
+			Mon::SetTransform(&terrain->collider, terrain->collider.worldPos, Mon::v3(1.0f));
+		}
+
+
+		// End
+		ImGui::TreePop();
+	}
+}
+
+static void TerrainMaterialWindow(Terrain* terrain)
+{
+	if (ImGui::TreeNode("Materials"))
+	{
+		ImGui::PushItemWidth(100.0f);
+		ImGui::DragFloat("Mat diffuse r", &terrain->mesh.mat.diffuse.x, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("Mat diffuse g", &terrain->mesh.mat.diffuse.y, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("Mat diffuse b", &terrain->mesh.mat.diffuse.z, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::Separator();
+		ImGui::DragFloat("Mat ambient r", &terrain->mesh.mat.ambient.x, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("Mat ambient g", &terrain->mesh.mat.ambient.y, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::DragFloat("Mat ambient b", &terrain->mesh.mat.ambient.z, 0.01f, 0.0f, 1.0f, "%.02f");
+		ImGui::PopItemWidth();
+
+
+		ImGui::TreePop();
+	}
+}
+
 void TerrainWindow(bool* p_open, Mon::Game* game)
 {
 	ImGui::Begin("Terrain", p_open);
@@ -117,40 +171,11 @@ void TerrainWindow(bool* p_open, Mon::Game* game)
 	if (ImGui::Button("Snow")) { game->terrain->mesh.selectedTexture = 3; }
 	ImGui::Separator();
 
-	ImGui::Checkbox("collider visible", &game->terrain->collider.data.visible);
-
-	if (ImGui::SliderFloat3("collider min", &game->terrain->collider.size.min[0], 0.0f, 500.0f))
-	{
-		Mon::SetTransform(&game->terrain->collider, game->terrain->collider.worldPos, Mon::v3(1.0f));
-	}
-	if (ImGui::SliderFloat3("collider max", &game->terrain->collider.size.max[0], 0.0f, 500.0f))
-	{
-		Mon::SetTransform(&game->terrain->collider, game->terrain->collider.worldPos, Mon::v3(1.0f));
-	}
-	if (ImGui::DragFloat("collider x", &game->terrain->collider.worldPos.x, 0.1f, -1000.0f, 1000.0f, "%.02f"))
-	{
-		Mon::SetTransform(&game->terrain->collider, game->terrain->collider.worldPos, Mon::v3(1.0f));
-	}
-	if (ImGui::DragFloat("collider y", &game->terrain->collider.worldPos.y, 0.1f, -1000.0f, 1000.0f, "%.02f"))
-	{
-		Mon::SetTransform(&game->terrain->collider, game->terrain->collider.worldPos, Mon::v3(1.0f));
-	}
-	if (ImGui::DragFloat("collider z", &game->terrain->collider.worldPos.z, 0.1f, -1000.0f, 1000.0f, "%.02f"))
-	{
-		Mon::SetTransform(&game->terrain->collider, game->terrain->collider.worldPos, Mon::v3(1.0f));
-	}
-
 	ImGui::Checkbox("Wireframe", &game->terrain->wireFrame);
 
-	ImGui::PushItemWidth(100.0f);
-		ImGui::DragFloat("Mat diffuse r", &game->terrain->mesh.mat.diffuse.x, 0.01f, 0.0f, 1.0f, "%.02f");
-		ImGui::DragFloat("Mat diffuse g", &game->terrain->mesh.mat.diffuse.y, 0.01f, 0.0f, 1.0f, "%.02f");
-		ImGui::DragFloat("Mat diffuse b", &game->terrain->mesh.mat.diffuse.z, 0.01f, 0.0f, 1.0f, "%.02f");
-		ImGui::Separator();
-		ImGui::DragFloat("Mat ambient r", &game->terrain->mesh.mat.ambient.x, 0.01f, 0.0f, 1.0f, "%.02f");
-		ImGui::DragFloat("Mat ambient g", &game->terrain->mesh.mat.ambient.y, 0.01f, 0.0f, 1.0f, "%.02f");
-		ImGui::DragFloat("Mat ambient b", &game->terrain->mesh.mat.ambient.z, 0.01f, 0.0f, 1.0f, "%.02f");
-	ImGui::PopItemWidth();
+	TerrainColliderWindow(game->terrain);
+	TerrainMaterialWindow(game->terrain);
+
 
 	ImGui::End();
 }

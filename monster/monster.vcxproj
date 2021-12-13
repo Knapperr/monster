@@ -189,6 +189,7 @@
     <ClInclude Include="include\imgui\imstb_rectpack.h" />
     <ClInclude Include="include\imgui\imstb_textedit.h" />
     <ClInclude Include="include\imgui\imstb_truetype.h" />
+    <ClInclude Include="mon_collider.h" />
     <ClInclude Include="mon_entity.h" />
     <ClInclude Include="mon_game.h" />
     <ClInclude Include="mon_app.h" />

@@ -63,7 +63,7 @@ void main()
             vec2 seam = floor(pixel + 0.5);
             pixel = seam + clamp((pixel - seam)/duDv, -0.5, 0.5);
             vec2 modifiedTextCoordinate = pixel / textureSize;
-            vec4 tex = texture2D(texture_diffuse1, modifiedTextCoordinate);
+            vec4 tex = texture(texture_diffuse1, modifiedTextCoordinate);
             FragColor = tex;
             return;
             // vec2 vres = textureSize(texture_diffuse1, 0);

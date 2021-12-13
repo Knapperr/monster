@@ -197,5 +197,8 @@
     <ClInclude Include="win32_platform.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="mon_collider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
