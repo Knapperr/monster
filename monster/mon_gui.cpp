@@ -112,23 +112,23 @@ static void TerrainColliderWindow(Terrain* terrain)
 
 		if (ImGui::SliderFloat3("collider min", &terrain->collider.size.min[0], 0.0f, 500.0f))
 		{
-			Mon::SetTransform(&terrain->collider, terrain->collider.worldPos, Mon::v3(1.0f));
+			Mon::SetBoxTransform(&terrain->collider, terrain->collider.worldPos, Mon::v3(1.0f));
 		}
 		if (ImGui::SliderFloat3("collider max", &terrain->collider.size.max[0], 0.0f, 500.0f))
 		{
-			Mon::SetTransform(&terrain->collider, terrain->collider.worldPos, Mon::v3(1.0f));
+			Mon::SetBoxTransform(&terrain->collider, terrain->collider.worldPos, Mon::v3(1.0f));
 		}
 		if (ImGui::DragFloat("collider x", &terrain->collider.worldPos.x, 0.1f, -1000.0f, 1000.0f, "%.02f"))
 		{
-			Mon::SetTransform(&terrain->collider, terrain->collider.worldPos, Mon::v3(1.0f));
+			Mon::SetBoxTransform(&terrain->collider, terrain->collider.worldPos, Mon::v3(1.0f));
 		}
 		if (ImGui::DragFloat("collider y", &terrain->collider.worldPos.y, 0.1f, -1000.0f, 1000.0f, "%.02f"))
 		{
-			Mon::SetTransform(&terrain->collider, terrain->collider.worldPos, Mon::v3(1.0f));
+			Mon::SetBoxTransform(&terrain->collider, terrain->collider.worldPos, Mon::v3(1.0f));
 		}
 		if (ImGui::DragFloat("collider z", &terrain->collider.worldPos.z, 0.1f, -1000.0f, 1000.0f, "%.02f"))
 		{
-			Mon::SetTransform(&terrain->collider, terrain->collider.worldPos, Mon::v3(1.0f));
+			Mon::SetBoxTransform(&terrain->collider, terrain->collider.worldPos, Mon::v3(1.0f));
 		}
 
 

@@ -51,7 +51,7 @@ namespace Mon {
 		MonGL::LoadTexture(&world->player->data, 3, MonGL::Type::Diffuse, shaderHandle, "res/textures/p1BACK.png");
 		world->player->facingDir = 0;
 
-		MonGL::InitBoundingBox(&world->player->collider.data);
+		InitBoxCollider(&world->player->collider);
 		world->player->particle.pos = v3(40.0f, 0.1f, 10.0);
 		world->player->particle.inverseMass = 10.0f;
 		world->player->particle.velocity = v3(0.0f, 0.0f, 0.0f); // 35m/s
@@ -83,7 +83,7 @@ namespace Mon {
 			MonGL::LoadTexture(&tree->data, 0, MonGL::Type::Diffuse, shaderHandle, "res/textures/tree.png");
 			tree->particle.pos = v3(6.0f * (i + 1), 6.80f, 5.5f * i);
 			tree->data.scale = v3(16.0f, 16.0f, 16.0f);
-			MonGL::InitBoundingBox(&tree->collider.data);
+			InitBoxCollider(&tree->collider);
 		}
 
 		int length = world->entityCount + 5;
@@ -97,7 +97,7 @@ namespace Mon {
 			MonGL::InitQuad(&flower->data);
 			MonGL::LoadTexture(&flower->data, 0, MonGL::Type::Diffuse, shaderHandle, "res/textures/sflow_tall.png");
 			flower->particle.pos = v3(10.0f, 0.1f, 6.0f);
-			MonGL::InitBoundingBox(&flower->collider.data);
+			InitBoxCollider(&flower->collider);
 
 		}
 		
@@ -108,7 +108,7 @@ namespace Mon {
 		MonGL::InitCube(&cube->data);
 		MonGL::LoadTexture(&cube->data, 0, MonGL::Type::Diffuse, shaderHandle, "res/textures/container2.png");
 		cube->particle.pos = v3(50.0f, 0.3f, 20.0f);
-		MonGL::InitBoundingBox(&cube->collider.data);
+		InitBoxCollider(&cube->collider);
 
 		//for (int i = 0; i < 4; ++i)
 		//{
@@ -137,5 +137,10 @@ namespace Mon {
 		MonGL::InitBoundingBox(&cube->collider.data);
 	}
 	
+
+	static void UpdateWorld(World* world)
+	{
+
+	}
 }
 #endif

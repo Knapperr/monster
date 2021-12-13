@@ -16,11 +16,12 @@ Terrain::Terrain(int gridX, int gridZ)
 	wireFrame = false;
 	drawTexture = true;
 
-	MonGL::InitBoundingBox(&collider.data);
+	// TODO(ck): Switch to plane shape
+	Mon::InitBoxCollider(&collider);
 	collider.data.color = Mon::v3(0.1f, 0.4f, 0.95f);
 	collider.worldPos = Mon::v3(-2.0f, -6.40f, -1.10f);
 	collider.size.max = Mon::v3(133.00f, 6.10f, 131.0f);
-	Mon::SetTransform(&collider, collider.worldPos, Mon::v3(1.0f));
+	Mon::SetBoxTransform(&collider, collider.worldPos, Mon::v3(1.0f));
 }
 
 Terrain::~Terrain()

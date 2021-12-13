@@ -161,6 +161,7 @@
     <ClCompile Include="include\imgui\imgui_widgets.cpp" />
     <ClCompile Include="include\stb_image\stb_image.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="mon_collider.cpp" />
     <ClCompile Include="mon_entity.cpp" />
     <ClCompile Include="mon_game.cpp" />
     <ClCompile Include="mon_app.cpp" />

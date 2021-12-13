@@ -158,7 +158,7 @@ namespace Mon
 		// we can check colliders between eachother after setting their position from
 		// the entity?
 		v3 colliderPos = { world->player->particle.pos.x - (0.5f), -0.2f, world->player->particle.pos.z - (0.5f) };
-		SetTransform(&world->player->collider, colliderPos, world->player->data.scale);
+		SetBoxTransform(&world->player->collider, colliderPos, world->player->data.scale);
 
 
 		for (int i = 1; i < world->entityCount; ++i)
@@ -166,7 +166,7 @@ namespace Mon
 			v3 colliderPos = { world->entities[i].particle.pos.x - (0.5f),
 								world->entities[i].particle.pos.y - (0.5),
 								world->entities[i].particle.pos.z - (0.5f) };
-			SetTransform(&world->entities[i].collider, colliderPos, world->entities[i].data.scale);
+			SetBoxTransform(&world->entities[i].collider, colliderPos, world->entities[i].data.scale);
 			UpdateWorldPosToWorldMatrix(&world->entities[i].collider);
 
 			// TODO(ck): Broad Phase Collision Check

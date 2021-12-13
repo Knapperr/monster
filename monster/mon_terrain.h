@@ -5,7 +5,10 @@
 #include "mon_entity.h"
 
 
+struct MousePicker
+{
 
+};
 
 class Terrain
 {

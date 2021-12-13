@@ -5,6 +5,14 @@
 #include "mon_gl_render.h"
 
 namespace Mon {
+
+	enum class ColliderType
+	{
+		BoundingBox,
+		Plane,
+		Sphere
+	};
+
 	struct Collider
 	{
 		struct Size
@@ -13,15 +21,18 @@ namespace Mon {
 			v3 max = v3(1.0f, 1.0f, 1.0f);;
 		};
 
+		ColliderType type;
 		MonGL::RenderData data;
 		v3 worldPos;
 		Size size;
 	};
 
-	v3 GetSize(Collider* c);
-	v3 GetCenter(Collider* c);
-	mat4 GetTransform(Collider* c, v3 entityPos, v3 entityScale);
-	void SetTransform(Collider* c, v3 entityPos, v3 entityScale);
+	void InitBoxCollider(Collider* c);
+	v3 GetBoxSize(Collider* c);
+	v3 GetBoxCenter(Collider* c);
+	mat4 GetBoxTransform(Collider* c, v3 entityPos, v3 entityScale);
+	void SetBoxTransform(Collider* c, v3 entityPos, v3 entityScale);
+
 	void UpdateWorldPosToWorldMatrix(Collider* c);
 
 
