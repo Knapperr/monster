@@ -10,9 +10,9 @@ namespace Mon
 	{
 		// Required to call this for Windows
 		// I'm not sure why SDL2 doesn't do this on Windows automatically?
-		//#if _WIN32
-		//	SetProcessDPIAware();
-		//#endif
+		#if _WIN32
+			SetProcessDPIAware();
+		#endif
 
 		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_EVENTS | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) < 0)
 			return false;
@@ -21,13 +21,13 @@ namespace Mon
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+		// TODO(ck): Do I want to double buffer here?
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-		// TODO(ck): Determine screen size and port width here on init... need
-		// some kind of configuration for the width, height... maybe not the port
-		// but the screen width and height needs to be determined by the monitor or settings
-		// SET THE SETTINGS HERE .. if they aren't already set?
-
+#ifdef _3D_
+		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
+#endif
 
 		int flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI;
 		window = SDL_CreateWindow(settings->title,
@@ -66,6 +66,7 @@ namespace Mon
 		glEnable(GL_BLEND);
 #ifdef _3D_
 		glEnable(GL_DEPTH_TEST); // NOTE(ck): OFF FOR 2D
+		glEnable(GL_MULTISAMPLE);
 		//glDepthFunc(GL_ALWAYS);
 #endif
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -104,16 +105,14 @@ namespace Mon
 	{
 		int winX, winY, x, y;
 
-		//SDL_GetWindowPosition(window, &winX, &winY);
 		SDL_GetRelativeMouseState(&x, &y);
 		SDL_GetMouseState(&winX, &winY);
-		//SDL_GetGlobalMouseState(&x, &y);
+		
 		newInput->mouseOffset.x = (float)x;
 		newInput->mouseOffset.y = (float)-y;
 
-		newInput->mouseXScreen = (float)winX;
-		newInput->mouseYScreen = (float)winY;
-		newInput->mouseScreen = v2((float)winX, (float)winY);
+		// TODO IMPORTANT(ck): Do I need to offset this with the port?
+		newInput->mouseScreen = v2((float)(winX), (float)(winY));
 
 		lastX = newInput->mouseOffset.x;
 		lastY = newInput->mouseOffset.y;
@@ -151,8 +150,6 @@ namespace Mon
 
 		// TODO(ck): Add to loop mouse[] something like that
 		newInput->mouseOffset = oldInput->mouseOffset;
-		newInput->mouseXScreen = oldInput->mouseXScreen;
-		newInput->mouseYScreen = oldInput->mouseYScreen;
 		newInput->mouseScreen = oldInput->mouseScreen;
 		newInput->rightStickValue = oldInput->rightStickValue;
 		newInput->rightStickAxis = oldInput->rightStickAxis;
@@ -226,8 +223,8 @@ namespace Mon
 
 					SDL_SetRelativeMouseMode(SDL_TRUE);
 					relativeMouseMode = true;
-					lastXAfterPress = (int)newInput->mouseXScreen;
-					lastYAfterPress = (int)newInput->mouseYScreen;
+					lastXAfterPress = (int)newInput->mouseScreen.x;
+					lastYAfterPress = (int)newInput->mouseScreen.y;
 				}
 				if (e.button.button == SDL_BUTTON_RIGHT)
 				{
@@ -324,8 +321,8 @@ namespace Mon
 
 	void SDLPlatform::sleep(int milliseconds)
 	{
-		//if (milliseconds > 0)
-			//Sleep(milliseconds);
+		if (milliseconds > 0)
+			Sleep(milliseconds);
 	}
 
 	uint64_t SDLPlatform::ticks()

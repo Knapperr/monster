@@ -2,6 +2,31 @@
 
 namespace Mon
 {
+	int GetTileValueUnchecked(TileMap* map, int tileX, int tileY)
+	{
+		// Not using chunks right now
+		//Assert(tileChunk);
+		//Assert(tileX < tileMap->chunkDim);
+		//Assert(tileY < tileMap->chunkDim);
+		int tileValue = map->tiles[1]->id;
+		return tileValue;
+	}
+
+	int GetTileValue(TileMap* map, int absTileX, int absTileY, int absTileZ)
+	{
+		//tile_chunk_position chunkPos = GetChunkPositionFor(tileMap, absTileX, absTileY, absTileZ);
+		//tile_chunk* tileChunk = GetTileChunk(tileMap, chunkPos.tileChunkX, chunkPos.tileChunkY, chunkPos.tileChunkZ);
+		//int tileChunkValue = GetTileValue(tileMap, tileChunk, chunkPos.relTileX, chunkPos.relTileY);
+
+		return 1;
+	}
+
+	int GetTileValue(TileMap* tileMap, TileMapPosition pos)
+	{
+		//int tileChunkValue = GetTileValue(tileMap, pos.absTileX, pos.absTileY, pos.absTileZ);
+		return 1;
+	}
+
 	void SetTile(Tile* tile, int tileId, int offsetX, int offsetY)
 	{
 		tile->id = tileId;
@@ -17,7 +42,7 @@ namespace Mon
 
 	void InitTileSheet(TileSheet* sheet, const char* fileName)
 	{
-		MonGL::LoadTextureFile(&sheet->texture, fileName, MonGL::Type::Diffuse, true, false, true);
+		MonGL::LoadTextureFile(&sheet->texture, fileName, MonGL::TextureType::Diffuse, true, false, true);
 
 		// TODO(ck): 
 		// Parse the loaded texture and calculate the tileids

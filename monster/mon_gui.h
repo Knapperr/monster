@@ -21,13 +21,12 @@
 
 struct Settings
 {
-	const char* title;
 	//Context* context;
+	const char* title;
 	int windowWidth;
 	int windowHeight;
-	int portWidth;
-	int portHeight;
-
+	float portWidth;
+	float portHeight;
 	int vsync;
 };
 

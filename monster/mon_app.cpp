@@ -20,8 +20,8 @@ bool App::init()
 	settings.title = "Monster";
 	settings.windowWidth = 1440;
 	settings.windowHeight = 900;
-	settings.portWidth = 960;
-	settings.portHeight = 540;
+	settings.portWidth = 960.0f;
+	settings.portHeight = 540.0f;
 	Mon::Log::print("Title", settings.title);
 	Mon::Log::print("Window Width", settings.windowWidth);
 	Mon::Log::print("Window Height", settings.windowHeight);

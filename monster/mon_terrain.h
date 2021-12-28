@@ -4,12 +4,6 @@
 #include "mon_shader.h"
 #include "mon_entity.h"
 
-
-struct MousePicker
-{
-
-};
-
 class Terrain
 {
 public:
@@ -23,6 +17,8 @@ public:
 	MonGL::RenderData mesh;
 	Mon::Collider collider;
 	
+	float* heightMap;
+
 	Terrain(int gridX, int gridZ);
 	~Terrain();
 
@@ -30,6 +26,26 @@ public:
 	float getHeight(int x, int z);
 	float lookUpHeight(int x, int z);
 };
+
+struct MousePicker
+{
+	Mon::v3 currentTerrainPoint;
+	Mon::v3 currentRay;
+	Mon::mat4 projectionMatrix;
+
+};
+
+void InitMousePicker(MousePicker* picker);
+void UpdatePicker(MousePicker* picker, Terrain* terrain, Mon::v2 mousePos, Mon::mat4 viewMatrix, Mon::mat4 projection, Mon::v3 cameraPos);
+Mon::v3 CalculateMouseRay(MousePicker* picker, Mon::v2 mousePos, Mon::mat4 viewMatrix);
+Mon::v4 ToEyeCoords(MousePicker* picker, Mon::v4 clipCoords);
+Mon::v3 ToWorldCoords(Mon::v4 eyeCoords, Mon::mat4 viewMatrix);
+Mon::v2 GetNormalizedDeviceCoords(Mon::v2 mousePos);
+
+Mon::v3 binarySearch(Terrain* terrain, int count, float start, float finish, Mon::v3 ray, Mon::v3 cameraPosition);
+Mon::v3 getPointOnRay(Mon::v3 ray, float distance, Mon::v3 cameraPosition);
+bool intersectionInRange(Terrain* terrain, float start, float finish, Mon::v3 ray, Mon::v3 cameraPosition);
+bool isUnderGround(Terrain* terrain, Mon::v3 testPoint);
 
 
 #endif

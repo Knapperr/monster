@@ -26,7 +26,7 @@ void main()
 	vec2 seam = floor(pixel + 0.5);
 	pixel = seam + clamp((pixel - seam)/duDv, -0.5, 0.5);
 	vec2 modifiedTextCoordinate = pixel / textureSize;
-	vec4 tex = texture2D(image, modifiedTextCoordinate);
+	vec4 tex = texture(image, modifiedTextCoordinate);
 	FragColor = tex;
 
 

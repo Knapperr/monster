@@ -10,6 +10,12 @@ namespace Mon
 {
 #define TILE_SIZE 16
 
+	struct TileMapDifference
+	{
+		v2 dXY;
+		float dZ;
+	};
+
 	struct TileMapPosition
 	{
 		uint32_t absTileX;

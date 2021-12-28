@@ -19,9 +19,10 @@ namespace Mon
 	public:
 
 		MonGL::RenderData2D sprite;
+
 		v2 pos;
-		// NOTE(ck): Need a map position (for drawing) and a velocity for movement
-		// TileMapPosition pos
+		TileMapPosition mapPos;
+		
 		v2 velocity;
 		float speed;
 		float maxSpeed;
@@ -29,7 +30,6 @@ namespace Mon
 		float rotation;
 		bool destroyed;
 
-		TileMapPosition mapPos;
 	};
 
 	void initEntity(Entity2D* e, const char* fileLocation, bool isAlpha, v2 position);

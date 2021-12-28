@@ -10,7 +10,8 @@ namespace Mon {
 	{
 		BoundingBox,
 		Plane,
-		Sphere
+		Sphere,
+		Rectangle
 	};
 
 	struct Collider

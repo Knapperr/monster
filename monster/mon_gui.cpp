@@ -49,7 +49,7 @@ void loadEntities(Mon::Game* game)
 		file >> textPath;
 
 		MonGL::InitQuad(&e.data);
-		MonGL::LoadTexture(&e.data, 0, MonGL::Type::Diffuse, shaderID, textPath);
+		MonGL::LoadTexture(&e.data, 0, MonGL::TextureType::Diffuse, shaderID, textPath);
 		//game->entities.push_back(e);
 	}
 }
@@ -370,9 +370,9 @@ void StatsWindow(bool* p_open, Mon::Game* game)
 	ImGui::LabelText(buffer, "mouse x");
 	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseOffset.y);
 	ImGui::LabelText(buffer, "mouse y");
-	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseXScreen);
+	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseScreen.x);
 	ImGui::LabelText(buffer, "win x");
-	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseYScreen);
+	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseScreen.y);
 	ImGui::LabelText(buffer, "win y");
 
 	snprintf(buffer, sizeof(buffer), "%f", game->input.stickAverageX);
@@ -717,6 +717,26 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game2D* game2D)
 	ImGui::Separator();
 
 	ImGui::LabelText(std::to_string(game2D->deltaTime).c_str(), "dt:");
+
+	if (ImGui::RadioButton("off", settings->vsync == 0))
+	{
+		SDL_GL_SetSwapInterval(0);
+		settings->vsync = SDL_GL_GetSwapInterval();
+	}
+	ImGui::SameLine();
+	if (ImGui::RadioButton("vertical retrace", settings->vsync == 1))
+	{
+		SDL_GL_SetSwapInterval(1);
+		settings->vsync = SDL_GL_GetSwapInterval();
+
+	}
+	ImGui::SameLine();
+	if (ImGui::RadioButton("adaptive", settings->vsync == -1))
+	{
+		SDL_GL_SetSwapInterval(-1);
+		settings->vsync = SDL_GL_GetSwapInterval();
+	}
+
 
 	ImGui::Checkbox("Demo", &showDemoWindow);
 	ImGui::SameLine();

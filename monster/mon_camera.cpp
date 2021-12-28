@@ -112,7 +112,7 @@ namespace Mon
 		ProcessScroll(camera, input->wheel.y);
 
 		float velocity = camera->speed * (float)dt;
-		if (input->rMouseBtn.endedDown)
+		if (input->lMouseBtn.endedDown && input->rMouseBtn.endedDown)
 		{
 			camera->pos += camera->front * velocity;
 		}

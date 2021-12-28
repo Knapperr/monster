@@ -6,7 +6,7 @@
 
 namespace MonGL
 {
-	enum class Type
+	enum class TextureType
 	{
 		Diffuse,
 		Normal,
@@ -31,10 +31,10 @@ namespace MonGL
 		unsigned int filterMin;
 		unsigned int filterMax;
 
-		Type type;
+		TextureType type;
 	};
 
-	void LoadTextureFile(Texture* texture, const char* file, Type type, bool alpha, bool flip, bool pixelArtTexture = false);
+	void LoadTextureFile(Texture* texture, const char* file, TextureType type, bool alpha, bool flip, bool pixelArtTexture = false);
 
 
 }

@@ -8,7 +8,7 @@ namespace MonGL
 	// can have a getter method that retrieves the globalDrawCalls from here
 	int globalDrawCalls = 0;
 
-	void LoadTexture(RenderData *data, int index, Type type, int shaderID, std::string path)
+	void LoadTexture(RenderData *data, int index, TextureType type, int shaderID, std::string path)
 	{
 		data->texturePath = path;
 		Texture text = {};
@@ -386,20 +386,17 @@ namespace MonGL
 		data->scale = v3(1.0f);
 	}
 
-	void GenerateTerrain(RenderData* data)
+	void GenerateTerrain(RenderData* data, float* heightMap)
 	{
 		data->VAO = 0;
 		data->VBO = 0;
 
-		const int SIZE = 128;
+		const int SIZE = 64;
 		const int VERTEX_COUNT = 16;
 
 		//Vertex3D vertices[VERTEX_COUNT * VERTEX_COUNT];
 		Vertex3D* vertices = new Vertex3D[VERTEX_COUNT * VERTEX_COUNT];
 		int verticeLength = VERTEX_COUNT * VERTEX_COUNT;
-
-
-		//data->vertices.resize(VERTEX_COUNT * VERTEX_COUNT);
 
 		// TODO(ck): Memory Allocation
 		int* indices = new int[6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1)];
@@ -415,6 +412,7 @@ namespace MonGL
 				vertices[index].position.x = (float)j / ((float)VERTEX_COUNT - 1) * SIZE;
 
 				vertices[index].position.y = -0.3f;
+				heightMap[index] = -0.3f;
 
 				vertices[index].position.z = (float)i / ((float)VERTEX_COUNT - 1) * SIZE;
 
@@ -492,22 +490,22 @@ namespace MonGL
 		*/
 		Texture text = {};
 		data->textures[0] = text;
-		LoadTextureFile(&data->textures[0], textPath.c_str(), Type::Diffuse, false, false, false);
+		LoadTextureFile(&data->textures[0], textPath.c_str(), TextureType::Diffuse, false, false, false);
 
 		textPath = "res/textures/terrain/grass.jpg";
 		Texture text1 = {};
 		data->textures[1] = text1;
-		LoadTextureFile(&data->textures[1], textPath.c_str(), Type::Diffuse, false, false, false);
+		LoadTextureFile(&data->textures[1], textPath.c_str(), TextureType::Diffuse, false, false, false);
 
 		textPath = "res/textures/terrain/pix_grass.png";
 		Texture text2 = {};
 		data->textures[2] = text2;
-		LoadTextureFile(&data->textures[2], textPath.c_str(), Type::Diffuse, false, false, false);
+		LoadTextureFile(&data->textures[2], textPath.c_str(), TextureType::Diffuse, false, false, false);
 
 		textPath = "res/textures/terrain/snow.jpg";
 		Texture text3 = {};
 		data->textures[3] = text3;
-		LoadTextureFile(&data->textures[3], textPath.c_str(), Type::Diffuse, false, false, false);
+		LoadTextureFile(&data->textures[3], textPath.c_str(), TextureType::Diffuse, false, false, false);
 	}
 
 
@@ -540,7 +538,7 @@ namespace MonGL
 		// type = "texture_diffuse"
 		std::string path = "res/textures/water/water.png";
 		Texture uv = {};
-		LoadTextureFile(&uv, path.c_str(), Type::Diffuse, false, true);
+		LoadTextureFile(&uv, path.c_str(), TextureType::Diffuse, false, true);
 		
 
 		renderData->textures[0] = uv;
@@ -548,14 +546,14 @@ namespace MonGL
 		// type = "texture_normal"
 		path = "res/textures/water/flow-speed-noise.png";
 		Texture flow = {};
-		LoadTextureFile(&flow, path.c_str(), Type::Normal, false, true);
+		LoadTextureFile(&flow, path.c_str(), TextureType::Normal, false, true);
 		
 		renderData->textures[1] = flow;
 
 		// type = "texture_normal"
 		path = "res/textures/water/water-derivative-height.png";
 		Texture normal = {};
-		LoadTextureFile(&normal, path.c_str(), Type::Normal, false, true);
+		LoadTextureFile(&normal, path.c_str(), TextureType::Normal, false, true);
 		renderData->textures[2] = normal;
 		
 	}
@@ -680,19 +678,19 @@ namespace MonGL
 			std::string name = "texture_";
 			switch (data->textures[i].type)
 			{
-			case Type::Diffuse:
+			case TextureType::Diffuse:
 				number = std::to_string(diffuseNr++);
 				name += "diffuse";
 				break;
-			case Type::Specular:
+			case TextureType::Specular:
 				number = std::to_string(specularNr++);
 				name += "specular";
 				break;
-			case Type::Normal:
+			case TextureType::Normal:
 				number = std::to_string(normalNr++);
 				name += "normal";
 				break;
-			case Type::Height:
+			case TextureType::Height:
 				number = std::to_string(heightNr++);
 				name += "height";
 			default:

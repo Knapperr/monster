@@ -29,7 +29,7 @@ namespace Mon
 	class Game
 	{
 	public:
-		bool init(int windowWidth, int windowHeight, int portWidth, int portHeight);
+		bool init(int windowWidth, int windowHeight, float portWidth, float portHeight);
 		void movePlayer(v3* velocity);
 		void update(double dt, Input* newInput);
 		void render(double dt);
@@ -42,8 +42,11 @@ namespace Mon
 
 		World* world;
 		Terrain* terrain;
+		MousePicker picker;
 
 		Input input;
+
+		Entity debugEnt;
 		
 		// TODO(ck): Camera Manager
 		Camera cameras[5];

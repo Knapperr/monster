@@ -4,7 +4,7 @@
 
 namespace Mon
 {
-	bool Game::init(int windowWidth, int windowHeight, int portWidth, int portHeight)
+	bool Game::init(int windowWidth, int windowHeight, float portWidth, float portHeight)
 	{
 		state = State::Debug;
 
@@ -40,18 +40,11 @@ namespace Mon
 
 		// TODO(ck): Memory Allocation
 		terrain = new Terrain(0, 0);
-		MonGL::GenerateTerrain(&terrain->mesh);
-		//terrain->generate();
 
 		simulate = false;
 		
 		config = new MonGL::Config();
-		config->viewPort = {
-			5.0f,
-			5.0f,
-			(float)portWidth,
-			(float)portHeight
-		};
+		config->viewPort = { 5.0f, 5.0f, portWidth, portHeight };
 		MonGL::ViewPort(&config->viewPort);
 
 		config->angleDegrees = -30.0f;
@@ -73,6 +66,20 @@ namespace Mon
 		drawCollisions = true;
 
 		state = State::Debug;
+
+		// Debug cube entity
+		//AddEntity(world);
+		//Entity* debugEnt = GetEntity(world, world->entityCount - 1);
+		debugEnt.setup = {};
+		debugEnt.name = "debug_cube";
+		MonGL::InitCube(&debugEnt.data);
+		MonGL::LoadTexture(&debugEnt.data, 0, MonGL::TextureType::Diffuse, shader.handle, "res/textures/container2.png");
+		debugEnt.particle.pos = v3(24.0f, 0.2f, 10.0f);
+		InitBoxCollider(&debugEnt.collider);
+		// =======================================
+
+		picker = {};
+
 		return true;
 	}
 
@@ -83,11 +90,6 @@ namespace Mon
 		float x = (2.0f * (mouse.x + offset.x)) / (float)viewPort.w - 1.0f;
 		float y = (2.0f * (mouse.y - offset.y)) / (float)viewPort.h - 1.0f;
 		return v2(x, -y);
-	}
-
-	void updateMousePicker()
-	{
-
 	}
 
 	// TODO(ck): Should this param be pointer?
@@ -152,27 +154,30 @@ namespace Mon
 		}
 	}
 
-	void UpdateColliders(World* world)
+	void UpdateCollider(Collider* collider, v3 colliderPos, v3 scale)
 	{
-		// TODO(ck): Need to check for collisions before setting the position.
-		// we can check colliders between eachother after setting their position from
-		// the entity?
-		v3 colliderPos = { world->player->particle.pos.x - (0.5f), -0.2f, world->player->particle.pos.z - (0.5f) };
-		SetBoxTransform(&world->player->collider, colliderPos, world->player->data.scale);
+		SetBoxTransform(collider, colliderPos, scale);
+		UpdateWorldPosToWorldMatrix(collider);
+	}
 
-
+	void UpdateEntities(World* world)
+	{
+		// TODO(ck): Update entity and then update entity collider right after
+		// instead of having two separate loops for entities and their colliders.
 		for (int i = 1; i < world->entityCount; ++i)
 		{
-			v3 colliderPos = { world->entities[i].particle.pos.x - (0.5f),
-								world->entities[i].particle.pos.y - (0.5),
-								world->entities[i].particle.pos.z - (0.5f) };
-			SetBoxTransform(&world->entities[i].collider, colliderPos, world->entities[i].data.scale);
-			UpdateWorldPosToWorldMatrix(&world->entities[i].collider);
+
 
 			// TODO(ck): Broad Phase Collision Check
 
 			// TODO(ck): Precise Collision check
 
+
+			v3 colliderPos = { world->entities[i].particle.pos.x - (0.5f),
+								world->entities[i].particle.pos.y - (0.5),
+								world->entities[i].particle.pos.z - (0.5f) };
+
+			UpdateCollider(&world->entities[i].collider, colliderPos, world->entities[i].data.scale);
 		}
 	}
 
@@ -263,20 +268,41 @@ namespace Mon
 		//cam->update(deltaTime, &input, world->player->particle.pos, world->player->particle.orientation, true);
 		
 
+#if 1
+		// ============  update DEBUG collider  =============
+		v3 colliderPos = { debugEnt.particle.pos.x - (0.5f), debugEnt.particle.pos.y - (0.5),
+							debugEnt.particle.pos.z - (0.5f) };
+		SetBoxTransform(&debugEnt.collider, colliderPos, debugEnt.data.scale);
+		UpdateWorldPosToWorldMatrix(&debugEnt.collider);
+		// ==================================================
+#endif
+
+		// player collider
+		colliderPos = { world->player->particle.pos.x - (0.5f),
+					world->player->particle.pos.y - (0.5),
+					world->player->particle.pos.z - (0.5f) };
+
+		UpdateCollider(&world->player->collider, colliderPos, world->player->data.scale);
+
 		//
 		//	ENTITIES UPDATE
 		//
-		
+		UpdateEntities(world);
+
 
 		// 
 		// CAMERA UPDATE
 		//
-		Update(&cameras[currCameraIndex], deltaTime, &input, world->player->particle.pos, world->player->particle.orientation, true);
+		Camera* cam = getCamera(this, currCameraIndex);
+		Update(cam, deltaTime, &input,
+			   world->player->particle.pos, world->player->particle.orientation, true);
 
 		//
-		// UPDATE COLLIDERS
-		// 
-		UpdateColliders(world);
+		// MOUSE PICKER
+		//
+		// TODO(ck): Only update the picker if we are in "picking" mode
+		
+		UpdatePicker(&picker, terrain, input.mouseScreen, ViewMatrix(cam), Projection(cam), cam->pos);
 	}
 
 	void Game::render(double dt)
@@ -300,6 +326,10 @@ namespace Mon
 		{
 			MonGL::DrawBoundingBox(&terrain->collider.data, cam, shader.handle);
 			MonGL::DrawBoundingBox(&world->player->collider.data, cam, shader.handle);
+
+			// DEBUG =============================================================
+			MonGL::DrawBoundingBox(&debugEnt.collider.data, cam, shader.handle);
+			// ===================================================================
 		}
 		MonGL::DrawTerrain(shader.handle, &terrain->mesh, &light, cam);
 		MonGL::Draw(config, &world->player->data, world->player->particle.pos, cam, shader.handle, world->player->facingDir);
@@ -307,6 +337,11 @@ namespace Mon
 		//
 		// ENTITIES DRAW
 		//
+
+		// DEBUG ======================================================================
+		MonGL::Draw(config, &debugEnt.data, debugEnt.particle.pos, cam, shader.handle);
+		// ============================================================================
+
 		for (int i = 1; i < world->entityCount; ++i)
 		{
 			Entity e = world->entities[i];
@@ -317,10 +352,8 @@ namespace Mon
 			MonGL::Draw(config, &e.data, e.particle.pos, cam, shader.handle);
 		}
 		
+
 		MonGL::EndRender();
-		//glUseProgram(waterShader.common.handle);
-		//MonGL::drawWater(&water.data, &water.setup, &waterShader, &light, water.particle.pos, v3(10.0f), cam->pos, waterShader.common.handle);
-		//MonGL::drawQuad(config, &water.data, water.particle.pos, v3(5.0f), cam.pos, shader.handle);
 	}
 
 	void Game::cleanUp()
