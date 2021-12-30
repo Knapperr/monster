@@ -21,6 +21,29 @@ void writeEntities(Mon::Entity* entities, int shaderID)
 	file.close();
 }
 
+void loadImpFile(Mon::Game* game)
+{
+	std::ifstream file("model.imp");
+	if (!file.is_open())
+	{
+		Mon::Log::print("Failure to open file");
+	}
+
+	std::string line;
+	while (file >> line)
+	{
+		Mon::Entity e = {};
+		e.name = line;
+		file >> e.data.vertices->position.x;
+		file >> e.data.vertices->position.y;
+		file >> e.data.vertices->position.z;
+		file >> e.data.vertices->normal.x;
+		file >> e.data.vertices->normal.y;
+		file >> e.data.vertices->normal.z;
+
+	}
+}
+
 void loadEntities(Mon::Game* game)
 {
 	// TODO(ck): memory management should probably have something in the list to only reload part of it
@@ -367,13 +390,16 @@ void StatsWindow(bool* p_open, Mon::Game* game)
 	char buffer[64];
 	
 	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseOffset.x);
-	ImGui::LabelText(buffer, "mouse x");
+	ImGui::LabelText(buffer, "mouse x:");
 	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseOffset.y);
-	ImGui::LabelText(buffer, "mouse y");
+	ImGui::LabelText(buffer, "mouse y:");
 	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseScreen.x);
-	ImGui::LabelText(buffer, "win x");
+	ImGui::LabelText(buffer, "win x:");
 	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseScreen.y);
-	ImGui::LabelText(buffer, "win y");
+	ImGui::LabelText(buffer, "win y:");
+
+	snprintf(buffer, sizeof(buffer), "%f", game->picker.currentTerrainPoint.y);
+	ImGui::LabelText(buffer, "current terrain point y:");
 
 	snprintf(buffer, sizeof(buffer), "%f", game->input.stickAverageX);
 	ImGui::LabelText(buffer, "stick average X:");
@@ -436,6 +462,7 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame(window);
+
 	ImGui::NewFrame();
 
 	static bool showDemoWindow = false;
@@ -579,6 +606,7 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 	ImGui::Separator();
 	
 	ImGui::End();
+
 }
 
 #else 
@@ -596,9 +624,9 @@ void StatsWindow(bool* p_open, Mon::Game2D* game)
 	ImGui::LabelText(buffer, "mouse x");
 	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseOffset.y);
 	ImGui::LabelText(buffer, "mouse y");
-	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseXScreen);
+	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseScreen.x);
 	ImGui::LabelText(buffer, "win x");
-	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseYScreen);
+	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseScreen.y);
 	ImGui::LabelText(buffer, "win y");
 
 	snprintf(buffer, sizeof(buffer), "%f", game->input.stickAverageX);

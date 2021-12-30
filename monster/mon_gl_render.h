@@ -39,8 +39,8 @@ namespace MonGL
 		v3 position;
 		v3 normal;
 		v2 texCoords;
-		//v3 tangent;
-		//v3 bitangent;
+		v3 tangent;
+		v3 bitangent;
 	};
 
 	// TODO(ck): RenderData is the entities draw data I can
@@ -54,11 +54,13 @@ namespace MonGL
 
 	struct RenderData
 	{
-		Vertex3D vertices[4];
+		Vertex3D* vertices;
+		unsigned int* indices;
 
 		unsigned int VAO;
 		unsigned int VBO;
 		unsigned int IBO;
+		int verticeCount;
 		int indiceCount;
 		int lineWidth;
 
@@ -162,6 +164,7 @@ namespace MonGL
 	
 	void InitQuad(RenderData* data, bool tangents = false);
 	void InitCube(RenderData* data);
+	void InitModel(RenderData* data);
 	void InitBoundingBox(RenderData* data);
 	void InitDistortedWater(RenderData* renderData, RenderSetup* setup);
 	void GenerateTerrain(RenderData* data, float* heightMap);
@@ -170,7 +173,7 @@ namespace MonGL
 	void Draw(Config* config, RenderData* data, v3 pos, Camera* camera,
 			  unsigned int shaderID, int selectedTexture = 0);	
 	void DrawBoundingBox(RenderData* data, Camera* camera, unsigned int shaderID);
-	void DrawTerrain(unsigned int shaderID, RenderData* data, Light* light, Camera* camera);
+	void DrawTerrain(unsigned int shaderID, RenderData* data, Light* light, Camera* camera, bool wireFrame);
 	
 	void DrawWater(RenderData* data, RenderSetup* setup, WaterDataProgram* waterData, Light* light, v3 pos, v3 scale, v3 camPos, unsigned int shaderID);
 

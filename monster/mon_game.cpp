@@ -4,6 +4,20 @@
 
 namespace Mon
 {
+	void RunDebugControls(Input* input, MousePicker* picker, World* world, int selectedIndex)
+	{
+		// Get the selected index from the GUI
+		Entity* ent = {};
+		if (selectedIndex > 0)
+			ent = GetEntity(world, selectedIndex);
+
+		if ((input->lMouseBtn.endedDown == false && input->rMouseBtn.endedDown) && ent != nullptr)
+		{
+			ent->particle.pos = picker->currentTerrainPoint;
+		}
+	}
+
+
 	bool Game::init(int windowWidth, int windowHeight, float portWidth, float portHeight)
 	{
 		state = State::Debug;
@@ -303,6 +317,10 @@ namespace Mon
 		// TODO(ck): Only update the picker if we are in "picking" mode
 		
 		UpdatePicker(&picker, terrain, input.mouseScreen, ViewMatrix(cam), Projection(cam), cam->pos);
+	
+		// DebugModule update?
+		RunDebugControls(&input, &picker, world, selectedIndex);
+		//world->player->particle.pos = picker.currentTerrainPoint;
 	}
 
 	void Game::render(double dt)
@@ -331,7 +349,7 @@ namespace Mon
 			MonGL::DrawBoundingBox(&debugEnt.collider.data, cam, shader.handle);
 			// ===================================================================
 		}
-		MonGL::DrawTerrain(shader.handle, &terrain->mesh, &light, cam);
+		MonGL::DrawTerrain(shader.handle, &terrain->mesh, &light, cam, terrain->wireFrame);
 		MonGL::Draw(config, &world->player->data, world->player->particle.pos, cam, shader.handle, world->player->facingDir);
 
 		//

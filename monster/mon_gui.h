@@ -21,7 +21,6 @@
 
 struct Settings
 {
-	//Context* context;
 	const char* title;
 	int windowWidth;
 	int windowHeight;

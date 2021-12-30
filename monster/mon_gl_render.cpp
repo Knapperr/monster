@@ -23,27 +23,22 @@ namespace MonGL
 	/// 
 
 	void InitQuad(RenderData* data, bool tangents)
-	{
-		/*data->vertices.push_back({ v3(0.5f, 0.5f, 0.0f), v3(1.0f, 1.0f, 1.0f), v2(1.0f, 1.0f) });
-		data->vertices.push_back({ v3(0.5f, -0.5f, 0.0f), v3(1.0f, 1.0f, 1.0f), v2(1.0f, 0.0f) });
-		data->vertices.push_back({ v3(-0.5f,-0.5f, 0.0f), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 0.0f) });
-		data->vertices.push_back({ v3(-0.5f, 0.5f, 0.0f), v3(1.0f, 1.0f, 1.0f), v2(0.0f, 1.0f) });*/
-		data->vertices[0] = {};
+	{		
+		data->verticeCount = 4;
+		// TODO(ck): Memory Allocation
+		data->vertices = new Vertex3D[data->verticeCount];
 		data->vertices[0].position = v3(0.5f, 0.5f, 0.0f);
 		data->vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
 		data->vertices[0].texCoords = v2(1.0f, 1.0f);
 
-		data->vertices[1] = {};
 		data->vertices[1].position = v3(0.5f, -0.5f, 0.0f);
 		data->vertices[1].normal = v3(1.0f, 1.0f, 1.0f);
 		data->vertices[1].texCoords = v2(1.0f, 0.0f);
 
-		data->vertices[2] = {};
 		data->vertices[2].position = v3(-0.5f, -0.5f, 0.0f); 
 		data->vertices[2].normal = v3(1.0f, 1.0f, 1.0f); 
 		data->vertices[2].texCoords = v2(0.0f, 0.0f);
-		
-		data->vertices[3] = {};
+
 		data->vertices[3].position = v3(-0.5f, 0.5f, 0.0f);
 		data->vertices[3].normal = v3(1.0f, 1.0f, 1.0f);
 		data->vertices[3].texCoords = v2(0.0f, 1.0f);
@@ -93,7 +88,7 @@ namespace MonGL
 		glBindVertexArray(data->VAO);
 		glBindBuffer(GL_ARRAY_BUFFER, data->VBO);
 		//glBufferData(GL_ARRAY_BUFFER, data->vertices.size() * sizeof(Vertex3D), &data->vertices[0], GL_STATIC_DRAW);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(data->vertices), data->vertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, data->verticeCount * sizeof(Vertex3D), data->vertices, GL_STATIC_DRAW);
 		
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
@@ -130,32 +125,34 @@ namespace MonGL
 		data->lineWidth = 2;
 		data->color = v3(0.7f, 0.15f, 0.4f);
 
-		Vertex3D vertices[8];
-		vertices[0].position = v3(-0.5, -0.5, -0.5);
-		vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[0].texCoords = v2(0.0f, 0.0f);
-		vertices[1].position  = v3(0.5, -0.5, -0.5);
-		vertices[1].normal    = v3(1.0f, 1.0f, 1.0f);
-		vertices[1].texCoords = v2(0.0f, 0.0f);
-		vertices[2].position = v3(0.5, 0.5, -0.5);
-		vertices[2].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[2].texCoords = v2(0.0f, 0.0f);
-		vertices[3].position = v3(-0.5, 0.5, -0.5);
-		vertices[3].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[3].texCoords = v2(0.0f, 0.0f);
+		data->verticeCount = 8;
+		// TODO(ck): Memory Allocation
+		data->vertices = new Vertex3D[data->verticeCount];
+		data->vertices[0].position = v3(-0.5, -0.5, -0.5);
+		data->vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[0].texCoords = v2(0.0f, 0.0f);
+		data->vertices[1].position  = v3(0.5, -0.5, -0.5);
+		data->vertices[1].normal    = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[1].texCoords = v2(0.0f, 0.0f);
+		data->vertices[2].position = v3(0.5, 0.5, -0.5);
+		data->vertices[2].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[2].texCoords = v2(0.0f, 0.0f);
+		data->vertices[3].position = v3(-0.5, 0.5, -0.5);
+		data->vertices[3].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[3].texCoords = v2(0.0f, 0.0f);
 
-		vertices[4].position = v3(-0.5, -0.5, 0.5);
-		vertices[4].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[4].texCoords = v2(0.0f, 0.0f);
-		vertices[5].position = v3(0.5, -0.5, 0.5);
-		vertices[5].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[5].texCoords = v2(0.0f, 0.0f);
-		vertices[6].position = v3(0.5, 0.5, 0.5);
-		vertices[6].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[6].texCoords = v2(0.0f, 0.0f);
-		vertices[7].position = v3(-0.5, 0.5, 0.5);
-		vertices[7].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[7].texCoords = v2(0.0f, 0.0f);
+		data->vertices[4].position = v3(-0.5, -0.5, 0.5);
+		data->vertices[4].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[4].texCoords = v2(0.0f, 0.0f);
+		data->vertices[5].position = v3(0.5, -0.5, 0.5);
+		data->vertices[5].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[5].texCoords = v2(0.0f, 0.0f);
+		data->vertices[6].position = v3(0.5, 0.5, 0.5);
+		data->vertices[6].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[6].texCoords = v2(0.0f, 0.0f);
+		data->vertices[7].position = v3(-0.5, 0.5, 0.5);
+		data->vertices[7].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[7].texCoords = v2(0.0f, 0.0f);
 	
 		glGenVertexArrays(1, &data->VAO);
 		glGenBuffers(1, &data->VBO);
@@ -164,7 +161,7 @@ namespace MonGL
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(data->vertices), data->vertices, GL_STATIC_DRAW);
 #endif
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, data->verticeCount * sizeof(Vertex3D), data->vertices, GL_STATIC_DRAW);
 		glBindVertexArray(data->VAO);
 		
 		GLushort elements[] = {
@@ -206,163 +203,130 @@ namespace MonGL
 		// Load from .vt file (need to do efficient as possible)
 		// maybe dont need to do this but?? tilemap does a quad and its a huge
 		// cubes can just be created with a macro PUSH_CUBE PUSH_QUAD x4?
-		Vertex3D vertices[36];
-		vertices[0] = {};
-		vertices[0].position = v3(-0.5f, -0.5f, -0.5f);
-		vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[0].texCoords = v2(0.0f, 0.0f);
-		vertices[1] = {};
-		vertices[1].position = v3(0.5f, -0.5f, -0.5f);
-		vertices[1].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[1].texCoords = v2(1.0f, 0.0f);
-		vertices[2] = {};
-		vertices[2].position = v3(0.5f, 0.5f, -0.5f);
-		vertices[2].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[2].texCoords = v2(1.0f, 1.0f);
-		vertices[3] = {};
-		vertices[3].position = v3(0.5f, 0.5f, -0.5f);
-		vertices[3].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[3].texCoords = v2(1.0f, 1.0f);
-		vertices[4] = {};
-		vertices[4].position = v3(-0.5f, 0.5f, -0.5f);
-		vertices[4].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[4].texCoords = v2(0.0f, 1.0f);
-		vertices[5] = {};
-		vertices[5].position = v3(-0.5f, -0.5f, -0.5f);
-		vertices[5].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[5].texCoords = v2(0.0f, 0.0f);
+		data->verticeCount = 36;
+		// TODO(ck): Memory Allocation
+		data->vertices = new Vertex3D[data->verticeCount];
 
-		vertices[6] = {};
-		vertices[6].position = v3(-0.5f, -0.5f, 0.5f);
-		vertices[6].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[6].texCoords = v2(0.0f, 0.0f);
-		vertices[7] = {};
-		vertices[7].position = v3(0.5f, -0.5f, 0.5f);
-		vertices[7].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[7].texCoords = v2(1.0f, 0.0f);
-		vertices[8] = {};
-		vertices[8].position = v3(0.5f, 0.5f, 0.5f);
-		vertices[8].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[8].texCoords = v2(1.0f, 1.0f);
-		vertices[9] = {};
-		vertices[9].position = v3(0.5f, 0.5f, 0.5f);
-		vertices[9].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[9].texCoords = v2(1.0f, 1.0f);
-		vertices[10] = {};
-		vertices[10].position = v3(-0.5f, 0.5f, 0.5f);
-		vertices[10].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[10].texCoords = v2(0.0f, 1.0f);
-		vertices[11] = {};
-		vertices[11].position = v3(-0.5f, -0.5f, 0.5f);
-		vertices[11].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[11].texCoords = v2(0.0f, 0.0f);
+		data->vertices[0].position = v3(-0.5f, -0.5f, -0.5f);
+		data->vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[0].texCoords = v2(0.0f, 0.0f);
+		data->vertices[1].position = v3(0.5f, -0.5f, -0.5f);
+		data->vertices[1].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[1].texCoords = v2(1.0f, 0.0f);
+		data->vertices[2].position = v3(0.5f, 0.5f, -0.5f);
+		data->vertices[2].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[2].texCoords = v2(1.0f, 1.0f);
+		data->vertices[3].position = v3(0.5f, 0.5f, -0.5f);
+		data->vertices[3].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[3].texCoords = v2(1.0f, 1.0f);
+		data->vertices[4].position = v3(-0.5f, 0.5f, -0.5f);
+		data->vertices[4].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[4].texCoords = v2(0.0f, 1.0f);
+		data->vertices[5].position = v3(-0.5f, -0.5f, -0.5f);
+		data->vertices[5].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[5].texCoords = v2(0.0f, 0.0f);
 
-		vertices[12] = {};
-		vertices[12].position = v3(-0.5f, 0.5f, 0.5f);
-		vertices[12].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[12].texCoords = v2(1.0f, 0.0f);
-		vertices[13] = {};
-		vertices[13].position = v3(-0.5f, 0.5f, -0.5f);
-		vertices[13].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[13].texCoords = v2(1.0f, 1.0f);
-		vertices[14] = {};
-		vertices[14].position = v3(-0.5f, -0.5f, -0.5f);
-		vertices[14].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[14].texCoords = v2(0.0f, 1.0f);
-		vertices[15] = {};
-		vertices[15].position = v3(-0.5f, -0.5f, -0.5f);
-		vertices[15].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[15].texCoords = v2(0.0f, 1.0f);
-		vertices[16] = {};
-		vertices[16].position = v3(-0.5f, -0.5f, 0.5f);
-		vertices[16].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[16].texCoords = v2(0.0f, 0.0f);
-		vertices[17] = {};
-		vertices[17].position = v3(-0.5f, 0.5f, 0.5f);
-		vertices[17].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[17].texCoords = v2(1.0f, 0.0f);
+		data->vertices[6].position = v3(-0.5f, -0.5f, 0.5f);
+		data->vertices[6].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[6].texCoords = v2(0.0f, 0.0f);
+		data->vertices[7].position = v3(0.5f, -0.5f, 0.5f);
+		data->vertices[7].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[7].texCoords = v2(1.0f, 0.0f);
+		data->vertices[8].position = v3(0.5f, 0.5f, 0.5f);
+		data->vertices[8].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[8].texCoords = v2(1.0f, 1.0f);
+		data->vertices[9].position = v3(0.5f, 0.5f, 0.5f);
+		data->vertices[9].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[9].texCoords = v2(1.0f, 1.0f);
+		data->vertices[10].position = v3(-0.5f, 0.5f, 0.5f);
+		data->vertices[10].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[10].texCoords = v2(0.0f, 1.0f);
+		data->vertices[11].position = v3(-0.5f, -0.5f, 0.5f);
+		data->vertices[11].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[11].texCoords = v2(0.0f, 0.0f);
 
-		vertices[18] = {};
-		vertices[18].position = v3(0.5f, 0.5f, 0.5f);
-		vertices[18].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[18].texCoords = v2(1.0f, 0.0f);
-		vertices[19] = {};
-		vertices[19].position = v3(0.5f, 0.5f, -0.5f);
-		vertices[19].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[19].texCoords = v2(1.0f, 1.0f);
-		vertices[20] = {};
-		vertices[20].position = v3(0.5f, -0.5f, -0.5f);
-		vertices[20].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[20].texCoords = v2(0.0f, 1.0f);
-		vertices[21] = {};
-		vertices[21].position = v3(0.5f, -0.5f, -0.5f);
-		vertices[21].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[21].texCoords = v2(0.0f, 1.0f);
-		vertices[22] = {};
-		vertices[22].position = v3(0.5f, -0.5f, 0.5f);
-		vertices[22].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[22].texCoords = v2(0.0f, 0.0f);
-		vertices[23] = {};
-		vertices[23].position = v3(0.5f, 0.5f, 0.5f);
-		vertices[23].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[23].texCoords = v2(1.0f, 0.0f);
+		data->vertices[12].position = v3(-0.5f, 0.5f, 0.5f);
+		data->vertices[12].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[12].texCoords = v2(1.0f, 0.0f);
+		data->vertices[13].position = v3(-0.5f, 0.5f, -0.5f);
+		data->vertices[13].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[13].texCoords = v2(1.0f, 1.0f);
+		data->vertices[14].position = v3(-0.5f, -0.5f, -0.5f);
+		data->vertices[14].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[14].texCoords = v2(0.0f, 1.0f);
+		data->vertices[15].position = v3(-0.5f, -0.5f, -0.5f);
+		data->vertices[15].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[15].texCoords = v2(0.0f, 1.0f);
+		data->vertices[16].position = v3(-0.5f, -0.5f, 0.5f);
+		data->vertices[16].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[16].texCoords = v2(0.0f, 0.0f);
+		data->vertices[17].position = v3(-0.5f, 0.5f, 0.5f);
+		data->vertices[17].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[17].texCoords = v2(1.0f, 0.0f);
 
-		vertices[24] = {};
-		vertices[24].position = v3(-0.5f, -0.5f, -0.5f);
-		vertices[24].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[24].texCoords = v2(0.0f, 1.0f);
-		vertices[25] = {};
-		vertices[25].position = v3(0.5f, -0.5f, -0.5f);
-		vertices[25].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[25].texCoords = v2(1.0f, 1.0f);
-		vertices[26] = {};
-		vertices[26].position = v3(0.5f, -0.5f, 0.5f);
-		vertices[26].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[26].texCoords = v2(1.0f, 0.0f);
-		vertices[27] = {};
-		vertices[27].position = v3(0.5f, -0.5f, 0.5f);
-		vertices[27].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[27].texCoords = v2(1.0f, 0.0f);
-		vertices[28] = {};
-		vertices[28].position = v3(-0.5f, -0.5f, 0.5f);
-		vertices[28].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[28].texCoords = v2(0.0f, 0.0f);
-		vertices[29] = {};
-		vertices[29].position = v3(-0.5f, -0.5f, -0.5f);
-		vertices[29].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[29].texCoords = v2(0.0f, 1.0f);
+		data->vertices[18].position = v3(0.5f, 0.5f, 0.5f);
+		data->vertices[18].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[18].texCoords = v2(1.0f, 0.0f);
+		data->vertices[19].position = v3(0.5f, 0.5f, -0.5f);
+		data->vertices[19].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[19].texCoords = v2(1.0f, 1.0f);
+		data->vertices[20].position = v3(0.5f, -0.5f, -0.5f);
+		data->vertices[20].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[20].texCoords = v2(0.0f, 1.0f);
+		data->vertices[21].position = v3(0.5f, -0.5f, -0.5f);
+		data->vertices[21].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[21].texCoords = v2(0.0f, 1.0f);
+		data->vertices[22].position = v3(0.5f, -0.5f, 0.5f);
+		data->vertices[22].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[22].texCoords = v2(0.0f, 0.0f);
+		data->vertices[23].position = v3(0.5f, 0.5f, 0.5f);
+		data->vertices[23].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[23].texCoords = v2(1.0f, 0.0f);
 
-		vertices[30] = {};
-		vertices[30].position = v3(-0.5f, 0.5f, -0.5f);
-		vertices[30].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[30].texCoords = v2(0.0f, 1.0f);
-		vertices[31] = {};
-		vertices[31].position = v3(0.5f, 0.5f, -0.5f);
-		vertices[31].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[31].texCoords = v2(1.0f, 1.0f);
-		vertices[32] = {};
-		vertices[32].position = v3(0.5f, 0.5f, 0.5f);
-		vertices[32].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[32].texCoords = v2(1.0f, 0.0f);
-		vertices[33] = {};
-		vertices[33].position = v3(0.5f, 0.5f, 0.5f);
-		vertices[33].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[33].texCoords = v2(1.0f, 0.0f);
-		vertices[34] = {};
-		vertices[34].position = v3(-0.5f, 0.5f, 0.5f);
-		vertices[34].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[34].texCoords = v2(0.0f, 0.0f);
-		vertices[35] = {};
-		vertices[35].position = v3(-0.5f, 0.5f, -0.5f);
-		vertices[35].normal = v3(1.0f, 1.0f, 1.0f);
-		vertices[35].texCoords = v2(0.0f, 1.0f);
+		data->vertices[24].position = v3(-0.5f, -0.5f, -0.5f);
+		data->vertices[24].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[24].texCoords = v2(0.0f, 1.0f);
+		data->vertices[25].position = v3(0.5f, -0.5f, -0.5f);
+		data->vertices[25].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[25].texCoords = v2(1.0f, 1.0f);
+		data->vertices[26].position = v3(0.5f, -0.5f, 0.5f);
+		data->vertices[26].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[26].texCoords = v2(1.0f, 0.0f);
+		data->vertices[27].position = v3(0.5f, -0.5f, 0.5f);
+		data->vertices[27].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[27].texCoords = v2(1.0f, 0.0f);
+		data->vertices[28].position = v3(-0.5f, -0.5f, 0.5f);
+		data->vertices[28].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[28].texCoords = v2(0.0f, 0.0f);
+		data->vertices[29].position = v3(-0.5f, -0.5f, -0.5f);
+		data->vertices[29].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[29].texCoords = v2(0.0f, 1.0f);
+
+		data->vertices[30].position = v3(-0.5f, 0.5f, -0.5f);
+		data->vertices[30].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[30].texCoords = v2(0.0f, 1.0f);
+		data->vertices[31].position = v3(0.5f, 0.5f, -0.5f);
+		data->vertices[31].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[31].texCoords = v2(1.0f, 1.0f);
+		data->vertices[32].position = v3(0.5f, 0.5f, 0.5f);
+		data->vertices[32].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[32].texCoords = v2(1.0f, 0.0f);
+		data->vertices[33].position = v3(0.5f, 0.5f, 0.5f);
+		data->vertices[33].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[33].texCoords = v2(1.0f, 0.0f);
+		data->vertices[34].position = v3(-0.5f, 0.5f, 0.5f);
+		data->vertices[34].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[34].texCoords = v2(0.0f, 0.0f);
+		data->vertices[35].position = v3(-0.5f, 0.5f, -0.5f);
+		data->vertices[35].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[35].texCoords = v2(0.0f, 1.0f);
 
 		glGenVertexArrays(1, &data->VAO);
 		glGenBuffers(1, &data->VBO);
 		glBindVertexArray(data->VAO);
 
 		glBindBuffer(GL_ARRAY_BUFFER, data->VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, data->verticeCount * sizeof(Vertex3D), data->vertices, GL_STATIC_DRAW);
 
 		//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 		
@@ -386,21 +350,54 @@ namespace MonGL
 		data->scale = v3(1.0f);
 	}
 
+	// NOTE(ck): Assumes the vertices and indices have been loaded
+	void InitModel(RenderData* data)
+	{
+		glGenVertexArrays(1, &data->VAO);
+		glGenBuffers(1, &data->VBO);
+		glGenBuffers(1, &data->IBO);
+
+		glBindVertexArray(data->VAO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, data->VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(data->vertices), data->vertices, GL_STATIC_DRAW);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, data->IBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(data->indices), data->indices, GL_STATIC_DRAW);
+
+		// Set the vertex attribute poiinters
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex3D, normal));
+
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex3D, texCoords));
+
+		glEnableVertexAttribArray(3);
+		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex3D, tangent));
+
+		glEnableVertexAttribArray(4);
+		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex3D, bitangent));
+
+		glBindVertexArray(0);
+	}
+	
 	void GenerateTerrain(RenderData* data, float* heightMap)
 	{
 		data->VAO = 0;
 		data->VBO = 0;
 
-		const int SIZE = 64;
-		const int VERTEX_COUNT = 16;
-
-		//Vertex3D vertices[VERTEX_COUNT * VERTEX_COUNT];
-		Vertex3D* vertices = new Vertex3D[VERTEX_COUNT * VERTEX_COUNT];
-		int verticeLength = VERTEX_COUNT * VERTEX_COUNT;
+		const int SIZE = 128;
+		const int VERTEX_COUNT = 32;
+		data->verticeCount = VERTEX_COUNT*VERTEX_COUNT;
+		// TODO(ck): Memory Allocation
+		data->vertices = new Vertex3D[data->verticeCount];
 
 		// TODO(ck): Memory Allocation
 		int* indices = new int[6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1)];
-		int verticesLength = VERTEX_COUNT * VERTEX_COUNT;
+		int verticesLength = data->verticeCount;
 		data->indiceCount = 6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1);
 
 		int index = 0;
@@ -408,20 +405,20 @@ namespace MonGL
 		{
 			for (int j = 0; j < VERTEX_COUNT; ++j)
 			{
-				vertices[index] = {};
-				vertices[index].position.x = (float)j / ((float)VERTEX_COUNT - 1) * SIZE;
+				data->vertices[index] = {};
+				data->vertices[index].position.x = (float)j / ((float)VERTEX_COUNT - 1) * SIZE;
 
-				vertices[index].position.y = -0.3f;
+				data->vertices[index].position.y = -0.3f;
 				heightMap[index] = -0.3f;
 
-				vertices[index].position.z = (float)i / ((float)VERTEX_COUNT - 1) * SIZE;
+				data->vertices[index].position.z = (float)i / ((float)VERTEX_COUNT - 1) * SIZE;
 
-				vertices[index].normal.x = 0;
-				vertices[index].normal.y = 1;
-				vertices[index].normal.z = 0;
+				data->vertices[index].normal.x = 0;
+				data->vertices[index].normal.y = 1;
+				data->vertices[index].normal.z = 0;
 
-				vertices[index].texCoords.x = (float)j / ((float)VERTEX_COUNT - 1);
-				vertices[index].texCoords.y = (float)i / ((float)VERTEX_COUNT - 1);
+				data->vertices[index].texCoords.x = (float)j / ((float)VERTEX_COUNT - 1);
+				data->vertices[index].texCoords.y = (float)i / ((float)VERTEX_COUNT - 1);
 				++index;
 			}
 		}
@@ -454,7 +451,7 @@ namespace MonGL
 		glBindBuffer(GL_ARRAY_BUFFER, data->VBO);
 		//glBufferData(GL_ARRAY_BUFFER, data->vertices.size() * sizeof(Vertex3D), &data->vertices[0], GL_STATIC_DRAW);
 		//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-		glBufferData(GL_ARRAY_BUFFER, verticesLength * sizeof(Vertex3D), vertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, verticesLength * sizeof(Vertex3D), data->vertices, GL_STATIC_DRAW);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, data->indiceCount * sizeof(int), indices, GL_STATIC_DRAW);
@@ -471,7 +468,8 @@ namespace MonGL
 
 		// unbind
 		glBindVertexArray(0);
-		delete[] vertices;
+		// TODO(ck): dont need to delete these yet?
+		//delete[] vertices;
 		delete[] indices;
 
 		data->mat = {};
@@ -739,7 +737,7 @@ namespace MonGL
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	void DrawTerrain(unsigned int shaderID, RenderData* data, Light* light, Camera* camera)
+	void DrawTerrain(unsigned int shaderID, RenderData* data, Light* light, Camera* camera, bool wireFrame)
 	{
 		glUseProgram(shaderID);
 
@@ -777,10 +775,10 @@ namespace MonGL
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
 		glBindVertexArray(data->VAO);
 
-		//terrain->wireFrame ?
-		//	glDrawElements(GL_LINES, terrain->indicesLength, GL_UNSIGNED_INT, 0)
-		//	: glDrawElements(GL_TRIANGLES, terrain->indicesLength, GL_UNSIGNED_INT, 0);
-		glDrawElements(GL_TRIANGLES, data->indiceCount, GL_UNSIGNED_INT, 0);
+		wireFrame ?
+			glDrawElements(GL_LINES, data->indiceCount, GL_UNSIGNED_INT, 0)
+			: glDrawElements(GL_TRIANGLES, data->indiceCount, GL_UNSIGNED_INT, 0);
+
 		glBindVertexArray(0);
 		// Always good practice to set everything back to defaults once configured
 		// NOTE(CK): bind texture must be AFTER glActiveTexture or it will not unbind properly

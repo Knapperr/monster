@@ -2,8 +2,8 @@
 #include <string>
 
 
-#define SIZE 64
-#define VERTEX_COUNT 16
+#define SIZE 128
+#define VERTEX_COUNT 32
 Terrain::Terrain(int gridX, int gridZ)
 {
 	x = (float)gridX * SIZE;
@@ -62,6 +62,7 @@ float Terrain::getHeight(int x, int z)
 							  Mon::v2(xCoord, zCoord));
 	}
 
+	
 	return result;
 }
 
@@ -126,7 +127,7 @@ Mon::v2 GetNormalizedDeviceCoords(Mon::v2 mousePos)
 	// TODO(ck): Get from settings
 	Mon::v2 window = { 1440.0f, 900.0f };
 	Mon::v2 port = { 960.0f, 540.0f };
-	Mon::v2 offset = (window - port) + 5.0f; // port.x & y = 5
+	Mon::v2 offset = (window - port); // port.x & y = 5
 
 	// TODO(ck): Figure out offset. Working for y but not for x 
 	// STUDY(ck): 

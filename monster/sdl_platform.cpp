@@ -32,8 +32,7 @@ namespace Mon
 		int flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI;
 		window = SDL_CreateWindow(settings->title,
 								  SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-								  settings->windowWidth, settings->windowHeight,
-								  flags);
+								  settings->windowWidth, settings->windowHeight, flags);
 
 		if (window == nullptr)
 			return false;
