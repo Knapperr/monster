@@ -23,7 +23,7 @@ void writeEntities(Mon::Entity* entities, int shaderID)
 
 void LoadImpFile(Mon::Game* game)
 {
-	std::ifstream file("player.imp");
+	std::ifstream file("test_grass.imp");
 	if (!file.is_open())
 	{
 		Mon::Log::print("Failure to open file");
