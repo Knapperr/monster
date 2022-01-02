@@ -21,26 +21,93 @@ void writeEntities(Mon::Entity* entities, int shaderID)
 	file.close();
 }
 
-void loadImpFile(Mon::Game* game)
+void LoadImpFile(Mon::Game* game)
 {
-	std::ifstream file("model.imp");
+	std::ifstream file("player.imp");
 	if (!file.is_open())
 	{
 		Mon::Log::print("Failure to open file");
 	}
 
+	// TODO(ck): RESEARCH(ck):
+	// This loads ONE model inside of the file right now. The imp asset file needs to be worked out 
+
 	std::string line;
+	// Create new entity and grab it to get it ready
+	Mon::AddEntity(game->world);
+	Mon::Entity* e = Mon::GetEntity(game->world, game->world->entityCount - 1);
 	while (file >> line)
 	{
-		Mon::Entity e = {};
-		e.name = line;
-		file >> e.data.vertices->position.x;
-		file >> e.data.vertices->position.y;
-		file >> e.data.vertices->position.z;
-		file >> e.data.vertices->normal.x;
-		file >> e.data.vertices->normal.y;
-		file >> e.data.vertices->normal.z;
+		// Get the name and the size of the vertices & indices here
+		e->name = line;
+		file >> e->data.verticeCount;
+		file >> e->data.indiceCount;
+		break;
+	}
 
+	e->data.vertices = new MonGL::Vertex3D[e->data.verticeCount];
+	e->data.indices = new unsigned int[e->data.indiceCount];
+
+	while (file >> line)
+	{
+		for (int i = 0; i < e->data.verticeCount; ++i)
+		{
+			if (i == 0)
+				e->data.vertices[i].position.x = std::stof(line);
+			else
+				file >> e->data.vertices[i].position.x;
+
+			file >> e->data.vertices[i].position.y;
+			file >> e->data.vertices[i].position.z;
+			file >> e->data.vertices[i].normal.x;
+			file >> e->data.vertices[i].normal.y;
+			file >> e->data.vertices[i].normal.z;
+			file >> e->data.vertices[i].texCoords.x;
+			file >> e->data.vertices[i].texCoords.y;
+			file >> e->data.vertices[i].tangent.x;
+			file >> e->data.vertices[i].tangent.y;
+			file >> e->data.vertices[i].tangent.z;
+			file >> e->data.vertices[i].bitangent.x;
+			file >> e->data.vertices[i].bitangent.y;
+			file >> e->data.vertices[i].bitangent.z;
+		}
+		for (int j = 0; j < e->data.indiceCount; ++j)
+		{
+			file >> e->data.indices[j];
+		}
+	}
+	file.close();
+
+	MonGL::InitModel(&e->data);
+	MonGL::LoadTexture(&e->data, 0, MonGL::TextureType::Diffuse, game->shader.handle, "res/textures/grass.png", false);
+	e->particle.pos = Mon::v3(10.0f, 0.3f, 20.0f);
+	MonGL::InitBoundingBox(&e->collider.data);
+}
+
+void writeImpFile(Mon::Game* game)
+{
+	// write the selected index to a file....
+	// this will be a good way to see if the file data is loaded properly.
+	Mon::Entity* e = Mon::GetEntity(game->world, game->selectedIndex);
+	std::string path = "test_data.imp";
+	std::ofstream file;
+	file.open(path);
+
+	file << e->name << "\n";
+	file << e->data.verticeCount << "\n";
+	file << e->data.indiceCount << "\n";
+
+	for (int i = 0; i < e->data.verticeCount; ++i)
+	{
+	   file << e->data.vertices[i].position.x << "\n" << e->data.vertices[i].position.y << "\n" << e->data.vertices[i].position.z << "\n"
+			<< e->data.vertices[i].normal.x << "\n" << e->data.vertices[i].normal.y << "\n" << e->data.vertices[i].normal.z << "\n"
+			<< e->data.vertices[i].texCoords.x << "\n" << e->data.vertices[i].texCoords.y << "\n"
+			<< e->data.vertices[i].tangent.x << "\n" << e->data.vertices[i].tangent.y << "\n" << e->data.vertices[i].tangent.z << "\n"
+			<< e->data.vertices[i].bitangent.x << "\n" << e->data.vertices[i].bitangent.y << "\n" << e->data.vertices[i].bitangent.z << "\n";
+	}
+	for (int j = 0; j < e->data.indiceCount; ++j)
+	{
+		file << e->data.indices[j] << "\n";
 	}
 }
 
@@ -286,7 +353,17 @@ void EntityWindow(bool* p_open, Mon::Game* game)
 	{
 		Mon::AddCube(game->world, game->shader.handle);
 	}
-
+	ImGui::SameLine();
+	if (ImGui::Button("Load imp file"))
+	{
+		LoadImpFile(game);
+	}
+	
+	// NOTE(ck): Write the .imp model to a file 
+	/*if (ImGui::Button("Write imp file"))
+	{
+		writeImpFile(game);
+	}*/
 
 	static unsigned int selected = 1;
 	ImGui::BeginChild("left pane", ImVec2(150.0f, 0.0f), true);

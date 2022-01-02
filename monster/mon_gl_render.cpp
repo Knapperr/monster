@@ -8,11 +8,11 @@ namespace MonGL
 	// can have a getter method that retrieves the globalDrawCalls from here
 	int globalDrawCalls = 0;
 
-	void LoadTexture(RenderData *data, int index, TextureType type, int shaderID, std::string path)
+	void LoadTexture(RenderData *data, int index, TextureType type, int shaderID, std::string path, bool pixelTexture)
 	{
 		data->texturePath = path;
 		Texture text = {};
-		LoadTextureFile(&text, path.c_str(), type, false, true, true);
+		LoadTextureFile(&text, path.c_str(), type, false, true, pixelTexture);
 		data->textures[index] = text;
 		data->selectedTexture = 0;
 		glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
@@ -360,28 +360,31 @@ namespace MonGL
 		glBindVertexArray(data->VAO);
 
 		glBindBuffer(GL_ARRAY_BUFFER, data->VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(data->vertices), data->vertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, data->verticeCount * sizeof(Vertex3D), data->vertices, GL_STATIC_DRAW);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, data->IBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(data->indices), data->indices, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, data->indiceCount * sizeof(unsigned int), data->indices, GL_STATIC_DRAW);
 
 		// Set the vertex attribute poiinters
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)0);
 
 		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex3D, normal));
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, normal));
 
 		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex3D, texCoords));
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, texCoords));
 
 		glEnableVertexAttribArray(3);
-		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex3D, tangent));
+		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, tangent));
 
 		glEnableVertexAttribArray(4);
-		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex3D, bitangent));
+		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, bitangent));
 
 		glBindVertexArray(0);
+
+		data->visible = true;
+		data->scale = v3(1.0f);
 	}
 	
 	void GenerateTerrain(RenderData* data, float* heightMap)

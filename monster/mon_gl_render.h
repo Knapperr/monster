@@ -168,7 +168,7 @@ namespace MonGL
 	void InitBoundingBox(RenderData* data);
 	void InitDistortedWater(RenderData* renderData, RenderSetup* setup);
 	void GenerateTerrain(RenderData* data, float* heightMap);
-	void LoadTexture(RenderData* data, int index, TextureType type, int shaderID, std::string path);
+	void LoadTexture(RenderData* data, int index, TextureType type, int shaderID, std::string path, bool pixelTexture = true);
 	
 	void Draw(Config* config, RenderData* data, v3 pos, Camera* camera,
 			  unsigned int shaderID, int selectedTexture = 0);	
