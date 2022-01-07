@@ -15,7 +15,8 @@ namespace Mon {
 	};
 
 	// Get to this starts pg49 Ian Millington
-	struct Particle
+	// TODO(ck): PARTICLE CHANGE TO RIGIDBODY AND FIX PARAMS
+	struct RigidBody
 	{
 		v3 pos;
 		v3 velocity;
@@ -40,7 +41,7 @@ namespace Mon {
 	struct Entity
 	{
 		std::string name;
-		Particle particle;
+		RigidBody rb;
 		MonGL::RenderData data;
 		MonGL::RenderSetup setup;
 		Collider collider;

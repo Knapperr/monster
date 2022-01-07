@@ -54,6 +54,7 @@ namespace MonGL
 
 	struct RenderData
 	{
+
 		Vertex3D* vertices;
 		unsigned int* indices;
 
@@ -81,6 +82,14 @@ namespace MonGL
 		// projection
 		// shader data?
 	};
+
+	struct InstancedData
+	{
+		mat4* matrices;
+		int amount = 1000;
+		RenderData renderData;
+	};
+
 
 	//struct render_setup
 	//{
@@ -162,6 +171,7 @@ namespace MonGL
 	void BeginRender(Config* config, mat4 projection, mat4 view, int shaderID);
 	void ViewPort(Rect* port);
 	
+	void InitInstancedData(InstancedData* data, int amount);
 	void InitQuad(RenderData* data, bool tangents = false);
 	void InitCube(RenderData* data);
 	void InitModel(RenderData* data);

@@ -47,6 +47,7 @@ namespace Mon
 		void debugMode();
 
 		World* world;
+		// TODO(ck): Move to World
 		Terrain* terrain;
 		MousePicker picker;
 

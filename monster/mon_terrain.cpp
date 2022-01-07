@@ -118,12 +118,6 @@ Mon::v3 CalculateMouseRay(MousePicker* picker, Mon::v2 mousePos, Mon::mat4 viewM
 
 Mon::v2 GetNormalizedDeviceCoords(Mon::v2 mousePos)
 {
-
-	//  offset = (window - viewPort) / 2
-	// float x = (2.0f * (mouseX + offset.x) / (float) port.w - 1.0f;
-	// float y = (2.0f * (mouseY - offset.y) / (float)port.h - 1.0f;
-	// return v2(x, -y);
-
 	// TODO(ck): Get from settings
 	Mon::v2 window = { 1440.0f, 900.0f };
 	Mon::v2 port = { 960.0f, 540.0f };

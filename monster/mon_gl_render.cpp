@@ -386,6 +386,14 @@ namespace MonGL
 		data->visible = true;
 		data->scale = v3(1.0f);
 	}
+
+	void InitInstancedData(InstancedData* data, int amount)
+	{
+		data->amount = amount;
+
+		InitModel(&data->renderData);
+		data->matrices = new mat4[data->amount];
+	}
 	
 	void GenerateTerrain(RenderData* data, float* heightMap)
 	{

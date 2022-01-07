@@ -25,7 +25,7 @@ namespace Mon
 
 	void OrthoCamera::update(v2 *target, float dt)
 	{
-#if 0
+#if 1
 		pos.x = target->x;
 		pos.y = target->y;
 #else 

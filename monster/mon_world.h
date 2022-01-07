@@ -11,6 +11,9 @@ namespace Mon {
 		unsigned int entityCount;
 		Entity entities[100];
 		Entity* player;
+
+		unsigned int instancedDataCount;
+		MonGL::InstancedData instancedData[2];
 	};
 
 	static unsigned int AddEntity(World* world)
@@ -23,6 +26,16 @@ namespace Mon {
 		return entityIndex;
 	}
 
+	static unsigned int AddInstancedData(World* world)
+	{
+		unsigned int instancedIndex = world->instancedDataCount++;
+		
+		MonGL::InstancedData* data = &world->instancedData[world->instancedDataCount];
+		data = {};
+
+		return instancedIndex;
+	}
+
 	static Entity* GetEntity(World* world, unsigned int index)
 	{
 		Entity* entity = 0;
@@ -31,6 +44,16 @@ namespace Mon {
 			entity = &world->entities[index];
 		}
 		return entity;
+	}
+
+	static MonGL::InstancedData* GetInstancedData(World* world, unsigned int index)
+	{
+		MonGL::InstancedData* data = 0;
+		if ((index > 0) && (index < ArrayCount(world->instancedData)))
+		{
+			data = &world->instancedData[index];
+		}
+		return data;
 	}
 
 	static void InitEntity(World* world, unsigned int index)
@@ -52,14 +75,14 @@ namespace Mon {
 		world->player->facingDir = 0;
 
 		InitBoxCollider(&world->player->collider);
-		world->player->particle.pos = v3(40.0f, 0.1f, 10.0);
-		world->player->particle.inverseMass = 10.0f;
-		world->player->particle.velocity = v3(0.0f, 0.0f, 0.0f); // 35m/s
-		world->player->particle.gravity = 10.0f;
-		world->player->particle.acceleration = v3(-40.0f, 0.0f, 0.0f);
-		world->player->particle.orientation = v3(1.0f, 1.0f, 1.0);
-		world->player->particle.damping = 0.9f;
-		world->player->particle.speed = 50.0f;
+		world->player->rb.pos = v3(40.0f, 0.1f, 10.0);
+		world->player->rb.inverseMass = 10.0f;
+		world->player->rb.velocity = v3(0.0f, 0.0f, 0.0f); // 35m/s
+		world->player->rb.gravity = 10.0f;
+		world->player->rb.acceleration = v3(-40.0f, 0.0f, 0.0f);
+		world->player->rb.orientation = v3(1.0f, 1.0f, 1.0);
+		world->player->rb.damping = 0.9f;
+		world->player->rb.speed = 50.0f;
 
 		world->player->data.mat.ambient = v3(1.0f, 0.5f, 0.6f);
 		world->player->data.mat.diffuse = v3(1.0f, 0.5f, 0.31f);
@@ -81,7 +104,7 @@ namespace Mon {
 			tree->name = "tree_" + std::to_string(i);
 			MonGL::InitQuad(&tree->data);
 			MonGL::LoadTexture(&tree->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/tree.png");
-			tree->particle.pos = v3(6.0f * (i + 1), 6.80f, 5.5f * i);
+			tree->rb.pos = v3(6.0f * (i + 1), 5.30f, 5.5f * i);
 			tree->data.scale = v3(16.0f, 16.0f, 16.0f);
 			InitBoxCollider(&tree->collider);
 		}
@@ -96,7 +119,7 @@ namespace Mon {
 			flower->name = "flower_" + std::to_string(i);
 			MonGL::InitQuad(&flower->data);
 			MonGL::LoadTexture(&flower->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/sflow_tall.png");
-			flower->particle.pos = v3(10.0f, 0.1f, 6.0f);
+			flower->rb.pos = v3(10.0f, 0.1f, 6.0f);
 			InitBoxCollider(&flower->collider);
 
 		}
@@ -107,7 +130,7 @@ namespace Mon {
 		cube->name = "cube_1";
 		MonGL::InitCube(&cube->data);
 		MonGL::LoadTexture(&cube->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/container2.png");
-		cube->particle.pos = v3(50.0f, 0.3f, 20.0f);
+		cube->rb.pos = v3(50.0f, 0.3f, 20.0f);
 		InitBoxCollider(&cube->collider);
 
 		//for (int i = 0; i < 4; ++i)
@@ -133,10 +156,19 @@ namespace Mon {
 		cube->name = "cube_" + std::to_string(world->entityCount-1);
 		MonGL::InitCube(&cube->data);
 		MonGL::LoadTexture(&cube->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/container2.png");
-		cube->particle.pos = v3(10.0f, 0.3f, 20.0f);
+		cube->rb.pos = v3(10.0f, 0.3f, 20.0f);
 		MonGL::InitBoundingBox(&cube->collider.data);
 	}
 	
+	static void CreateInstancedGrass(World* world, int shaderHandle)
+	{
+		AddInstancedData(world);
+		MonGL::InstancedData* data = GetInstancedData(world, world->instancedDataCount - 1);
+		MonGL::InitInstancedData(data, 100);
+		MonGL::LoadTexture(&data->renderData, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/grass.png", false);
+
+
+	}
 
 	static void UpdateWorld(World* world)
 	{

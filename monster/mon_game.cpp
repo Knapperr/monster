@@ -13,7 +13,7 @@ namespace Mon
 
 		if ((input->lMouseBtn.endedDown == false && input->rMouseBtn.endedDown) && ent != nullptr)
 		{
-			ent->particle.pos = picker->currentTerrainPoint;
+			ent->rb.pos = picker->currentTerrainPoint;
 		}
 	}
 
@@ -61,7 +61,7 @@ namespace Mon
 		config->viewPort = { 5.0f, 5.0f, portWidth, portHeight };
 		MonGL::ViewPort(&config->viewPort);
 
-		config->angleDegrees = -30.0f;
+		config->angleDegrees = -45.0f;
 
 		// TODO(ck): Memory management
 		// reserve slot 0 for NULL camera
@@ -88,22 +88,13 @@ namespace Mon
 		debugEnt.name = "debug_cube";
 		MonGL::InitCube(&debugEnt.data);
 		MonGL::LoadTexture(&debugEnt.data, 0, MonGL::TextureType::Diffuse, shader.handle, "res/textures/container2.png");
-		debugEnt.particle.pos = v3(24.0f, 0.2f, 10.0f);
+		debugEnt.rb.pos = v3(24.0f, 0.2f, 10.0f);
 		InitBoxCollider(&debugEnt.collider);
 		// =======================================
 
 		picker = {};
 
 		return true;
-	}
-
-	v2 getNormalizedDeviceCoords(v2 mouse, Rect viewPort, v2 window)
-	{
-		v2 port = v2(viewPort.w, viewPort.h);
-		v2 offset = (window - port) / 2.0f;
-		float x = (2.0f * (mouse.x + offset.x)) / (float)viewPort.w - 1.0f;
-		float y = (2.0f * (mouse.y - offset.y)) / (float)viewPort.h - 1.0f;
-		return v2(x, -y);
 	}
 
 	// TODO(ck): Should this param be pointer?
@@ -116,35 +107,35 @@ namespace Mon
 		{
 			*velocity *= (1.0f / squareRoot(velocityLength));
 		}
-		*velocity *= world->player->particle.speed;
+		*velocity *= world->player->rb.speed;
 
-		*velocity += -7.0f * world->player->particle.velocity;
+		*velocity += -7.0f * world->player->rb.velocity;
 
 		
-		v3 oldPos = world->player->particle.pos;
+		v3 oldPos = world->player->rb.pos;
 		v3 newPos = oldPos;
-		float deltaX = (0.5f * velocity->x * square(deltaTime) + world->player->particle.velocity.x * deltaTime);
-		float deltaY = world->player->particle.velocity.y;
+		float deltaX = (0.5f * velocity->x * square(deltaTime) + world->player->rb.velocity.x * deltaTime);
+		float deltaY = world->player->rb.velocity.y;
 		//float deltaY = velocity->y * square(deltaTime) + player.particle.velocity.y * deltaTime);
-		float deltaZ = (0.5f * velocity->z * square(deltaTime) + world->player->particle.velocity.z * deltaTime);
+		float deltaZ = (0.5f * velocity->z * square(deltaTime) + world->player->rb.velocity.z * deltaTime);
 		v3 delta = { deltaX, deltaY, deltaZ };
 
 		// TODO(ck): need to set an offest like casey does
 		newPos += delta;
 
-		world->player->particle.velocity.x = velocity->x * deltaTime + world->player->particle.velocity.x;
-		world->player->particle.velocity.z = velocity->z * deltaTime + world->player->particle.velocity.z;
+		world->player->rb.velocity.x = velocity->x * deltaTime + world->player->rb.velocity.x;
+		world->player->rb.velocity.z = velocity->z * deltaTime + world->player->rb.velocity.z;
 
-		world->player->particle.pos = newPos;
+		world->player->rb.pos = newPos;
 
 
-		if ((world->player->particle.velocity.x == 0.0f) && (world->player->particle.velocity.z == 0.0f))
+		if ((world->player->rb.velocity.x == 0.0f) && (world->player->rb.velocity.z == 0.0f))
 		{
 			// NOTE(ck): Leave facingDirection whatever it was 
 		}
-		else if (absoluteValue(world->player->particle.velocity.x) > absoluteValue(world->player->particle.velocity.z))
+		else if (absoluteValue(world->player->rb.velocity.x) > absoluteValue(world->player->rb.velocity.z))
 		{
-			if (world->player->particle.velocity.x > 0)
+			if (world->player->rb.velocity.x > 0)
 			{
 				world->player->facingDir = 0; // right
 			}
@@ -155,7 +146,7 @@ namespace Mon
 		}
 		else
 		{
-			if (world->player->particle.velocity.z > 0)
+			if (world->player->rb.velocity.z > 0)
 			{
 				world->player->facingDir = 1; // back
 
@@ -178,7 +169,7 @@ namespace Mon
 	{
 		// TODO(ck): Update entity and then update entity collider right after
 		// instead of having two separate loops for entities and their colliders.
-		for (int i = 1; i < world->entityCount; ++i)
+		for (unsigned int i = 1; i < world->entityCount; ++i)
 		{
 
 
@@ -187,9 +178,9 @@ namespace Mon
 			// TODO(ck): Precise Collision check
 
 
-			v3 colliderPos = { world->entities[i].particle.pos.x - (0.5f),
-								world->entities[i].particle.pos.y - (0.5),
-								world->entities[i].particle.pos.z - (0.5f) };
+			v3 colliderPos = { world->entities[i].rb.pos.x - (0.5f),
+								world->entities[i].rb.pos.y - (0.5),
+								world->entities[i].rb.pos.z - (0.5f) };
 
 			UpdateCollider(&world->entities[i].collider, colliderPos, world->entities[i].data.scale);
 		}
@@ -284,17 +275,17 @@ namespace Mon
 
 #if 1
 		// ============  update DEBUG collider  =============
-		v3 colliderPos = { debugEnt.particle.pos.x - (0.5f), debugEnt.particle.pos.y - (0.5),
-							debugEnt.particle.pos.z - (0.5f) };
+		v3 colliderPos = { debugEnt.rb.pos.x - (0.5f), debugEnt.rb.pos.y - (0.5),
+							debugEnt.rb.pos.z - (0.5f) };
 		SetBoxTransform(&debugEnt.collider, colliderPos, debugEnt.data.scale);
 		UpdateWorldPosToWorldMatrix(&debugEnt.collider);
 		// ==================================================
 #endif
 
 		// player collider
-		colliderPos = { world->player->particle.pos.x - (0.5f),
-					world->player->particle.pos.y - (0.5),
-					world->player->particle.pos.z - (0.5f) };
+		colliderPos = { world->player->rb.pos.x - (0.5f),
+					world->player->rb.pos.y - (0.5),
+					world->player->rb.pos.z - (0.5f) };
 
 		UpdateCollider(&world->player->collider, colliderPos, world->player->data.scale);
 
@@ -309,7 +300,7 @@ namespace Mon
 		//
 		Camera* cam = getCamera(this, currCameraIndex);
 		Update(cam, deltaTime, &input,
-			   world->player->particle.pos, world->player->particle.orientation, true);
+			   world->player->rb.pos, world->player->rb.orientation, true);
 
 		//
 		// MOUSE PICKER
@@ -350,14 +341,14 @@ namespace Mon
 			// ===================================================================
 		}
 		MonGL::DrawTerrain(shader.handle, &terrain->mesh, &light, cam, terrain->wireFrame);
-		MonGL::Draw(config, &world->player->data, world->player->particle.pos, cam, shader.handle, world->player->facingDir);
+		MonGL::Draw(config, &world->player->data, world->player->rb.pos, cam, shader.handle, world->player->facingDir);
 
 		//
 		// ENTITIES DRAW
 		//
 
 		// DEBUG ======================================================================
-		MonGL::Draw(config, &debugEnt.data, debugEnt.particle.pos, cam, shader.handle);
+		MonGL::Draw(config, &debugEnt.data, debugEnt.rb.pos, cam, shader.handle);
 		// ============================================================================
 
 		for (int i = 1; i < world->entityCount; ++i)
@@ -367,7 +358,7 @@ namespace Mon
 			if (drawCollisions)
 				MonGL::DrawBoundingBox(&e.collider.data, cam, shader.handle);
 			
-			MonGL::Draw(config, &e.data, e.particle.pos, cam, shader.handle);
+			MonGL::Draw(config, &e.data, e.rb.pos, cam, shader.handle);
 		}
 		
 

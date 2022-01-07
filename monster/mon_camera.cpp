@@ -109,7 +109,8 @@ namespace Mon
 		if (input->shift.endedDown)
 			camera->speed *= 2.0f;
 
-		ProcessScroll(camera, input->wheel.y);
+		if (input->rMouseBtn.endedDown == false)
+			ProcessScroll(camera, input->wheel.y);
 
 		float velocity = camera->speed * (float)dt;
 		if (input->lMouseBtn.endedDown && input->rMouseBtn.endedDown)
@@ -194,7 +195,7 @@ namespace Mon
 		InitFlyCamera(camera, viewPort);
 
 		camera->yaw = 0.0f;
-		camera->pitch = 40.0f;
+		camera->pitch = 50.0f;
 		camera->front = v3(0.0f, 0.0f, -1.0f);
 		camera->velocity = v3(0.0f);
 		camera->distanceFromTarget = 10.0f;
@@ -258,7 +259,7 @@ namespace Mon
 	void FollowOn(Camera* camera)
 	{
 		camera->yaw = 0.0f;
-		camera->pitch = 40.0f;
+		camera->pitch = 50.0f;
 		camera->front = v3(0.0f, 0.0f, -1.0f);
 	}
 

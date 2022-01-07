@@ -3,7 +3,7 @@
 namespace Mon {
 
 #define real_pow powf
-	void Particle::integrate(float duration)
+	void RigidBody::integrate(float duration)
 	{
 		if (inverseMass <= 0.0f)
 			return;
@@ -39,12 +39,9 @@ namespace Mon {
 		clearAccumulator();
 	}
 
-	void Particle::clearAccumulator()
+	void RigidBody::clearAccumulator()
 	{
 		return;
 	}
-
-
-
 
 }

@@ -13,7 +13,7 @@ void writeEntities(Mon::Entity* entities, int shaderID)
 	for (int i = 0; i < ArrayCount(&entities); ++i)
 	{
 		file << entities[i].name << "\n"
-			<< entities[i].particle.pos.x << "\n" << entities[i].particle.pos.y << "\n" << entities[i].particle.pos.z << "\n"
+			<< entities[i].rb.pos.x << "\n" << entities[i].rb.pos.y << "\n" << entities[i].rb.pos.z << "\n"
 			<< shaderID << "\n"
 			<< entities[i].data.texturePath << "\n";
 	}
@@ -80,7 +80,7 @@ void LoadImpFile(Mon::Game* game)
 
 	MonGL::InitModel(&e->data);
 	MonGL::LoadTexture(&e->data, 0, MonGL::TextureType::Diffuse, game->shader.handle, "res/textures/grass.png", false);
-	e->particle.pos = Mon::v3(10.0f, 0.3f, 20.0f);
+	e->rb.pos = Mon::v3(10.0f, 0.3f, 20.0f);
 	MonGL::InitBoundingBox(&e->collider.data);
 }
 
@@ -126,9 +126,9 @@ void loadEntities(Mon::Game* game)
 	{
 		Mon::Entity e = {};
 		e.name = line;
-		file >> e.particle.pos.x;
-		file >> e.particle.pos.y;
-		file >> e.particle.pos.z;
+		file >> e.rb.pos.x;
+		file >> e.rb.pos.y;
+		file >> e.rb.pos.z;
 
 		// TODO(ck): This is why a raw array needs to be used
 		// the render data needs to be rebuilt. Serialization I think 
@@ -419,9 +419,9 @@ void EntityWindow(bool* p_open, Mon::Game* game)
 				//ImGui::SliderFloat("scale", &game->entities[selected].data.size.max, 0.0f, 200.0f);
 				//ImGui::DragFloat("fine scale", &game->entities[selected].data.size, 0.0001f, 0.0f, 200.0f, "%.02f");
 
-				ImGui::DragFloat("x", &game->world->entities[selected].particle.pos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");
-				ImGui::DragFloat("y", &game->world->entities[selected].particle.pos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
-				ImGui::DragFloat("z", &game->world->entities[selected].particle.pos.z, 0.1f, -1000.0f, 1000.0f, "%.02f");
+				ImGui::DragFloat("x", &game->world->entities[selected].rb.pos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");
+				ImGui::DragFloat("y", &game->world->entities[selected].rb.pos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
+				ImGui::DragFloat("z", &game->world->entities[selected].rb.pos.z, 0.1f, -1000.0f, 1000.0f, "%.02f");
 
 
 				ImGui::SliderFloat3("scale", &game->world->entities[selected].data.scale[0], 0.0f, 100.0f);
