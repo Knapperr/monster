@@ -23,7 +23,7 @@ namespace Mon
 	// NOTE(ck): TODO(ck): 
 	// Not sure how to design this. Need some kind of debug module that can hook into the game 
 	// and then come off for release
-	void RunDebugControls(Input* input, MousePicker* picker, World* world, int selectedIndex);
+	void RunDebugControls(Input* input, MousePicker* picker, World* world, int& selectedIndex);
 
 
 	enum State

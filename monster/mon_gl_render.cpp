@@ -116,6 +116,7 @@ namespace MonGL
 		// unbind
 		glBindVertexArray(0);
 
+		data->type = RenderType::Quad;
 		data->visible = true;
 		data->scale = v3(1.0f);
 	}
@@ -346,6 +347,7 @@ namespace MonGL
 		// unbind
 		glBindVertexArray(0);
 
+		data->type = RenderType::Cube;
 		data->visible = true;
 		data->scale = v3(1.0f);
 	}
@@ -383,6 +385,7 @@ namespace MonGL
 
 		glBindVertexArray(0);
 
+		data->type = RenderType::Model;
 		data->visible = true;
 		data->scale = v3(1.0f);
 	}
@@ -390,7 +393,6 @@ namespace MonGL
 	void InitInstancedData(InstancedData* data, int amount)
 	{
 		data->amount = amount;
-
 		InitModel(&data->renderData);
 		data->matrices = new mat4[data->amount];
 	}

@@ -263,6 +263,10 @@ namespace Mon
 						processKeyboard(&newInput->left, isDown);
 					if (keyCode == SDLK_RIGHT || keyCode == SDLK_d)
 						processKeyboard(&newInput->right, isDown);
+					if (keyCode == SDLK_r)
+						processKeyboard(&newInput->r, isDown);
+					if (keyCode == SDLK_f)
+						processKeyboard(&newInput->f, isDown);
 					if (keyCode == SDLK_e)
 						processKeyboard(&newInput->raise, isDown);
 					if (keyCode == SDLK_q)

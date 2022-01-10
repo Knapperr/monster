@@ -2,20 +2,27 @@
 
 #include <string>
 
+float inputTimer = 0.0f;
+
 // TODO(ck): open files with current platform layer
+// TODO(ck): Entities are saved and loaded in order that they appear in
+//			 the array.
 #include <fstream>
 #ifdef _3D_GUI_
-void writeEntities(Mon::Entity* entities, int shaderID)
+void WriteEntities(Mon::Entity* entities, unsigned int entityCount, int shaderID)
 {
 	std::ofstream file;
 	file.open("scene_1.txt");
 
+	file << entityCount;
+
 	for (int i = 0; i < ArrayCount(&entities); ++i)
 	{
-		file << entities[i].name << "\n"
-			<< entities[i].rb.pos.x << "\n" << entities[i].rb.pos.y << "\n" << entities[i].rb.pos.z << "\n"
-			<< shaderID << "\n"
-			<< entities[i].data.texturePath << "\n";
+		file << (int)entities[i].data.type << "\n"
+			 << entities[i].name << "\n"
+			 << entities[i].rb.pos.x << "\n" << entities[i].rb.pos.y << "\n" << entities[i].rb.pos.z << "\n"
+			 << shaderID << "\n"
+			 << entities[i].data.texturePath << "\n";
 	}
 
 	file.close();
@@ -116,6 +123,7 @@ void loadEntities(Mon::Game* game)
 	// TODO(ck): memory management should probably have something in the list to only reload part of it
 	// READ MEMORY FROM FILE
 	//game->entities.clear();
+#if 0
 	std::string line;
 	std::ifstream file("scene_1.txt");
 	if (!file.is_open())
@@ -141,6 +149,73 @@ void loadEntities(Mon::Game* game)
 		MonGL::InitQuad(&e.data);
 		MonGL::LoadTexture(&e.data, 0, MonGL::TextureType::Diffuse, shaderID, textPath);
 		//game->entities.push_back(e);
+	}
+#endif
+	std::string line;
+	std::ifstream file("scene_1.txt");
+	if (!file.is_open())
+	{
+		Mon::Log::warn("Failure to open file!");
+		return;
+	}
+
+	// the file count should never be less than the size of the 
+	// current array
+
+	unsigned int count = 0;
+	file >> count;
+	Assert(count > ArrayCount(game->world->entities));
+	if (ArrayCount(game->world->entities) < count)
+	{
+		// need to add the remaning entities to the 
+
+	}
+	
+
+	while (file >> line)
+	{
+		/*
+			clear entity array
+			read entity count 
+			loop through and InitQuad, InitCube, InitModel depending on the type
+			do not forget to load their textures as well
+		*/
+		for (int i = 1; i < (game->world->entityCount); ++i)
+		{
+			Mon::Entity* e = Mon::GetEntity(game->world, i);
+			e->name = line;
+			file >> e->rb.pos.x;
+			file >> e->rb.pos.y;
+			file >> e->rb.pos.z;
+
+			// TODO(ck): This is why a raw array needs to be used
+			// the render data needs to be rebuilt. Serialization I think 
+			// will take care of having to reload any rendering data.
+			int shaderID = 0;
+			std::string textPath = "";
+			file >> shaderID;
+			file >> textPath;
+			
+			// Init Render data
+			switch (e->data.type)
+			{
+				case MonGL::RenderType::Quad:
+					MonGL::InitQuad(&e->data);
+					break;
+				case MonGL::RenderType::Cube:
+					MonGL::InitCube(&e->data);
+					break;
+				case MonGL::RenderType::Model:
+					MonGL::InitModel(&e->data);
+					break;
+				default:
+					MonGL::InitModel(&e->data);
+					break;
+			}
+			// Load textures
+			MonGL::LoadTexture(&e->data, 0, MonGL::TextureType::Diffuse, shaderID, textPath);
+
+		}
 	}
 }
 #endif
@@ -368,6 +443,43 @@ void EntityWindow(bool* p_open, Mon::Game* game)
 	static unsigned int selected = 1;
 	ImGui::BeginChild("left pane", ImVec2(150.0f, 0.0f), true);
 
+
+	// increment or decrement the selectedIndex with r and f for quick editing 
+	// this might not be a standard but it will make it quick for me and thats
+	// all that matters =)
+	// Need to set a timer on this so it cant fire
+/*
+	TODO(ck): For this I need to pause the input
+	I need input delay or timer delay im not sure if the input needs to run on
+	another thread and be async?
+	
+	Find a way to stop r & f from affecting if we aren't in 'select' mode 
+*/
+#if 1
+	if (inputTimer > 0.0f)
+		inputTimer -= game->deltaTime;
+
+	if (game->input.r.endedDown && inputTimer <= 0.0f)
+	{
+		inputTimer = game->deltaTime * 10.0f;
+		if (game->selectedIndex > 1)
+		{
+			game->selectedIndex--;
+			selected--;
+		}
+	}
+	if (game->input.f.endedDown && inputTimer <= 0.0f)
+	{
+		inputTimer = game->deltaTime * 10.0f;
+		if (game->selectedIndex < (game->world->entityCount - 1))
+		{
+			game->selectedIndex++;
+			selected++;
+		}
+	}
+#endif
+
+
 	for (unsigned int i = 1; i < game->world->entityCount; ++i)
 	{
 		char label[128];
@@ -579,7 +691,7 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 		ImGui::PopID();
 		if (ImGui::Button("save")) 
 		{
-			writeEntities(game->world->entities, game->mainShaderID); 
+			WriteEntities(game->world->entities, game->world->entityCount, game->mainShaderID); 
 			Mon::Log::print("Saved game to master file");
 			Mon::Log::warn("Only one master save file active!!!");
 		}
@@ -676,8 +788,6 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 		//ImGui::SliderFloat3("min", &game->player.collider.size.min[0], 0.0f, 50.0f);
 		//ImGui::SliderFloat3("max", &game->player.collider.size.max[0], 0.0f, 50.0f);
 	
-
-		ImGui::Checkbox("simulate", &game->simulate);
 		ImGui::Checkbox("draw collisions", &game->drawCollisions);
 
 	ImGui::Separator();

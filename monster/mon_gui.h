@@ -29,6 +29,8 @@ struct Settings
 	int vsync;
 };
 
+extern float inputTimer;
+
 #ifdef USE_SDL
 void InitGui(SDL_Window* window, SDL_GLContext* context);
 #ifdef _3D_GUI_

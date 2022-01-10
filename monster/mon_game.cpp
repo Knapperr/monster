@@ -4,8 +4,10 @@
 
 namespace Mon
 {
-	void RunDebugControls(Input* input, MousePicker* picker, World* world, int selectedIndex)
+	// Should this be part of the gui???
+	void RunDebugControls(Input* input, MousePicker* picker, World* world, int &selectedIndex)
 	{
+
 		// Get the selected index from the GUI
 		Entity* ent = {};
 		if (selectedIndex > 0)
@@ -13,10 +15,11 @@ namespace Mon
 
 		if ((input->lMouseBtn.endedDown == false && input->rMouseBtn.endedDown) && ent != nullptr)
 		{
-			ent->rb.pos = picker->currentTerrainPoint;
+			ent->rb.pos.x = picker->currentTerrainPoint.x;
+			ent->rb.pos.z = picker->currentTerrainPoint.z;
+			ent->rb.pos.y += input->wheel.y * 0.35f;
 		}
 	}
-
 
 	bool Game::init(int windowWidth, int windowHeight, float portWidth, float portHeight)
 	{
@@ -212,7 +215,6 @@ namespace Mon
 			}
 		}
 		
-
 		//
 		// CAMERA
 		//

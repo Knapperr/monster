@@ -43,6 +43,13 @@ namespace MonGL
 		v3 bitangent;
 	};
 
+	enum class RenderType
+	{
+		Model,
+		Quad,
+		Cube
+	};
+	
 	// TODO(ck): RenderData is the entities draw data I can
 	// probably get rid of it and have an openGL struct that has the VAO, VBO, IBO 
 	// inside of it. this is holding our textures and stuff i guess that would be part
@@ -66,13 +73,16 @@ namespace MonGL
 		int lineWidth;
 
 		v3 color;
-		mat4 worldMatrix;
 		v3 scale;
+		mat4 worldMatrix;
 
 		std::string texturePath;
-		Texture textures[4];
 		int selectedTexture;
+		Texture textures[4];
 		Material mat;
+
+		// Note(ck): For saving and loading scene files
+		RenderType type;
 
 		bool visible;
 		// TODO(ck): More collider specific info

@@ -40,7 +40,7 @@ namespace Mon
 
 		union
 		{
-			ButtonState buttons[8];
+			ButtonState buttons[20];
 			struct
 			{
 				ButtonState up;
@@ -60,6 +60,8 @@ namespace Mon
 				ButtonState num1;
 				ButtonState num2;
 				ButtonState num3;
+				ButtonState r;
+				ButtonState f;
 				ButtonState quit;
 			};
 		};
