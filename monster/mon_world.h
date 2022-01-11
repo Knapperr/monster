@@ -46,6 +46,20 @@ namespace Mon {
 		return entity;
 	}
 
+	static void ClearEntity(World* world, unsigned int index)
+	{
+		Entity* entity = 0;
+		if ((index > 0) && (index < ArrayCount(world->entities)))
+		{
+			entity = &world->entities[index];
+
+			entity->data = {};
+			entity->collider = {};
+			entity->setup = {};
+			entity->name = "";
+		}
+	}
+
 	static MonGL::InstancedData* GetInstancedData(World* world, unsigned int index)
 	{
 		MonGL::InstancedData* data = 0;

@@ -73,7 +73,7 @@ namespace MonGL
 		int lineWidth;
 
 		v3 color;
-		v3 scale;
+		v3 scale = v3(1.0f);
 		mat4 worldMatrix;
 
 		std::string texturePath;

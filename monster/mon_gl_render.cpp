@@ -118,7 +118,7 @@ namespace MonGL
 
 		data->type = RenderType::Quad;
 		data->visible = true;
-		data->scale = v3(1.0f);
+		//data->scale = v3(1.0f);
 	}
 
 	void InitBoundingBox(RenderData* data)

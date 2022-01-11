@@ -14,13 +14,14 @@ void WriteEntities(Mon::Entity* entities, unsigned int entityCount, int shaderID
 	std::ofstream file;
 	file.open("scene_1.txt");
 
-	file << entityCount;
+	file << entityCount << "\n";
 
-	for (int i = 0; i < ArrayCount(&entities); ++i)
+	for (int i = 1; i < entityCount; ++i)
 	{
-		file << (int)entities[i].data.type << "\n"
-			 << entities[i].name << "\n"
+		file << entities[i].name << "\n"
+			 << (int)entities[i].data.type << "\n"
 			 << entities[i].rb.pos.x << "\n" << entities[i].rb.pos.y << "\n" << entities[i].rb.pos.z << "\n"
+			 << entities[i].data.scale.x << "\n" << entities[i].data.scale.y << "\n" << entities[i].data.scale.z << "\n"
 			 << shaderID << "\n"
 			 << entities[i].data.texturePath << "\n";
 	}
@@ -122,35 +123,6 @@ void loadEntities(Mon::Game* game)
 {
 	// TODO(ck): memory management should probably have something in the list to only reload part of it
 	// READ MEMORY FROM FILE
-	//game->entities.clear();
-#if 0
-	std::string line;
-	std::ifstream file("scene_1.txt");
-	if (!file.is_open())
-	{
-		printf("Failure to open file!");
-	}
-	while (file >> line)
-	{
-		Mon::Entity e = {};
-		e.name = line;
-		file >> e.rb.pos.x;
-		file >> e.rb.pos.y;
-		file >> e.rb.pos.z;
-
-		// TODO(ck): This is why a raw array needs to be used
-		// the render data needs to be rebuilt. Serialization I think 
-		// will take care of having to reload any rendering data.
-		int shaderID = 0;
-		std::string textPath = "";
-		file >> shaderID;
-		file >> textPath;
-
-		MonGL::InitQuad(&e.data);
-		MonGL::LoadTexture(&e.data, 0, MonGL::TextureType::Diffuse, shaderID, textPath);
-		//game->entities.push_back(e);
-	}
-#endif
 	std::string line;
 	std::ifstream file("scene_1.txt");
 	if (!file.is_open())
@@ -158,19 +130,15 @@ void loadEntities(Mon::Game* game)
 		Mon::Log::warn("Failure to open file!");
 		return;
 	}
-
-	// the file count should never be less than the size of the 
-	// current array
-
+	
+	// I don't think the size matters because the entities[] is a fixed size...
 	unsigned int count = 0;
 	file >> count;
-	Assert(count > ArrayCount(game->world->entities));
-	if (ArrayCount(game->world->entities) < count)
+	// Clear all of the entities
+	for (int i = 1; i < count; ++i)
 	{
-		// need to add the remaning entities to the 
-
+		Mon::ClearEntity(game->world, i);
 	}
-	
 
 	while (file >> line)
 	{
@@ -180,13 +148,25 @@ void loadEntities(Mon::Game* game)
 			loop through and InitQuad, InitCube, InitModel depending on the type
 			do not forget to load their textures as well
 		*/
+
 		for (int i = 1; i < (game->world->entityCount); ++i)
 		{
 			Mon::Entity* e = Mon::GetEntity(game->world, i);
-			e->name = line;
+			int renderType = -1;
+			
+			if (i == 1)
+				e->name = line;
+			else
+				file >> e->name;
+
+			file >> renderType;
 			file >> e->rb.pos.x;
 			file >> e->rb.pos.y;
 			file >> e->rb.pos.z;
+
+			file >> e->data.scale.x;
+			file >> e->data.scale.y;
+			file >> e->data.scale.z;
 
 			// TODO(ck): This is why a raw array needs to be used
 			// the render data needs to be rebuilt. Serialization I think 
@@ -197,6 +177,7 @@ void loadEntities(Mon::Game* game)
 			file >> textPath;
 			
 			// Init Render data
+			e->data.type = (MonGL::RenderType)renderType;
 			switch (e->data.type)
 			{
 				case MonGL::RenderType::Quad:
@@ -216,6 +197,7 @@ void loadEntities(Mon::Game* game)
 			MonGL::LoadTexture(&e->data, 0, MonGL::TextureType::Diffuse, shaderID, textPath);
 
 		}
+		int x = 1;
 	}
 }
 #endif
