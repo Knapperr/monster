@@ -181,6 +181,8 @@ namespace MonGL
 	void BeginRender(Config* config, mat4 projection, mat4 view, int shaderID);
 	void ViewPort(Rect* port);
 	
+	void LoadImpFile(RenderData* data);
+
 	void InitInstancedData(InstancedData* data, int amount);
 	void InitQuad(RenderData* data, bool tangents = false);
 	void InitCube(RenderData* data);

@@ -5,10 +5,10 @@
 float inputTimer = 0.0f;
 
 // TODO(ck): open files with current platform layer
-// TODO(ck): Entities are saved and loaded in order that they appear in
-//			 the array.
 #include <fstream>
 #ifdef _3D_GUI_
+
+// TODO(ck): Write WORLD not entities
 void WriteEntities(Mon::Entity* entities, unsigned int entityCount, int shaderID)
 {
 	std::ofstream file;
@@ -25,6 +25,12 @@ void WriteEntities(Mon::Entity* entities, unsigned int entityCount, int shaderID
 			 << shaderID << "\n"
 			 << entities[i].data.texturePath << "\n";
 	}
+
+	// TODO(ck):
+	// Cube and Quad still use imp file because we still need their texture paths???
+	// if (entities[i].data.type == MonGL::RenderType.Model)
+	//	file << entities.impFilePath;
+	
 
 	file.close();
 }
@@ -119,7 +125,7 @@ void writeImpFile(Mon::Game* game)
 	}
 }
 
-void loadEntities(Mon::Game* game)
+void LoadSceneFile(Mon::Game* game)
 {
 	// TODO(ck): memory management should probably have something in the list to only reload part of it
 	// READ MEMORY FROM FILE
@@ -148,6 +154,9 @@ void loadEntities(Mon::Game* game)
 			loop through and InitQuad, InitCube, InitModel depending on the type
 			do not forget to load their textures as well
 		*/
+		// TODO(ck):
+		// file >> line --- to get rid of the #Entities line because the world will read this file
+		//					not just the entities array
 
 		for (int i = 1; i < (game->world->entityCount); ++i)
 		{
@@ -175,7 +184,8 @@ void loadEntities(Mon::Game* game)
 			std::string textPath = "";
 			file >> shaderID;
 			file >> textPath;
-			
+
+			// TODO(ck): IMPORTANT(ck): Remove the rendertype we don't need this anymore EVERYTHING WILL USE AN IMP FILE
 			// Init Render data
 			e->data.type = (MonGL::RenderType)renderType;
 			switch (e->data.type)
@@ -187,6 +197,7 @@ void loadEntities(Mon::Game* game)
 					MonGL::InitCube(&e->data);
 					break;
 				case MonGL::RenderType::Model:
+					// Load Imp File 
 					MonGL::InitModel(&e->data);
 					break;
 				default:
@@ -195,9 +206,7 @@ void loadEntities(Mon::Game* game)
 			}
 			// Load textures
 			MonGL::LoadTexture(&e->data, 0, MonGL::TextureType::Diffuse, shaderID, textPath);
-
 		}
-		int x = 1;
 	}
 }
 #endif
@@ -680,7 +689,7 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 		ImGui::SameLine();
 		if (ImGui::Button("load")) 
 		{ 
-			loadEntities(game); 
+			LoadSceneFile(game); 
 			Mon::Log::print("Loaded last saved scene");
 		}
 		ImGui::SameLine();

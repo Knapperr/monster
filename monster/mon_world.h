@@ -9,8 +9,7 @@ namespace Mon {
 	struct World
 	{
 		unsigned int entityCount;
-		Entity entities[100];
-		Entity* player;
+		Entity entities[256];
 
 		unsigned int instancedDataCount;
 		MonGL::InstancedData instancedData[2];
@@ -20,7 +19,7 @@ namespace Mon {
 	{
 		unsigned int entityIndex = world->entityCount++;
 
-		Entity* entity = &world->entities[world->entityCount];
+		Entity* entity = &world->entities[entityIndex];
 		entity = {};
 
 		return entityIndex;
@@ -43,6 +42,13 @@ namespace Mon {
 		{
 			entity = &world->entities[index];
 		}
+		return entity;
+	}
+
+	static Entity* GetPlayer(World* world)
+	{
+		Entity* entity = 0;
+		entity = &world->entities[1];
 		return entity;
 	}
 
@@ -75,33 +81,33 @@ namespace Mon {
 
 	}
 
-	static void InitPlayer(World* world, int shaderHandle)
+	static void InitPlayer(Entity* player, int shaderHandle)
 	{
 		// TODO(ck): MEMORY MANAGEMENT
-		world->player = new Entity();
-		world->player->name = "player";
-		world->player->setup = {};
-		MonGL::InitQuad(&world->player->data);
-		MonGL::LoadTexture(&world->player->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/p1SIDERIGHT.png");
-		MonGL::LoadTexture(&world->player->data, 1, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/p1.png");
-		MonGL::LoadTexture(&world->player->data, 2, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/p1SIDE.png");
-		MonGL::LoadTexture(&world->player->data, 3, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/p1BACK.png");
-		world->player->facingDir = 0;
+		//world->player = new Entity();
+		player->name = "player";
+		player->setup = {};
+		MonGL::InitQuad(&player->data);
+		MonGL::LoadTexture(&player->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/p1SIDERIGHT.png");
+		MonGL::LoadTexture(&player->data, 1, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/p1.png");
+		MonGL::LoadTexture(&player->data, 2, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/p1SIDE.png");
+		MonGL::LoadTexture(&player->data, 3, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/p1BACK.png");
+		player->facingDir = 0;
 
-		InitBoxCollider(&world->player->collider);
-		world->player->rb.pos = v3(40.0f, 0.1f, 10.0);
-		world->player->rb.inverseMass = 10.0f;
-		world->player->rb.velocity = v3(0.0f, 0.0f, 0.0f); // 35m/s
-		world->player->rb.gravity = 10.0f;
-		world->player->rb.acceleration = v3(-40.0f, 0.0f, 0.0f);
-		world->player->rb.orientation = v3(1.0f, 1.0f, 1.0);
-		world->player->rb.damping = 0.9f;
-		world->player->rb.speed = 50.0f;
+		InitBoxCollider(&player->collider);
+		player->rb.pos = v3(40.0f, 0.1f, 10.0);
+		player->rb.inverseMass = 10.0f;
+		player->rb.velocity = v3(0.0f, 0.0f, 0.0f); // 35m/s
+		player->rb.gravity = 10.0f;
+		player->rb.acceleration = v3(-40.0f, 0.0f, 0.0f);
+		player->rb.orientation = v3(1.0f, 1.0f, 1.0);
+		player->rb.damping = 0.9f;
+		player->rb.speed = 50.0f;
 
-		world->player->data.mat.ambient = v3(1.0f, 0.5f, 0.6f);
-		world->player->data.mat.diffuse = v3(1.0f, 0.5f, 0.31f);
-		world->player->data.mat.specular = v3(0.5f, 0.5f, 0.5f);
-		world->player->data.mat.shininess = 32.0f;
+		player->data.mat.ambient = v3(1.0f, 0.5f, 0.6f);
+		player->data.mat.diffuse = v3(1.0f, 0.5f, 0.31f);
+		player->data.mat.specular = v3(0.5f, 0.5f, 0.5f);
+		player->data.mat.shininess = 32.0f;
 	}
 
 	static void InitWorld(World* world, int shaderHandle)
@@ -109,7 +115,13 @@ namespace Mon {
 		// reserve slot 0 for null entity
 		AddEntity(world);
 
-		for (int i = 1; i < 10; ++i)
+		// reserve slot 1 for player entity
+		AddEntity(world);
+		Entity* player = GetPlayer(world);
+		InitPlayer(player, shaderHandle);
+		
+		
+		for (int i = world->entityCount; i < 10; ++i)
 		{
 			AddEntity(world);
 			Entity* tree = GetEntity(world, i);

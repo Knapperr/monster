@@ -29,6 +29,14 @@ struct Settings
 	int vsync;
 };
 
+// Use for showing assets from folder and loading
+struct ImpAsset
+{
+	std::string name;
+	std::string impFilePath;
+	bool loaded;
+};
+
 extern float inputTimer;
 
 #ifdef USE_SDL

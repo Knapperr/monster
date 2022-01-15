@@ -35,7 +35,7 @@ namespace Mon
 		// TODO(ck): MEMORY MANAGEMENT
 		world = new World();
 		InitWorld(world, shader.handle);
-		InitPlayer(world, shader.handle);
+		
 
 		light = {};
 		v3 lightColor = v3(0.2f, 0.3f, 0.6f);
@@ -100,63 +100,69 @@ namespace Mon
 		return true;
 	}
 
-	// TODO(ck): Should this param be pointer?
 	// should velocity be acceleratio?
-	void Game::movePlayer(v3* velocity)
+	void Game::movePlayer(World* world, v3* velocity)
 	{
+		Entity* player = GetPlayer(world);
+
 		// ddPLength
 		float velocityLength = lengthSq(*velocity);
 		if (velocityLength > 1.0f)
 		{
 			*velocity *= (1.0f / squareRoot(velocityLength));
 		}
-		*velocity *= world->player->rb.speed;
 
-		*velocity += -7.0f * world->player->rb.velocity;
+		float speed = player->rb.speed;
+		if (input.shift.endedDown)
+			speed *= 1.5f;
+
+		*velocity *= speed;
+
+		*velocity += -7.0f * player->rb.velocity;
 
 		
-		v3 oldPos = world->player->rb.pos;
+		v3 oldPos = player->rb.pos;
 		v3 newPos = oldPos;
-		float deltaX = (0.5f * velocity->x * square(deltaTime) + world->player->rb.velocity.x * deltaTime);
-		float deltaY = world->player->rb.velocity.y;
+		float deltaX = (0.5f * velocity->x * square(deltaTime) + player->rb.velocity.x * deltaTime);
+		float deltaY = player->rb.velocity.y;
 		//float deltaY = velocity->y * square(deltaTime) + player.particle.velocity.y * deltaTime);
-		float deltaZ = (0.5f * velocity->z * square(deltaTime) + world->player->rb.velocity.z * deltaTime);
+		float deltaZ = (0.5f * velocity->z * square(deltaTime) + player->rb.velocity.z * deltaTime);
 		v3 delta = { deltaX, deltaY, deltaZ };
 
 		// TODO(ck): need to set an offest like casey does
 		newPos += delta;
 
-		world->player->rb.velocity.x = velocity->x * deltaTime + world->player->rb.velocity.x;
-		world->player->rb.velocity.z = velocity->z * deltaTime + world->player->rb.velocity.z;
+		player->rb.velocity.x = velocity->x * deltaTime + player->rb.velocity.x;
+		player->rb.velocity.z = velocity->z * deltaTime + player->rb.velocity.z;
 
-		world->player->rb.pos = newPos;
+		player->rb.pos = newPos;
 
 
-		if ((world->player->rb.velocity.x == 0.0f) && (world->player->rb.velocity.z == 0.0f))
+		if ((player->rb.velocity.x == 0.0f) && (player->rb.velocity.z == 0.0f))
 		{
 			// NOTE(ck): Leave facingDirection whatever it was 
 		}
-		else if (absoluteValue(world->player->rb.velocity.x) > absoluteValue(world->player->rb.velocity.z))
+		else if (absoluteValue(player->rb.velocity.x) > absoluteValue(player->rb.velocity.z))
 		{
-			if (world->player->rb.velocity.x > 0)
+			if (player->rb.velocity.x > 0)
 			{
-				world->player->facingDir = 0; // right
+				player->facingDir = 0; // right
 			}
 			else
 			{
-				world->player->facingDir = 2; // left
+				player->facingDir = 2; // left
 			}
 		}
 		else
 		{
-			if (world->player->rb.velocity.z > 0)
+			if (player->rb.velocity.z > 0)
 			{
-				world->player->facingDir = 1; // back
+				player->facingDir = 1; // back
 
 			}
 			else
 			{
-				world->player->facingDir = 3; // front
+				player->facingDir = 3; // front
 			}
 
 		}
@@ -253,11 +259,12 @@ namespace Mon
 					velocity.x = -1.0f;
 				if (input.right.endedDown)
 					velocity.x = 1.0f;
-				if (input.space.endedDown)
-					velocity.y = 1.0f;
 			}
 			// PIPE velocity to function
-			movePlayer(&velocity);
+			movePlayer(world, &velocity);
+
+
+
 		}
 		//player.particle.velocity *= player.particle.speed;
 		//player.particle.pos.x += player.particle.velocity.x * dt;
@@ -284,12 +291,13 @@ namespace Mon
 		// ==================================================
 #endif
 
+		Entity* player = GetPlayer(world);
 		// player collider
-		colliderPos = { world->player->rb.pos.x - (0.5f),
-					world->player->rb.pos.y - (0.5),
-					world->player->rb.pos.z - (0.5f) };
+		colliderPos = { player->rb.pos.x - (0.5f),
+					player->rb.pos.y - (0.5),
+					player->rb.pos.z - (0.5f) };
 
-		UpdateCollider(&world->player->collider, colliderPos, world->player->data.scale);
+		UpdateCollider(&player->collider, colliderPos, player->data.scale);
 
 		//
 		//	ENTITIES UPDATE
@@ -302,7 +310,7 @@ namespace Mon
 		//
 		Camera* cam = getCamera(this, currCameraIndex);
 		Update(cam, deltaTime, &input,
-			   world->player->rb.pos, world->player->rb.orientation, true);
+			   player->rb.pos, player->rb.orientation, true);
 
 		//
 		// MOUSE PICKER
@@ -333,17 +341,18 @@ namespace Mon
 		//
 		// PLAYER DRAW
 		//
+		Entity* player = GetPlayer(world);
 		if (drawCollisions)
 		{
 			MonGL::DrawBoundingBox(&terrain->collider.data, cam, shader.handle);
-			MonGL::DrawBoundingBox(&world->player->collider.data, cam, shader.handle);
+			MonGL::DrawBoundingBox(&player->collider.data, cam, shader.handle);
 
 			// DEBUG =============================================================
 			MonGL::DrawBoundingBox(&debugEnt.collider.data, cam, shader.handle);
 			// ===================================================================
 		}
 		MonGL::DrawTerrain(shader.handle, &terrain->mesh, &light, cam, terrain->wireFrame);
-		MonGL::Draw(config, &world->player->data, world->player->rb.pos, cam, shader.handle, world->player->facingDir);
+		MonGL::Draw(config, &player->data, player->rb.pos, cam, shader.handle, player->facingDir);
 
 		//
 		// ENTITIES DRAW
@@ -369,9 +378,10 @@ namespace Mon
 
 	void Game::cleanUp()
 	{
+		// IMPORTANT(ck):
 		// TODO(ck): clean up render data 
-		glDeleteVertexArrays(1, &world->player->data.VAO);
-		glDeleteBuffers(1, &world->player->data.VBO);
+		//glDeleteVertexArrays(1, &world->player->data.VAO);
+		//glDeleteBuffers(1, &world->player->data.VBO);
 		MonGL::DeleteShader(&shader);
 	}
 

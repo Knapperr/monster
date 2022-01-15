@@ -36,7 +36,7 @@ namespace Mon
 	{
 	public:
 		bool init(int windowWidth, int windowHeight, float portWidth, float portHeight);
-		void movePlayer(v3* velocity);
+		void movePlayer(World* world, v3* velocity);
 		void update(double dt, Input* newInput);
 		void render(double dt);
 		void cleanUp();
@@ -89,7 +89,7 @@ namespace Mon
 	{
 		unsigned int cameraIndex = game->cameraCount++;
 
-		Camera* c = &game->cameras[game->cameraCount];
+		Camera* c = &game->cameras[cameraIndex];
 		c = {};
 
 		return cameraIndex;
