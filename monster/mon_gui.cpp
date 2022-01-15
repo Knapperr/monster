@@ -168,6 +168,11 @@ void LoadSceneFile(Mon::Game* game)
 			else
 				file >> e->name;
 
+			if (e->name == "player")
+			{
+				Mon::InitPlayer(e, game->shader.handle);
+			}
+
 			file >> renderType;
 			file >> e->rb.pos.x;
 			file >> e->rb.pos.y;
@@ -205,7 +210,10 @@ void LoadSceneFile(Mon::Game* game)
 					break;
 			}
 			// Load textures
-			MonGL::LoadTexture(&e->data, 0, MonGL::TextureType::Diffuse, shaderID, textPath);
+			if (e->name != "player")
+			{
+				MonGL::LoadTexture(&e->data, 0, MonGL::TextureType::Diffuse, shaderID, textPath);
+			}
 		}
 	}
 }

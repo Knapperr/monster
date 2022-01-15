@@ -297,7 +297,7 @@ namespace Mon
 					player->rb.pos.y - (0.5),
 					player->rb.pos.z - (0.5f) };
 
-		UpdateCollider(&player->collider, colliderPos, player->data.scale);
+		//UpdateCollider(&player->collider, colliderPos, player->data.scale);
 
 		//
 		//	ENTITIES UPDATE

@@ -88,6 +88,8 @@ namespace Mon {
 		player->name = "player";
 		player->setup = {};
 		MonGL::InitQuad(&player->data);
+
+		// IMPORTANT(ck): These cant be loaded again if they are already loaded..
 		MonGL::LoadTexture(&player->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/p1SIDERIGHT.png");
 		MonGL::LoadTexture(&player->data, 1, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/p1.png");
 		MonGL::LoadTexture(&player->data, 2, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/p1SIDE.png");
