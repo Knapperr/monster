@@ -19,11 +19,12 @@ void WriteEntities(Mon::Entity* entities, unsigned int entityCount, int shaderID
 	for (int i = 1; i < entityCount; ++i)
 	{
 		file << entities[i].name << "\n"
-			 << (int)entities[i].data.type << "\n"
-			 << entities[i].rb.pos.x << "\n" << entities[i].rb.pos.y << "\n" << entities[i].rb.pos.z << "\n"
-			 << entities[i].data.scale.x << "\n" << entities[i].data.scale.y << "\n" << entities[i].data.scale.z << "\n"
-			 << shaderID << "\n"
-			 << entities[i].data.texturePath << "\n";
+			<< (int)entities[i].data.type << "\n"
+			<< entities[i].rb.pos.x << "\n" << entities[i].rb.pos.y << "\n" << entities[i].rb.pos.z << "\n"
+			<< entities[i].data.scale.x << "\n" << entities[i].data.scale.y << "\n" << entities[i].data.scale.z << "\n"
+			<< shaderID << "\n"
+			<< entities[i].impPath << "\n"
+			<< entities[i].data.texturePath << "\n";
 	}
 
 	// TODO(ck):
@@ -35,7 +36,60 @@ void WriteEntities(Mon::Entity* entities, unsigned int entityCount, int shaderID
 	file.close();
 }
 
-void LoadImpFile(Mon::Game* game)
+void LoadImpFile(Mon::Entity* e, std::string fileName)
+{
+	std::ifstream file(fileName);
+	if (!file.is_open())
+	{
+		Mon::Log::print("Failure to open file");
+	}
+
+	std::string line;
+	while (file >> line)
+	{
+		// Get the name and the size of the vertices & indices here
+		e->name = line;
+		file >> e->data.verticeCount;
+		file >> e->data.indiceCount;
+		break;
+	}
+
+	e->data.vertices = new MonGL::Vertex3D[e->data.verticeCount];
+	e->data.indices = new unsigned int[e->data.indiceCount];
+
+	while (file >> line)
+	{
+		for (int i = 0; i < e->data.verticeCount; ++i)
+		{
+			if (i == 0)
+				e->data.vertices[i].position.x = std::stof(line);
+			else
+				file >> e->data.vertices[i].position.x;
+
+			file >> e->data.vertices[i].position.y;
+			file >> e->data.vertices[i].position.z;
+			file >> e->data.vertices[i].normal.x;
+			file >> e->data.vertices[i].normal.y;
+			file >> e->data.vertices[i].normal.z;
+			file >> e->data.vertices[i].texCoords.x;
+			file >> e->data.vertices[i].texCoords.y;
+			file >> e->data.vertices[i].tangent.x;
+			file >> e->data.vertices[i].tangent.y;
+			file >> e->data.vertices[i].tangent.z;
+			file >> e->data.vertices[i].bitangent.x;
+			file >> e->data.vertices[i].bitangent.y;
+			file >> e->data.vertices[i].bitangent.z;
+		}
+		for (int j = 0; j < e->data.indiceCount; ++j)
+		{
+			file >> e->data.indices[j];
+		}
+	}
+	file.close();
+
+}
+
+void LoadImpGrassFile(Mon::Game* game)
 {
 	std::ifstream file("test_grass.imp");
 	if (!file.is_open())
@@ -96,6 +150,7 @@ void LoadImpFile(Mon::Game* game)
 	MonGL::LoadTexture(&e->data, 0, MonGL::TextureType::Diffuse, game->shader.handle, "res/textures/grass.png", false);
 	e->rb.pos = Mon::v3(10.0f, 0.3f, 20.0f);
 	MonGL::InitBoundingBox(&e->collider.data);
+	e->impPath = "test_grass.imp";
 }
 
 void writeImpFile(Mon::Game* game)
@@ -140,12 +195,20 @@ void LoadSceneFile(Mon::Game* game)
 	// I don't think the size matters because the entities[] is a fixed size...
 	unsigned int count = 0;
 	file >> count;
+	
+	// Add extra entities to increment the entityCount
+	for (unsigned int i = game->world->entityCount; i < count; i++)
+	{
+		Mon::AddEntity(game->world);
+	}
 	// Clear all of the entities
 	for (int i = 1; i < count; ++i)
 	{
 		Mon::ClearEntity(game->world, i);
 	}
 
+	bool finished = false;
+	int index = 1;
 	while (file >> line)
 	{
 		/*
@@ -157,13 +220,13 @@ void LoadSceneFile(Mon::Game* game)
 		// TODO(ck):
 		// file >> line --- to get rid of the #Entities line because the world will read this file
 		//					not just the entities array
-
-		for (int i = 1; i < (game->world->entityCount); ++i)
+		
+		while (index < game->world->entityCount)
 		{
-			Mon::Entity* e = Mon::GetEntity(game->world, i);
+			Mon::Entity* e = Mon::GetEntity(game->world, index);
 			int renderType = -1;
-			
-			if (i == 1)
+
+			if (index == 1)
 				e->name = line;
 			else
 				file >> e->name;
@@ -188,13 +251,16 @@ void LoadSceneFile(Mon::Game* game)
 			int shaderID = 0;
 			std::string textPath = "";
 			file >> shaderID;
+			file >> e->impPath;
 			file >> textPath;
 
 			// TODO(ck): IMPORTANT(ck): Remove the rendertype we don't need this anymore EVERYTHING WILL USE AN IMP FILE
 			// Init Render data
 			e->data.type = (MonGL::RenderType)renderType;
-			switch (e->data.type)
+			if (e->name != "player")
 			{
+				switch (e->data.type)
+				{
 				case MonGL::RenderType::Quad:
 					MonGL::InitQuad(&e->data);
 					break;
@@ -203,17 +269,21 @@ void LoadSceneFile(Mon::Game* game)
 					break;
 				case MonGL::RenderType::Model:
 					// Load Imp File 
+					LoadImpFile(e, e->impPath);
 					MonGL::InitModel(&e->data);
 					break;
 				default:
 					MonGL::InitModel(&e->data);
 					break;
-			}
-			// Load textures
-			if (e->name != "player")
-			{
+				}
+
+				// Load textures
 				MonGL::LoadTexture(&e->data, 0, MonGL::TextureType::Diffuse, shaderID, textPath);
 			}
+
+
+			//Mon::Log::print("Entity loaded");
+			++index;
 		}
 	}
 }
@@ -430,7 +500,7 @@ void EntityWindow(bool* p_open, Mon::Game* game)
 	ImGui::SameLine();
 	if (ImGui::Button("Load imp file"))
 	{
-		LoadImpFile(game);
+		LoadImpGrassFile(game);
 	}
 	
 	// NOTE(ck): Write the .imp model to a file 
@@ -698,7 +768,8 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 		if (ImGui::Button("load")) 
 		{ 
 			LoadSceneFile(game); 
-			Mon::Log::print("Loaded last saved scene");
+			Mon::Log::print("Loaded saved scene");
+			Mon::Log::warn("Only one master save file active!!!");
 		}
 		ImGui::SameLine();
 

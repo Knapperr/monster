@@ -10,6 +10,10 @@ namespace Mon {
 	{
 		unsigned int entityCount;
 		Entity entities[256];
+		// TODO(ck): Not sure if I want things like trees but they can go into instanced data I guess?
+		// might still want to have trees in entities because they can be attacked or respond to player interaction?
+		// StaticEntities??? staticEntities[256];
+		
 
 		unsigned int instancedDataCount;
 		MonGL::InstancedData instancedData[2];
@@ -110,6 +114,13 @@ namespace Mon {
 		player->data.mat.diffuse = v3(1.0f, 0.5f, 0.31f);
 		player->data.mat.specular = v3(0.5f, 0.5f, 0.5f);
 		player->data.mat.shininess = 32.0f;
+
+		player->impPath = "none";
+	}
+
+	static void PlayerAttack(Entity* player)
+	{
+
 	}
 
 	static void InitWorld(World* world, int shaderHandle)
@@ -130,6 +141,7 @@ namespace Mon {
 
 			tree->setup = {};
 			tree->name = "tree_" + std::to_string(i);
+			tree->impPath = "none";
 			MonGL::InitQuad(&tree->data);
 			MonGL::LoadTexture(&tree->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/tree.png");
 			tree->rb.pos = v3(6.0f * (i + 1), 5.30f, 5.5f * i);
@@ -145,6 +157,7 @@ namespace Mon {
 
 			flower->setup = {};
 			flower->name = "flower_" + std::to_string(i);
+			flower->impPath = "none";
 			MonGL::InitQuad(&flower->data);
 			MonGL::LoadTexture(&flower->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/sflow_tall.png");
 			flower->rb.pos = v3(10.0f, 0.1f, 6.0f);
@@ -156,6 +169,7 @@ namespace Mon {
 		Entity* cube = GetEntity(world, world->entityCount - 1);
 		cube->setup = {};
 		cube->name = "cube_1";
+		cube->impPath = "none";
 		MonGL::InitCube(&cube->data);
 		MonGL::LoadTexture(&cube->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/container2.png");
 		cube->rb.pos = v3(50.0f, 0.3f, 20.0f);
@@ -182,6 +196,7 @@ namespace Mon {
 		Entity* cube = GetEntity(world, world->entityCount - 1);
 		cube->setup = {};
 		cube->name = "cube_" + std::to_string(world->entityCount-1);
+		cube->impPath = "none";
 		MonGL::InitCube(&cube->data);
 		MonGL::LoadTexture(&cube->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/container2.png");
 		cube->rb.pos = v3(10.0f, 0.3f, 20.0f);

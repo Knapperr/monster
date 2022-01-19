@@ -41,6 +41,7 @@ namespace Mon {
 	struct Entity
 	{
 		std::string name;
+		std::string impPath;
 		RigidBody rb;
 		MonGL::RenderData data;
 		MonGL::RenderSetup setup;
