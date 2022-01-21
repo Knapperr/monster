@@ -362,7 +362,8 @@ namespace Mon
 		MonGL::Draw(config, &debugEnt.data, debugEnt.rb.pos, cam, shader.handle);
 		// ============================================================================
 
-		for (int i = 1; i < world->entityCount; ++i)
+		// IMPORTANT(ck): start at index 2 player is being drawn above right now.
+		for (int i = 2; i < world->entityCount; ++i)
 		{
 			Entity e = world->entities[i];
 

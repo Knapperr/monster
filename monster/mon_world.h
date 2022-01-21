@@ -63,8 +63,8 @@ namespace Mon {
 		{
 			entity = &world->entities[index];
 
-			entity->data = {};
 			entity->collider = {};
+			entity->data = {};
 			entity->setup = {};
 			entity->name = "";
 		}

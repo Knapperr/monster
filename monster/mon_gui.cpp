@@ -39,54 +39,72 @@ void WriteEntities(Mon::Entity* entities, unsigned int entityCount, int shaderID
 void LoadImpFile(Mon::Entity* e, std::string fileName)
 {
 	std::ifstream file(fileName);
-	if (!file.is_open())
+	file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+	int index;
+	try
 	{
-		Mon::Log::print("Failure to open file");
-	}
-
-	std::string line;
-	while (file >> line)
-	{
-		// Get the name and the size of the vertices & indices here
-		e->name = line;
-		file >> e->data.verticeCount;
-		file >> e->data.indiceCount;
-		break;
-	}
-
-	e->data.vertices = new MonGL::Vertex3D[e->data.verticeCount];
-	e->data.indices = new unsigned int[e->data.indiceCount];
-
-	while (file >> line)
-	{
-		for (int i = 0; i < e->data.verticeCount; ++i)
+		if (!file.is_open())
 		{
-			if (i == 0)
-				e->data.vertices[i].position.x = std::stof(line);
-			else
-				file >> e->data.vertices[i].position.x;
-
-			file >> e->data.vertices[i].position.y;
-			file >> e->data.vertices[i].position.z;
-			file >> e->data.vertices[i].normal.x;
-			file >> e->data.vertices[i].normal.y;
-			file >> e->data.vertices[i].normal.z;
-			file >> e->data.vertices[i].texCoords.x;
-			file >> e->data.vertices[i].texCoords.y;
-			file >> e->data.vertices[i].tangent.x;
-			file >> e->data.vertices[i].tangent.y;
-			file >> e->data.vertices[i].tangent.z;
-			file >> e->data.vertices[i].bitangent.x;
-			file >> e->data.vertices[i].bitangent.y;
-			file >> e->data.vertices[i].bitangent.z;
+			Mon::Log::print("Failure to open file");
 		}
-		for (int j = 0; j < e->data.indiceCount; ++j)
+
+		std::string line;
+		while (file >> line)
 		{
-			file >> e->data.indices[j];
+			// Get the name and the size of the vertices & indices here
+			e->name = line;
+			file >> e->data.verticeCount;
+			file >> e->data.indiceCount;
+			break;
+		}
+
+		e->data.vertices = new MonGL::Vertex3D[e->data.verticeCount];
+		e->data.indices = new unsigned int[e->data.indiceCount];
+
+		while (file >> line)
+		{
+			for (int i = 0; i < e->data.verticeCount; ++i)
+			{
+				index = i;
+
+				if (i == 0)
+					e->data.vertices[i].position.x = std::stof(line);
+				else
+					file >> e->data.vertices[i].position.x;
+
+				file >> e->data.vertices[i].position.y;
+				file >> e->data.vertices[i].position.z;
+				file >> e->data.vertices[i].normal.x;
+				file >> e->data.vertices[i].normal.y;
+				file >> e->data.vertices[i].normal.z;
+				file >> e->data.vertices[i].texCoords.x;
+				file >> e->data.vertices[i].texCoords.y;
+				file >> e->data.vertices[i].tangent.x;
+				file >> e->data.vertices[i].tangent.y;
+				file >> e->data.vertices[i].tangent.z;
+				file >> e->data.vertices[i].bitangent.x;
+				file >> e->data.vertices[i].bitangent.y;
+				file >> e->data.vertices[i].bitangent.z;
+			}
+
+			for (int j = 0; j < e->data.indiceCount; ++j)
+			{
+				index = j;
+				file >> e->data.indices[j];
+			}
+
+			// finished
+			break;
 		}
 	}
+	catch (std::ifstream::failure& ex)
+	{
+		Mon::Log::print("File read failed");
+		Mon::Log::print(ex.what());
+		int x = index;
+	}
+
 	file.close();
-
 }
 
 void LoadImpGrassFile(Mon::Game* game)
@@ -308,7 +326,7 @@ const char* GetSwapInterval()
 
 void InitGui(SDL_Window* window, SDL_GLContext* context)
 {
-	const char* glsl_version = "#version 130";
+	const char* glsl_version = "#version 330";
 
 	// set up
 	IMGUI_CHECKVERSION();
