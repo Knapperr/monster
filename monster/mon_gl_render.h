@@ -85,12 +85,14 @@ namespace MonGL
 		RenderType type;
 
 		bool visible;
-		// TODO(ck): More collider specific info
+	};
 
-		//float pos;
-		// view 
-		// projection
-		// shader data?
+	// Change to batch data
+	struct BatchData3D
+	{
+		unsigned int VAO;
+		unsigned int VBO;
+		unsigned int EBO;
 	};
 
 	struct InstancedData
@@ -155,6 +157,8 @@ namespace MonGL
 		Texture texture;
 		unsigned int VAO;
 		unsigned int VBO;
+
+		// TODO(ck): Should this use a point?? probably
 		//Point pos;
 		v2 pos;
 		v3 color;
@@ -205,7 +209,7 @@ namespace MonGL
 	//
 	// 2d
 	//
-	void InitRenderData2D(RenderData2D* sprite);
+	void InitRenderData2D(RenderData2D* sprite, int size);
 	
 	void InitTileMap(int tileAmount);
 	void FillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize);

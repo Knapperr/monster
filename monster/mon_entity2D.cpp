@@ -3,12 +3,12 @@
 namespace Mon
 {
 
-	void initEntity(Entity2D* e, const char* fileLocation, bool isAlpha, v2 position)
+	void initEntity(Entity2D* e, const char* fileLocation, bool isAlpha, v2 position, int size)
 	{
 		e->sprite = {};
 		// TODO(ck): Don't automatically make opengl data... figure out what renderer we are using
 		// TODO(ck): Texture load in renderer we need the sprite size from the texture
-		MonGL::InitRenderData2D(&e->sprite);
+		MonGL::InitRenderData2D(&e->sprite, size);
 		LoadTextureFile(&e->sprite.texture, fileLocation, MonGL::TextureType::Diffuse, isAlpha, false, true);
 
 		e->pos = position;
@@ -23,7 +23,7 @@ namespace Mon
 		e->sprite.size.y = e->sprite.texture.height;
 
 		// TODO(ck): Deal with speed
-		e->speed = 150.0f;
+		e->speed = 100.0f;
 		e->maxSpeed = 250.0f;
 		
 		e->rotation = 0.0f;

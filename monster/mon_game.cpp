@@ -2,6 +2,9 @@
 
 #include "handmade_random.h"
 
+#include <algorithm>
+
+
 namespace Mon
 {
 	// Should this be part of the gui???
@@ -82,20 +85,9 @@ namespace Mon
 		selectedIndex = 1;
 		drawCollisions = true;
 
-		state = State::Debug;
-
-		// Debug cube entity
-		//AddEntity(world);
-		//Entity* debugEnt = GetEntity(world, world->entityCount - 1);
-		debugEnt.setup = {};
-		debugEnt.name = "debug_cube";
-		MonGL::InitCube(&debugEnt.data);
-		MonGL::LoadTexture(&debugEnt.data, 0, MonGL::TextureType::Diffuse, shader.handle, "res/textures/container2.png");
-		debugEnt.rb.pos = v3(24.0f, 0.2f, 10.0f);
-		InitBoxCollider(&debugEnt.collider);
-		// =======================================
-
 		picker = {};
+
+		state = State::Debug;
 
 		return true;
 	}
@@ -195,6 +187,29 @@ namespace Mon
 		}
 	}
 
+	//bool sortEntities(Entity leftEnt, Entity rightEnt)
+	//{
+	//	//Camera* cam = getCamera(this, currCameraIndex);
+
+
+	//	float distToCameraA = glm::distance(leftEnt.rb.pos.z, 10.0f);
+	//	float distToCameraB = glm::distance(rightEnt.rb.pos.z, 1.0f);
+	//	return (distToCameraA > distToCameraB);
+	//}
+
+	void SortEntitiesFromCamera(Game* game)
+	{
+		
+		//for (int i = 1; i < game->world->entityCount; i++)
+		//{
+		//	Entity* e = GetEntity(game->world, i);
+		//	if (e->rb.pos <)
+		//}
+
+
+		//qsort(game->world->entities, game->world->entityCount, sizeof(Entity), sortEntities);
+	}
+
 	void Game::update(double dt, Input* newInput)
 	{
 		if (dt > deltaTime)
@@ -282,18 +297,9 @@ namespace Mon
 		//cam->update(deltaTime, &input, world->player->particle.pos, world->player->particle.orientation, true);
 		
 
-#if 1
-		// ============  update DEBUG collider  =============
-		v3 colliderPos = { debugEnt.rb.pos.x - (0.5f), debugEnt.rb.pos.y - (0.5),
-							debugEnt.rb.pos.z - (0.5f) };
-		SetBoxTransform(&debugEnt.collider, colliderPos, debugEnt.data.scale);
-		UpdateWorldPosToWorldMatrix(&debugEnt.collider);
-		// ==================================================
-#endif
-
 		Entity* player = GetPlayer(world);
 		// player collider
-		colliderPos = { player->rb.pos.x - (0.5f),
+		v3 colliderPos = { player->rb.pos.x - (0.5f),
 					player->rb.pos.y - (0.5),
 					player->rb.pos.z - (0.5f) };
 
@@ -311,6 +317,9 @@ namespace Mon
 		Camera* cam = getCamera(this, currCameraIndex);
 		Update(cam, deltaTime, &input,
 			   player->rb.pos, player->rb.orientation, true);
+		// sort the entities from the camera
+		//std::sort(world->entities, world->entities + world->entityCount, sortEntities);
+		
 
 		//
 		// MOUSE PICKER
@@ -322,6 +331,8 @@ namespace Mon
 		// DebugModule update?
 		RunDebugControls(&input, &picker, world, selectedIndex);
 		//world->player->particle.pos = picker.currentTerrainPoint;
+
+		
 	}
 
 	void Game::render(double dt)
@@ -339,31 +350,19 @@ namespace Mon
 		glUniform3fv(glGetUniformLocation(shader.handle, "light.specular"), 1, &light.specular[0]);
 		
 		//
-		// PLAYER DRAW
+		// TERRAIN
 		//
-		Entity* player = GetPlayer(world);
 		if (drawCollisions)
 		{
-			MonGL::DrawBoundingBox(&terrain->collider.data, cam, shader.handle);
-			MonGL::DrawBoundingBox(&player->collider.data, cam, shader.handle);
-
-			// DEBUG =============================================================
-			MonGL::DrawBoundingBox(&debugEnt.collider.data, cam, shader.handle);
-			// ===================================================================
+			MonGL::DrawBoundingBox(&terrain->collider.data, cam, shader.handle);	
 		}
 		MonGL::DrawTerrain(shader.handle, &terrain->mesh, &light, cam, terrain->wireFrame);
-		MonGL::Draw(config, &player->data, player->rb.pos, cam, shader.handle, player->facingDir);
-
+		
 		//
-		// ENTITIES DRAW
+		// ENTITIES
 		//
-
-		// DEBUG ======================================================================
-		MonGL::Draw(config, &debugEnt.data, debugEnt.rb.pos, cam, shader.handle);
-		// ============================================================================
-
 		// IMPORTANT(ck): start at index 2 player is being drawn above right now.
-		for (int i = 2; i < world->entityCount; ++i)
+		for (int i = 1; i < world->entityCount; ++i)
 		{
 			Entity e = world->entities[i];
 
@@ -372,7 +371,6 @@ namespace Mon
 			
 			MonGL::Draw(config, &e.data, e.rb.pos, cam, shader.handle);
 		}
-		
 
 		MonGL::EndRender();
 	}

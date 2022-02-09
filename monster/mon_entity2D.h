@@ -16,11 +16,10 @@ namespace Mon
 
 	struct Entity2D
 	{
-	public:
-
 		MonGL::RenderData2D sprite;
 
-		v2 pos;
+		// TODO(ck): Fix this. We need this position to be in 
+		v2 pos; // currently screen space is used for world position and is sent to render data
 		TileMapPosition mapPos;
 		
 		v2 velocity;
@@ -32,7 +31,7 @@ namespace Mon
 
 	};
 
-	void initEntity(Entity2D* e, const char* fileLocation, bool isAlpha, v2 position);
+	void initEntity(Entity2D* e, const char* fileLocation, bool isAlpha, v2 position, int size);
 	// TODO(ck): Should this param be pointer?
 	// should velocity be acceleration?
 	void movePlayer(TileMap* map, Entity2D* p, v2* velocity, float deltaTime);

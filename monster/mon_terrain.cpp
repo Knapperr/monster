@@ -62,7 +62,6 @@ float Terrain::getHeight(int x, int z)
 							  Mon::v2(xCoord, zCoord));
 	}
 
-	
 	return result;
 }
 

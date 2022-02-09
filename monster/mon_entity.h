@@ -37,7 +37,6 @@ namespace Mon {
 
 	};
 
-
 	struct Entity
 	{
 		std::string name;
@@ -47,6 +46,7 @@ namespace Mon {
 		MonGL::RenderSetup setup;
 		Collider collider;
 
+		
 		int facingDir;
 	};
 }

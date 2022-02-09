@@ -31,9 +31,10 @@ namespace Mon {
 	void InitBoxCollider(Collider* c);
 	v3 GetBoxSize(Collider* c);
 	v3 GetBoxCenter(Collider* c);
+
+	// TODO(ck): Remove world position from collider... only need the min, max size in relation to entity
 	mat4 GetBoxTransform(Collider* c, v3 entityPos, v3 entityScale);
 	void SetBoxTransform(Collider* c, v3 entityPos, v3 entityScale);
-
 	void UpdateWorldPosToWorldMatrix(Collider* c);
 
 

@@ -10,6 +10,8 @@ namespace Mon {
 	{
 		unsigned int entityCount;
 		Entity entities[256];
+		// Probably want this in the rendering layer?
+		MonGL::RenderData renderItems[256];
 		// TODO(ck): Not sure if I want things like trees but they can go into instanced data I guess?
 		// might still want to have trees in entities because they can be attacked or respond to player interaction?
 		// StaticEntities??? staticEntities[256];
@@ -64,6 +66,7 @@ namespace Mon {
 			entity = &world->entities[index];
 
 			entity->collider = {};
+			// TODO(ck): ClearRenderData - must call glDeleteTextures before generating new ones
 			entity->data = {};
 			entity->setup = {};
 			entity->name = "";
@@ -94,7 +97,7 @@ namespace Mon {
 		MonGL::InitQuad(&player->data);
 
 		// IMPORTANT(ck): These cant be loaded again if they are already loaded..
-		MonGL::LoadTexture(&player->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/p1SIDERIGHT.png");
+		MonGL::LoadTexture(&player->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/ch_witch.png");
 		MonGL::LoadTexture(&player->data, 1, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/p1.png");
 		MonGL::LoadTexture(&player->data, 2, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/p1SIDE.png");
 		MonGL::LoadTexture(&player->data, 3, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/p1BACK.png");
@@ -132,7 +135,6 @@ namespace Mon {
 		AddEntity(world);
 		Entity* player = GetPlayer(world);
 		InitPlayer(player, shaderHandle);
-		
 		
 		for (int i = world->entityCount; i < 10; ++i)
 		{
@@ -174,6 +176,47 @@ namespace Mon {
 		MonGL::LoadTexture(&cube->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/container2.png");
 		cube->rb.pos = v3(50.0f, 0.3f, 20.0f);
 		InitBoxCollider(&cube->collider);
+
+		// ch_minion
+		AddEntity(world);
+		Entity* ent = GetEntity(world, world->entityCount - 1);
+		ent->setup = {};
+		ent->name = "minion";
+		ent->impPath = "none";
+		MonGL::InitQuad(&ent->data);
+		MonGL::LoadTexture(&ent->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/ch_minion.png");
+		ent->rb.pos = v3(10.0f, 10.0f, 10.0f);
+		InitBoxCollider(&ent->collider);
+
+		AddEntity(world);
+		Entity* ent1 = GetEntity(world, world->entityCount - 1);
+		ent1->setup = {};
+		ent1->name = "minion";
+		ent1->impPath = "none";
+		MonGL::InitQuad(&ent1->data);
+		MonGL::LoadTexture(&ent1->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/ch_minion.png");
+		ent1->rb.pos = v3(10.0f, 10.0f, 10.0f);
+		InitBoxCollider(&ent1->collider);
+
+		AddEntity(world);
+		Entity* ent2 = GetEntity(world, world->entityCount - 1);
+		ent2->setup = {};
+		ent2->name = "minion";
+		ent2->impPath = "none";
+		MonGL::InitQuad(&ent2->data);
+		MonGL::LoadTexture(&ent2->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/ch_minion.png");
+		ent2->rb.pos = v3(10.0f, 10.0f, 10.0f);
+		InitBoxCollider(&ent2->collider);
+
+		AddEntity(world);
+		Entity* ent3 = GetEntity(world, world->entityCount - 1);
+		ent3->setup = {};
+		ent3->name = "minion";
+		ent3->impPath = "none";
+		MonGL::InitQuad(&ent3->data);
+		MonGL::LoadTexture(&ent3->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/ch_minion.png");
+		ent3->rb.pos = v3(10.0f, 10.0f, 10.0f);
+		InitBoxCollider(&ent3->collider);
 
 		//for (int i = 0; i < 4; ++i)
 		//{

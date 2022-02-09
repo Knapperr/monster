@@ -121,6 +121,64 @@ namespace MonGL
 		//data->scale = v3(1.0f);
 	}
 
+	void InitBatchData(int amount)
+	{
+		// These will be figured out after looping our tilemap and pushing quads
+		// TODO(ck): Need to be able to choose amount of vertices and indices
+		int usedVertices = 1;
+		const int quadCount = 2000;
+		const int maxVertices = quadCount * 4;
+		const int indicesLength = quadCount * 6;
+
+		// TODO(ck): MEMORY 
+		//batch = new BatchData();
+		BatchData3D batch = {};
+
+
+		//glGenVertexArrays(1, &batch->VAO);
+		//glBindVertexArray(batch->VAO);
+
+		//glGenBuffers(1, &batch->VBO);
+		//glBindBuffer(GL_ARRAY_BUFFER, batch->VBO);
+		glBufferData(GL_ARRAY_BUFFER, maxVertices * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
+
+		// position attribute
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
+		// color attribute
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
+		// texture coord attribute
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
+
+		// TODO(ck): Memory management
+		uint32_t* tileIndices = new uint32_t[indicesLength];
+		int offset = 0;
+		for (int i = 0; i < indicesLength; i += 6)
+		{
+			tileIndices[i + 0] = 0 + offset;
+			tileIndices[i + 1] = 1 + offset;
+			tileIndices[i + 2] = 2 + offset;
+
+			tileIndices[i + 3] = 2 + offset;
+			tileIndices[i + 4] = 3 + offset;
+			tileIndices[i + 5] = 0 + offset;
+
+			offset += 4;
+		}
+
+		unsigned int EBO;
+		glGenBuffers(1, &EBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesLength * sizeof(tileIndices), tileIndices, GL_DYNAMIC_DRAW);
+
+		delete[] tileIndices;
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	};
+
+
 	void InitBoundingBox(RenderData* data)
 	{
 		data->lineWidth = 2;
@@ -492,8 +550,6 @@ namespace MonGL
 		data->mat.shininess = 32.0f;
 
 		std::string textPath = "res/textures/terrain/1024multi.png";
-		std::string textDir = textPath.substr(0, textPath.find_last_of('/'));
-
 		/*
 		textureIds[0] = MonTexture::LoadTextureFile("1024multi.png", textDir, false);
 		std::string filename = std::string(path);
@@ -511,7 +567,7 @@ namespace MonGL
 		textPath = "res/textures/terrain/pix_grass.png";
 		Texture text2 = {};
 		data->textures[2] = text2;
-		LoadTextureFile(&data->textures[2], textPath.c_str(), TextureType::Diffuse, false, false, false);
+		LoadTextureFile(&data->textures[2], textPath.c_str(), TextureType::Diffuse, false, false, true);
 
 		textPath = "res/textures/terrain/snow.jpg";
 		Texture text3 = {};
@@ -772,10 +828,8 @@ namespace MonGL
 
 		mat4 matModel = mat4(1.0f);
 
-		//mat4 matTranslate = glm::translate(mat4(1.0f),
-		//										v3(terrain->x, 0.0f, terrain->z));
-		mat4 matTranslate = glm::translate(mat4(1.0f),
-												v3(0.0f, 0.0f, 0.0f));
+		//mat4 matTranslate = glm::translate(mat4(1.0f), v3(terrain->x, 0.0f, terrain->z));
+		mat4 matTranslate = glm::translate(mat4(1.0f), v3(0.0f, 0.0f, 0.0f));
 		matModel = matModel * matTranslate;
 
 		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), true);
@@ -829,7 +883,7 @@ namespace MonGL
 
 	//MonGL::DeleteShader(&shader);
 
-
+	
 
 	///
 	/// 2D
@@ -840,11 +894,10 @@ namespace MonGL
 	int usedIndices = 0;
 
 
-	void InitRenderData2D(RenderData2D* sprite)
+	void InitRenderData2D(RenderData2D* sprite, int size)
 	{
 		// TODO(ck): Switch to fill batch for this... can not rely on model matrix anymore if using a batch
 		// need to update the positions and the texture coordinates manually each frame.
-		int size = 32;
 
 		int x = 0;
 		int y = 0;
@@ -960,7 +1013,6 @@ namespace MonGL
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	};
 
-	// This isn't draw this is fill
 	void FillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize)
 	{		
 		float sheetSize = 256.0f;
@@ -972,7 +1024,7 @@ namespace MonGL
 		float topLeftX		= (tileOffsetX * spriteSize) / sheetSize;
 		float topLeftY		= ((tileOffsetY + 1) * spriteSize) / sheetSize;
 		float bottomLeftX	= (tileOffsetX * spriteSize) / sheetSize;
-		float bottomLeftY  = (tileOffsetY * spriteSize) / sheetSize;
+		float bottomLeftY   = (tileOffsetY * spriteSize) / sheetSize;
 		float bottomRightX	= ((tileOffsetX + 1) * spriteSize) / sheetSize;
 		float bottomRightY	= (tileOffsetY * spriteSize) / sheetSize;
 

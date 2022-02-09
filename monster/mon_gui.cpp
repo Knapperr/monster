@@ -718,7 +718,6 @@ void StatsWindow(bool* p_open, Mon::Game* game)
 	snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].right.z);
 	ImGui::LabelText(buffer, "right z");
 
-
 	snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].front.x);
 	ImGui::LabelText(buffer, "front x");
 	snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].front.y);
@@ -860,24 +859,14 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 
 		ImGui::DragFloat("cam speed", &game->cameras[game->currCameraIndex].speed, 0.01f, 1.0f, 200.0f, "%.02f");
 
-		/// 
-		/// Player 
-		///
-		ImGui::LabelText("", "Player");
-		if (ImGui::SmallButton("reset Pos"))
-		{
-			//game->player.particle.pos.y = 0.1f;
-			//game->player.particle.pos.x = 10.0f;
-			//game->player.particle.pos.z = 10.0f;
-		}
+
+		ImGui::Checkbox("draw collisions", &game->drawCollisions);
 		//ImGui::SliderFloat("speed", &game->player.particle.speed, 0.0f, 100.0f);
 		//ImGui::SliderFloat3("lightpos", &game->light.pos[0], 0.0f, 500.0f);
 		//ImGui::SliderFloat3("color", &game->player.collider.data.color[0], 0.0f, 1.0f);
 		//ImGui::SliderFloat3("min", &game->player.collider.size.min[0], 0.0f, 50.0f);
 		//ImGui::SliderFloat3("max", &game->player.collider.size.max[0], 0.0f, 50.0f);
 	
-		ImGui::Checkbox("draw collisions", &game->drawCollisions);
-
 	ImGui::Separator();
 	
 	ImGui::End();

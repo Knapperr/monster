@@ -8,15 +8,17 @@ namespace Mon
 	void InitCamera(Camera* camera, CameraType type, const char* name, Rect viewPort)
 	{
 		camera->name = name;
+		camera->type = type;
 		switch (type)
 		{
 		case CameraType::Fly:
-			camera->type = CameraType::Fly;
 			InitFlyCamera(camera, viewPort);
 			break;
 		case CameraType::Follow:
-			camera->type = CameraType::Follow;
 			InitFollowCamera(camera, viewPort);
+			break;
+		case CameraType::Ortho:
+			InitOrthoCamera(camera);
 			break;
 		default:
 			Mon::Log::print("Camera type not specified. Creating fly camera");
@@ -38,6 +40,8 @@ namespace Mon
 			return FlyViewMatrix(camera);
 		case CameraType::Follow:
 			return FollowViewMatrix(camera);
+		case CameraType::Ortho:
+			return OrthoViewMatrix(camera);
 		default:
 			return FlyViewMatrix(camera);
 		}
@@ -54,6 +58,9 @@ namespace Mon
 			break;
 		case CameraType::Follow:
 			UpdateFollowCamera(camera, dt, input, pos, orientation, constrainPitch);
+			break;
+		case CameraType::Ortho:
+			UpdateOrthoCamera(camera, dt, pos);
 			break;
 		default:
 			UpdateFlyCamera(camera, dt, input, pos, orientation, constrainPitch);
@@ -187,7 +194,7 @@ namespace Mon
 	}
 
 	/// 
-	/// Follow Camera 
+	/// Follow 3D Camera 
 	///
 
 	void InitFollowCamera(Camera* camera, Rect viewPort)
@@ -263,5 +270,50 @@ namespace Mon
 		camera->front = v3(0.0f, 0.0f, -1.0f);
 	}
 
+	//
+	// Orthographic Camera
+	//
+	void InitOrthoCamera(Camera* camera)
+	{
+		camera->lerpSpeed = 7.0f;
+		camera->smoothness = 0.24f;
+		camera->pos = v3(100.0f);
+		camera->velocity = v3(1.0f);
+		camera->zoom = 1.0f;
+	}
+
+	mat4 OrthoViewMatrix(Camera* camera)
+	{
+		// 640.0f = window.x
+	// 360.0f = window.y
+	// TODO(ck): my camera isn't deciding the projection that gets sent to the renderer
+	// this might be a good thing because i can separate that off here
+		float width = 960.0f;
+		float height = 540.0f;
+		float half = 6.0f;
+#if 1
+		// TODO(ck): compute in update?
+		// TODO(ck): Remove half prefer zoom
+		float left = camera->pos.x - width / half;
+		float right = camera->pos.x + width / half;
+		float top = camera->pos.y - height / half;
+		float bottom = camera->pos.y + height / half;
+#else
+		float left = 0.0f;
+		float right = 960.0f;
+		float top = 0.0f;
+		float bottom = 540.0f;
+#endif
+		mat4 projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
+		mat4 zoomMatrix = glm::scale(v3(camera->zoom));
+		projection = projection * zoomMatrix;
+
+		return projection;
+	}
+
+	void UpdateOrthoCamera(Camera* camera, float dt, v3 pos)
+	{
+		camera->pos = pos;
+	}
 
 }

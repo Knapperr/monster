@@ -5,6 +5,17 @@
 
 namespace Mon
 {
+	struct World2D_
+	{
+		Entity2D entities[256];
+		MonGL::RenderData2D renderData[256];
+		TileMap* map;
+		TileSheet sheet;
+	};
+
+	void InitWorld(World2D_* world);
+
+
 	class World2D
 	{
 	public:
@@ -12,6 +23,7 @@ namespace Mon
 		Entity2D* player;
 		//GameObject* objects[MAX_OBJECTS];
 		std::vector<Entity2D*> entities;
+		std::vector<MonGL::RenderData2D> drawData;
 		TileMap* map;
 		TileSheet sheet;
 

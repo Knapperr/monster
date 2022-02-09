@@ -52,8 +52,6 @@ namespace Mon
 		MousePicker picker;
 
 		Input input;
-
-		Entity debugEnt;
 		
 		// TODO(ck): Camera Manager
 		Camera cameras[5];

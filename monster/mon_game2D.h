@@ -17,6 +17,30 @@ namespace Mon {
 		Play
 	};
 
+	struct Game2D_
+	{
+		Input input;
+		World2D* world;
+		// cameras like in game.cpp
+		OrthoCamera camera;
+
+		MonGL::Config* config;
+		MonGL::CommonProgram shader;
+		MonGL::CommonProgram tileShader;
+	};
+
+	bool Init(Game2D_* game);
+	void Update(Game2D_* game, double dt, Input* input);
+	void Render(Game2D_* game);
+
+	void SetViewPort(MonGL::Config* config, int width, int height);
+	bool Playing();
+
+	bool PlayMode(int state);
+	bool DebugMode(int state);
+
+	void CleanUp();
+
 	class Game2D
 	{
 	public:

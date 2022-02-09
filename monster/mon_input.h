@@ -24,6 +24,7 @@ namespace Mon
 		// maybe make an array for mouse buttons
 		ButtonState lMouseBtn;
 		ButtonState rMouseBtn;
+		ButtonState quit;
 		ScrollWheel wheel;
 
 		float stickAverageX;
@@ -37,10 +38,11 @@ namespace Mon
 		v2 mouseScreen;
 		v2 mouseOffset;
 		v2 stickDir;
+		
 
 		union
 		{
-			ButtonState buttons[20];
+			ButtonState buttons[19];
 			struct
 			{
 				ButtonState up;
@@ -62,7 +64,6 @@ namespace Mon
 				ButtonState num3;
 				ButtonState r;
 				ButtonState f;
-				ButtonState quit;
 			};
 		};
 	};

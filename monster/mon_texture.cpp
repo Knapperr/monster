@@ -58,8 +58,16 @@ namespace MonGL
 		{
 			texture->wrapS = GL_CLAMP_TO_EDGE; // GL_CLAMP_TO_BORDER 
 			texture->wrapT = GL_CLAMP_TO_EDGE; // GL_CLAMP_TO_BORDER
+			// IMPORTANT(ck):
+			// TODO(ck): 
+			// Need to use linear for 3d pixel art???
+#if 1
 			texture->filterMin = GL_NEAREST;
 			texture->filterMax = GL_NEAREST;
+#else
+			texture->filterMin = GL_LINEAR_MIPMAP_LINEAR;
+			texture->filterMax = GL_LINEAR;
+#endif
 		}
 
 		int nrChannels;

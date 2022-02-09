@@ -54,7 +54,8 @@ void main()
             discard;
         }
 
-        // FragColor = texture(texture_diffuse1, TexCoords);
+        // IMPORTANT(ck): sets texture without pixel filter on it
+        //FragColor = texColor;
         if (pixelTexture)
         {
             vec2 textureSize = textureSize(texture_diffuse1, 0);

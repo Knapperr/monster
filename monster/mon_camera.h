@@ -45,7 +45,6 @@ namespace Mon
 	mat4 ViewMatrix(Camera* camera);
 	void Update(Camera* camera, double dt, Input* input, v3 pos, v3 orientation, bool constrainPitch = true);
 
-
 	void InitFlyCamera(Camera* camera, Rect viewPort);
 	void UpdateFlyCamera(Camera* camera, double dt, Input* input, v3 pos, v3 orientation, bool constrainPitch = true);
 	void ProcessInput(Camera* camera, double dt, Input* input);
@@ -59,6 +58,10 @@ namespace Mon
 	mat4 FollowViewMatrix(Camera* camera);
 	void UpdateFollowCamera(Camera* camera, double dt, Input* input, v3 pos, v3 orientation, bool constrainPitch = true);
 	void CalculateAngleAroundTarget(Camera* camera, v2 offset);
+	
+	void InitOrthoCamera(Camera* camera);
+	mat4 OrthoViewMatrix(Camera* camera);
+	void UpdateOrthoCamera(Camera* camera, float dt, v3 pos);
 
 	void FollowOn(Camera* camera);
 }
