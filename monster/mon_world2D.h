@@ -11,10 +11,38 @@ namespace Mon
 		MonGL::RenderData2D renderData[256];
 		TileMap* map;
 		TileSheet sheet;
+
+		int entityCount;
 	};
 
-	void InitWorld(World2D_* world);
+	bool InitWorld(World2D_* world);
 
+	static unsigned int AddEntity2D(World2D_* world)
+	{
+		unsigned int entityIndex = world->entityCount++;
+
+		Entity2D* entity = &world->entities[entityIndex];
+		entity = {};
+
+		return entityIndex;
+	}
+
+	static Entity2D* GetEntity2D(World2D_* world, unsigned int index)
+	{
+		Entity2D* entity = 0;
+		if ((index > 0) && (index < ArrayCount(world->entities)))
+		{
+			entity = &world->entities[index];
+		}
+		return entity;
+	}
+
+	static Entity2D* GetPlayer(World2D_* world)
+	{
+		Entity2D* entity = 0;
+		entity = &world->entities[1];
+		return entity;
+	}
 
 	class World2D
 	{

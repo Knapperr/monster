@@ -6,6 +6,7 @@
 #include "mon_camera.h"
 
 #include <vector>
+#include <stack>
 
 namespace MonGL
 {
@@ -47,7 +48,8 @@ namespace MonGL
 	{
 		Model,
 		Quad,
-		Cube
+		Cube,
+		Debug,
 	};
 	
 	// TODO(ck): RenderData is the entities draw data I can
@@ -150,6 +152,9 @@ namespace MonGL
 	{
 		unsigned int VAO;
 		unsigned int VBO;
+
+		mat4 matrix = mat4(1.0f);
+		std::stack<mat4> matrixStack;
 	};
 
 	struct RenderData2D
@@ -187,6 +192,11 @@ namespace MonGL
 	
 	void LoadImpFile(RenderData* data);
 
+	// Debug lines
+	void InitLine(RenderData* data);
+	void DrawLine(RenderData* data, v3 pos, unsigned int shaderID);
+
+	// Models and assets
 	void InitInstancedData(InstancedData* data, int amount);
 	void InitQuad(RenderData* data, bool tangents = false);
 	void InitCube(RenderData* data);
@@ -209,6 +219,13 @@ namespace MonGL
 	//
 	// 2d
 	//
+
+	void PushMatrix(BatchData* batch, mat4 matrix);
+	void PopMatrix(BatchData* batch);
+
+	void InitLine2D(RenderData2D* data);
+	void DrawLine2D(RenderData2D* data);
+
 	void InitRenderData2D(RenderData2D* sprite, int size);
 	
 	void InitTileMap(int tileAmount);

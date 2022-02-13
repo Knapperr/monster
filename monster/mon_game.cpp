@@ -86,6 +86,7 @@ namespace Mon
 		drawCollisions = true;
 
 		picker = {};
+		InitMousePicker(&picker);
 
 		state = State::Debug;
 
@@ -349,6 +350,7 @@ namespace Mon
 		glUniform3fv(glGetUniformLocation(shader.handle, "light.diffuse"), 1, &light.diffuse[0]);
 		glUniform3fv(glGetUniformLocation(shader.handle, "light.specular"), 1, &light.specular[0]);
 		
+
 		//
 		// TERRAIN
 		//
@@ -371,6 +373,12 @@ namespace Mon
 			
 			MonGL::Draw(config, &e.data, e.rb.pos, cam, shader.handle);
 		}
+
+		//
+		// DEBUG TOOLS
+		// 
+		// Drawing mouse picker ray for testing
+		//MonGL::DrawLine(&picker.data, picker.currentTerrainPoint, shader.handle);
 
 		MonGL::EndRender();
 	}

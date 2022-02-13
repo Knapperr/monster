@@ -28,7 +28,7 @@ uniform sampler2D texture_diffuse1;
 uniform bool useTexture;
 uniform bool collider;
 uniform bool pixelTexture;
-uniform vec3 colliderColor;
+uniform vec3 colliderColor = vec3(0.4, 0.5, 0.5);
 
 // this is a better way to do pixel art
 // https://www.shadertoy.com/view/MlB3D3 - d7Samurai

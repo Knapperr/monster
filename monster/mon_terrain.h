@@ -4,6 +4,14 @@
 #include "mon_shader.h"
 #include "mon_entity.h"
 
+struct TerrainPosition
+{
+	uint32_t absTileX;
+	uint32_t absTileY;
+	// NOTE(casey): These are the offsets from the tile center
+	Mon::v2 offset;
+};
+
 class Terrain
 {
 public:
@@ -31,8 +39,10 @@ struct MousePicker
 {
 	Mon::v3 currentTerrainPoint;
 	Mon::v3 currentRay;
+	Mon::v3 pos;
 	Mon::mat4 projectionMatrix;
 
+	MonGL::RenderData data;
 };
 
 void InitMousePicker(MousePicker* picker);

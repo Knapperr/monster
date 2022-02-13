@@ -35,10 +35,6 @@ bool App::init()
 	//Platform->SetTitle(window, "Monster");
 
 	// TODO(ck): Memory Allocation
-	oldInput = new Mon::Input();
-	newInput = new Mon::Input();
-	//oldInput = &input[0];
-	//newInput = &input[1];
 #ifdef _3D_
 	game = new Mon::Game();
 
@@ -48,6 +44,10 @@ bool App::init()
 	game2D = new Mon::Game2D();
 	if (!game2D->init(1))
 		return false;
+
+	// TODO(ck): Memory allocation
+	//game2D_ = new Mon::Game2D_();
+	//Mon::Init(game2D_);
 #endif
 
 	return true;
@@ -55,7 +55,8 @@ bool App::init()
 
 void App::run()
 {
-	
+	Mon::Input* oldInput = &input[0];
+	Mon::Input* newInput = &input[1];
 
 	// startup
 	//if (app_config.on_startup != nullptr)

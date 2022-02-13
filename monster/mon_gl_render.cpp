@@ -8,7 +8,7 @@ namespace MonGL
 	// can have a getter method that retrieves the globalDrawCalls from here
 	int globalDrawCalls = 0;
 
-	void LoadTexture(RenderData *data, int index, TextureType type, int shaderID, std::string path, bool pixelTexture)
+	void LoadTexture(RenderData* data, int index, TextureType type, int shaderID, std::string path, bool pixelTexture)
 	{
 		data->texturePath = path;
 		Texture text = {};
@@ -23,7 +23,7 @@ namespace MonGL
 	/// 
 
 	void InitQuad(RenderData* data, bool tangents)
-	{		
+	{
 		data->verticeCount = 4;
 		// TODO(ck): Memory Allocation
 		data->vertices = new Vertex3D[data->verticeCount];
@@ -35,8 +35,8 @@ namespace MonGL
 		data->vertices[1].normal = v3(1.0f, 1.0f, 1.0f);
 		data->vertices[1].texCoords = v2(1.0f, 0.0f);
 
-		data->vertices[2].position = v3(-0.5f, -0.5f, 0.0f); 
-		data->vertices[2].normal = v3(1.0f, 1.0f, 1.0f); 
+		data->vertices[2].position = v3(-0.5f, -0.5f, 0.0f);
+		data->vertices[2].normal = v3(1.0f, 1.0f, 1.0f);
 		data->vertices[2].texCoords = v2(0.0f, 0.0f);
 
 		data->vertices[3].position = v3(-0.5f, 0.5f, 0.0f);
@@ -89,16 +89,16 @@ namespace MonGL
 		glBindBuffer(GL_ARRAY_BUFFER, data->VBO);
 		//glBufferData(GL_ARRAY_BUFFER, data->vertices.size() * sizeof(Vertex3D), &data->vertices[0], GL_STATIC_DRAW);
 		glBufferData(GL_ARRAY_BUFFER, data->verticeCount * sizeof(Vertex3D), data->vertices, GL_STATIC_DRAW);
-		
+
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)0);
-		
+
 		glEnableVertexAttribArray(1);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, normal));
-		
+
 		glEnableVertexAttribArray(2);
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, texCoords));
 
@@ -190,8 +190,8 @@ namespace MonGL
 		data->vertices[0].position = v3(-0.5, -0.5, -0.5);
 		data->vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
 		data->vertices[0].texCoords = v2(0.0f, 0.0f);
-		data->vertices[1].position  = v3(0.5, -0.5, -0.5);
-		data->vertices[1].normal    = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[1].position = v3(0.5, -0.5, -0.5);
+		data->vertices[1].normal = v3(1.0f, 1.0f, 1.0f);
 		data->vertices[1].texCoords = v2(0.0f, 0.0f);
 		data->vertices[2].position = v3(0.5, 0.5, -0.5);
 		data->vertices[2].normal = v3(1.0f, 1.0f, 1.0f);
@@ -212,7 +212,7 @@ namespace MonGL
 		data->vertices[7].position = v3(-0.5, 0.5, 0.5);
 		data->vertices[7].normal = v3(1.0f, 1.0f, 1.0f);
 		data->vertices[7].texCoords = v2(0.0f, 0.0f);
-	
+
 		glGenVertexArrays(1, &data->VAO);
 		glGenBuffers(1, &data->VBO);
 		glBindBuffer(GL_ARRAY_BUFFER, data->VBO);
@@ -222,7 +222,7 @@ namespace MonGL
 #endif
 		glBufferData(GL_ARRAY_BUFFER, data->verticeCount * sizeof(Vertex3D), data->vertices, GL_STATIC_DRAW);
 		glBindVertexArray(data->VAO);
-		
+
 		GLushort elements[] = {
 			0, 1, 2, 3, // front 
 			4, 5, 6, 7, // back
@@ -232,7 +232,7 @@ namespace MonGL
 
 		glGenBuffers(1, &data->IBO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, data->IBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);  
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
 
 		// Position
 		glEnableVertexAttribArray(0);
@@ -388,7 +388,7 @@ namespace MonGL
 		glBufferData(GL_ARRAY_BUFFER, data->verticeCount * sizeof(Vertex3D), data->vertices, GL_STATIC_DRAW);
 
 		//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-		
+
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)0);
 
@@ -454,7 +454,7 @@ namespace MonGL
 		InitModel(&data->renderData);
 		data->matrices = new mat4[data->amount];
 	}
-	
+
 	void GenerateTerrain(RenderData* data, float* heightMap)
 	{
 		data->VAO = 0;
@@ -462,7 +462,7 @@ namespace MonGL
 
 		const int SIZE = 128;
 		const int VERTEX_COUNT = 32;
-		data->verticeCount = VERTEX_COUNT*VERTEX_COUNT;
+		data->verticeCount = VERTEX_COUNT * VERTEX_COUNT;
 		// TODO(ck): Memory Allocation
 		data->vertices = new Vertex3D[data->verticeCount];
 
@@ -606,7 +606,7 @@ namespace MonGL
 		std::string path = "res/textures/water/water.png";
 		Texture uv = {};
 		LoadTextureFile(&uv, path.c_str(), TextureType::Diffuse, false, true);
-		
+
 
 		renderData->textures[0] = uv;
 
@@ -614,7 +614,7 @@ namespace MonGL
 		path = "res/textures/water/flow-speed-noise.png";
 		Texture flow = {};
 		LoadTextureFile(&flow, path.c_str(), TextureType::Normal, false, true);
-		
+
 		renderData->textures[1] = flow;
 
 		// type = "texture_normal"
@@ -622,7 +622,7 @@ namespace MonGL
 		Texture normal = {};
 		LoadTextureFile(&normal, path.c_str(), TextureType::Normal, false, true);
 		renderData->textures[2] = normal;
-		
+
 	}
 
 	void BeginRender(Config* config, mat4 projection, mat4 view, int shaderID)
@@ -635,13 +635,76 @@ namespace MonGL
 	}
 
 	///
+	/// Debug Drawing
+	///
+
+	void InitLine(RenderData* data)
+	{
+		// TODO(ck): Memory Allocation
+		data->verticeCount = 2;
+		data->vertices = new Vertex3D[data->verticeCount];
+
+		data->vertices[0].position = v3(0.0f, 0.0f, 1.0f);
+		data->vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[0].texCoords = v2(1.0f, 1.0f);
+
+		data->vertices[1].position = v3(0.0f, 0.0f, 50.0f);
+		data->vertices[1].normal = v3(1.0f, 1.0f, 1.0f);
+		data->vertices[1].texCoords = v2(1.0f, 1.0f);
+
+		glGenVertexArrays(1, &data->VAO);
+		glGenBuffers(1, &data->VBO);
+		glBindVertexArray(data->VAO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, data->VBO);
+		glBufferData(GL_ARRAY_BUFFER, data->verticeCount * sizeof(Vertex3D), data->vertices, GL_STATIC_DRAW);
+
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, position));
+
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, normal));
+
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, texCoords));
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
+
+		data->color = v3(0.1f, 0.5f, 1.0f);
+		data->type = RenderType::Debug;
+		data->visible = true;
+	}
+
+	void DrawLine(RenderData* data, v3 pos, unsigned int shaderID)
+	{
+		data->worldMatrix = mat4(1.0f);
+		data->worldMatrix = glm::translate(data->worldMatrix, pos);
+
+		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(data->worldMatrix));
+
+		// Use for now
+		glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
+		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), false);
+		glUniform1i(glGetUniformLocation(shaderID, "pixelTexture"), false);
+		glUniform1i(glGetUniformLocation(shaderID, "collider"), true);
+
+		glBindVertexArray(data->VAO);
+		glDrawArrays(GL_LINES, 0, 2);
+
+		globalDrawCalls++;
+	}
+
+
+	///
 	/// Draw RenderData  
 	///
+
 
 	void Draw(Config* config, RenderData* data, v3 pos, Camera* camera,
 			  unsigned int shaderID, int selectedTexture)
 	{
-	
+
 		// NOTE(ck): Lighting information
 		//glUniform3fv(glGetUniformLocation(shaderID, "lightPos"), 1, &light->pos[0]);
 		//glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camPos[0]);
@@ -649,8 +712,6 @@ namespace MonGL
 		bool useTexture = (ArrayCount(data->textures) > 0);
 		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), useTexture);
 		glUniform1i(glGetUniformLocation(shaderID, "pixelTexture"), useTexture);
-		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), true);
-		glUniform1i(glGetUniformLocation(shaderID, "pixelTexture"), true);
 		// bind textures on corresponding texture units
 		//glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, data->textures[selectedTexture].id);
@@ -667,7 +728,7 @@ namespace MonGL
 			data->worldMatrix = glm::rotate(data->worldMatrix, glm::radians(config->angleDegrees), v3{ 1.0f, 0.0f, 0.0f });
 		}
 		data->worldMatrix = glm::scale(data->worldMatrix, data->scale);
-		
+
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(data->worldMatrix));
 
 		glBindVertexArray(data->VAO);
@@ -689,7 +750,7 @@ namespace MonGL
 		if (false == data->visible)
 			return;
 
-		
+
 		// ==============================================================================
 		glUniform3fv(glGetUniformLocation(shaderID, "material.ambient"), 1, &data->mat.ambient[0]);
 		glUniform3fv(glGetUniformLocation(shaderID, "material.diffuse"), 1, &data->mat.diffuse[0]);
@@ -864,7 +925,7 @@ namespace MonGL
 	// ==================================================================
 
 	void ViewPort(Rect* port)
-	{		
+	{
 		glViewport(port->x, port->y, port->w, port->h);
 		return;
 	}
@@ -883,15 +944,30 @@ namespace MonGL
 
 	//MonGL::DeleteShader(&shader);
 
-	
+
 
 	///
 	/// 2D
 	///
-	 
+
 	BatchData* batch;
 	std::vector<Vertex> tileVertices;
 	int usedIndices = 0;
+
+	void PushMatrix(BatchData* batch, mat4 matrix)
+	{
+		batch->matrixStack.push(batch->matrix);
+		batch->matrix = matrix * batch->matrix;
+		
+	}
+
+	void PopMatrix(BatchData* batch)
+	{
+		// mat4 was = batch->matrix;
+		batch->matrix = batch->matrixStack.top();
+		batch->matrixStack.pop();
+		// return  was 
+	}
 
 
 	void InitRenderData2D(RenderData2D* sprite, int size)
@@ -1088,6 +1164,7 @@ namespace MonGL
 		// and elongated triangles
 		
 		//glBufferSubData(GL_ARRAY_BUFFER, 0, tileVertices.size() * sizeof(Vertex), &tileVertices[0]);
+		// TODO(ck): Should be GL_ELEMENT_ARRAY_BUFFER?
 		glBufferData(GL_ARRAY_BUFFER, tileVertices.size() * sizeof(Vertex), &tileVertices[0], GL_DYNAMIC_DRAW);
 		/*
 			// Upload Buffer
@@ -1211,6 +1288,7 @@ namespace MonGL
 		// and elongated triangles
 
 		//glBufferSubData(GL_ARRAY_BUFFER, 0, tileVertices.size() * sizeof(Vertex), &tileVertices[0]);
+		// TODO(ck): Should be GL_ELEMENT_ARRAY_BUFFER ??
 		glBufferData(GL_ARRAY_BUFFER, tileVertices.size() * sizeof(Vertex), &tileVertices[0], GL_DYNAMIC_DRAW);
 		/*
 			// Upload Buffer

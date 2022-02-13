@@ -36,7 +36,7 @@ namespace Mon
 		static void print(const char* msg, Severity severity);
 		static void warn(const char* msg);
 	private:
-		static std::ofstream file;
+		//static std::ofstream file;
 
 		// TODO(ck): Logger on separate thread
 		//std::thread logThread;

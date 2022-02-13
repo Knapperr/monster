@@ -1,6 +1,19 @@
 #include "mon_game2D.h"
 
 namespace Mon {
+	
+	// New 
+	void Init(Game2D_* game)
+	{
+		InitWorld(game->world);
+
+		MonGL::LoadShader(&game->shader, "res/shaders/vert_sprite.glsl", "res/shaders/frag_sprite.glsl", NULL);
+		// TODO(ck): REMOVE TESTING TILE SHADER use above shader for both tiles and quads
+		MonGL::LoadShader(&game->tileShader, "res/shaders/vert_tile.glsl", "res/shaders/frag_tile.glsl", NULL);
+
+		
+	}
+
 
 	bool Game2D::init(int x)
 	{
@@ -66,8 +79,6 @@ namespace Mon {
 	{
 		if (dt > deltaTime || dt < deltaTime)
 			printf("dt: %f\n", dt);
-
-#ifndef _3D_
 
 		deltaTime = dt;
 		this->input = *input;
@@ -180,13 +191,24 @@ namespace Mon {
 			// mapping a world coordinate to 
 
 		}
-#endif
 		// ending Game::update
 	}
 
 	void Game2D::render()
 	{
 		MonGL::ViewPort(&config->viewPort);
+
+		// test stack
+		MonGL::PushMatrix(&batch, camera.projectionMatrix());
+
+		mat4 newerMat = mat4(10.0f);
+		MonGL::PushMatrix(&batch, newerMat);
+		MonGL::PopMatrix(&batch);
+
+		mat4 newMat = mat4(2.0f);
+		MonGL::PushMatrix(&batch, newMat);
+
+		MonGL::PopMatrix(&batch);
 
 		// TEST DRAW
 		glUseProgram(tileShader.handle);

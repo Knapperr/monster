@@ -14,8 +14,22 @@
 	\_|  |_/\___/\_| \_/\____/  \_/ \____/\_| \_|    \____/\_| \_/\____/\___/\_| \_/\____/
 */
 
+
+// IMPORTANT(ck): Microsoft CRT tools
+//#define _CRTDBG_MAP_ALLOC
+//#include <stdlib.h>
+//#include <crtdbg.h>
+
 int main(int argc, char** argv)
 {
+// IMPORTANT(ck): Microsoft CRT tools
+//#if defined(_DEBUG)
+//	int dbgFlags = ::_CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
+//	dbgFlags |= _CRTDBG_CHECK_ALWAYS_DF;
+//	dbgFlags |= _CRTDBG_DELAY_FREE_MEM_DF;
+//	dbgFlags |= _CRTDBG_LEAK_CHECK_DF;
+//	_CrtSetDbgFlag(dbgFlags);
+//#endif
 
 	// TODO(ck): Memory allocation
 	App* app = new App();

@@ -20,16 +20,15 @@ namespace Mon {
 	struct Game2D_
 	{
 		Input input;
-		World2D* world;
+		World2D_* world;
 		// cameras like in game.cpp
 		OrthoCamera camera;
-
 		MonGL::Config* config;
 		MonGL::CommonProgram shader;
 		MonGL::CommonProgram tileShader;
 	};
 
-	bool Init(Game2D_* game);
+	void Init(Game2D_* game);
 	void Update(Game2D_* game, double dt, Input* input);
 	void Render(Game2D_* game);
 
@@ -50,6 +49,8 @@ namespace Mon {
 		OrthoCamera camera;
 
 		MonGL::Config* config;
+
+		MonGL::BatchData batch;
 
 		MonGL::CommonProgram shader;
 		MonGL::CommonProgram tileShader;

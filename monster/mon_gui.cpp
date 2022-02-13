@@ -300,7 +300,7 @@ void LoadSceneFile(Mon::Game* game)
 			}
 
 
-			//Mon::Log::print("Entity loaded");
+			Mon::Log::print("Entity loaded");
 			++index;
 		}
 	}
@@ -498,9 +498,9 @@ void CameraWindow(bool* p_open, Mon::Game* game)
 		Mon::Log::print("near plane", game->cameras[game->currCameraIndex].nearPlane);
 		Mon::Log::print("far plane", game->cameras[game->currCameraIndex].farPlane);
 		Mon::Log::print("pitch", game->cameras[game->currCameraIndex].pitch);
-		//Mon::Log::print("angle around target", game->cameras[game->currCameraIndex].angleAroundTarget);
-		//Mon::Log::print("lerp speed", game->cameras[game->currCameraIndex].lerpSpeed);
-		//Mon::Log::print("smoothness", game->cameras[game->currCameraIndex].smoothness);
+		Mon::Log::print("angle around target", game->cameras[game->currCameraIndex].angleAroundTarget);
+		Mon::Log::print("lerp speed", game->cameras[game->currCameraIndex].lerpSpeed);
+		Mon::Log::print("smoothness", game->cameras[game->currCameraIndex].smoothness);
 	}
 
 	ImGui::End();
@@ -858,6 +858,10 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 		ImGui::Checkbox("Things", &showEntityWindow);
 
 		ImGui::DragFloat("cam speed", &game->cameras[game->currCameraIndex].speed, 0.01f, 1.0f, 200.0f, "%.02f");
+
+		ImGui::DragFloat("picker pos x", &game->picker.pos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");
+		ImGui::DragFloat("picker pos y", &game->picker.pos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
+		ImGui::DragFloat("picker pos z", &game->picker.pos.z, 0.1f, -1000.0f, 1000.0f, "%.02f");
 
 
 		ImGui::Checkbox("draw collisions", &game->drawCollisions);

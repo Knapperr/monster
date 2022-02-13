@@ -164,7 +164,7 @@ namespace Mon
 		assert(sheet->tileCount > 0);
 
 		map->tileSideInMeters = 1.6f;
-		map->tileSideInPixels = 60;
+		map->tileSideInPixels = 32;
 		map->metersToPixels = (float)map->tileSideInPixels / (float)map->tileSideInMeters;
 
 

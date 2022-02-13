@@ -3,7 +3,7 @@
 namespace Mon
 {
 
-	void initEntity(Entity2D* e, const char* fileLocation, bool isAlpha, v2 position, int size)
+	void InitEntity(Entity2D* e, const char* fileLocation, bool isAlpha, v2 position, int size)
 	{
 		e->sprite = {};
 		// TODO(ck): Don't automatically make opengl data... figure out what renderer we are using

@@ -39,7 +39,6 @@ namespace Mon
 		v2 mouseOffset;
 		v2 stickDir;
 		
-
 		union
 		{
 			ButtonState buttons[19];
