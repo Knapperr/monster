@@ -107,7 +107,7 @@ void LoadImpFile(Mon::Entity* e, std::string fileName)
 	file.close();
 }
 
-void LoadImpGrassFile(Mon::Game* game)
+void LoadImpGrassFile(Mon::GameState* game)
 {
 	std::ifstream file("test_grass.imp");
 	if (!file.is_open())
@@ -198,7 +198,7 @@ void writeImpFile(Mon::Game* game)
 	}
 }
 
-void LoadSceneFile(Mon::Game* game)
+void LoadSceneFile(Mon::GameState* game)
 {
 	// TODO(ck): memory management should probably have something in the list to only reload part of it
 	// READ MEMORY FROM FILE
@@ -408,7 +408,7 @@ static void TerrainMaterialWindow(Terrain* terrain)
 	}
 }
 
-void TerrainWindow(bool* p_open, Mon::Game* game)
+void TerrainWindow(bool* p_open, Mon::GameState* game)
 {
 	ImGui::Begin("Terrain", p_open);
 
@@ -432,7 +432,7 @@ void TerrainWindow(bool* p_open, Mon::Game* game)
 	ImGui::End();
 }
 
-void CameraWindow(bool* p_open, Mon::Game* game)
+void CameraWindow(bool* p_open, Mon::GameState* game)
 {
 	ImGui::Begin("Cammy", p_open);
 
@@ -463,9 +463,9 @@ void CameraWindow(bool* p_open, Mon::Game* game)
 			game->currCameraIndex--;
 
 		if (game->cameras[game->currCameraIndex].type == Mon::CameraType::Follow)
-			game->playMode();
+			Mon::PlayMode(game);
 		else
-			game->debugMode();
+			Mon::DebugMode(game);
 	}
 	ImGui::SameLine();
 	if (ImGui::ArrowButton("##right", ImGuiDir_Right))
@@ -474,9 +474,9 @@ void CameraWindow(bool* p_open, Mon::Game* game)
 			game->currCameraIndex++;
 
 		if (game->cameras[game->currCameraIndex].type == Mon::CameraType::Follow)
-			game->playMode();
+			PlayMode(game);
 		else
-			game->debugMode();
+			Mon::DebugMode(game);
 	}
 
 	ImGui::Separator();
@@ -506,7 +506,7 @@ void CameraWindow(bool* p_open, Mon::Game* game)
 	ImGui::End();
 }
 
-void EntityWindow(bool* p_open, Mon::Game* game)
+void EntityWindow(bool* p_open, Mon::GameState* game)
 {
 	ImGui::Begin("entities and things", p_open);
 	
@@ -659,36 +659,36 @@ void EntityWindow(bool* p_open, Mon::Game* game)
 }
 	
 
-void StatsWindow(bool* p_open, Mon::Game* game)
+void StatsWindow(bool* p_open, Mon::GameState* game)
 {
 	ImGui::Begin("stats for me", p_open);
 
-	char buffer[64];
-	
-	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseOffset.x);
-	ImGui::LabelText(buffer, "mouse x:");
-	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseOffset.y);
-	ImGui::LabelText(buffer, "mouse y:");
-	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseScreen.x);
-	ImGui::LabelText(buffer, "win x:");
-	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseScreen.y);
-	ImGui::LabelText(buffer, "win y:");
+	//char buffer[64];
+	//
+	//snprintf(buffer, sizeof(buffer), "%f", game->input.mouseOffset.x);
+	//ImGui::LabelText(buffer, "mouse x:");
+	//snprintf(buffer, sizeof(buffer), "%f", game->input.mouseOffset.y);
+	//ImGui::LabelText(buffer, "mouse y:");
+	//snprintf(buffer, sizeof(buffer), "%f", game->input.mouseScreen.x);
+	//ImGui::LabelText(buffer, "win x:");
+	//snprintf(buffer, sizeof(buffer), "%f", game->input.mouseScreen.y);
+	//ImGui::LabelText(buffer, "win y:");
 
-	snprintf(buffer, sizeof(buffer), "%f", game->picker.currentTerrainPoint.y);
-	ImGui::LabelText(buffer, "current terrain point y:");
+	//snprintf(buffer, sizeof(buffer), "%f", game->picker.currentTerrainPoint.y);
+	//ImGui::LabelText(buffer, "current terrain point y:");
 
-	snprintf(buffer, sizeof(buffer), "%f", game->input.stickAverageX);
-	ImGui::LabelText(buffer, "stick average X:");
-	snprintf(buffer, sizeof(buffer), "%f", (float)game->input.stickAverageY);
-	ImGui::LabelText(buffer, "stick average Y:");
+	//snprintf(buffer, sizeof(buffer), "%f", game->input.stickAverageX);
+	//ImGui::LabelText(buffer, "stick average X:");
+	//snprintf(buffer, sizeof(buffer), "%f", (float)game->input.stickAverageY);
+	//ImGui::LabelText(buffer, "stick average Y:");
 
-	snprintf(buffer, sizeof(buffer), "%f", game->input.stickAvgRX);
-	ImGui::LabelText(buffer, "right stick average X:");
-	snprintf(buffer, sizeof(buffer), "%f", (float)game->input.stickAvgRY);
-	ImGui::LabelText(buffer, "right stick average Y:");
+	//snprintf(buffer, sizeof(buffer), "%f", game->input.stickAvgRX);
+	//ImGui::LabelText(buffer, "right stick average X:");
+	//snprintf(buffer, sizeof(buffer), "%f", (float)game->input.stickAvgRY);
+	//ImGui::LabelText(buffer, "right stick average Y:");
 
-	snprintf(buffer, sizeof(buffer), "%d", game->input.lMouseBtn.endedDown);
-	ImGui::LabelText(buffer, "left mouse down");
+	//snprintf(buffer, sizeof(buffer), "%d", game->input.lMouseBtn.endedDown);
+	//ImGui::LabelText(buffer, "left mouse down");
 
 
 
@@ -704,36 +704,36 @@ void StatsWindow(bool* p_open, Mon::Game* game)
 	//snprintf(buffer, sizeof(buffer), "%f", game->player.particle.acceleration.x);
 	//ImGui::LabelText(buffer, "player acc");
 
-	snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].pos.x);
-	ImGui::LabelText(buffer, "cam x");
-	snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].pos.y);
-	ImGui::LabelText(buffer, "cam y");
-	snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].pos.z);
-	ImGui::LabelText(buffer, "cam z");
+	//snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].pos.x);
+	//ImGui::LabelText(buffer, "cam x");
+	//snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].pos.y);
+	//ImGui::LabelText(buffer, "cam y");
+	//snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].pos.z);
+	//ImGui::LabelText(buffer, "cam z");
 
-	snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].right.x);
-	ImGui::LabelText(buffer, "right x");
-	snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].right.y);
-	ImGui::LabelText(buffer, "right y");
-	snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].right.z);
-	ImGui::LabelText(buffer, "right z");
+	//snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].right.x);
+	//ImGui::LabelText(buffer, "right x");
+	//snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].right.y);
+	//ImGui::LabelText(buffer, "right y");
+	//snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].right.z);
+	//ImGui::LabelText(buffer, "right z");
 
-	snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].front.x);
-	ImGui::LabelText(buffer, "front x");
-	snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].front.y);
-	ImGui::LabelText(buffer, "front y");
-	snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].front.z);
-	ImGui::LabelText(buffer, "front z");
+	//snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].front.x);
+	//ImGui::LabelText(buffer, "front x");
+	//snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].front.y);
+	//ImGui::LabelText(buffer, "front y");
+	//snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].front.z);
+	//ImGui::LabelText(buffer, "front z");
 
-	snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].pitch);
-	ImGui::LabelText(buffer, "pitch");
-	snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].yaw);
-	ImGui::LabelText(buffer, "yaw");
+	//snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].pitch);
+	//ImGui::LabelText(buffer, "pitch");
+	//snprintf(buffer, sizeof(buffer), "%f", game->cameras[game->currCameraIndex].yaw);
+	//ImGui::LabelText(buffer, "yaw");
 
 	ImGui::End();
 }
 
-void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
+void UpdateGui(SDL_Window* window, Settings* settings, Mon::GameState* game)
 {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame(window);
@@ -763,7 +763,7 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 			ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::ImColor(170, 40, 44));
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::ImColor(105, 24, 27));
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::ImColor(66, 15, 16));
-			if (ImGui::Button("debug")) { game->debugMode(); }
+			if (ImGui::Button("debug")) { Mon::DebugMode(game); }
 			ImGui::PopStyleColor(3);
 		ImGui::PopID();
 		ImGui::SameLine();
@@ -772,7 +772,7 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 			ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::ImColor(16, 169, 35));
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::ImColor(31, 80, 18));
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::ImColor(34, 64, 35));
-			if (ImGui::Button("play") && game->state != Mon::State::Play) { game->playMode(); }
+			if (ImGui::Button("play") && game->mode != Mon::Mode::Play) { Mon::PlayMode(game); }
 			ImGui::PopStyleColor(3);
 		ImGui::PopID();
 		if (ImGui::Button("save")) 
@@ -796,14 +796,14 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game)
 			SDL_GetCurrentDisplayMode(0, &dm);
 			SDL_SetWindowSize(window, dm.w, dm.h);
 			SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
-			game->setViewPort(dm.w, dm.h);
+			Mon::SetViewPort(game, dm.w, dm.h);
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("Exit"))
 		{
 			SDL_SetWindowSize(window, settings->windowWidth, settings->windowHeight);
 			SDL_SetWindowFullscreen(window, 0);
-			game->setViewPort(960.0f, 540.0f);
+			Mon::SetViewPort(game, 960.0f, 540.0f);
 		}
 
 		if (ImGui::Button("720"))
@@ -886,38 +886,39 @@ void StatsWindow(bool* p_open, Mon::Game2D* game)
 {
 	ImGui::Begin("stats for me", p_open);
 
-	char buffer[64];
+	{
+		char buffer[64];
 
-	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseOffset.x);
-	ImGui::LabelText(buffer, "mouse x");
-	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseOffset.y);
-	ImGui::LabelText(buffer, "mouse y");
-	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseScreen.x);
-	ImGui::LabelText(buffer, "win x");
-	snprintf(buffer, sizeof(buffer), "%f", game->input.mouseScreen.y);
-	ImGui::LabelText(buffer, "win y");
+		snprintf(buffer, sizeof(buffer), "%f", game->input.mouseOffset.x);
+		ImGui::LabelText(buffer, "mouse x");
+		snprintf(buffer, sizeof(buffer), "%f", game->input.mouseOffset.y);
+		ImGui::LabelText(buffer, "mouse y");
+		snprintf(buffer, sizeof(buffer), "%f", game->input.mouseScreen.x);
+		ImGui::LabelText(buffer, "win x");
+		snprintf(buffer, sizeof(buffer), "%f", game->input.mouseScreen.y);
+		ImGui::LabelText(buffer, "win y");
 
-	snprintf(buffer, sizeof(buffer), "%f", game->input.stickAverageX);
-	ImGui::LabelText(buffer, "stick average X:");
-	snprintf(buffer, sizeof(buffer), "%f", (float)game->input.stickAverageY);
-	ImGui::LabelText(buffer, "stick average Y:");
+		snprintf(buffer, sizeof(buffer), "%f", game->input.stickAverageX);
+		ImGui::LabelText(buffer, "stick average X:");
+		snprintf(buffer, sizeof(buffer), "%f", (float)game->input.stickAverageY);
+		ImGui::LabelText(buffer, "stick average Y:");
 
-	snprintf(buffer, sizeof(buffer), "%f", game->input.stickAvgRX);
-	ImGui::LabelText(buffer, "right stick average X:");
-	snprintf(buffer, sizeof(buffer), "%f", (float)game->input.stickAvgRY);
-	ImGui::LabelText(buffer, "right stick average Y:");
+		snprintf(buffer, sizeof(buffer), "%f", game->input.stickAvgRX);
+		ImGui::LabelText(buffer, "right stick average X:");
+		snprintf(buffer, sizeof(buffer), "%f", (float)game->input.stickAvgRY);
+		ImGui::LabelText(buffer, "right stick average Y:");
 
-	snprintf(buffer, sizeof(buffer), "%d", game->input.lMouseBtn.endedDown);
-	ImGui::LabelText(buffer, "left mouse down");
+		snprintf(buffer, sizeof(buffer), "%d", game->input.lMouseBtn.endedDown);
+		ImGui::LabelText(buffer, "left mouse down");
 
-	snprintf(buffer, sizeof(buffer), "%f", game->camera.pos.x);
-	ImGui::LabelText(buffer, "cam x");
-	snprintf(buffer, sizeof(buffer), "%f", game->camera.pos.y);
-	ImGui::LabelText(buffer, "cam y");
+		snprintf(buffer, sizeof(buffer), "%f", game->camera.pos.x);
+		ImGui::LabelText(buffer, "cam x");
+		snprintf(buffer, sizeof(buffer), "%f", game->camera.pos.y);
+		ImGui::LabelText(buffer, "cam y");
 
-	snprintf(buffer, sizeof(buffer), "%d", GuiActive(false));
-	ImGui::LabelText(buffer, "gui active");
-
+		snprintf(buffer, sizeof(buffer), "%d", GuiActive(false));
+		ImGui::LabelText(buffer, "gui active");
+	}
 	ImGui::End();
 }
 
@@ -965,11 +966,6 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game2D* game2D)
 	ImGui::SameLine();
 	if (ImGui::Button("save"))
 	{
-#ifdef _3D_GUI_
-		writeEntities(game->world->entities, game->mainShaderID);
-		Mon::Log::print("Saved game to master file");
-		Mon::Log::warn("Only one master save file active!!!");
-#endif
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("load"))
@@ -1047,17 +1043,21 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game2D* game2D)
 	ImGui::SliderFloat("camera lerp", &game2D->camera.lerpSpeed, 0.0f, 100.0f);
 	ImGui::SliderFloat("camera smooth", &game2D->camera.smoothness, 0.1f, 10.0f);
 
-	char buffer[64];
-	snprintf(buffer, sizeof(buffer), "%f", game2D->world->player->pos.x);
-	ImGui::LabelText("player x", buffer);
-	snprintf(buffer, sizeof(buffer), "%f", game2D->world->player->pos.y);
-	ImGui::LabelText("player y", buffer);
+	{
+		//char buffer[64];
+		//snprintf(buffer, sizeof(buffer), "%f", game2D->world->player->pos.x);
+		//ImGui::LabelText("player x", buffer);
+		//snprintf(buffer, sizeof(buffer), "%f", game2D->world->player->pos.y);
+		//ImGui::LabelText("player y", buffer);
+	}
 
 	ImGui::DragFloat("cam zoom", &game2D->camera.zoom, 0.1f, 1.0f, 200.0f, "%.02f");
 	//ImGui::SliderInt("Tile 0 ID: ", &game->world2D->map->tiles[0].tileId, 0, 3, NULL);
 
-	char entitysizebuf[64];
-	snprintf(entitysizebuf, sizeof(entitysizebuf), "%f", (float)game2D->world->entities.size());
+	{
+		//char entitysizebuf[64];
+		//snprintf(entitysizebuf, sizeof(entitysizebuf), "%f", (float)game2D->world->entities.size());
+	}
 
 	ImGui::End();
 }

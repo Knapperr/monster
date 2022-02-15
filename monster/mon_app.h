@@ -11,7 +11,7 @@ public:
 	Mon::Platform* platform; /* SDLPlatform */
 
 #ifdef _3D_
-	Mon::Game* game;
+	Mon::GameState* gameState;
 #else 
 	Mon::Game2D* game2D;
 	Mon::Game2D_* game2D_;

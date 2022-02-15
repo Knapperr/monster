@@ -15,6 +15,9 @@ DESC:	Imp loader current uses Assimp to load popular model formats.
 
 		Jan 01/2022 - Cole Knapp
 
+IMPORTANT(ck): TODO(ck):
+Imp loader for 2d is going to parse Aesprite data and build asset files for 2d. 
+also create tilesheets for the engine to load as well
 
 IMPORTANT(ck): README
 The assimp-vc142-mtd.dll must be in D:\Programming\$$GameProjects\monster\imp_loader
@@ -24,6 +27,8 @@ sub projects? the main project requires the dll to be elsewhere.. could be some 
 
 - load .obj .fbx and whatever is the easiest to work with file format for 3d models
 - export out .imp files with Assimp for now
+
+
 
 Assimp is heavy I do not want it in the main engine. Eventually I would like to write
 the loader on my own and not rely on assimp. Remember that we can use this project in finnsie
@@ -36,12 +41,11 @@ having an import/export logic in Monster
 #include <assimp/postprocess.h>
 
 #include <stdio.h>
-
+#include <fstream>
 #include <vector>
 
 struct Texture
 {
-	unsigned int id;
 	std::string type;
 	std::string path;
 };
@@ -53,9 +57,14 @@ std::vector<Texture> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, s
 	std::vector<Texture> textures;
 	for (int i = 0; i < mat->GetTextureCount(type); ++i)
 	{
-		
-	}
+		aiString str;
+		mat->GetTexture(type, i, &str);
+		Texture texture;
+		texture.type = typeName;
+		texture.path = str.C_Str();
+		textures.push_back(texture);
 
+	}
 	return textures;
 }
 
@@ -91,12 +100,12 @@ struct Mesh
 
 struct Model
 {
-	std::vector<Texture> textures;
+	std::vector<std::string> texturePaths;
 	std::vector<Mesh> meshes;
 	bool gammaCorrection;
 };
 
-Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene)
+Mesh ProcessMesh(Model* model, aiMesh* mesh, const aiScene* scene)
 {
 	// data to fill 
 	std::vector<Vertex> vertices;
@@ -177,7 +186,6 @@ Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	std::vector<Texture> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
 	textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
-
 	return Mesh{ vertices, indices, textures };
 }
 
@@ -189,7 +197,7 @@ void ProcessNode(Model* model, aiNode* node, const aiScene* scene)
 		// node object only contains indices to index the actual objects in the scene
 		// the scene contains all the data, node is just to keep stuff organized (like realations between nodes)
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		model->meshes.push_back(ProcessMesh(mesh, scene));
+		model->meshes.push_back(ProcessMesh(model, mesh, scene));
 	}
 
 	// after meshes have been processed, recursively process each of the child nodes
@@ -217,44 +225,32 @@ bool LoadModel(Model* model, std::string path, bool gammaCorrection)
 }
 
 
-void CreateImpFileFromModel(Model* model)
+void ExportImpFile(Model* model, std::string name, std::string impPath)
 {
-/*
-if (ImGui::SmallButton("SAVE TO IMP FILE"))
-{
-	// Save the selected model to an '.imp' file
-	// loads with the Monster Engine
-	std::string path = "model.imp";
 	std::ofstream file;
-	file.open(path);
+	file.open(impPath);
 
-
-	GameObject* obj = g_Game->objects[selected];
-	for (int i = 0; i < obj->model->meshes.size(); ++i)
+	for (int i = 0; i < model->meshes.size(); ++i)
 	{
-		file << obj->name << "\n";
+		file << name << "\n";
 
-		Mesh* mesh = &obj->model->meshes[i];
+		Mesh* mesh = &model->meshes[i];
 		file << mesh->vertices.size() << "\n";
 		file << mesh->indices.size() << "\n";
+
 		for (int vertIndex = 0; vertIndex < mesh->vertices.size(); ++vertIndex)
 		{
-
 			file << mesh->vertices[vertIndex].position.x << "\n" << mesh->vertices[vertIndex].position.y << "\n" << mesh->vertices[vertIndex].position.z << "\n"
-					<< mesh->vertices[vertIndex].normal.x << "\n" << mesh->vertices[vertIndex].normal.y << "\n" << mesh->vertices[vertIndex].normal.z << "\n"
-					<< mesh->vertices[vertIndex].texCoords.x << "\n" << mesh->vertices[vertIndex].texCoords.y << "\n"
-					<< mesh->vertices[vertIndex].tangent.x << "\n" << mesh->vertices[vertIndex].tangent.y << "\n" << mesh->vertices[vertIndex].tangent.z << "\n"
-					<< mesh->vertices[vertIndex].bitangent.x << "\n" << mesh->vertices[vertIndex].bitangent.y << "\n" << mesh->vertices[vertIndex].bitangent.z << "\n";
+				<< mesh->vertices[vertIndex].normal.x << "\n" << mesh->vertices[vertIndex].normal.y << "\n" << mesh->vertices[vertIndex].normal.z << "\n"
+				<< mesh->vertices[vertIndex].texCoords.x << "\n" << mesh->vertices[vertIndex].texCoords.y << "\n"
+				<< mesh->vertices[vertIndex].tangent.x << "\n" << mesh->vertices[vertIndex].tangent.y << "\n" << mesh->vertices[vertIndex].tangent.z << "\n"
+				<< mesh->vertices[vertIndex].bitangent.x << "\n" << mesh->vertices[vertIndex].bitangent.y << "\n" << mesh->vertices[vertIndex].bitangent.z << "\n";
 		}
 		for (int indIndex = 0; indIndex < mesh->indices.size(); ++indIndex)
 		{
 			file << mesh->indices[indIndex] << "\n";
 		}
 	}
-
-	file.close();
-}
-*/
 }
 
 
@@ -268,7 +264,17 @@ int main(int argc, char** argv)
 	s - "path" export single model
 	h - help show commands
 	*/
+	Model model = {};
 
+	LoadModel(&model, "models/grass_star/Grass.obj", false);
+	ExportImpFile(&model, "grass", "test_grass.imp");
+
+	model = {};
+	LoadModel(&model, "models/tree/my_tree.obj", false);
+	ExportImpFile(&model, "tree", "tree.imp");
+
+
+	// Verify Exported Imp Files before check for (nan) and exponents in the data
 
 
 	return 0;

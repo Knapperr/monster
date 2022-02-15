@@ -199,21 +199,22 @@ namespace Mon {
 		MonGL::ViewPort(&config->viewPort);
 
 		// test stack
-		MonGL::PushMatrix(&batch, camera.projectionMatrix());
+		//MonGL::PushMatrix(&batch, camera.projectionMatrix());
 
-		mat4 newerMat = mat4(10.0f);
-		MonGL::PushMatrix(&batch, newerMat);
-		MonGL::PopMatrix(&batch);
+		//	mat4 newerMat = mat4(10.0f);
+		//	MonGL::PushMatrix(&batch, newerMat);
+		//	MonGL::PopMatrix(&batch);
 
-		mat4 newMat = mat4(2.0f);
-		MonGL::PushMatrix(&batch, newMat);
+		//	mat4 newMat = mat4(2.0f);
+		//	MonGL::PushMatrix(&batch, newMat);
 
-		MonGL::PopMatrix(&batch);
+		//MonGL::PopMatrix(&batch);
 
 		// TEST DRAW
 		glUseProgram(tileShader.handle);
 		int projLoc = glGetUniformLocation(tileShader.handle, "projection");
-		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(camera.projectionMatrix()));
+		mat4 projection = camera.projectionMatrix();
+		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 		//MonGL::drawMap(&tileShader, world->sheet.texture.id);
 		DrawTileMap(world->map, &tileShader, world->sheet.texture.id);
@@ -221,7 +222,7 @@ namespace Mon {
 
 		glUseProgram(shader.handle);
 		projLoc = glGetUniformLocation(shader.handle, "projection");
-		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(camera.projectionMatrix()));
+		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 		for (unsigned int i = 0; i < world->entities.size(); ++i)
 		{

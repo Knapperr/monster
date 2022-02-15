@@ -32,6 +32,8 @@ int main(int argc, char** argv)
 //#endif
 
 	// TODO(ck): Memory allocation
+	// IMPORTANT the app contains the game and the platform layer..
+	// game needs to be pulled above here but the design of sdl is working against that
 	App* app = new App();
 	app->init();
 	app->run();

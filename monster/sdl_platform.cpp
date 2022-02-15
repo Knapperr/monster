@@ -132,11 +132,8 @@ namespace Mon
 
 	void SDLPlatform::pollInput(Mon::Input* newInput, Mon::Input* oldInput)
 	{
-		//Input* newInput = &input[0];
-		//Input* oldInput = &input[1];
-
+		// clear new input
 		*newInput = {};
-
 
 		for (int buttonIndex = 0; buttonIndex < ArrayCount(newInput->buttons); ++buttonIndex)
 		{

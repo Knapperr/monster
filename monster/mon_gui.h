@@ -42,7 +42,7 @@ extern float inputTimer;
 #ifdef USE_SDL
 void InitGui(SDL_Window* window, SDL_GLContext* context);
 #ifdef _3D_GUI_
-void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game* game);
+void UpdateGui(SDL_Window* window, Settings* settings, Mon::GameState* game);
 #else
 void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game2D* game2D);
 #endif

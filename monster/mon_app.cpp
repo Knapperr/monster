@@ -36,10 +36,14 @@ bool App::init()
 
 	// TODO(ck): Memory Allocation
 #ifdef _3D_
-	game = new Mon::Game();
+	//game = new Mon::Game();
+	//if (!game->init(settings.windowWidth, settings.windowHeight, settings.portWidth, settings.portHeight))
+		//return false;
 
-	if (!game->init(settings.windowWidth, settings.windowHeight, settings.portWidth, settings.portHeight))
+	gameState = new Mon::GameState();
+	if (false == Mon::InitGame(gameState, settings.windowWidth, settings.windowHeight, settings.portWidth, settings.portHeight))
 		return false;
+
 #else
 	game2D = new Mon::Game2D();
 	if (!game2D->init(1))
@@ -84,15 +88,15 @@ void App::run()
 
 	int target_framerate = 60;
 	uint64_t ticks_per_second = 1000000;
-	int max_updates = 3;
+	int max_updates = 2;
 
 	while (running)
 	{
 		// fixed time framerate
 		{
 			uint64_t time_target = (uint64_t)((1.0 / target_framerate) * ticks_per_second);
-			uint64_t time_curr = platform->ticks();
-			uint64_t time_diff = time_curr - time_last;
+			uint64_t time_curr   = platform->ticks();
+			uint64_t time_diff   = time_curr - time_last;
 			time_last = time_curr;
 			time_accumulator += time_diff;
 
@@ -160,18 +164,16 @@ void App::run()
 					showGUI = !showGUI;
 				}
 
+
+#ifdef _3D_
+				Mon::Update(gameState, delta, newInput);
+#else
+				game2D->update(delta, newInput, 1);
+#endif
+
 				Mon::Input* temp = newInput;
 				newInput = oldInput;
 				oldInput = temp;
-
-#ifdef _3D_
-				game->update(delta, newInput);
-#else
-				// TODO(ck): I think I need to reset my inputs here like switch between states
-				// that means I would have to remove the resetting of states to be in here 
-				// maybe platform->clear() or something like that
-				game2D->update(delta, newInput, 1);
-#endif
 			}
 		}
 
@@ -186,7 +188,7 @@ void App::run()
 
 
 #ifdef _3D_
-		game->render(1);
+		Mon::Render(gameState, delta);
 #else
 		game2D->render();
 #endif
@@ -194,7 +196,7 @@ void App::run()
 		if (showGUI)
 		{ 
 #ifdef _3D_
-			UpdateGui(platform->window, &settings, game);
+			UpdateGui(platform->window, &settings, gameState);
 #else
 			UpdateGui(platform->window, &settings, game2D);
 #endif
@@ -207,7 +209,8 @@ void App::run()
 	Mon::Log::print("Shutting down...");
 	Mon::Log::shutdown();
 #ifdef _3D_
-	game->cleanUp();
+	Mon::CleanUp(gameState);
+	//game->cleanUp();
 #else
 	game2D->cleanUp();
 #endif
