@@ -47,9 +47,6 @@ namespace Mon
 
 		MonGL::Config* config;
 
-		// TODO(ck): Use one container
-		//Entity player;
-		//Entity water;
 		bool simulate;
 		bool drawCollisions;
 

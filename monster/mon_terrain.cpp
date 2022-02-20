@@ -2,7 +2,7 @@
 #include <string>
 
 
-#define SIZE 128
+#define SIZE 64
 #define VERTEX_COUNT 32
 Terrain::Terrain(int gridX, int gridZ)
 {
@@ -26,7 +26,7 @@ Terrain::Terrain(int gridX, int gridZ)
 
 Terrain::~Terrain()
 {
-	// 
+	delete[] heightMap;
 }
 
 float GetHeight(int x, int z)

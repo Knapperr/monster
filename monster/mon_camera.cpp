@@ -209,6 +209,7 @@ namespace Mon
 		camera->angleAroundTarget = 180.0f;
 		camera->smoothness = 0.30f;
 		camera->lerpSpeed = 7.0f;
+		camera->zoom = 30.0f;
 	}
 
 	mat4 FollowViewMatrix(Camera* camera)

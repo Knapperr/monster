@@ -460,7 +460,7 @@ namespace MonGL
 		data->VAO = 0;
 		data->VBO = 0;
 
-		const int SIZE = 128;
+		const int SIZE = 64;
 		const int VERTEX_COUNT = 32;
 		data->verticeCount = VERTEX_COUNT * VERTEX_COUNT;
 		// TODO(ck): Memory Allocation

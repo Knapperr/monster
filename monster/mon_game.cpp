@@ -72,11 +72,21 @@ namespace Mon
 		// keep going left
 		// set if 0 or 100 hit
 		Entity* e = GetEntity(world, 16);
-		if (e->rb.pos.x > 0.0f && e->rb.pos.x < 100.0f)
-			e->rb.pos.x += 40 * dt;
-		else
-			e->rb.pos.x -= 40 * dt;
-		SetFacingDirection(e);
+		float speed = 4.0f;
+
+		if (e->rb.pos.x >= 40.0f && e->facingDir == Direction::Right)
+		{	
+			e->facingDir = Direction::Left;
+		}
+		if(e->rb.pos.x <= 0.0f && e->facingDir == Direction::Left)
+		{
+			e->facingDir = Direction::Right;
+		}
+
+		if (e->facingDir == Direction::Left)
+			speed = -speed;
+
+		e->rb.pos.x += speed * dt;
 
 		// TODO(ck): Update entity and then update entity collider right after
 		// instead of having two separate loops for entities and their colliders.
@@ -382,6 +392,7 @@ namespace Mon
 		// TODO(ck): clean up render data 
 		//glDeleteVertexArrays(1, &world->player->data.VAO);
 		//glDeleteBuffers(1, &world->player->data.VBO);
+		delete state->terrain;
 		MonGL::DeleteShader(&state->shader);
 	}
 

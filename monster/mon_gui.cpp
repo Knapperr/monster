@@ -627,6 +627,7 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 				ImGui::SliderFloat3("collider min", &game->world->entities[selected].collider.size.min[0], 0.0f, 100.0f);
 				ImGui::SliderFloat3("collider max", &game->world->entities[selected].collider.size.max[0], 0.0f, 100.0f);
 				
+				ImGui::DragFloat("speed", &game->world->entities[selected].rb.speed, 0.10f, 0.0f, 200.0f, "%.10f");
 				ImGui::DragFloat("angle", &game->world->entities[selected].spriteAngleDegrees, 0.10f, -180.0f, 360.0f, "%.10f");
 				//ImGui::DragFloat("rot x", &g_Game->objects[selected]->orientation.x, 0.05f, -1000.0f, 1000.0f, "%.02f");
 				//ImGui::DragFloat("rot y", &g_Game->objects[selected]->orientation.y, 0.05f, -1000.0f, 1000.0f, "%.02f");
@@ -860,11 +861,6 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::GameState* game)
 		ImGui::Checkbox("Things", &showEntityWindow);
 
 		ImGui::DragFloat("cam speed", &game->cameras[game->currCameraIndex].speed, 0.01f, 1.0f, 200.0f, "%.02f");
-
-		ImGui::DragFloat("picker pos x", &game->picker.pos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");
-		ImGui::DragFloat("picker pos y", &game->picker.pos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
-		ImGui::DragFloat("picker pos z", &game->picker.pos.z, 0.1f, -1000.0f, 1000.0f, "%.02f");
-
 
 		ImGui::Checkbox("draw collisions", &game->drawCollisions);
 		//ImGui::SliderFloat("speed", &game->player.particle.speed, 0.0f, 100.0f);
