@@ -206,7 +206,7 @@ namespace MonGL
 	void GenerateTerrain(RenderData* data, float* heightMap);
 	void LoadTexture(RenderData* data, int index, TextureType type, int shaderID, std::string path, bool pixelTexture = true);
 	
-	void Draw(Config* config, RenderData* data, v3 pos, Camera* camera,
+	void Draw(Config* config, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera,
 			  unsigned int shaderID, int selectedTexture = 0);	
 	void DrawBoundingBox(RenderData* data, Camera* camera, unsigned int shaderID);
 	void DrawTerrain(unsigned int shaderID, RenderData* data, Light* light, Camera* camera, bool wireFrame);

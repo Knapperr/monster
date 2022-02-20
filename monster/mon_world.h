@@ -105,10 +105,10 @@ namespace Mon {
 		MonGL::LoadTexture(&player->data, 1, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/p1.png");
 		MonGL::LoadTexture(&player->data, 2, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/p1SIDE.png");
 		MonGL::LoadTexture(&player->data, 3, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/p1BACK.png");
-		player->facingDir = 0;
+		player->facingDir = Direction::Forward;
 
 		InitBoxCollider(&player->collider);
-		player->rb.pos = v3(40.0f, 0.1f, 10.0);
+		player->rb.pos = v3(40.0f, 0.0f, 10.0);
 		player->rb.inverseMass = 10.0f;
 		player->rb.velocity = v3(0.0f, 0.0f, 0.0f); // 35m/s
 		player->rb.gravity = 10.0f;
@@ -123,6 +123,7 @@ namespace Mon {
 		player->data.mat.shininess = 32.0f;
 
 		player->impPath = "none";
+		player->spriteAngleDegrees = -45.0f;
 	}
 
 	static void PlayerAttack(Entity* player)
@@ -130,7 +131,7 @@ namespace Mon {
 
 	}
 
-	static void InitWorld(World* world, int shaderHandle)
+	static void InitWorld(World* world, int shaderHandle, float angleDegrees)
 	{
 		// reserve slot 0 for null entity
 		AddEntity(world);
@@ -153,6 +154,7 @@ namespace Mon {
 			tree->rb.pos = v3(6.0f * (i + 1), 5.30f, 5.5f * i);
 			tree->data.scale = v3(16.0f, 16.0f, 16.0f);
 			InitBoxCollider(&tree->collider);
+			tree->spriteAngleDegrees = angleDegrees;
 		}
 
 		int length = world->entityCount + 5;
@@ -168,7 +170,7 @@ namespace Mon {
 			MonGL::LoadTexture(&flower->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/sflow_tall.png");
 			flower->rb.pos = v3(10.0f, 0.1f, 6.0f);
 			InitBoxCollider(&flower->collider);
-
+			flower->spriteAngleDegrees = angleDegrees;
 		}
 		
 		AddEntity(world);
@@ -180,6 +182,7 @@ namespace Mon {
 		MonGL::LoadTexture(&cube->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/container2.png");
 		cube->rb.pos = v3(50.0f, 0.3f, 20.0f);
 		InitBoxCollider(&cube->collider);
+		cube->spriteAngleDegrees = angleDegrees;
 
 		// ch_minion
 		AddEntity(world);
@@ -191,6 +194,7 @@ namespace Mon {
 		MonGL::LoadTexture(&ent->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/ch_minion.png");
 		ent->rb.pos = v3(10.0f, 10.0f, 10.0f);
 		InitBoxCollider(&ent->collider);
+		ent->spriteAngleDegrees = angleDegrees;
 
 		AddEntity(world);
 		Entity* ent1 = GetEntity(world, world->entityCount - 1);
@@ -201,6 +205,7 @@ namespace Mon {
 		MonGL::LoadTexture(&ent1->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/ch_minion.png");
 		ent1->rb.pos = v3(10.0f, 10.0f, 10.0f);
 		InitBoxCollider(&ent1->collider);
+		ent1->spriteAngleDegrees = angleDegrees;
 
 		AddEntity(world);
 		Entity* ent2 = GetEntity(world, world->entityCount - 1);
@@ -211,6 +216,7 @@ namespace Mon {
 		MonGL::LoadTexture(&ent2->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/ch_minion.png");
 		ent2->rb.pos = v3(10.0f, 10.0f, 10.0f);
 		InitBoxCollider(&ent2->collider);
+		ent2->spriteAngleDegrees = angleDegrees;
 
 		AddEntity(world);
 		Entity* ent3 = GetEntity(world, world->entityCount - 1);
@@ -221,6 +227,7 @@ namespace Mon {
 		MonGL::LoadTexture(&ent3->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/ch_minion.png");
 		ent3->rb.pos = v3(10.0f, 10.0f, 10.0f);
 		InitBoxCollider(&ent3->collider);
+		ent3->spriteAngleDegrees = angleDegrees;
 
 		AddEntity(world);
 		Entity* ent4 = GetEntity(world, world->entityCount - 1);
@@ -231,7 +238,7 @@ namespace Mon {
 		MonGL::LoadTexture(&ent4->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/ch_witch2.png");
 		ent4->rb.pos = v3(25.0f, 0.0f, 26.0f);
 		InitBoxCollider(&ent4->collider);
-
+		ent4->spriteAngleDegrees = angleDegrees;
 	}
 
 	static void AddCube(World* world, int shaderHandle)

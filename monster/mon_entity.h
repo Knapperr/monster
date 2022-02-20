@@ -8,10 +8,10 @@ namespace Mon {
 	// Use this for now
 	enum class Direction
 	{
-		LEFT,
-		RIGHT,
-		FORWARD,
-		BACKWARD
+		Right,
+		Backward,
+		Left,
+		Forward
 	};
 
 	// Get to this starts pg49 Ian Millington
@@ -24,7 +24,7 @@ namespace Mon {
 		v3 orientation;
 		float gravity;
 
-		Direction dir = Direction::FORWARD;
+		Direction dir = Direction::Forward;
 
 		float damping;
 		float inverseMass;
@@ -46,9 +46,44 @@ namespace Mon {
 		MonGL::RenderSetup setup;
 		Collider collider;
 
-		
-		int facingDir;
+		Direction facingDir;
+
+		// NOTE(ck): Should this be in the render layer??
+		// its not really specific to drawing its just part of the 
+		// world matrix?
+		float spriteAngleDegrees;
 	};
+
+	static void SetFacingDirection(Entity* e)
+	{
+		if ((e->rb.velocity.x == 0.0f) && (e->rb.velocity.z == 0.0f))
+		{
+			// NOTE(ck): Leave facingDirection whatever it was 
+		}
+		else if (absoluteValue(e->rb.velocity.x) > absoluteValue(e->rb.velocity.z))
+		{
+			if (e->rb.velocity.x > 0)
+			{
+				e->facingDir = Direction::Right;
+			}
+			else
+			{
+				e->facingDir = Direction::Left;
+			}
+		}
+		else
+		{
+			if (e->rb.velocity.z > 0)
+			{
+				e->facingDir = Direction::Backward;
+
+			}
+			else
+			{
+				e->facingDir = Direction::Forward;
+			}
+		}
+	}
 }
 
 #endif // MON_ENTITY_H

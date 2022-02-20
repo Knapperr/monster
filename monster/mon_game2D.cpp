@@ -77,8 +77,8 @@ namespace Mon {
 
 	void Game2D::update(double dt, Input* input, int x)
 	{
-		if (dt > deltaTime || dt < deltaTime)
-			printf("dt: %f\n", dt);
+		//if (dt > deltaTime || dt < deltaTime)
+			//printf("dt: %f\n", dt);
 
 		deltaTime = dt;
 		this->input = *input;

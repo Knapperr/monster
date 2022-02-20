@@ -65,9 +65,6 @@ void App::run()
 	// startup
 	//if (app_config.on_startup != nullptr)
 		//app_config.on_startup();
-
-	uint64_t time_last = 0;
-	uint64_t time_accumulator = 0;
 	
 	// time struct
 	/*
@@ -78,105 +75,50 @@ void App::run()
 	float Time::delta = 0;
 	float Time::pause_timer = 0;
 	*/
-	uint64_t ticks = 0;
-	uint64_t previousTicks = 0;
-	double seconds = 0;
-	double previousSeconds = 0;
-	float delta = 0;
-	float pauseTimer = 0;
-	// ------------------------------------------------------------------------------------------------------------------------
+	
+	// NOTE(ck): https://gafferongames.com/post/fix_your_timestep/
+	// Semi-fixed timestep to start
+	double t = 0.0;
+	double frameRate = 60.0;
+	double dt = 1 / frameRate;
 
-	int target_framerate = 60;
-	uint64_t ticks_per_second = 1000000;
-	int max_updates = 2;
+	// hires time in seconds
+	uint64_t currentTime = SDL_GetPerformanceCounter();
 
 	while (running)
 	{
-		// fixed time framerate
+		uint64_t newTime = SDL_GetPerformanceCounter();
+		double frameTime = (newTime - currentTime) / (double)SDL_GetPerformanceFrequency();
+		currentTime = newTime;
+
+		// TODO(ck): Deal with spiral of death here
+
+
+		// Process platform input and other system events
+		platform->pollInput(newInput, oldInput);
+		if (platform->quit == true)
+			running = false;
+
+		if (newInput->quit.endedDown)
 		{
-			uint64_t time_target = (uint64_t)((1.0 / target_framerate) * ticks_per_second);
-			uint64_t time_curr   = platform->ticks();
-			uint64_t time_diff   = time_curr - time_last;
-			time_last = time_curr;
-			time_accumulator += time_diff;
-
-			// do not run too fast
-			while (time_accumulator < time_target)
-			{
-				int milliseconds = (int)(time_target - time_accumulator) / (ticks_per_second / 1000);
-				// TODO(ck): Sleep might be causing stuttering this happened in handmade remember
-				// TODO(ck): The bandaid for handmade was the multiply the time passed to sleep by 400
-				// TODO(ck): For some reason here sleep needs to be divided by 2 in order for it to run smoothly.
-				//			 Sleep() on this machine is very problematic?
-				platform->sleep(milliseconds);
-
-				time_curr = platform->ticks();
-				time_diff = time_curr - time_last;
-				time_last = time_curr;
-				time_accumulator += time_diff;
-			}
-
-			// Do not allow us to fall behind too many updates
-			// (otherwise we'll get spiral of death)
-
-			uint64_t time_maximum = max_updates * time_target; // max_updates = 5
-			if (time_accumulator > time_maximum)
-				time_accumulator = time_maximum;
-
-			// do as many updates as we can
-			while (time_accumulator >= time_target)
-			{
-				time_accumulator -= time_target;
-
-				// timer.delta
-				delta = (1.0f / target_framerate); // 60
-
-				if (pauseTimer > 0)
-				{
-					pauseTimer -= delta;
-					if (pauseTimer <= -0.0001)
-						delta = -pauseTimer;
-					else
-						continue;
-				}
-
-				// Timer:: this needs to be packed in and passed to game
-				previousTicks = ticks;
-				ticks += time_target;
-				previousSeconds = seconds;
-				seconds += delta;
-				//printf("delta: %f\n", previousSeconds);
-
-				// input backend just resets the state of the input instead of doing it every frame at the top
-				//InputBackend::frame();
-				//GraphicsBackend::frame();
-
-				//if (app_config.on_update != nullptr)
-					//app_config.on_update();
-
-
-				platform->pollInput(newInput, oldInput);
-				if (platform->quit == true)
-					running = false;
-
-				if (newInput->quit.endedDown)
-				{
-					showGUI = !showGUI;
-				}
-
-
-#ifdef _3D_
-				Mon::Update(gameState, delta, newInput);
-#else
-				game2D->update(delta, newInput, 1);
-#endif
-
-				Mon::Input* temp = newInput;
-				newInput = oldInput;
-				oldInput = temp;
-			}
+			showGUI = !showGUI;
 		}
 
+		while (frameTime > 0.0)
+		{
+
+			double deltaTime = std::min(frameTime, dt);
+
+#ifdef _3D_
+			Mon::Update(gameState, deltaTime, newInput);
+#else
+			game2D->update(deltaTime, newInput, 1);
+#endif
+			frameTime -= deltaTime;
+			// NOTE(ck): T is the current time ... not using this?
+			// t += deltaTime;
+		}
+			
 		// TODO(ck): Platform->Renderer->clearColor 
 		glClearColor(0.126f, 0.113f, 0.165f, 1.0f);
 
@@ -188,7 +130,7 @@ void App::run()
 
 
 #ifdef _3D_
-		Mon::Render(gameState, delta);
+		Mon::Render(gameState, 1.0f);
 #else
 		game2D->render();
 #endif
@@ -205,6 +147,12 @@ void App::run()
 
 		// TODO(ck): Platform->swapWindow()
 		SDL_GL_SwapWindow(platform->window);
+
+
+		// Swap input
+		Mon::Input* temp = newInput;
+		newInput = oldInput;
+		oldInput = temp;
 	}
 	Mon::Log::print("Shutting down...");
 	Mon::Log::shutdown();

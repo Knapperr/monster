@@ -171,7 +171,7 @@ void LoadImpGrassFile(Mon::GameState* game)
 	e->impPath = "test_grass.imp";
 }
 
-void writeImpFile(Mon::Game* game)
+void writeImpFile(Mon::GameState* game)
 {
 	// write the selected index to a file....
 	// this will be a good way to see if the file data is loaded properly.
@@ -510,7 +510,7 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 {
 	ImGui::Begin("entities and things", p_open);
 	
-	ImGui::DragFloat("sprite angle", &game->config->angleDegrees, 0.10f, -180.0f, 360.0f, "%.10f");
+	
 	if (ImGui::Button("Add Cube"))
 	{
 		Mon::AddCube(game->world, game->shader.handle);
@@ -626,6 +626,8 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 				ImGui::SliderFloat3("scale", &game->world->entities[selected].data.scale[0], 0.0f, 100.0f);
 				ImGui::SliderFloat3("collider min", &game->world->entities[selected].collider.size.min[0], 0.0f, 100.0f);
 				ImGui::SliderFloat3("collider max", &game->world->entities[selected].collider.size.max[0], 0.0f, 100.0f);
+				
+				ImGui::DragFloat("angle", &game->world->entities[selected].spriteAngleDegrees, 0.10f, -180.0f, 360.0f, "%.10f");
 				//ImGui::DragFloat("rot x", &g_Game->objects[selected]->orientation.x, 0.05f, -1000.0f, 1000.0f, "%.02f");
 				//ImGui::DragFloat("rot y", &g_Game->objects[selected]->orientation.y, 0.05f, -1000.0f, 1000.0f, "%.02f");
 				//ImGui::DragFloat("rot z", &g_Game->objects[selected]->orientation.z, 0.05f, -1000.0f, 1000.0f, "%.02f");

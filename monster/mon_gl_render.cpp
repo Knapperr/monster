@@ -701,7 +701,7 @@ namespace MonGL
 	///
 
 
-	void Draw(Config* config, RenderData* data, v3 pos, Camera* camera,
+	void Draw(Config* config, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera,
 			  unsigned int shaderID, int selectedTexture)
 	{
 
@@ -725,7 +725,7 @@ namespace MonGL
 		data->worldMatrix = glm::translate(data->worldMatrix, pos);
 		if (data->indiceCount > 0)
 		{
-			data->worldMatrix = glm::rotate(data->worldMatrix, glm::radians(config->angleDegrees), v3{ 1.0f, 0.0f, 0.0f });
+			data->worldMatrix = glm::rotate(data->worldMatrix, glm::radians(spriteAngleDegrees), v3{ 1.0f, 0.0f, 0.0f });
 		}
 		data->worldMatrix = glm::scale(data->worldMatrix, data->scale);
 

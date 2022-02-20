@@ -61,12 +61,13 @@ namespace MonGL
 			// IMPORTANT(ck):
 			// TODO(ck): 
 			// Need to use linear for 3d pixel art???
-#if 0
-			texture->filterMin = GL_NEAREST;
-			texture->filterMax = GL_NEAREST;
-#else
+#define _3D_
+#ifdef _3D_
 			texture->filterMin = GL_LINEAR_MIPMAP_LINEAR;
 			texture->filterMax = GL_LINEAR;
+#else
+			texture->filterMin = GL_NEAREST;
+			texture->filterMax = GL_NEAREST;
 #endif
 		}
 
