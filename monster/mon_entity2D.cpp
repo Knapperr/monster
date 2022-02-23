@@ -9,7 +9,7 @@ namespace Mon
 		// TODO(ck): Don't automatically make opengl data... figure out what renderer we are using
 		// TODO(ck): Texture load in renderer we need the sprite size from the texture
 		MonGL::InitRenderData2D(&e->sprite, size);
-		LoadTextureFile(&e->sprite.texture, fileLocation, MonGL::TextureType::Diffuse, isAlpha, false, true);
+		LoadTextureFile(&e->sprite.texture, fileLocation, MonGL::TextureType::Diffuse, isAlpha, false, false, true);
 
 		e->pos = position;
 		

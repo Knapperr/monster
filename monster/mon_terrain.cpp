@@ -20,7 +20,7 @@ Terrain::Terrain(int gridX, int gridZ)
 	Mon::InitBoxCollider(&collider);
 	collider.data.color = Mon::v3(0.1f, 0.4f, 0.95f);
 	collider.worldPos = Mon::v3(-2.0f, -6.40f, -1.10f);
-	collider.size.max = Mon::v3(68.00f, 6.10f, 64.0f);
+	collider.max = Mon::v3(68.00f, 6.10f, 64.0f);
 	Mon::SetBoxTransform(&collider, collider.worldPos, Mon::v3(1.0f));
 }
 

@@ -97,7 +97,7 @@ namespace Mon
 			// TODO(ck): Broad Phase Collision Check
 
 			// TODO(ck): Precise Collision check
-
+			
 
 			v3 colliderPos = { world->entities[i].rb.pos.x - (0.5f),
 								world->entities[i].rb.pos.y - (0.5),
@@ -216,9 +216,19 @@ namespace Mon
 		player->rb.velocity.x = velocity->x * dt + player->rb.velocity.x;
 		player->rb.velocity.z = velocity->z * dt + player->rb.velocity.z;
 
+
+		// Need to update the collider of the player first because we are using the position here
+		// maybe not?
+		Entity* minion = GetEntity(world, 16);
+		if (TestAABBAABB(player->collider, minion->collider))
+			player->rb.speed = 1.0f;
+		else
+			player->rb.speed = 40.0f;
+		
+
+
+
 		player->rb.pos = newPos;
-
-
 		SetFacingDirection(player);
 	}
 

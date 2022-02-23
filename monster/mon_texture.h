@@ -34,7 +34,8 @@ namespace MonGL
 		TextureType type;
 	};
 
-	void LoadTextureFile(Texture* texture, const char* file, TextureType type, bool alpha, bool flip, bool pixelArtTexture = false);
+	// TODO(ck): Pass a texture config or flags instead of bools?
+	void LoadTextureFile(Texture* texture, const char* file, TextureType type, bool alpha, bool flip, bool linearFilter = false, bool pixelArtTexture = false);
 
 
 }

@@ -362,11 +362,11 @@ static void TerrainColliderWindow(Terrain* terrain)
 		ImGui::Checkbox("draw collider", &terrain->collider.data.visible);
 
 
-		if (ImGui::SliderFloat3("collider min", &terrain->collider.size.min[0], 0.0f, 500.0f))
+		if (ImGui::SliderFloat3("collider min", &terrain->collider.min[0], 0.0f, 500.0f))
 		{
 			Mon::SetBoxTransform(&terrain->collider, terrain->collider.worldPos, Mon::v3(1.0f));
 		}
-		if (ImGui::SliderFloat3("collider max", &terrain->collider.size.max[0], 0.0f, 500.0f))
+		if (ImGui::SliderFloat3("collider max", &terrain->collider.max[0], 0.0f, 500.0f))
 		{
 			Mon::SetBoxTransform(&terrain->collider, terrain->collider.worldPos, Mon::v3(1.0f));
 		}
@@ -624,8 +624,8 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 
 
 				ImGui::SliderFloat3("scale", &game->world->entities[selected].data.scale[0], 0.0f, 100.0f);
-				ImGui::SliderFloat3("collider min", &game->world->entities[selected].collider.size.min[0], 0.0f, 100.0f);
-				ImGui::SliderFloat3("collider max", &game->world->entities[selected].collider.size.max[0], 0.0f, 100.0f);
+				ImGui::SliderFloat3("collider min", &game->world->entities[selected].collider.min[0], 0.0f, 100.0f);
+				ImGui::SliderFloat3("collider max", &game->world->entities[selected].collider.max[0], 0.0f, 100.0f);
 				
 				ImGui::DragFloat("speed", &game->world->entities[selected].rb.speed, 0.10f, 0.0f, 200.0f, "%.10f");
 				ImGui::DragFloat("angle", &game->world->entities[selected].spriteAngleDegrees, 0.10f, -180.0f, 360.0f, "%.10f");

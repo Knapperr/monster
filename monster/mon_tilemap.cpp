@@ -42,13 +42,13 @@ namespace Mon
 
 	void InitTileSheet(TileSheet* sheet, const char* fileName)
 	{
-		MonGL::LoadTextureFile(&sheet->texture, fileName, MonGL::TextureType::Diffuse, true, false, true);
+		MonGL::LoadTextureFile(&sheet->texture, fileName, MonGL::TextureType::Diffuse, true, false, false, true);
 
 		// TODO(ck): 
 		// Parse the loaded texture and calculate the tileids
 		// all we need is the width and height i.e 256x256 and the gridX and gridY
 		// that will give us our ids for the sheet that we can then use for picking tiles
-		// tileid 0 = 0,0 - 1 = 0,1 and so on this info can easily be put into the gui 
+		// tileid 0 = 0,0 - 1 = 0,1 and so on this info can easily be put into the gui
 		// cause the map can just be used directly in the gui
 		// need a way to save the map and all of that as well
 		// possibly have a lighter weight tilemap for when the game is actually running 

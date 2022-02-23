@@ -42,7 +42,7 @@ namespace MonGL
 	}
 
 	// Generates the texture as well
-	void LoadTextureFile(Texture* texture, const char* file, TextureType type, bool alpha, bool flip, bool pixelArtTexture)
+	void LoadTextureFile(Texture* texture, const char* file, TextureType type, bool alpha, bool flip, bool linearFilter, bool pixelArtTexture)
 	{
 		texture->type = type;
 		// TODO(CK): Clean up
@@ -56,19 +56,21 @@ namespace MonGL
 		}
 		else
 		{
-			texture->wrapS = GL_CLAMP_TO_EDGE; // GL_CLAMP_TO_BORDER 
-			texture->wrapT = GL_CLAMP_TO_EDGE; // GL_CLAMP_TO_BORDER
-			// IMPORTANT(ck):
-			// TODO(ck): 
-			// Need to use linear for 3d pixel art???
-#define _3D_
-#ifdef _3D_
-			texture->filterMin = GL_LINEAR_MIPMAP_LINEAR;
-			texture->filterMax = GL_LINEAR;
-#else
-			texture->filterMin = GL_NEAREST;
-			texture->filterMax = GL_NEAREST;
-#endif
+			texture->wrapS = GL_CLAMP_TO_EDGE;
+			texture->wrapT = GL_CLAMP_TO_EDGE;
+			
+			// Linear for 3D and Texture Atlas
+			if (linearFilter)
+			{
+				//texture->filterMin = GL_LINEAR_MIPMAP_LINEAR;
+				texture->filterMin = GL_LINEAR;
+				texture->filterMax = GL_LINEAR;
+			}
+			else
+			{
+				texture->filterMin = GL_NEAREST;
+				texture->filterMax = GL_NEAREST;
+			}
 		}
 
 		int nrChannels;

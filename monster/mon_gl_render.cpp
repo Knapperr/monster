@@ -12,7 +12,7 @@ namespace MonGL
 	{
 		data->texturePath = path;
 		Texture text = {};
-		LoadTextureFile(&text, path.c_str(), type, false, true, pixelTexture);
+		LoadTextureFile(&text, path.c_str(), type, false, true, true, pixelTexture);
 		data->textures[index] = text;
 		data->selectedTexture = 0;
 		glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
@@ -216,10 +216,7 @@ namespace MonGL
 		glGenVertexArrays(1, &data->VAO);
 		glGenBuffers(1, &data->VBO);
 		glBindBuffer(GL_ARRAY_BUFFER, data->VBO);
-#if 0
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(data->vertices), data->vertices, GL_STATIC_DRAW);
-#endif
+
 		glBufferData(GL_ARRAY_BUFFER, data->verticeCount * sizeof(Vertex3D), data->vertices, GL_STATIC_DRAW);
 		glBindVertexArray(data->VAO);
 
@@ -236,10 +233,8 @@ namespace MonGL
 
 		// Position
 		glEnableVertexAttribArray(0);
-#if 0
-		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0);
-#endif
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)0);
+
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 		// Set world matrix to be the same size as the bounding box
@@ -557,22 +552,22 @@ namespace MonGL
 		*/
 		Texture text = {};
 		data->textures[0] = text;
-		LoadTextureFile(&data->textures[0], textPath.c_str(), TextureType::Diffuse, false, false, false);
+		LoadTextureFile(&data->textures[0], textPath.c_str(), TextureType::Diffuse, false, false, true, false);
 
 		textPath = "res/textures/terrain/grass.jpg";
 		Texture text1 = {};
 		data->textures[1] = text1;
-		LoadTextureFile(&data->textures[1], textPath.c_str(), TextureType::Diffuse, false, false, false);
+		LoadTextureFile(&data->textures[1], textPath.c_str(), TextureType::Diffuse, false, false, true, false);
 
 		textPath = "res/textures/terrain/pix_grass.png";
 		Texture text2 = {};
 		data->textures[2] = text2;
-		LoadTextureFile(&data->textures[2], textPath.c_str(), TextureType::Diffuse, false, false, true);
+		LoadTextureFile(&data->textures[2], textPath.c_str(), TextureType::Diffuse, false, false, true, true);
 
 		textPath = "res/textures/terrain/snow.jpg";
 		Texture text3 = {};
 		data->textures[3] = text3;
-		LoadTextureFile(&data->textures[3], textPath.c_str(), TextureType::Diffuse, false, false, false);
+		LoadTextureFile(&data->textures[3], textPath.c_str(), TextureType::Diffuse, false, false, true, false);
 	}
 
 
@@ -696,6 +691,42 @@ namespace MonGL
 	}
 
 
+	void DrawBoundingBox(RenderData* data, Camera* camera, unsigned int shaderID)
+	{
+		if (false == data->visible)
+			return;
+
+
+		// ==============================================================================
+		glUniform3fv(glGetUniformLocation(shaderID, "material.ambient"), 1, &data->mat.ambient[0]);
+		glUniform3fv(glGetUniformLocation(shaderID, "material.diffuse"), 1, &data->mat.diffuse[0]);
+		glUniform3fv(glGetUniformLocation(shaderID, "material.specular"), 1, &data->mat.specular[0]);
+		glUniform1f(glGetUniformLocation(shaderID, "material.shininess"), data->mat.shininess);
+
+		glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camera->pos[0]);
+
+		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(Projection(camera)));
+		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(ViewMatrix(camera)));
+
+		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), false);
+
+		glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
+		glUniform1i(glGetUniformLocation(shaderID, "collider"), true);
+		// ==============================================================================
+
+		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(data->worldMatrix));
+		glBindVertexArray(data->VAO);
+
+		glEnable(GL_LINE_SMOOTH);
+		glLineWidth(data->lineWidth);
+		glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, 0);
+		glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, (GLvoid*)(4 * sizeof(GLushort)));
+		glDrawElements(GL_LINES, 8, GL_UNSIGNED_SHORT, (GLvoid*)(8 * sizeof(GLushort)));
+
+		globalDrawCalls++;
+	}
+
+
 	///
 	/// Draw RenderData  
 	///
@@ -741,41 +772,6 @@ namespace MonGL
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 
-
-		globalDrawCalls++;
-	}
-
-	void DrawBoundingBox(RenderData* data, Camera* camera, unsigned int shaderID)
-	{
-		if (false == data->visible)
-			return;
-
-
-		// ==============================================================================
-		glUniform3fv(glGetUniformLocation(shaderID, "material.ambient"), 1, &data->mat.ambient[0]);
-		glUniform3fv(glGetUniformLocation(shaderID, "material.diffuse"), 1, &data->mat.diffuse[0]);
-		glUniform3fv(glGetUniformLocation(shaderID, "material.specular"), 1, &data->mat.specular[0]);
-		glUniform1f(glGetUniformLocation(shaderID, "material.shininess"), data->mat.shininess);
-
-		glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camera->pos[0]);
-
-		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(Projection(camera)));
-		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(ViewMatrix(camera)));
-
-		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), false);
-
-		glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
-		glUniform1i(glGetUniformLocation(shaderID, "collider"), true);
-		// ==============================================================================
-
-		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(data->worldMatrix));
-		glBindVertexArray(data->VAO);
-
-		glEnable(GL_LINE_SMOOTH);
-		glLineWidth(data->lineWidth);
-		glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, 0);
-		glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, (GLvoid*)(4 * sizeof(GLushort)));
-		glDrawElements(GL_LINES, 8, GL_UNSIGNED_SHORT, (GLvoid*)(8 * sizeof(GLushort)));
 
 		globalDrawCalls++;
 	}
@@ -1092,7 +1088,7 @@ namespace MonGL
 	void FillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize)
 	{		
 		float sheetSize = 256.0f;
-		int spriteSize = 16;
+		int spriteSize = 16.0;
 
 		// Texture coords
 		float topRightX		= ((tileOffsetX + 1) * spriteSize) / sheetSize;
