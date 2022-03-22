@@ -3,7 +3,7 @@
 namespace Mon {
 	
 	// New 
-	void Init(Game2D_* game)
+	bool Init(Game2D_* game)
 	{
 		InitWorld(game->world);
 
@@ -11,20 +11,74 @@ namespace Mon {
 		// TODO(ck): REMOVE TESTING TILE SHADER use above shader for both tiles and quads
 		MonGL::LoadShader(&game->tileShader, "res/shaders/vert_tile.glsl", "res/shaders/frag_tile.glsl", NULL);
 
-		
-	}
+		game->world = new World2D_();
+		// Set up the shader locations for our objects
+		glUseProgram(game->shader.handle);
 
+		// TODO(CK): CAMERA
+		// So let's say you want your pixel art scale 2:1
+		// Then your target 1080p. Just take the resolution and divide by 2. Examples
+		// This is for 1920x1080 I am using 1280x720 right now
+		// 2:1 960x540 -- 3:1 640x360 --- 4:! 480x240
+		float left = 0.0f;
+		float right = 960.0f;
+		float bottom = 540.0f;
+		float top = 0.0f;
+
+		mat4 projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
+
+		int imgLoc = glGetUniformLocation(game->shader.handle, "image");
+		glUniform1i(imgLoc, 0);
+
+		int projLoc = glGetUniformLocation(game->shader.handle, "projection");
+		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+
+		// TODO(ck): REMOVE TESTING TILE SHADER
+		glUseProgram(game->tileShader.handle);
+		imgLoc = glGetUniformLocation(game->tileShader.handle, "image");
+		glUniform1i(imgLoc, 0);
+
+		projLoc = glGetUniformLocation(game->tileShader.handle, "projection");
+		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+		mat4 model = mat4(1.0f);
+		v3 pos = v3(0, 0, 1.0f);
+		model = glm::translate(model, pos);
+		model = glm::scale(model, v3(v2(32, 32), 1.0f));
+		glUniformMatrix4fv(glGetUniformLocation(game->tileShader.handle, "model"), 1, GL_FALSE, glm::value_ptr(model));
+
+
+		int screenWidth = 1440;
+		int screenHeight = 900;
+		int portWidth = 960;
+		int portHeight = 540;
+		game->config = new MonGL::Config();
+
+		game->config->viewPort = { (float)(screenWidth - portWidth) / 2 , (float)(screenHeight - portHeight) / 2, (float)portWidth, (float)portHeight };
+		MonGL::ViewPort(&game->config->viewPort);
+
+		AddCamera(game);
+		int camIndex = AddCamera(game);
+		// InitCamera
+		//OrthoCamera(game->world->player->pos, &game->config->viewPort);
+		// 
+		//game->camera = OrthoCamera(game->world->player->pos, &game->config->viewPort);
+		
+		
+		return true;
+	}
 
 	bool Game2D::init(int x)
 	{
 		state = State::Play;
 
 		// TODO(ck): Memory management
-		world = new World2D();
 		MonGL::LoadShader(&shader, "res/shaders/vert_sprite.glsl", "res/shaders/frag_sprite.glsl", NULL);
 		// TODO(ck): REMOVE TESTING TILE SHADER
 		MonGL::LoadShader(&tileShader, "res/shaders/vert_tile.glsl", "res/shaders/frag_tile.glsl", NULL);
 
+		world = new World2D();
 		// Set up the shader locations for our objects
 		glUseProgram(shader.handle);
 

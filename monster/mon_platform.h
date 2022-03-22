@@ -13,7 +13,6 @@ namespace Mon
 	class Platform
 	{
 	public:
-
 		// TODO(ck): Need wrappers for these
 		SDL_Window* window;
 		SDL_GLContext context;

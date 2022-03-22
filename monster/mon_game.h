@@ -25,13 +25,12 @@ namespace Mon
 	// and then come off for release
 	void RunDebugControls(Input* input, MousePicker* picker, World* world, int& selectedIndex);
 
-
 	enum Mode
 	{
 		Debug,
 		Play
 	};
-	
+
 	struct GameState
 	{
 		World* world;
@@ -39,6 +38,9 @@ namespace Mon
 		Terrain* terrain;
 		MousePicker picker;
 		Input input;
+
+		MonGL::Line lineOne;
+		MonGL::Line lineTwo;
 
 		// TODO(ck): Camera Manager
 		Camera cameras[5];

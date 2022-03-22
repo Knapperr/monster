@@ -23,12 +23,15 @@ namespace Mon {
 		World2D_* world;
 		// cameras like in game.cpp
 		OrthoCamera camera;
+		OrthoCamera cameras[5];
+		int cameraCount;
+
 		MonGL::Config* config;
 		MonGL::CommonProgram shader;
 		MonGL::CommonProgram tileShader;
 	};
 
-	void Init(Game2D_* game);
+	bool Init(Game2D_* game);
 	void Update(Game2D_* game, double dt, Input* input);
 	void Render(Game2D_* game);
 
@@ -39,6 +42,28 @@ namespace Mon {
 	bool DebugMode(int state);
 
 	void CleanUp();
+
+	// TODO(ck): Camera manager
+	static unsigned int AddCamera(Game2D_* state)
+	{
+		unsigned int cameraIndex = state->cameraCount++;
+
+		OrthoCamera* c = &state->cameras[cameraIndex];
+		c = {};
+
+		return cameraIndex;
+	}
+
+	// TODO(ck): Camera manager
+	static OrthoCamera* GetCamera(Game2D_* state, unsigned int index)
+	{
+		OrthoCamera* c = 0;
+		if ((index > 0) && (index < ArrayCount(state->cameras)))
+		{
+			c = &state->cameras[index];
+		}
+		return c;
+	}
 
 	class Game2D
 	{

@@ -13,7 +13,6 @@ namespace Mon {
 
 		// Probably want this in the rendering layer?
 		MonGL::RenderData renderItems[256];
-		MonGL::RenderData lines[128];
 		// TODO(ck): Not sure if I want things like trees but they can go into instanced data I guess?
 		// might still want to have trees in entities because they can be attacked or respond to player interaction?
 		// StaticEntities??? staticEntities[256];

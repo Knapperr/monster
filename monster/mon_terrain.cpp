@@ -92,8 +92,6 @@ void InitMousePicker(MousePicker* picker)
 	picker->projectionMatrix = Mon::mat4(1.0f);
 	picker->currentRay = Mon::v3(0.0f);
 	picker->currentTerrainPoint = Mon::v3(0.0f);
-
-	MonGL::InitLine(&picker->data);
 }
 
 #define RECURSION_COUNT 200.0f

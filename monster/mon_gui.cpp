@@ -862,6 +862,9 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::GameState* game)
 
 		ImGui::DragFloat("cam speed", &game->cameras[game->currCameraIndex].speed, 0.01f, 1.0f, 200.0f, "%.02f");
 
+		ImGui::DragFloat("line one x", &game->lineOne.pos.x, 0.01f, 1.0f, 2000.0f, "%.02f");
+		ImGui::DragFloat("line two z", &game->lineTwo.pos.z, 0.01f, 1.0f, 2000.0f, "%.02f");
+
 		ImGui::Checkbox("draw collisions", &game->drawCollisions);
 		//ImGui::SliderFloat("speed", &game->player.particle.speed, 0.0f, 100.0f);
 		//ImGui::SliderFloat3("lightpos", &game->light.pos[0], 0.0f, 500.0f);

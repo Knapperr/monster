@@ -92,25 +92,17 @@ namespace Mon
 		// instead of having two separate loops for entities and their colliders.
 		for (unsigned int i = 1; i < world->entityCount; ++i)
 		{
-
-
 			// TODO(ck): Broad Phase Collision Check
 
 			// TODO(ck): Precise Collision check
 			
-
 			v3 colliderPos = { world->entities[i].rb.pos.x - (0.5f),
 								world->entities[i].rb.pos.y - (0.5),
 								world->entities[i].rb.pos.z - (0.5f) };
 
 			UpdateCollider(&world->entities[i].collider, colliderPos, world->entities[i].data.scale);
 		}
-
-
-
 	}
-
- 
 
 	bool InitGame(GameState* state, int windowWidth, int windowHeight, float portWidth, float portHeight)
 	{
@@ -120,8 +112,9 @@ namespace Mon
 		//waterShader = {};
 		MonGL::LoadShader(&state->shader, "res/shaders/vert_colors.glsl", "res/shaders/frag_colors.glsl", NULL);
 		//MonGL::LoadShader(&waterShader.common, "res/shaders/vert_water.glsl", "res/shaders/frag_water.glsl", NULL);
-
 		state->mainShaderID = state->shader.handle;
+
+
 
 
 		state->light = {};
@@ -174,6 +167,11 @@ namespace Mon
 
 		state->mode = Mode::Debug;
 
+
+		// debug stuff
+		MonGL::InitLine(&state->lineOne);
+		MonGL::InitLine(&state->lineTwo);
+
 		// Init the game world
 		// TODO(ck): MEMORY MANAGEMENT
 		state->world = new World();
@@ -221,12 +219,10 @@ namespace Mon
 		// maybe not?
 		Entity* minion = GetEntity(world, 16);
 		if (TestAABBAABB(player->collider, minion->collider))
-			player->rb.speed = 1.0f;
+			minion->rb.speed = 1.0f;
 		else
-			player->rb.speed = 40.0f;
+			minion->rb.speed = 40.0f;
 		
-
-
 
 		player->rb.pos = newPos;
 		SetFacingDirection(player);
@@ -344,6 +340,7 @@ namespace Mon
 		UpdatePicker(&state->picker, state->terrain, newInput->mouseScreen, ViewMatrix(cam), Projection(cam), cam->pos);
 
 		// DebugModule update?
+		// DebugManager update?
 		RunDebugControls(newInput, &state->picker, state->world, state->selectedIndex);
 		//world->player->particle.pos = picker.currentTerrainPoint;
 
@@ -357,12 +354,6 @@ namespace Mon
 
 		// TODO(ck): use shader
 		glUseProgram(state->shader.handle);
-		// light & material
-		glUniform3fv(glGetUniformLocation(state->shader.handle, "light.pos"), 1, &state->light.pos[0]);
-		glUniform3fv(glGetUniformLocation(state->shader.handle, "light.ambient"), 1, &state->light.ambient[0]);
-		glUniform3fv(glGetUniformLocation(state->shader.handle, "light.diffuse"), 1, &state->light.diffuse[0]);
-		glUniform3fv(glGetUniformLocation(state->shader.handle, "light.specular"), 1, &state->light.specular[0]);
-
 		//
 		// TERRAIN
 		//
@@ -389,8 +380,8 @@ namespace Mon
 		//
 		// DEBUG TOOLS
 		// 
-		// Drawing mouse picker ray for testing
-		//MonGL::DrawLine(&picker.data, picker.currentTerrainPoint, shader.handle);
+		MonGL::DrawLine(&state->lineOne, state->shader.handle);
+		MonGL::DrawLine(&state->lineTwo, state->shader.handle);
 
 		MonGL::EndRender();
 

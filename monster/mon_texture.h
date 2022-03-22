@@ -36,7 +36,8 @@ namespace MonGL
 
 	// TODO(ck): Pass a texture config or flags instead of bools?
 	void LoadTextureFile(Texture* texture, const char* file, TextureType type, bool alpha, bool flip, bool linearFilter = false, bool pixelArtTexture = false);
-
+	void LoadFrameBufferTexture(Texture* texture, int screenWidth, int screenHeight);
+	void Load2DTextureArrayFile(Texture* texture, const char* file);
 
 }
 #endif

@@ -18,9 +18,9 @@ namespace MonGL
 		glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
 	}
 
-	/// 
-	/// Init RenderData
-	/// 
+	///
+	/// [BEGIN] Init RenderData
+	///
 
 	void InitQuad(RenderData* data, bool tangents)
 	{
@@ -237,17 +237,9 @@ namespace MonGL
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
+
 		// Set world matrix to be the same size as the bounding box
 		//data->worldMatrix = GetTransform(&data->size);
-
-		// TODO(ck): Add back for cubes
-		// Normals
-		//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-		//glEnableVertexAttribArray(1);
-
-		//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-		//glEnableVertexAttribArray(2);
-
 		data->visible = true;
 	}
 
@@ -490,9 +482,9 @@ namespace MonGL
 		}
 
 		index = 0;
-		for (int gz = 0; gz < VERTEX_COUNT - 1; ++gz)
+		for (int gz = 0; gz < (VERTEX_COUNT - 1); ++gz)
 		{
-			for (int gx = 0; gx < VERTEX_COUNT - 1; ++gx)
+			for (int gx = 0; gx < (VERTEX_COUNT - 1); ++gx)
 			{
 				int topLeft = (gz * VERTEX_COUNT) + gx;
 				int topRight = topLeft + 1;
@@ -620,6 +612,14 @@ namespace MonGL
 
 	}
 
+	/// 
+	/// [END] INIT 
+	/// 
+
+	/// 
+	/// [BEGIN] begin render 
+	/// 
+
 	void BeginRender(Config* config, mat4 projection, mat4 view, int shaderID)
 	{
 		MonGL::ViewPort(&config->viewPort);
@@ -630,29 +630,33 @@ namespace MonGL
 	}
 
 	///
-	/// Debug Drawing
+	/// [END] BEGIN RENDER
+	/// 
+
+	///
+	/// [BEGIN] Debug Drawing
 	///
 
-	void InitLine(RenderData* data)
+	void InitLine(Line* line)
 	{
 		// TODO(ck): Memory Allocation
-		data->verticeCount = 2;
-		data->vertices = new Vertex3D[data->verticeCount];
+		line->data.verticeCount = 2;
+		line->data.vertices = new Vertex3D[line->data.verticeCount];
 
-		data->vertices[0].position = v3(0.0f, 0.0f, 1.0f);
-		data->vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[0].texCoords = v2(1.0f, 1.0f);
+		line->data.vertices[0].position = v3(0.0f, 0.0f, 1.0f);
+		line->data.vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
+		line->data.vertices[0].texCoords = v2(1.0f, 1.0f);
 
-		data->vertices[1].position = v3(0.0f, 0.0f, 50.0f);
-		data->vertices[1].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[1].texCoords = v2(1.0f, 1.0f);
+		line->data.vertices[1].position = v3(0.0f, 0.0f, 50.0f);
+		line->data.vertices[1].normal = v3(1.0f, 1.0f, 1.0f);
+		line->data.vertices[1].texCoords = v2(1.0f, 1.0f);
 
-		glGenVertexArrays(1, &data->VAO);
-		glGenBuffers(1, &data->VBO);
-		glBindVertexArray(data->VAO);
+		glGenVertexArrays(1, &line->data.VAO);
+		glGenBuffers(1, &line->data.VBO);
+		glBindVertexArray(line->data.VAO);
 
-		glBindBuffer(GL_ARRAY_BUFFER, data->VBO);
-		glBufferData(GL_ARRAY_BUFFER, data->verticeCount * sizeof(Vertex3D), data->vertices, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, line->data.VBO);
+		glBufferData(GL_ARRAY_BUFFER, line->data.verticeCount * sizeof(Vertex3D), line->data.vertices, GL_STATIC_DRAW);
 
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, position));
@@ -666,25 +670,25 @@ namespace MonGL
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 
-		data->color = v3(0.1f, 0.5f, 1.0f);
-		data->type = RenderType::Debug;
-		data->visible = true;
+		line->data.color = v3(0.1f, 0.5f, 1.0f);
+		line->data.type = RenderType::Debug;
+		line->data.visible = true;
 	}
 
-	void DrawLine(RenderData* data, v3 pos, unsigned int shaderID)
+	void DrawLine(Line* line, unsigned int shaderID)
 	{
-		data->worldMatrix = mat4(1.0f);
-		data->worldMatrix = glm::translate(data->worldMatrix, pos);
+		line->data.worldMatrix = mat4(1.0f);
+		line->data.worldMatrix = glm::translate(line->data.worldMatrix, line->pos);
 
-		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(data->worldMatrix));
+		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(line->data.worldMatrix));
 
 		// Use for now
-		glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
+		glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &line->data.color[0]);
 		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), false);
 		glUniform1i(glGetUniformLocation(shaderID, "pixelTexture"), false);
 		glUniform1i(glGetUniformLocation(shaderID, "collider"), true);
 
-		glBindVertexArray(data->VAO);
+		glBindVertexArray(line->data.VAO);
 		glDrawArrays(GL_LINES, 0, 2);
 
 		globalDrawCalls++;
@@ -696,23 +700,14 @@ namespace MonGL
 		if (false == data->visible)
 			return;
 
-
-		// ==============================================================================
-		glUniform3fv(glGetUniformLocation(shaderID, "material.ambient"), 1, &data->mat.ambient[0]);
-		glUniform3fv(glGetUniformLocation(shaderID, "material.diffuse"), 1, &data->mat.diffuse[0]);
-		glUniform3fv(glGetUniformLocation(shaderID, "material.specular"), 1, &data->mat.specular[0]);
-		glUniform1f(glGetUniformLocation(shaderID, "material.shininess"), data->mat.shininess);
-
 		glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camera->pos[0]);
 
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(Projection(camera)));
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(ViewMatrix(camera)));
 
 		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), false);
-
 		glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
 		glUniform1i(glGetUniformLocation(shaderID, "collider"), true);
-		// ==============================================================================
 
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(data->worldMatrix));
 		glBindVertexArray(data->VAO);
@@ -726,19 +721,26 @@ namespace MonGL
 		globalDrawCalls++;
 	}
 
+	///
+	/// [END] Debug Drawing 
+	/// 
 
 	///
-	/// Draw RenderData  
+	/// [BEGIN]  Draw RenderData  
 	///
-
 
 	void Draw(Config* config, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera,
 			  unsigned int shaderID, int selectedTexture)
 	{
-
 		// NOTE(ck): Lighting information
 		//glUniform3fv(glGetUniformLocation(shaderID, "lightPos"), 1, &light->pos[0]);
 		//glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camPos[0]);
+
+		//glUniform3fv(glGetUniformLocation(shaderID, "material.ambient"), 1, &data->mat.ambient[0]);
+		//glUniform3fv(glGetUniformLocation(shaderID, "material.diffuse"), 1, &data->mat.diffuse[0]);
+		//glUniform3fv(glGetUniformLocation(shaderID, "material.specular"), 1, &data->mat.specular[0]);
+		//glUniform1f(glGetUniformLocation(shaderID, "material.shininess"), data->mat.shininess);
+		// ==============================================================================
 
 		bool useTexture = (ArrayCount(data->textures) > 0);
 		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), useTexture);
@@ -747,7 +749,7 @@ namespace MonGL
 		//glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, data->textures[selectedTexture].id);
 
-		glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
+		//glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
 		glUniform1i(glGetUniformLocation(shaderID, "collider"), false);
 
 		// TODO(ck): Does this happen at the end of update. the data gets its mat4 updated 
@@ -913,18 +915,38 @@ namespace MonGL
 		globalDrawCalls++;
 	}
 
+	///
+	///  [END] Draw RenderData  
+	///
+
+	///
+	///	[BEGIN] End Rendering
+	///
+
 	void EndRender()
 	{
 		assert(globalDrawCalls > 0);
 	}
 
+	///
+	///	[END] End Rendering
+	///
+
 	// ==================================================================
+
+	/// 
+	/// [BEGIN] utility methods 
+	/// 
 
 	void ViewPort(Rect* port)
 	{
 		glViewport(port->x, port->y, port->w, port->h);
 		return;
 	}
+
+	///
+	/// [END] utility methods
+	/// 
 
 	//void cleanUp(Sprite* sprite)
 	//{
@@ -1085,6 +1107,104 @@ namespace MonGL
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	};
 
+	void FillTileVertices(RenderData2D* sprite, int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize)
+	{
+		float sheetSize = 256.0f;
+		int spriteSize = 16.0;
+
+		// Texture coords
+		float topRightX = ((tileOffsetX + 1) * spriteSize) / sheetSize;
+		float topRightY = ((tileOffsetY + 1) * spriteSize) / sheetSize;
+		float topLeftX = (tileOffsetX * spriteSize) / sheetSize;
+		float topLeftY = ((tileOffsetY + 1) * spriteSize) / sheetSize;
+		float bottomLeftX = (tileOffsetX * spriteSize) / sheetSize;
+		float bottomLeftY = (tileOffsetY * spriteSize) / sheetSize;
+		float bottomRightX = ((tileOffsetX + 1) * spriteSize) / sheetSize;
+		float bottomRightY = (tileOffsetY * spriteSize) / sheetSize;
+
+		// TODO(ck): pushQuad(pos, color, texcoords)		
+		float x = tileXPos;
+		float y = tileYPos;
+		int size = tileSize;
+		Vertex vec0 = {
+			v3(x, y, 0.0f),
+			v3(1.0f, 0.0f, 0.0f),
+			v2(bottomLeftX, bottomLeftY)
+		};
+
+		Vertex vec1 = {
+			v3(x + size, y, 0.0f),
+			v3(0.0f, 1.0f, 0.0f),
+			v2(bottomRightX, bottomRightY)
+		};
+
+		Vertex vec2 = {
+			v3(x + size, y + size, 0.0f),
+			v3(0.0f, 0.0f, 1.0f),
+			v2(topRightX, topRightY)
+		};
+
+		Vertex vec3 = {
+			v3(x, y + size, 0.0f),
+			v3(1.0f, 1.0f, 0.0f),
+			v2(topLeftX, topLeftY)
+		};
+
+		usedIndices += 6;
+		sprite->vertices.push_back(vec0);
+		sprite->vertices.push_back(vec1);
+		sprite->vertices.push_back(vec2);
+		sprite->vertices.push_back(vec3);
+	}
+
+	void InitTileMap(RenderData2D* sprite, int tileAmount)
+	{
+		//const int indicesLength = sprite->vertices.size() * 6;
+		const int indicesLength = 9600;
+
+		// TODO(ck): Memory management
+		uint32_t* tileIndices = new uint32_t[indicesLength];
+		int offset = 0;
+		for (int i = 0; i < indicesLength; i += 6)
+		{
+			tileIndices[i + 0] = 0 + offset;
+			tileIndices[i + 1] = 1 + offset;
+			tileIndices[i + 2] = 2 + offset;
+
+			tileIndices[i + 3] = 2 + offset;
+			tileIndices[i + 4] = 3 + offset;
+			tileIndices[i + 5] = 0 + offset;
+
+			offset += 4;
+		}
+
+		unsigned int EBO;
+		glGenVertexArrays(1, &sprite->VAO);
+		glGenBuffers(1, &sprite->VBO);
+		glGenBuffers(1, &EBO);
+
+		glBindVertexArray(sprite->VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, sprite->VBO);
+		glBufferData(GL_ARRAY_BUFFER, sprite->vertices.size() * sizeof(Vertex), &sprite->vertices[0], GL_STATIC_DRAW);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesLength * sizeof(int), tileIndices, GL_STATIC_DRAW);
+
+		// position attribute
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
+		// color attribute
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
+		// texture coord attribute
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
+
+		delete[] tileIndices;
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	};
+
 	void FillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize)
 	{		
 		float sheetSize = 256.0f;
@@ -1177,33 +1297,18 @@ namespace MonGL
 		//_lastVertex = vVertices[vVertices.size() - 1];
 	}
 
-	void DrawMap(CommonProgram* shader, unsigned int textureID)
+	void DrawMap(CommonProgram* shader, RenderData2D* sprite, unsigned int textureID)
 	{
-		// TODO(ck): If we want the ability to change the map at runtime we need to constantly
-		// be filling and binding the batch (if things have changed)
-		// Fill batch 
-		// bind vertices
+		glUseProgram(shader->handle);
+		
+		glActiveTexture(GL_TEXTURE0);
+		glUniform1i(glGetUniformLocation(shader->handle, "imageArray"), 0);
+		glUniform1i(glGetUniformLocation(shader->handle, "diffuse_layer"), 0);
+		glBindTexture(GL_TEXTURE_2D_ARRAY, textureID);
 
-
-		//glUseProgram(shader->id);
-
-		//glActiveTexture(GL_TEXTURE0);
-		// IMPORTANT(ck):
-		// NOTE(ck): the reason why you set it to 0 is because thats the base texture slot
-		// its not expecting the textureID thats only for binding
-		glUniform1i(glGetUniformLocation(shader->handle, "image"), 0);
-		glBindTexture(GL_TEXTURE_2D, textureID);
-
-		glBindVertexArray(batch->VAO);
-		// (void*)(index_size * pass.index_start)
-		glDrawElements(GL_TRIANGLES, usedIndices, GL_UNSIGNED_INT, (void*)(2 * 0));
+		glBindVertexArray(sprite->VAO);
+		glDrawElements(GL_TRIANGLES, 9600, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
-
-		//reset buffer
-		//_uNumUsedVertices = 0;
-		//_config.iPriority = 0;
-		usedIndices = 0;
-		tileVertices.clear();
 	}
 
 	void DrawObject(CommonProgram* shader, RenderData2D* data)
@@ -1247,7 +1352,34 @@ namespace MonGL
 
 	}
 
+	void DrawMap(CommonProgram* shader, unsigned int textureID)
+	{
+		// TODO(ck): If we want the ability to change the map at runtime we need to constantly
+		// be filling and binding the batch (if things have changed)
+		// Fill batch 
+		// bind vertices
 
+
+		//glUseProgram(shader->id);
+
+		//glActiveTexture(GL_TEXTURE0);
+		// IMPORTANT(ck):
+		// NOTE(ck): the reason why you set it to 0 is because thats the base texture slot
+		// its not expecting the textureID thats only for binding
+		glUniform1i(glGetUniformLocation(shader->handle, "image"), 0);
+		glBindTexture(GL_TEXTURE_2D, textureID);
+
+		glBindVertexArray(batch->VAO);
+		// (void*)(index_size * pass.index_start)
+		glDrawElements(GL_TRIANGLES, usedIndices, GL_UNSIGNED_INT, (void*)(2 * 0));
+		glBindVertexArray(0);
+
+		//reset buffer
+		//_uNumUsedVertices = 0;
+		//_config.iPriority = 0;
+		usedIndices = 0;
+		tileVertices.clear();
+	}
 
 	void DrawMap(CommonProgram* shader, unsigned int textureID, int batchThing)
 	{

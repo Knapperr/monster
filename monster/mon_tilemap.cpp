@@ -43,6 +43,7 @@ namespace Mon
 	void InitTileSheet(TileSheet* sheet, const char* fileName)
 	{
 		MonGL::LoadTextureFile(&sheet->texture, fileName, MonGL::TextureType::Diffuse, true, false, false, true);
+		//MonGL::Load2DTextureArrayFile(&sheet->texture, fileName);
 
 		// TODO(ck): 
 		// Parse the loaded texture and calculate the tileids
@@ -55,7 +56,7 @@ namespace Mon
 		// that just reads off of a text file and instantly loads
 
 		// TODO(ck):
-		// SPLICE the tilesheet and figure out the offsets manually 
+		// SPLICE the tilesheet and figure out the offsets manually
 		sheet->tileCount = 18;
 		sheet->tiles = new Tile[sheet->tileCount];
 
@@ -242,7 +243,7 @@ namespace Mon
 					// the sheet because we are just using the x and y of the new tile we grabbed it just always sets that old tile to the last one...
 					// this could have caused huge bugs later IMPORTANT(ck):
 					Tile sheetTile = *sheet->createTile(testmap[y][x]);
-					// TODO(ck): Copy constructor
+					// TODO(ck): Copy constructor - MEMORY MANAGEMENT
 					Tile* newTile = new Tile();
 					newTile->id = sheetTile.id;
 					newTile->width = sheetTile.width;
@@ -272,7 +273,6 @@ namespace Mon
 		}
 
 		MonGL::BindVertices();
-
 		MonGL::DrawMap(shader, textureID);
 	}
 

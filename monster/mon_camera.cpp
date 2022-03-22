@@ -207,7 +207,7 @@ namespace Mon
 		camera->velocity = v3(0.0f);
 		camera->distanceFromTarget = 10.0f;
 		camera->angleAroundTarget = 180.0f;
-		camera->smoothness = 0.30f;
+		camera->smoothness = 0.15f;
 		camera->lerpSpeed = 7.0f;
 		camera->zoom = 30.0f;
 	}

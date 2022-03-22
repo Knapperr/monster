@@ -12,6 +12,18 @@ namespace MonGL
 {
 	using namespace Mon;
 
+	//
+	//	3D structs
+	//
+
+	struct Framebuffer
+	{
+		unsigned int handle;
+		int width;
+		int height;
+		Texture texture[2];
+	};
+
 	struct Light
 	{
 		v3 pos;
@@ -37,6 +49,7 @@ namespace MonGL
 
 	struct Vertex3D
 	{
+		// TODO(ck): smaller types on vertex? position=vec3, color=uint32, texCoord=short2
 		v3 position;
 		v3 normal;
 		v2 texCoords;
@@ -80,6 +93,8 @@ namespace MonGL
 
 		std::string texturePath;
 		int selectedTexture;
+	
+		// TODO(ck): hold id to an array of textures
 		Texture textures[4];
 		Material mat;
 
@@ -119,17 +134,12 @@ namespace MonGL
 	//	f32 ClipAlphaEndDistance;
 	//};
 
-	// TODO(ck): So basically this is going to replace RenderData in a sense.
-	// for now we need the RenderData to hold our vertices and textures though.
 	struct RenderSetup
 	{
 		/*
 			model ??? 
 			viewPosition,
-			cameraPosition,
-
-			
-		
+			cameraPosition
 		*/
 
 		// Water Data
@@ -141,8 +151,19 @@ namespace MonGL
 		float heightScaleModulated;
 	};
 
+	struct Line
+	{
+		v3 pos;
+		RenderData data;
+	};
+
+
+	//
+	// 2D structs 
+	//
 	struct Vertex
 	{
+		// TODO(ck): smaller types on vertex? position=vec3, color=uint32, texCoord=short2
 		v3 position;
 		v3 color;
 		v2 texCoords;
@@ -169,6 +190,8 @@ namespace MonGL
 		v3 color;
 		v2 size;
 		bool wireFrame;
+
+		std::vector<Vertex> vertices;
 	};
 
 
@@ -187,14 +210,19 @@ namespace MonGL
 	//	//CommonProgram programs[];
 	//};
 
+	// ResourceManager
+	//	shaders[]
+	//	Textures[]
+
 	void BeginRender(Config* config, mat4 projection, mat4 view, int shaderID);
 	void ViewPort(Rect* port);
-	
+	void CreateFramebuffer(Framebuffer* buffer);
+
 	void LoadImpFile(RenderData* data);
 
 	// Debug lines
-	void InitLine(RenderData* data);
-	void DrawLine(RenderData* data, v3 pos, unsigned int shaderID);
+	void InitLine(Line* data);
+	void DrawLine(Line* data, unsigned int shaderID);
 
 	// Models and assets
 	void InitInstancedData(InstancedData* data, int amount);
@@ -228,11 +256,14 @@ namespace MonGL
 
 	void InitRenderData2D(RenderData2D* sprite, int size);
 	
+	void FillTileVertices(RenderData2D* sprite, int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize);
 	void InitTileMap(int tileAmount);
+	void InitTileMap(RenderData2D* sprite, int tileAmount);
 	void FillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize);
 	void BindVertices();
 	
 	void DrawObject(CommonProgram* shader, RenderData2D* data);
+	void DrawMap(CommonProgram* shader, RenderData2D* sprite, unsigned int textureID);
 	void DrawMap(CommonProgram* shader, unsigned int textureID);
 	void DrawMap(CommonProgram* shader, unsigned int textureID, int batchThing);
 

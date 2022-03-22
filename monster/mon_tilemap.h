@@ -95,6 +95,7 @@ namespace Mon
 	{
 		//MonGL::BatchData* batch;
 		std::vector<Tile*> tiles;
+		MonGL::RenderData2D sprite;
 		float tileSideInMeters;
 		float metersToPixels;
 		int tileSideInPixels;

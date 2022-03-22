@@ -41,8 +41,6 @@ struct MousePicker
 	Mon::v3 currentRay;
 	Mon::v3 pos;
 	Mon::mat4 projectionMatrix;
-
-	MonGL::RenderData data;
 };
 
 void InitMousePicker(MousePicker* picker);
