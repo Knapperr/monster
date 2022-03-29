@@ -151,7 +151,7 @@ namespace Mon {
 			AddEntity(world);
 			Entity* tree = GetEntity(world, i);
 			std::string name = "tree_" + std::to_string(i);
-			InitEntity(tree, name, v3(6.0f * (i + 1), 5.30f, 5.5f * i), v3(16.0f), angleDegrees, shaderHandle, "res/textures/tree.png");
+			InitEntity(tree, name, v3(6.0f * (i + 1), 1.70f, 5.5f * i), v3(6.0f), angleDegrees, shaderHandle, "res/textures/tree.png");
 		}
 
 		int length = world->entityCount + 5;

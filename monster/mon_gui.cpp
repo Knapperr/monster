@@ -912,9 +912,9 @@ void StatsWindow(bool* p_open, Mon::Game2D* game)
 		snprintf(buffer, sizeof(buffer), "%d", game->input.lMouseBtn.endedDown);
 		ImGui::LabelText(buffer, "left mouse down");
 
-		snprintf(buffer, sizeof(buffer), "%f", game->camera.pos.x);
+		//snprintf(buffer, sizeof(buffer), "%f", game->camera.pos.x);
 		ImGui::LabelText(buffer, "cam x");
-		snprintf(buffer, sizeof(buffer), "%f", game->camera.pos.y);
+		//snprintf(buffer, sizeof(buffer), "%f", game->camera.pos.y);
 		ImGui::LabelText(buffer, "cam y");
 
 		snprintf(buffer, sizeof(buffer), "%d", GuiActive(false));
@@ -961,9 +961,9 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game2D* game2D)
 		ImGui::PopID();
 	}*/
 	ImGui::Separator();
-	if (ImGui::Button("debug")) { game2D->debugMode(); }
+	if (ImGui::Button("debug")) { DebugMode(game2D); }
 	ImGui::SameLine();
-	if (ImGui::Button("play") && game2D->state != Mon::State::Play) { game2D->playMode(); }
+	if (ImGui::Button("play") && game2D->state != Mon::State::Play) { PlayMode(game2D); }
 	ImGui::SameLine();
 	if (ImGui::Button("save"))
 	{
@@ -982,14 +982,14 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game2D* game2D)
 		SDL_GetCurrentDisplayMode(0, &dm);
 		SDL_SetWindowSize(window, dm.w, dm.h);
 		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
-		game2D->setViewPort(dm.w, dm.h);
+		Mon::SetViewPort(game2D->config, dm.w, dm.h);
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Exit"))
 	{
 		SDL_SetWindowSize(window, settings->windowWidth, settings->windowHeight);
 		SDL_SetWindowFullscreen(window, 0);
-		game2D->setViewPort(960.0f, 540.0f);
+		Mon::SetViewPort(game2D->config, 960.0f, 540.0f);
 	}
 
 	if (ImGui::Button("720"))
@@ -1009,7 +1009,7 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game2D* game2D)
 	ImGui::SliderFloat2("port", (float*)&game2D->config->viewPort, 0.0f, 477.0f);
 	ImGui::Separator();
 
-	ImGui::LabelText(std::to_string(game2D->deltaTime).c_str(), "dt:");
+	//ImGui::LabelText(std::to_string(game2D->dt).c_str(), "dt:");
 
 	if (ImGui::RadioButton("off", settings->vsync == 0))
 	{
@@ -1040,9 +1040,9 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game2D* game2D)
 	// TODO(CK): put player at the 0th index for now
 
 
-	ImGui::SliderFloat("Player Speed", &game2D->world->player->speed, 0.0f, 1000.0f);
-	ImGui::SliderFloat("camera lerp", &game2D->camera.lerpSpeed, 0.0f, 100.0f);
-	ImGui::SliderFloat("camera smooth", &game2D->camera.smoothness, 0.1f, 10.0f);
+	//ImGui::SliderFloat("Player Speed", &game2D->world->player->speed, 0.0f, 1000.0f);
+	ImGui::SliderFloat("camera lerp", &game2D->cameras[game2D->currentCameraIndex].lerpSpeed, 0.0f, 100.0f);
+	ImGui::SliderFloat("camera smooth", &game2D->cameras[game2D->currentCameraIndex].smoothness, 0.1f, 10.0f);
 
 	{
 		//char buffer[64];
@@ -1052,7 +1052,7 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game2D* game2D)
 		//ImGui::LabelText("player y", buffer);
 	}
 
-	ImGui::DragFloat("cam zoom", &game2D->camera.zoom, 0.1f, 1.0f, 200.0f, "%.02f");
+	ImGui::DragFloat("cam zoom", &game2D->cameras[game2D->currentCameraIndex].zoom, 0.1f, 1.0f, 200.0f, "%.02f");
 	//ImGui::SliderInt("Tile 0 ID: ", &game->world2D->map->tiles[0].tileId, 0, 3, NULL);
 
 	{

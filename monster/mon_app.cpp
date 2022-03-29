@@ -45,13 +45,10 @@ bool App::init()
 		return false;
 
 #else
-	game2D = new Mon::Game2D();
-	if (!game2D->init(1))
-		return false;
-
 	// TODO(ck): Memory allocation
-	//game2D_ = new Mon::Game2D_();
-	//Mon::Init(game2D_);
+	game2D = new Mon::Game2D();
+	if (!Mon::Init(game2D))
+		return false;
 #endif
 
 	return true;
@@ -112,7 +109,7 @@ void App::run()
 #ifdef _3D_
 			Mon::Update(gameState, deltaTime, newInput);
 #else
-			game2D->update(deltaTime, newInput, 1);
+			Mon::Update(game2D, deltaTime, newInput);
 #endif
 			frameTime -= deltaTime;
 			// NOTE(ck): T is the current time ... not using this?
@@ -132,7 +129,7 @@ void App::run()
 #ifdef _3D_
 		Mon::Render(gameState, 1.0f);
 #else
-		game2D->render();
+		Mon::Render(game2D);
 #endif
 
 		if (showGUI)
@@ -160,7 +157,7 @@ void App::run()
 	Mon::CleanUp(gameState);
 	//game->cleanUp();
 #else
-	game2D->cleanUp();
+	Mon::CleanUp(game2D);
 #endif
 	ShutdownGui();
 	platform->cleanUp();

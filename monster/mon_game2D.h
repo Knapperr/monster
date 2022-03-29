@@ -17,34 +17,37 @@ namespace Mon {
 		Play
 	};
 
-	struct Game2D_
+	struct Game2D
 	{
 		Input input;
-		World2D_* world;
-		// cameras like in game.cpp
-		OrthoCamera camera;
+		World2D* world;
+		
 		OrthoCamera cameras[5];
+		int currentCameraIndex;
 		int cameraCount;
 
 		MonGL::Config* config;
 		MonGL::CommonProgram shader;
 		MonGL::CommonProgram tileShader;
+
+		// Note(ck): Current game state - State::Debug is default
+		int state;
 	};
 
-	bool Init(Game2D_* game);
-	void Update(Game2D_* game, double dt, Input* input);
-	void Render(Game2D_* game);
+	bool Init(Game2D* game);
+	void Update(Game2D* game, double dt, Input* input);
+	void Render(Game2D* game);
 
 	void SetViewPort(MonGL::Config* config, int width, int height);
-	bool Playing();
+	bool Playing(Game2D* game);
 
-	bool PlayMode(int state);
-	bool DebugMode(int state);
+	void PlayMode(Game2D* game);
+	void DebugMode(Game2D* game);
 
-	void CleanUp();
+	void CleanUp(Game2D* game);
 
 	// TODO(ck): Camera manager
-	static unsigned int AddCamera(Game2D_* state)
+	static unsigned int AddCamera(Game2D* state)
 	{
 		unsigned int cameraIndex = state->cameraCount++;
 
@@ -55,7 +58,7 @@ namespace Mon {
 	}
 
 	// TODO(ck): Camera manager
-	static OrthoCamera* GetCamera(Game2D_* state, unsigned int index)
+	static OrthoCamera* GetCamera(Game2D* state, unsigned int index)
 	{
 		OrthoCamera* c = 0;
 		if ((index > 0) && (index < ArrayCount(state->cameras)))
@@ -64,38 +67,5 @@ namespace Mon {
 		}
 		return c;
 	}
-
-	class Game2D
-	{
-	public:
-		Input input;
-
-		World2D* world;
-		OrthoCamera camera;
-
-		MonGL::Config* config;
-
-		MonGL::BatchData batch;
-
-		MonGL::CommonProgram shader;
-		MonGL::CommonProgram tileShader;
-
-		// Note(ck): Current game state - State::Debug is default
-		int state;
-
-		double deltaTime;
-
-		bool init(int x);
-		void update(double dt, Input* input, int x);
-		void render();
-
-		void setViewPort(int width, int height);
-		bool playing();
-
-		void playMode();
-		void debugMode();
-
-		void cleanUp();
-	};
 }
 #endif

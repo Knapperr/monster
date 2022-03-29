@@ -14,7 +14,6 @@ public:
 	Mon::GameState* gameState;
 #else 
 	Mon::Game2D* game2D;
-	Mon::Game2D_* game2D_;
 #endif
 	Mon::Input input[2];
 	bool running = true;

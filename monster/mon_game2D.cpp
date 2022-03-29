@@ -3,15 +3,16 @@
 namespace Mon {
 	
 	// New 
-	bool Init(Game2D_* game)
+	bool Init(Game2D* game)
 	{
+		// TODO(ck): Memory management - allocate world
+		game->world = new World2D();
 		InitWorld(game->world);
 
 		MonGL::LoadShader(&game->shader, "res/shaders/vert_sprite.glsl", "res/shaders/frag_sprite.glsl", NULL);
 		// TODO(ck): REMOVE TESTING TILE SHADER use above shader for both tiles and quads
 		MonGL::LoadShader(&game->tileShader, "res/shaders/vert_tile.glsl", "res/shaders/frag_tile.glsl", NULL);
 
-		game->world = new World2D_();
 		// Set up the shader locations for our objects
 		glUseProgram(game->shader.handle);
 
@@ -48,7 +49,6 @@ namespace Mon {
 		model = glm::scale(model, v3(v2(32, 32), 1.0f));
 		glUniformMatrix4fv(glGetUniformLocation(game->tileShader.handle, "model"), 1, GL_FALSE, glm::value_ptr(model));
 
-
 		int screenWidth = 1440;
 		int screenHeight = 900;
 		int portWidth = 960;
@@ -59,87 +59,26 @@ namespace Mon {
 		MonGL::ViewPort(&game->config->viewPort);
 
 		AddCamera(game);
-		int camIndex = AddCamera(game);
+		game->currentCameraIndex = AddCamera(game);
 		// InitCamera
-		//OrthoCamera(game->world->player->pos, &game->config->viewPort);
-		// 
-		//game->camera = OrthoCamera(game->world->player->pos, &game->config->viewPort);
+		Entity2D* player = GetPlayer(game->world);
+		//game->camera = OrthoCamera(player->pos, &game->config->viewPort);
 		
-		
+		game->state = State::Play;
+
 		return true;
 	}
 
-	bool Game2D::init(int x)
-	{
-		state = State::Play;
-
-		// TODO(ck): Memory management
-		MonGL::LoadShader(&shader, "res/shaders/vert_sprite.glsl", "res/shaders/frag_sprite.glsl", NULL);
-		// TODO(ck): REMOVE TESTING TILE SHADER
-		MonGL::LoadShader(&tileShader, "res/shaders/vert_tile.glsl", "res/shaders/frag_tile.glsl", NULL);
-
-		world = new World2D();
-		// Set up the shader locations for our objects
-		glUseProgram(shader.handle);
-
-		// TODO(CK): CAMERA
-		// So let's say you want your pixel art scale 2:1
-		// Then your target 1080p. Just take the resolution and divide by 2. Examples
-		// This is for 1920x1080 I am using 1280x720 right now
-		// 2:1 960x540 -- 3:1 640x360 --- 4:! 480x240
-		float left = 0.0f;
-		float right = 960.0f;
-		float bottom = 540.0f;
-		float top = 0.0f;
-
-		mat4 projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
-
-		int imgLoc = glGetUniformLocation(shader.handle, "image");
-		glUniform1i(imgLoc, 0);
-
-		int projLoc = glGetUniformLocation(shader.handle, "projection");
-		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
-
-		// TODO(ck): REMOVE TESTING TILE SHADER
-		glUseProgram(tileShader.handle);
-		imgLoc = glGetUniformLocation(tileShader.handle, "image");
-		glUniform1i(imgLoc, 0);
-
-		projLoc = glGetUniformLocation(tileShader.handle, "projection");
-		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
-		mat4 model = mat4(1.0f);
-		v3 pos = v3(0, 0, 1.0f);
-		model = glm::translate(model, pos);
-		model = glm::scale(model, v3(v2(32, 32), 1.0f));
-		glUniformMatrix4fv(glGetUniformLocation(tileShader.handle, "model"), 1, GL_FALSE, glm::value_ptr(model));
-
-
-		int screenWidth = 1440;
-		int screenHeight = 900;
-		int portWidth = 960;
-		int portHeight = 540;
-		config = new MonGL::Config();
-
-		config->viewPort = { (float)(screenWidth - portWidth) / 2 , (float)(screenHeight - portHeight) / 2, (float)portWidth, (float)portHeight };
-		MonGL::ViewPort(&config->viewPort);
-
-		camera = OrthoCamera(world->player->pos, &config->viewPort);
-		return true;
-	}
-
-	void Game2D::update(double dt, Input* input, int x)
+	void Update(Game2D* game, double dt, Input* input)
 	{
 		//if (dt > deltaTime || dt < deltaTime)
-			//printf("dt: %f\n", dt);
+	//printf("dt: %f\n", dt);
+		//game->deltaTime = dt;
+		game->input = *input;
 
-		deltaTime = dt;
-		this->input = *input;
-
-		if (state == State::Play)
+		if (game->state == State::Play)
 		{
-			Entity2D* p = world->player;
+			Entity2D* p = GetPlayer(game->world);
 			v2 velocity = {};
 
 			if (input->isAnalog)
@@ -194,10 +133,10 @@ namespace Mon {
 					int chunkCountY = 0;
 					int tileIndex = 500;
 
-					if (world->map->tiles[tileIndex]->id == 3)
-						UpdateTile(world->map, &world->sheet, 500, 9);
-					else if (world->map->tiles[tileIndex]->id == 9)
-						UpdateTile(world->map, &world->sheet, 500, 3);
+					if (game->world->map->tiles[tileIndex]->id == 3)
+						UpdateTile(game->world->map, &game->world->sheet, 500, 9);
+					else if (game->world->map->tiles[tileIndex]->id == 9)
+						UpdateTile(game->world->map, &game->world->sheet, 500, 3);
 				}
 			}
 			//Mon::movePlayer(world->map, p, &velocity, deltaTime);
@@ -210,7 +149,7 @@ namespace Mon {
 			//https://gamedev.stackexchange.com/questions/2642/scrolling-2d-sprites-on-a-map-with-a-camera
 
 			// positions should be relative to the map the camera shouldn't come into play with real positions..
-			camera.update(&p->pos, deltaTime);
+			game->cameras[game->currentCameraIndex].update(&p->pos, dt);
 
 
 
@@ -228,7 +167,7 @@ namespace Mon {
 			p->sprite.pos = p->pos;
 #endif
 
-			v2 windowSize = v2{ config->viewPort.w, config->viewPort.h };
+			v2 windowSize = v2{ game->config->viewPort.w, game->config->viewPort.h };
 
 			// screenCoord(worldCoord) .. not working
 			//p->sprite.pos = v2{ p->pos.x - camera.pos.x, camera.pos.y - p->pos.y } + windowSize / 2.0f;
@@ -245,12 +184,13 @@ namespace Mon {
 			// mapping a world coordinate to 
 
 		}
-		// ending Game::update
+		// ending update
+
 	}
 
-	void Game2D::render()
+	void Render(Game2D* game)
 	{
-		MonGL::ViewPort(&config->viewPort);
+		MonGL::ViewPort(&game->config->viewPort);
 
 		// test stack
 		//MonGL::PushMatrix(&batch, camera.projectionMatrix());
@@ -265,61 +205,57 @@ namespace Mon {
 		//MonGL::PopMatrix(&batch);
 
 		// TEST DRAW
-		glUseProgram(tileShader.handle);
-		int projLoc = glGetUniformLocation(tileShader.handle, "projection");
-		mat4 projection = camera.projectionMatrix();
+		glUseProgram(game->tileShader.handle);
+		int projLoc = glGetUniformLocation(game->tileShader.handle, "projection");
+		mat4 projection = game->cameras[game->currentCameraIndex].projectionMatrix();
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 		//MonGL::drawMap(&tileShader, world->sheet.texture.id);
-		DrawTileMap(world->map, &tileShader, world->sheet.texture.id);
+		DrawTileMap(game->world->map, &game->tileShader, game->world->sheet.texture.id);
 
 
-		glUseProgram(shader.handle);
-		projLoc = glGetUniformLocation(shader.handle, "projection");
+		glUseProgram(game->shader.handle);
+		projLoc = glGetUniformLocation(game->shader.handle, "projection");
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-		for (unsigned int i = 0; i < world->entities.size(); ++i)
+		for (unsigned int i = 1; i < game->world->entityCount; ++i)
 		{
+			Entity2D e = game->world->entities[i];
 			//state->world->entities[i]->pos.x *= time;
 			//state->world->entities[i]->pos.y *= time;
-			MonGL::DrawObject(&shader, &world->entities[i]->sprite);
+			MonGL::DrawObject(&game->shader, &e.sprite);
 		}
 
-		MonGL::DrawObject(&shader, &world->player->sprite);
+
+		//MonGL::DrawObject(&game->shader, &game->world->player->sprite);
+
 
 	}
 
-	///
-	/// Utility 
-	///
-
-	void Game2D::cleanUp()
-	{
-		// glDeleteVertexArrays()???? this is in the 3D stuff
-		MonGL::DeleteShader(&shader);
-	}
-
-	void Game2D::setViewPort(int width, int height)
+	void SetViewPort(MonGL::Config *config, int width, int height)
 	{
 		config->viewPort = Rect{ 0.0f, 0.0f, (float)width, (float)height };
 	}
 
-	bool Game2D::playing()
+	bool Playing(Game2D *game)
 	{
-		return (state == State::Play);
-		// checking 3d fly camera
-		//return (state == State::Play && cam->follow == true);
+		return (game->state == State::Play);
 	}
 
-	void Game2D::playMode()
+	void PlayMode(Game2D *game)
 	{
-		state = State::Play;
-		//cam->followOn();
+		game->state = State::Play;
 	}
 
-	void Game2D::debugMode()
+	void DebugMode(Game2D *game)
 	{
-		state = State::Debug;
-		//cam->followOff();
+		game->state = State::Debug;
 	}
+
+	void CleanUp(Game2D *game)
+	{
+		// TODO(ck): Empty
+		return;
+	}
+
 }
