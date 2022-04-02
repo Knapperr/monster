@@ -53,17 +53,17 @@ void LoadImpFile(Mon::Entity* e, std::string fileName)
 		{
 			// Get the name and the size of the vertices & indices here
 			e->name = line;
-			file >> e->data.verticeCount;
-			file >> e->data.indiceCount;
+			file >> e->data.mesh.verticeCount;
+			file >> e->data.mesh.indiceCount;
 			break;
 		}
 
-		e->data.vertices = new MonGL::Vertex3D[e->data.verticeCount];
-		e->data.indices = new unsigned int[e->data.indiceCount];
+		e->data.vertices = new MonGL::Vertex3D[e->data.mesh.verticeCount];
+		e->data.indices = new unsigned int[e->data.mesh.indiceCount];
 
 		while (file >> line)
 		{
-			for (int i = 0; i < e->data.verticeCount; ++i)
+			for (int i = 0; i < e->data.mesh.verticeCount; ++i)
 			{
 				index = i;
 
@@ -87,7 +87,7 @@ void LoadImpFile(Mon::Entity* e, std::string fileName)
 				file >> e->data.vertices[i].bitangent.z;
 			}
 
-			for (int j = 0; j < e->data.indiceCount; ++j)
+			for (int j = 0; j < e->data.mesh.indiceCount; ++j)
 			{
 				index = j;
 				file >> e->data.indices[j];
@@ -126,17 +126,17 @@ void LoadImpGrassFile(Mon::GameState* game)
 	{
 		// Get the name and the size of the vertices & indices here
 		e->name = line;
-		file >> e->data.verticeCount;
-		file >> e->data.indiceCount;
+		file >> e->data.mesh.verticeCount;
+		file >> e->data.mesh.indiceCount;
 		break;
 	}
 
-	e->data.vertices = new MonGL::Vertex3D[e->data.verticeCount];
-	e->data.indices = new unsigned int[e->data.indiceCount];
+	e->data.vertices = new MonGL::Vertex3D[e->data.mesh.verticeCount];
+	e->data.indices = new unsigned int[e->data.mesh.indiceCount];
 
 	while (file >> line)
 	{
-		for (int i = 0; i < e->data.verticeCount; ++i)
+		for (int i = 0; i < e->data.mesh.verticeCount; ++i)
 		{
 			if (i == 0)
 				e->data.vertices[i].position.x = std::stof(line);
@@ -157,7 +157,7 @@ void LoadImpGrassFile(Mon::GameState* game)
 			file >> e->data.vertices[i].bitangent.y;
 			file >> e->data.vertices[i].bitangent.z;
 		}
-		for (int j = 0; j < e->data.indiceCount; ++j)
+		for (int j = 0; j < e->data.mesh.indiceCount; ++j)
 		{
 			file >> e->data.indices[j];
 		}
@@ -181,10 +181,10 @@ void writeImpFile(Mon::GameState* game)
 	file.open(path);
 
 	file << e->name << "\n";
-	file << e->data.verticeCount << "\n";
-	file << e->data.indiceCount << "\n";
+	file << e->data.mesh.verticeCount << "\n";
+	file << e->data.mesh.indiceCount << "\n";
 
-	for (int i = 0; i < e->data.verticeCount; ++i)
+	for (int i = 0; i < e->data.mesh.verticeCount; ++i)
 	{
 	   file << e->data.vertices[i].position.x << "\n" << e->data.vertices[i].position.y << "\n" << e->data.vertices[i].position.z << "\n"
 			<< e->data.vertices[i].normal.x << "\n" << e->data.vertices[i].normal.y << "\n" << e->data.vertices[i].normal.z << "\n"
@@ -192,7 +192,7 @@ void writeImpFile(Mon::GameState* game)
 			<< e->data.vertices[i].tangent.x << "\n" << e->data.vertices[i].tangent.y << "\n" << e->data.vertices[i].tangent.z << "\n"
 			<< e->data.vertices[i].bitangent.x << "\n" << e->data.vertices[i].bitangent.y << "\n" << e->data.vertices[i].bitangent.z << "\n";
 	}
-	for (int j = 0; j < e->data.indiceCount; ++j)
+	for (int j = 0; j < e->data.mesh.indiceCount; ++j)
 	{
 		file << e->data.indices[j] << "\n";
 	}

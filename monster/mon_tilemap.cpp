@@ -174,7 +174,7 @@ namespace Mon
 
 		map->tileSideInMeters = 1.6f;
 		map->tileSideInPixels = 32;
-		map->metersToPixels = (float)map->tileSideInPixels / (float)map->tileSideInMeters;
+		map->metersToPixels = (float)map->tileSideInPixels / map->tileSideInMeters;
 
 
 		// NOTE(ck): Sheet must be created first

@@ -18,15 +18,67 @@ namespace MonGL
 		glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
 	}
 
+	void InitOpenGLMesh(RenderData* data)
+	{
+		Mesh* mesh = &data->mesh;
+
+		glGenVertexArrays(1, &mesh->VAO);
+		glGenBuffers(1, &mesh->VBO);
+		
+		glBindVertexArray(mesh->VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, mesh->VBO);
+		glBufferData(GL_ARRAY_BUFFER, mesh->verticeCount * sizeof(Vertex3D), data->vertices, GL_STATIC_DRAW);
+
+		if (mesh->indiceCount > 0)
+		{
+			glGenBuffers(1, &mesh->IBO);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->IBO);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->indiceCount * sizeof(data->indices), data->indices, GL_STATIC_DRAW);
+		}
+
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)0);
+
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, normal));
+
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, texCoords));
+
+		if (data->type == RenderType::Model)
+		{
+			glEnableVertexAttribArray(3);
+			glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, tangent));
+
+			glEnableVertexAttribArray(4);
+			glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, bitangent));
+		}
+
+#if 0
+		if (tangents)
+		{
+			glEnableVertexAttribArray(3);
+			glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, tangent));
+
+			glEnableVertexAttribArray(4);
+			glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, bitangent));
+		}
+#endif
+
+		// unbind
+		glBindVertexArray(0);
+	}
+
+
 	///
 	/// [BEGIN] Init RenderData
 	///
 
 	void InitQuad(RenderData* data, bool tangents)
 	{
-		data->verticeCount = 4;
+		int verticeCount = 4;
 		// TODO(ck): Memory Allocation
-		data->vertices = new Vertex3D[data->verticeCount];
+		data->vertices = new Vertex3D[verticeCount];
 		data->vertices[0].position = v3(0.5f, 0.5f, 0.0f);
 		data->vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
 		data->vertices[0].texCoords = v2(1.0f, 1.0f);
@@ -71,54 +123,24 @@ namespace MonGL
 
 
 			f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
-
 		}
 
-		unsigned int indices[] = {
-			0, 1, 3,
-			1, 2, 3
-		};
-		data->indiceCount = 6;
-
-		unsigned int EBO;
-		glGenVertexArrays(1, &data->VAO);
-		glGenBuffers(1, &data->VBO);
-		glGenBuffers(1, &EBO);
-
-		glBindVertexArray(data->VAO);
-		glBindBuffer(GL_ARRAY_BUFFER, data->VBO);
-		//glBufferData(GL_ARRAY_BUFFER, data->vertices.size() * sizeof(Vertex3D), &data->vertices[0], GL_STATIC_DRAW);
-		glBufferData(GL_ARRAY_BUFFER, data->verticeCount * sizeof(Vertex3D), data->vertices, GL_STATIC_DRAW);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)0);
-
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, normal));
-
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, texCoords));
-
-#if 0
-		if (tangents)
-		{
-			glEnableVertexAttribArray(3);
-			glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, tangent));
-
-			glEnableVertexAttribArray(4);
-			glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, bitangent));
-		}
-#endif
-
-		// unbind
-		glBindVertexArray(0);
+		int indiceCount = 6;
+		data->indices = new unsigned int[indiceCount];
+		data->indices[0] = 0;
+		data->indices[1] = 1;
+		data->indices[2] = 3;
+		data->indices[3] = 1;
+		data->indices[4] = 2;
+		data->indices[5] = 3;
 
 		data->type = RenderType::Quad;
+		data->mesh = {};
+		data->mesh.verticeCount = verticeCount;
+		data->mesh.indiceCount = indiceCount;
+		InitOpenGLMesh(data);
+
 		data->visible = true;
-		//data->scale = v3(1.0f);
 	}
 
 	void InitBatchData(int amount)
@@ -184,9 +206,9 @@ namespace MonGL
 		data->lineWidth = 2;
 		data->color = v3(0.7f, 0.15f, 0.4f);
 
-		data->verticeCount = 8;
+		int verticeCount = 8;
 		// TODO(ck): Memory Allocation
-		data->vertices = new Vertex3D[data->verticeCount];
+		data->vertices = new Vertex3D[verticeCount];
 		data->vertices[0].position = v3(-0.5, -0.5, -0.5);
 		data->vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
 		data->vertices[0].texCoords = v2(0.0f, 0.0f);
@@ -213,33 +235,22 @@ namespace MonGL
 		data->vertices[7].normal = v3(1.0f, 1.0f, 1.0f);
 		data->vertices[7].texCoords = v2(0.0f, 0.0f);
 
-		glGenVertexArrays(1, &data->VAO);
-		glGenBuffers(1, &data->VBO);
-		glBindBuffer(GL_ARRAY_BUFFER, data->VBO);
-
-		glBufferData(GL_ARRAY_BUFFER, data->verticeCount * sizeof(Vertex3D), data->vertices, GL_STATIC_DRAW);
-		glBindVertexArray(data->VAO);
-
 		GLushort elements[] = {
 			0, 1, 2, 3, // front 
 			4, 5, 6, 7, // back
 			0, 4, 1, 5, 2, 6, 3, 7 // back
 		};
-		data->indiceCount = sizeof(elements) / sizeof(elements[0]);
-
-		glGenBuffers(1, &data->IBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, data->IBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
-
-		// Position
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)0);
-
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindVertexArray(0);
+		int indiceCount = sizeof(elements) / sizeof(elements[0]);
+		data->indices = (unsigned int*)elements;
 
 		// Set world matrix to be the same size as the bounding box
 		//data->worldMatrix = GetTransform(&data->size);
+
+		data->mesh = {};
+		data->mesh.verticeCount = verticeCount;
+		data->mesh.indiceCount = indiceCount;
+		InitOpenGLMesh(data);
+
 		data->visible = true;
 	}
 
@@ -249,9 +260,9 @@ namespace MonGL
 		// Load from .vt file (need to do efficient as possible)
 		// maybe dont need to do this but?? tilemap does a quad and its a huge
 		// cubes can just be created with a macro PUSH_CUBE PUSH_QUAD x4?
-		data->verticeCount = 36;
+		int verticeCount = 36;
 		// TODO(ck): Memory Allocation
-		data->vertices = new Vertex3D[data->verticeCount];
+		data->vertices = new Vertex3D[verticeCount];
 
 		data->vertices[0].position = v3(-0.5f, -0.5f, -0.5f);
 		data->vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
@@ -367,69 +378,21 @@ namespace MonGL
 		data->vertices[35].normal = v3(1.0f, 1.0f, 1.0f);
 		data->vertices[35].texCoords = v2(0.0f, 1.0f);
 
-		glGenVertexArrays(1, &data->VAO);
-		glGenBuffers(1, &data->VBO);
-		glBindVertexArray(data->VAO);
-
-		glBindBuffer(GL_ARRAY_BUFFER, data->VBO);
-		glBufferData(GL_ARRAY_BUFFER, data->verticeCount * sizeof(Vertex3D), data->vertices, GL_STATIC_DRAW);
-
-		//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)0);
-
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, normal));
-
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, texCoords));
-
-		// TODO(ck): Check for no texture?
-		// load a texture onto the cube
-		data->indiceCount = 0;
-
-		// unbind
-		glBindVertexArray(0);
 
 		data->type = RenderType::Cube;
+		data->mesh = {};
+		data->mesh.verticeCount = verticeCount;
+		data->mesh.indiceCount = 0;
+		InitOpenGLMesh(data);
+
 		data->visible = true;
 		data->scale = v3(1.0f);
 	}
 
-	// NOTE(ck): Assumes the vertices and indices have been loaded
+	// NOTE(ck): Assume the vertices and indices have been loaded
 	void InitModel(RenderData* data)
-	{
-		glGenVertexArrays(1, &data->VAO);
-		glGenBuffers(1, &data->VBO);
-		glGenBuffers(1, &data->IBO);
-
-		glBindVertexArray(data->VAO);
-
-		glBindBuffer(GL_ARRAY_BUFFER, data->VBO);
-		glBufferData(GL_ARRAY_BUFFER, data->verticeCount * sizeof(Vertex3D), data->vertices, GL_STATIC_DRAW);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, data->IBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, data->indiceCount * sizeof(unsigned int), data->indices, GL_STATIC_DRAW);
-
-		// Set the vertex attribute poiinters
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)0);
-
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, normal));
-
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, texCoords));
-
-		glEnableVertexAttribArray(3);
-		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, tangent));
-
-		glEnableVertexAttribArray(4);
-		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, bitangent));
-
-		glBindVertexArray(0);
-
+	{		
+		InitOpenGLMesh(data);
 		data->type = RenderType::Model;
 		data->visible = true;
 		data->scale = v3(1.0f);
@@ -444,19 +407,16 @@ namespace MonGL
 
 	void GenerateTerrain(RenderData* data, float* heightMap)
 	{
-		data->VAO = 0;
-		data->VBO = 0;
-
 		const int SIZE = 64;
 		const int VERTEX_COUNT = 32;
-		data->verticeCount = VERTEX_COUNT * VERTEX_COUNT;
+		int verticeCount = VERTEX_COUNT * VERTEX_COUNT;
 		// TODO(ck): Memory Allocation
-		data->vertices = new Vertex3D[data->verticeCount];
+		data->vertices = new Vertex3D[verticeCount];
 
 		// TODO(ck): Memory Allocation
-		int* indices = new int[6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1)];
-		int verticesLength = data->verticeCount;
-		data->indiceCount = 6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1);
+		data->indices = new unsigned int[6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1)];
+		int verticesLength = verticeCount;
+		int indiceCount = 6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1);
 
 		int index = 0;
 		for (int i = 0; i < VERTEX_COUNT; ++i)
@@ -491,44 +451,19 @@ namespace MonGL
 				int bottomLeft = ((gz + 1) * VERTEX_COUNT) + gx;
 				int bottomRight = bottomLeft + 1;
 
-				indices[index++] = topLeft;
-				indices[index++] = bottomLeft;
-				indices[index++] = topRight;
-				indices[index++] = topRight;
-				indices[index++] = bottomLeft;
-				indices[index++] = bottomRight;
+				data->indices[index++] = topLeft;
+				data->indices[index++] = bottomLeft;
+				data->indices[index++] = topRight;
+				data->indices[index++] = topRight;
+				data->indices[index++] = bottomLeft;
+				data->indices[index++] = bottomRight;
 			}
 		}
 
-		unsigned int ebo;
-		glGenVertexArrays(1, &data->VAO);
-		glGenBuffers(1, &data->VBO);
-		glGenBuffers(1, &ebo);
-
-		glBindVertexArray(data->VAO);
-		glBindBuffer(GL_ARRAY_BUFFER, data->VBO);
-		//glBufferData(GL_ARRAY_BUFFER, data->vertices.size() * sizeof(Vertex3D), &data->vertices[0], GL_STATIC_DRAW);
-		//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-		glBufferData(GL_ARRAY_BUFFER, verticesLength * sizeof(Vertex3D), data->vertices, GL_STATIC_DRAW);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, data->indiceCount * sizeof(int), indices, GL_STATIC_DRAW);
-
-		// pos
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)0);
-		// normals
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, normal));
-		// tex coords
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, texCoords));
-
-		// unbind
-		glBindVertexArray(0);
-		// TODO(ck): dont need to delete these yet?
-		//delete[] vertices;
-		delete[] indices;
+		data->mesh = {};
+		data->mesh.verticeCount = verticeCount;
+		data->mesh.indiceCount = indiceCount;
+		InitOpenGLMesh(data);
 
 		data->mat = {};
 		data->mat.ambient = v3(1.0f, 0.5f, 0.6f);
@@ -537,11 +472,6 @@ namespace MonGL
 		data->mat.shininess = 32.0f;
 
 		std::string textPath = "res/textures/terrain/1024multi.png";
-		/*
-		textureIds[0] = MonTexture::LoadTextureFile("1024multi.png", textDir, false);
-		std::string filename = std::string(path);
-		filename = directory + '/' + filename;
-		*/
 		Texture text = {};
 		data->textures[0] = text;
 		LoadTextureFile(&data->textures[0], textPath.c_str(), TextureType::Diffuse, false, false, true, false);
@@ -640,8 +570,8 @@ namespace MonGL
 	void InitLine(Line* line)
 	{
 		// TODO(ck): Memory Allocation
-		line->data.verticeCount = 2;
-		line->data.vertices = new Vertex3D[line->data.verticeCount];
+		int verticeCount = 2;
+		line->data.vertices = new Vertex3D[verticeCount];
 
 		line->data.vertices[0].position = v3(0.0f, 0.0f, 1.0f);
 		line->data.vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
@@ -651,24 +581,10 @@ namespace MonGL
 		line->data.vertices[1].normal = v3(1.0f, 1.0f, 1.0f);
 		line->data.vertices[1].texCoords = v2(1.0f, 1.0f);
 
-		glGenVertexArrays(1, &line->data.VAO);
-		glGenBuffers(1, &line->data.VBO);
-		glBindVertexArray(line->data.VAO);
-
-		glBindBuffer(GL_ARRAY_BUFFER, line->data.VBO);
-		glBufferData(GL_ARRAY_BUFFER, line->data.verticeCount * sizeof(Vertex3D), line->data.vertices, GL_STATIC_DRAW);
-
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, position));
-
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, normal));
-
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, texCoords));
-
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindVertexArray(0);
+		line->data.mesh = {};
+		line->data.mesh.verticeCount = verticeCount;
+		line->data.mesh.indiceCount = 0;
+		InitOpenGLMesh(&line->data);
 
 		line->data.color = v3(0.1f, 0.5f, 1.0f);
 		line->data.type = RenderType::Debug;
@@ -688,7 +604,7 @@ namespace MonGL
 		glUniform1i(glGetUniformLocation(shaderID, "pixelTexture"), false);
 		glUniform1i(glGetUniformLocation(shaderID, "collider"), true);
 
-		glBindVertexArray(line->data.VAO);
+		glBindVertexArray(line->data.mesh.VAO);
 		glDrawArrays(GL_LINES, 0, 2);
 
 		globalDrawCalls++;
@@ -710,11 +626,12 @@ namespace MonGL
 		glUniform1i(glGetUniformLocation(shaderID, "collider"), true);
 
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(data->worldMatrix));
-		glBindVertexArray(data->VAO);
+		glBindVertexArray(data->mesh.VAO);
 
 		glEnable(GL_LINE_SMOOTH);
 		glLineWidth(data->lineWidth);
 		glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, 0);
+
 		glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, (GLvoid*)(4 * sizeof(GLushort)));
 		glDrawElements(GL_LINES, 8, GL_UNSIGNED_SHORT, (GLvoid*)(8 * sizeof(GLushort)));
 
@@ -756,7 +673,7 @@ namespace MonGL
 		// and then we can just call glUniformMatrix on this
 		data->worldMatrix = mat4(1.0f);
 		data->worldMatrix = glm::translate(data->worldMatrix, pos);
-		if (data->indiceCount > 0)
+		if (data->mesh.indiceCount > 0)
 		{
 			data->worldMatrix = glm::rotate(data->worldMatrix, glm::radians(spriteAngleDegrees), v3{ 1.0f, 0.0f, 0.0f });
 		}
@@ -764,10 +681,10 @@ namespace MonGL
 
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(data->worldMatrix));
 
-		glBindVertexArray(data->VAO);
-		if (data->indiceCount > 0)
+		glBindVertexArray(data->mesh.VAO);
+		if (data->mesh.indiceCount > 0)
 		{
-			glDrawElements(GL_TRIANGLES, data->indiceCount, GL_UNSIGNED_INT, 0);
+			glDrawElements(GL_TRIANGLES, data->mesh.indiceCount, GL_UNSIGNED_INT, 0);
 		}
 		else
 		{
@@ -856,7 +773,7 @@ namespace MonGL
 		//model = glm::rotate(model, glm::radians(config->angleDegrees), v3{ 1.0f, 0.0f, 0.0f });
 		//model = glm::scale(model, scale);
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(model));
-		glBindVertexArray(data->VAO);
+		glBindVertexArray(data->mesh.VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		// Always good practice to set everything back to defaults once configured
@@ -899,11 +816,11 @@ namespace MonGL
 		glBindTexture(GL_TEXTURE_2D, data->textures[data->selectedTexture].id);
 
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
-		glBindVertexArray(data->VAO);
+		glBindVertexArray(data->mesh.VAO);
 
 		wireFrame ?
-			glDrawElements(GL_LINES, data->indiceCount, GL_UNSIGNED_INT, 0)
-			: glDrawElements(GL_TRIANGLES, data->indiceCount, GL_UNSIGNED_INT, 0);
+			glDrawElements(GL_LINES, data->mesh.indiceCount, GL_UNSIGNED_INT, 0)
+			: glDrawElements(GL_TRIANGLES, data->mesh.indiceCount, GL_UNSIGNED_INT, 0);
 
 		glBindVertexArray(0);
 		// Always good practice to set everything back to defaults once configured

@@ -36,20 +36,15 @@ bool App::init()
 
 	// TODO(ck): Memory Allocation
 #ifdef _3D_
-	//game = new Mon::Game();
-	//if (!game->init(settings.windowWidth, settings.windowHeight, settings.portWidth, settings.portHeight))
-		//return false;
-
 	gameState = new Mon::GameState();
 	if (false == Mon::InitGame(gameState, settings.windowWidth, settings.windowHeight, settings.portWidth, settings.portHeight))
 		return false;
-
 #else
-	// TODO(ck): Memory allocation
 	game2D = new Mon::Game2D();
 	if (!Mon::Init(game2D))
 		return false;
 #endif
+
 
 	return true;
 }
@@ -162,5 +157,3 @@ void App::run()
 	ShutdownGui();
 	platform->cleanUp();
 }
-
-

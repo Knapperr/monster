@@ -59,6 +59,7 @@ namespace MonGL
 
 	enum class RenderType
 	{
+		None,
 		Model,
 		Quad,
 		Cube,
@@ -72,19 +73,23 @@ namespace MonGL
 	// I guess the opengl struct even keeps the textures and stuff in it too its controlling
 	// and doing everything.
 
-	// for now we need the RenderData to hold our vertices and textures though.
-
-	struct RenderData
+	struct Mesh
 	{
-
-		Vertex3D* vertices;
-		unsigned int* indices;
-
 		unsigned int VAO;
 		unsigned int VBO;
 		unsigned int IBO;
 		int verticeCount;
 		int indiceCount;
+	};
+
+	// for now we need the RenderData to hold our vertices and textures though.
+	struct RenderData
+	{
+		Mesh mesh;
+
+		// NOTE(ck): Vertices and indices are outside of the Mesh as they are uploaded to it.
+		Vertex3D* vertices;
+		unsigned int* indices;
 		int lineWidth;
 
 		v3 color;
