@@ -92,9 +92,10 @@ namespace Mon {
 		e->name = name;
 		e->impPath = "none";
 		MonGL::InitQuad(&e->data);
+		e->data.shaderIndex = shaderHandle;
+		e->data.scale = scale;
 		MonGL::LoadTexture(&e->data, 0, MonGL::TextureType::Diffuse, shaderHandle, texturePath);
 		e->rb.pos = pos;
-		e->data.scale = scale;
 		InitBoxCollider(&e->collider);
 		e->spriteAngleDegrees = angleDegrees;
 	}
@@ -131,12 +132,31 @@ namespace Mon {
 		player->spriteAngleDegrees = -45.0f;
 	}
 
+	static void InitWater(Entity* e, int shaderHandle)
+	{
+		e->name = "water";
+		e->setup = {};
+		MonGL::InitQuad(&e->data);
+
+		// IMPORTANT(ck): These cant be loaded again if they are already loaded..
+		MonGL::LoadTexture(&e->data, 0, MonGL::TextureType::Normal, shaderHandle, "res/textures/water/ripples-derivative-height.png");
+		MonGL::LoadTexture(&e->data, 1, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/water/flow-speed-noise.png");
+	
+
+		InitBoxCollider(&e->collider);
+		e->rb.pos = v3(30.0f, 0.0f, 30.0);
+		e->rb.speed = 40.0f;
+
+		e->impPath = "none";
+		e->spriteAngleDegrees = 0.0f;
+	}
+
 	static void PlayerAttack(Entity* player)
 	{
 
 	}
 
-	static void InitWorld(World* world, int shaderHandle, float angleDegrees)
+	static void InitWorld(World* world, int shaderHandle, int waterShaderHandle, float angleDegrees)
 	{
 		// reserve slot 0 for null entity
 		AddEntity(world);
@@ -189,6 +209,10 @@ namespace Mon {
 		AddEntity(world);
 		Entity* ent4 = GetEntity(world, world->entityCount - 1);
 		InitEntity(ent4, "ch_witch2", v3(12.0f, 0.0f, 9.0f), v3(1.0f), angleDegrees, shaderHandle, "res/textures/ch_witch2.png");
+
+		AddEntity(world);
+		Entity* water = GetEntity(world, world->entityCount - 1);
+		InitWater(water, shaderHandle);
 	}
 
 	static void AddCube(World* world, int shaderHandle)

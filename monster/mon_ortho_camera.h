@@ -21,6 +21,7 @@ namespace Mon
 		void update(v2* pos, float dt);
 		void createOrtho();
 		mat4 projectionMatrix();
+		mat4 viewMatrix();
 	};
 }
 #endif

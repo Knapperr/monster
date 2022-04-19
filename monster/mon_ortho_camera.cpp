@@ -56,24 +56,48 @@ namespace Mon
 		// this might be a good thing because i can separate that off here
 		float width = 960.0f;
 		float height = 540.0f;
-		float half = 6.0f;
-#if 1
+		float half = 4.0f;
+#if 0
 		// TODO(ck): compute in update?
 		// TODO(ck): Remove half prefer zoom
 		float left = pos.x - width / half;
 		float right = pos.x + width / half;
 		float top = pos.y - height / half;
 		float bottom = pos.y + height / half;
+
+		
+		//float aspect = width / height;
+		//float half_height = height / 2.0f; // ortho size?
+		//float half_width = half_height * aspect;
+
+
+		//float left = -half_width;
+		//float right = half_width;
+		//float top = -half_height;
+		//float bottom = half_height;
 #else
 		float left = 0.0f;
-		float right = 960.0f;
+		float right = 16.0f * 40.0f;
 		float top = 0.0f;
-		float bottom = 540.0f;
+		float bottom = 16.0f * 21.0f;
 #endif
 		mat4 projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
 		mat4 zoomMatrix = glm::scale(v3(zoom));
 		projection = projection * zoomMatrix;
 
 		return projection;
+	}
+
+	mat4 OrthoCamera::viewMatrix()
+	{
+		v3 cameraFront = v3(0.0f, 0.0f, -1.0f);
+		v3 cameraUp = v3(0.0f, 1.0f, 0.0f);
+
+		cameraFront.x += pos.x;
+		cameraFront.y += pos.y;
+
+		mat4 view = mat4(1.0f);
+		view = glm::lookAt(v3(pos.x, pos.y, 0.0f), cameraFront, cameraUp);
+		return view;
 	}
 }

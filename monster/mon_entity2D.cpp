@@ -3,6 +3,8 @@
 namespace Mon
 {
 
+
+
 	void InitEntity(Entity2D* e, const char* fileLocation, bool isAlpha, v2 position, int size)
 	{
 		e->sprite = {};

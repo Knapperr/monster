@@ -33,7 +33,7 @@ namespace MonGL
 		{
 			glGenBuffers(1, &mesh->IBO);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->IBO);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->indiceCount * sizeof(data->indices), data->indices, GL_STATIC_DRAW);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->indiceCount * sizeof(unsigned int), data->indices, GL_STATIC_DRAW);
 		}
 
 		glEnableVertexAttribArray(0);
@@ -68,7 +68,6 @@ namespace MonGL
 		// unbind
 		glBindVertexArray(0);
 	}
-
 
 	///
 	/// [BEGIN] Init RenderData
@@ -118,8 +117,8 @@ namespace MonGL
 
 			float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
 
-			v3 tangent1, bitangent1;
-			v3 tangent2, bitangent2;
+			//v3 tangent1, bitangent1;
+			//v3 tangent2, bitangent2;
 
 
 			f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
@@ -263,7 +262,8 @@ namespace MonGL
 		int verticeCount = 36;
 		// TODO(ck): Memory Allocation
 		data->vertices = new Vertex3D[verticeCount];
-
+		
+		// TODO(ck): ADD QUAD method
 		data->vertices[0].position = v3(-0.5f, -0.5f, -0.5f);
 		data->vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
 		data->vertices[0].texCoords = v2(0.0f, 0.0f);
@@ -405,58 +405,103 @@ namespace MonGL
 		data->matrices = new mat4[data->amount];
 	}
 
-	void GenerateTerrain(RenderData* data, float* heightMap)
+	void InitGrid(RenderData* data, int xSize, int zSize, float* heightMap)
 	{
-		const int SIZE = 64;
-		const int VERTEX_COUNT = 32;
-		int verticeCount = VERTEX_COUNT * VERTEX_COUNT;
-		// TODO(ck): Memory Allocation
+		// TODO(ck): 
+		/*
+			Keep this as basic grid but make a new grid that is batched?
+			can create the Grid struct and then have a batcher that it uploads 
+			itself too. that way we can start creating terrain?
+			
+			each cell is about the same size as 16 pixel texture wide... is there a way to define 
+			this in our vertices?
+			
+			can try and use ArrayTextures for this as well so there is no texture bleeding???
+			we can get that DS game look using this
+
+			
+		*/
+		int verticeCount = (xSize + 1) * (zSize + 1);
 		data->vertices = new Vertex3D[verticeCount];
-
-		// TODO(ck): Memory Allocation
-		data->indices = new unsigned int[6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1)];
-		int verticesLength = verticeCount;
-		int indiceCount = 6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1);
-
-		int index = 0;
-		for (int i = 0; i < VERTEX_COUNT; ++i)
+		for (int index = 0, z = 0; z <= zSize; z++)
 		{
-			for (int j = 0; j < VERTEX_COUNT; ++j)
+			for (int x = 0; x <= xSize; x++, index++)
 			{
 				data->vertices[index] = {};
-				data->vertices[index].position.x = (float)j / ((float)VERTEX_COUNT - 1) * SIZE;
+				data->vertices[index].position.x = x;
+				data->vertices[index].position.y = -0.5f;
+				data->vertices[index].position.z = z;
 
-				data->vertices[index].position.y = -0.3f;
-				heightMap[index] = -0.3f;
-
-				data->vertices[index].position.z = (float)i / ((float)VERTEX_COUNT - 1) * SIZE;
-
+				heightMap[index] = -0.5f;
+				
 				data->vertices[index].normal.x = 0;
 				data->vertices[index].normal.y = 1;
 				data->vertices[index].normal.z = 0;
 
-				data->vertices[index].texCoords.x = (float)j / ((float)VERTEX_COUNT - 1);
-				data->vertices[index].texCoords.y = (float)i / ((float)VERTEX_COUNT - 1);
-				++index;
+				data->vertices[index].texCoords.x = (float)x / (float)xSize;
+				data->vertices[index].texCoords.y = (float)z / (float)zSize;
 			}
 		}
 
-		index = 0;
-		for (int gz = 0; gz < (VERTEX_COUNT - 1); ++gz)
-		{
-			for (int gx = 0; gx < (VERTEX_COUNT - 1); ++gx)
-			{
-				int topLeft = (gz * VERTEX_COUNT) + gx;
-				int topRight = topLeft + 1;
-				int bottomLeft = ((gz + 1) * VERTEX_COUNT) + gx;
-				int bottomRight = bottomLeft + 1;
+		/*
+		*   NOTE(ck): 
+			build our grid using this method? 
 
-				data->indices[index++] = topLeft;
-				data->indices[index++] = bottomLeft;
-				data->indices[index++] = topRight;
-				data->indices[index++] = topRight;
-				data->indices[index++] = bottomLeft;
-				data->indices[index++] = bottomRight;
+			for (int index = 0; i < sizeof(Grid); ++i)
+			{
+				data->vertices[index].position.x = grid[index].x;
+				data->vertices[index].position.y = -0.5;
+				data->vertices[index].position.z = grid[index].z;
+
+			}
+		
+
+			NOTE(ck): This is from RPG Paper Maker they use a square size
+			void Grid::initializeVertices(int w, int h, int squareSize) {
+				m_vertices.clear();
+
+				float w_f = (float)w, h_f = (float)h, squareSize_f = (float)squareSize;
+
+				for (int i = 0; i <= w; i++){
+					m_vertices.push_back(QVector3D((i * squareSize_f), 0.0f, 0.0f));
+					m_vertices.push_back(QVector3D((i * squareSize_f), 0.0f,
+												   squareSize_f * h_f));
+				}
+				for (int i = 0; i <= h; i++){
+					m_vertices.push_back(QVector3D(0.0f, 0.0f,(i*squareSize_f)));
+					m_vertices.push_back(QVector3D(squareSize_f * w_f, 0.0f,
+												   (i * squareSize_f)));
+				}
+			}
+
+			NOTE(ck): looks like they are adding 0.5 to the world position just like i am in the verts
+			I wonder why they are doing the grid size like that? why does mine work?
+
+			void Grid::paintGL(QMatrix4x4& modelviewProjection, int y) {
+				m_program->bind();
+				m_program->setUniformValue(u_modelviewProjection, modelviewProjection);
+				m_program->setUniformValue(u_yPosition, y + 0.5f);
+				{
+				  m_vao.bind();
+				  glDrawArrays(GL_LINES, 0, m_vertices.size());
+				  m_vao.release();
+				}
+				m_program->release();
+			}
+
+		
+		*/
+
+		int indiceCount = xSize * zSize * 6;
+		data->indices = new unsigned int[indiceCount];
+		for (int ti = 0, vi = 0, z = 0; z < zSize; z++, vi++)
+		{
+			for (int x = 0; x < xSize; x++, ti += 6, vi++)
+			{
+				data->indices[ti] = vi;
+				data->indices[ti + 3] = data->indices[ti + 2] = vi + 1;
+				data->indices[ti + 4] = data->indices[ti + 1] = vi + xSize + 1;
+				data->indices[ti + 5] = vi + xSize + 2;
 			}
 		}
 
@@ -491,7 +536,6 @@ namespace MonGL
 		data->textures[3] = text3;
 		LoadTextureFile(&data->textures[3], textPath.c_str(), TextureType::Diffuse, false, false, true, false);
 	}
-
 
 	void InitDistortedWater(RenderData* renderData, RenderSetup* setup)
 	{
@@ -629,7 +673,7 @@ namespace MonGL
 		glBindVertexArray(data->mesh.VAO);
 
 		glEnable(GL_LINE_SMOOTH);
-		glLineWidth(data->lineWidth);
+		glLineWidth((float)data->lineWidth);
 		glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, 0);
 
 		glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, (GLvoid*)(4 * sizeof(GLushort)));
@@ -649,16 +693,6 @@ namespace MonGL
 	void Draw(Config* config, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera,
 			  unsigned int shaderID, int selectedTexture)
 	{
-		// NOTE(ck): Lighting information
-		//glUniform3fv(glGetUniformLocation(shaderID, "lightPos"), 1, &light->pos[0]);
-		//glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camPos[0]);
-
-		//glUniform3fv(glGetUniformLocation(shaderID, "material.ambient"), 1, &data->mat.ambient[0]);
-		//glUniform3fv(glGetUniformLocation(shaderID, "material.diffuse"), 1, &data->mat.diffuse[0]);
-		//glUniform3fv(glGetUniformLocation(shaderID, "material.specular"), 1, &data->mat.specular[0]);
-		//glUniform1f(glGetUniformLocation(shaderID, "material.shininess"), data->mat.shininess);
-		// ==============================================================================
-
 		bool useTexture = (ArrayCount(data->textures) > 0);
 		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), useTexture);
 		glUniform1i(glGetUniformLocation(shaderID, "pixelTexture"), useTexture);
@@ -678,7 +712,6 @@ namespace MonGL
 			data->worldMatrix = glm::rotate(data->worldMatrix, glm::radians(spriteAngleDegrees), v3{ 1.0f, 0.0f, 0.0f });
 		}
 		data->worldMatrix = glm::scale(data->worldMatrix, data->scale);
-
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(data->worldMatrix));
 
 		glBindVertexArray(data->mesh.VAO);
@@ -690,7 +723,6 @@ namespace MonGL
 		{
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
-
 
 		globalDrawCalls++;
 	}
@@ -756,12 +788,12 @@ namespace MonGL
 
 		glUniform1f(glGetUniformLocation(shaderID, "uJump"), 0.25f);	// water->uJump
 		glUniform1f(glGetUniformLocation(shaderID, "vJump"), 0.25f);	// water->vJump
-		glUniform1f(glGetUniformLocation(shaderID, "tiling"), waterData->tiling);	// water->tiling
-		glUniform1f(glGetUniformLocation(shaderID, "speed"), waterData->speed);	// water->speed 
-		glUniform1f(glGetUniformLocation(shaderID, "flowStrength"), waterData->flowStrength); // water->flowStrength
-		glUniform1f(glGetUniformLocation(shaderID, "flowOffset"), waterData->flowOffset);	// water->flowOffset
-		glUniform1f(glGetUniformLocation(shaderID, "heightScale"), waterData->heightScale);	// water->heightScale
-		glUniform1f(glGetUniformLocation(shaderID, "heightScaleModulated"), waterData->heightScaleModulated); // water->heightScaleModulated
+		glUniform1f(glGetUniformLocation(shaderID, "tiling"), (float)waterData->tiling);	// water->tiling
+		glUniform1f(glGetUniformLocation(shaderID, "speed"), (float)waterData->speed);	// water->speed 
+		glUniform1f(glGetUniformLocation(shaderID, "flowStrength"), (float)waterData->flowStrength); // water->flowStrength
+		glUniform1f(glGetUniformLocation(shaderID, "flowOffset"), (float)waterData->flowOffset);	// water->flowOffset
+		glUniform1f(glGetUniformLocation(shaderID, "heightScale"), (float)waterData->heightScale);	// water->heightScale
+		glUniform1f(glGetUniformLocation(shaderID, "heightScaleModulated"), (float)waterData->heightScaleModulated); // water->heightScaleModulated
 		//glUniform1f(glGetUniformLocation(shaderID, "waveLength"), waterData->waveLength);	//  water->waveLength
 
 		// ==============================================================================
@@ -805,8 +837,8 @@ namespace MonGL
 		mat4 matModel = mat4(1.0f);
 
 		//mat4 matTranslate = glm::translate(mat4(1.0f), v3(terrain->x, 0.0f, terrain->z));
-		mat4 matTranslate = glm::translate(mat4(1.0f), v3(0.0f, 0.0f, 0.0f));
-		matModel = matModel * matTranslate;
+		//mat4 matTranslate = glm::translate(mat4(1.0f), v3(0.0f, 0.0f, 0.0f));
+		//matModel = matModel * matTranslate;
 
 		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), true);
 		glUniform1i(glGetUniformLocation(shaderID, "pixelTexture"), true);
@@ -857,7 +889,7 @@ namespace MonGL
 
 	void ViewPort(Rect* port)
 	{
-		glViewport(port->x, port->y, port->w, port->h);
+		glViewport((int)port->x, (int)port->y, (int)port->w, (int)port->h);
 		return;
 	}
 
@@ -889,6 +921,41 @@ namespace MonGL
 	std::vector<Vertex> tileVertices;
 	int usedIndices = 0;
 
+	void InitOpenGLBatchMesh(BatchData* data)
+	{
+		int usedVertices = 1;
+		const int quadCount = 2000;
+		const int maxVertices = quadCount * 4;
+		const int indicesLength = quadCount * 6;
+
+		Mesh* mesh = &data->mesh;
+
+		glGenVertexArrays(1, &mesh->VAO);
+		glBindVertexArray(mesh->VAO);
+
+		glGenBuffers(1, &mesh->VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, mesh->VBO);
+		glBufferData(GL_ARRAY_BUFFER, maxVertices * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
+
+		glGenBuffers(1, &mesh->IBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->IBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesLength * sizeof(data->indices), data->indices, GL_DYNAMIC_DRAW);
+
+		// position attribute
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
+		// color attribute
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
+		// texture coord attribute
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
+
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
+
+
 	void PushMatrix(BatchData* batch, mat4 matrix)
 	{
 		batch->matrixStack.push(batch->matrix);
@@ -904,15 +971,16 @@ namespace MonGL
 		// return  was 
 	}
 
-
 	void InitRenderData2D(RenderData2D* sprite, int size)
 	{
 		// TODO(ck): Switch to fill batch for this... can not rely on model matrix anymore if using a batch
 		// need to update the positions and the texture coordinates manually each frame.
-
 		int x = 0;
 		int y = 0;
 
+		// NOTE(ck): TODO(ck):
+		// size should be equal to 1 
+		// 1 unit should equal 16 pixels which is the size of a normal quad in monster 2d
 		Vertex vertices[4];
 		vertices[0] = {};
 		vertices[0].position = v3(x, y, 0.0f);
@@ -968,66 +1036,45 @@ namespace MonGL
 		sprite->pos = {};
 	}
 
-	
-	void InitTileMap(int tileAmount)
+	void InitAABB(RenderData2D* sprite)
 	{
-		// These will be figured out after looping our tilemap and pushing quads
-		// TODO(ck): Need to be able to choose amount of vertices and indices
-		int usedVertices = 1;
-		const int quadCount = 2000;
-		const int maxVertices = quadCount * 4;
-		const int indicesLength = quadCount * 6;
-		 
+
+	}
+
+	void InitTileMap(int tileAmount)
+	{		 
 		// TODO(ck): MEMORY - TEST 
 		batch = new BatchData();
-		
-		glGenVertexArrays(1, &batch->VAO);
-		glBindVertexArray(batch->VAO);
-
-		glGenBuffers(1, &batch->VBO);
-		glBindBuffer(GL_ARRAY_BUFFER, batch->VBO);
-		glBufferData(GL_ARRAY_BUFFER, maxVertices * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
-
-		// position attribute
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
-		// color attribute
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
-		// texture coord attribute
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
+		// These will be figured out after looping our tilemap and pushing quads
+		// TODO(ck): Need to be able to choose amount of vertices and indices
+		batch->quadCount = 2000;
+		batch->maxVertices = batch->quadCount * 4;
+		batch->indicesLength = batch->quadCount * 6;
 
 		// TODO(ck): Memory management
-		uint32_t* tileIndices = new uint32_t[indicesLength];
+		batch->indices = new uint32_t[batch->indicesLength];
 		int offset = 0;
-		for (int i = 0; i < indicesLength; i += 6)
+		for (int i = 0; i < batch->indicesLength; i += 6)
 		{
-			tileIndices[i + 0] = 0 + offset;
-			tileIndices[i + 1] = 1 + offset;
-			tileIndices[i + 2] = 2 + offset;
-			
-			tileIndices[i + 3] = 2 + offset;
-			tileIndices[i + 4] = 3 + offset;
-			tileIndices[i + 5] = 0 + offset;
+			batch->indices[i + 0] = 0 + offset;
+			batch->indices[i + 1] = 1 + offset;
+			batch->indices[i + 2] = 2 + offset;
+
+			batch->indices[i + 3] = 2 + offset;
+			batch->indices[i + 4] = 3 + offset;
+			batch->indices[i + 5] = 0 + offset;
 
 			offset += 4;
 		}
-
-		unsigned int EBO;
-		glGenBuffers(1, &EBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesLength * sizeof(tileIndices), tileIndices, GL_DYNAMIC_DRAW);
-
-		delete[] tileIndices;
-		glBindVertexArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		
+		batch->mesh = {};
+		InitOpenGLBatchMesh(batch);
 	};
 
 	void FillTileVertices(RenderData2D* sprite, int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize)
 	{
 		float sheetSize = 256.0f;
-		int spriteSize = 16.0;
+		int spriteSize = 16;
 
 		// Texture coords
 		float topRightX = ((tileOffsetX + 1) * spriteSize) / sheetSize;
@@ -1074,72 +1121,23 @@ namespace MonGL
 		sprite->vertices.push_back(vec3);
 	}
 
-	void InitTileMap(RenderData2D* sprite, int tileAmount)
-	{
-		//const int indicesLength = sprite->vertices.size() * 6;
-		const int indicesLength = 9600;
-
-		// TODO(ck): Memory management
-		uint32_t* tileIndices = new uint32_t[indicesLength];
-		int offset = 0;
-		for (int i = 0; i < indicesLength; i += 6)
-		{
-			tileIndices[i + 0] = 0 + offset;
-			tileIndices[i + 1] = 1 + offset;
-			tileIndices[i + 2] = 2 + offset;
-
-			tileIndices[i + 3] = 2 + offset;
-			tileIndices[i + 4] = 3 + offset;
-			tileIndices[i + 5] = 0 + offset;
-
-			offset += 4;
-		}
-
-		unsigned int EBO;
-		glGenVertexArrays(1, &sprite->VAO);
-		glGenBuffers(1, &sprite->VBO);
-		glGenBuffers(1, &EBO);
-
-		glBindVertexArray(sprite->VAO);
-		glBindBuffer(GL_ARRAY_BUFFER, sprite->VBO);
-		glBufferData(GL_ARRAY_BUFFER, sprite->vertices.size() * sizeof(Vertex), &sprite->vertices[0], GL_STATIC_DRAW);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesLength * sizeof(int), tileIndices, GL_STATIC_DRAW);
-
-		// position attribute
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
-		// color attribute
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
-		// texture coord attribute
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
-
-		delete[] tileIndices;
-		glBindVertexArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-	};
-
 	void FillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize)
 	{		
 		float sheetSize = 256.0f;
-		int spriteSize = 16.0;
 
 		// Texture coords
-		float topRightX		= ((tileOffsetX + 1) * spriteSize) / sheetSize;
-		float topRightY		= ((tileOffsetY + 1) * spriteSize) / sheetSize;
-		float topLeftX		= (tileOffsetX * spriteSize) / sheetSize;
-		float topLeftY		= ((tileOffsetY + 1) * spriteSize) / sheetSize;
-		float bottomLeftX	= (tileOffsetX * spriteSize) / sheetSize;
-		float bottomLeftY   = (tileOffsetY * spriteSize) / sheetSize;
-		float bottomRightX	= ((tileOffsetX + 1) * spriteSize) / sheetSize;
-		float bottomRightY	= (tileOffsetY * spriteSize) / sheetSize;
+		float topRightX		= ((tileOffsetX + 1) * tileSize) / sheetSize;
+		float topRightY		= ((tileOffsetY + 1) * tileSize) / sheetSize;
+		float topLeftX		= (tileOffsetX * tileSize) / sheetSize;
+		float topLeftY		= ((tileOffsetY + 1) * tileSize) / sheetSize;
+		float bottomLeftX	= (tileOffsetX * tileSize) / sheetSize;
+		float bottomLeftY   = (tileOffsetY * tileSize) / sheetSize;
+		float bottomRightX	= ((tileOffsetX + 1) * tileSize) / sheetSize;
+		float bottomRightY	= (tileOffsetY * tileSize) / sheetSize;
 
 		// TODO(ck): pushQuad(pos, color, texcoords)		
-		float x = tileXPos;
-		float y = tileYPos;		
+		float x = tileXPos * tileSize;
+		float y = tileYPos * tileSize;
 		int size = tileSize;
 		Vertex vec0 = {
 			v3(x, y, 0.0f),
@@ -1177,8 +1175,8 @@ namespace MonGL
 		// 2 extra vertices are needed for degenerate triangles between each strip 
 		//unsigned uNumExtraVertices = ( GL_TRIANGLE_STRIP == _config.uRenderType && _uNumUsedVertices > 0 ? 2 : 0 ); 
 
-		glBindVertexArray(batch->VAO);
-		glBindBuffer(GL_ARRAY_BUFFER, batch->VBO);
+		glBindVertexArray(batch->mesh.VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, batch->mesh.VBO);
 		//if (uNumExtraVertices > 0)
 		//{
 		//	//need to add 2 vertex copies to create degenerate triangles between this strip 
@@ -1241,9 +1239,9 @@ namespace MonGL
 		tilePosition.y = data->pos.y;
 		model = glm::translate(model, tilePosition);
 
-		//model = glm::translate(model, v3(0.5f * obj->size.x, 0.0f * obj->size.y, 0.0f));
+		//model = glm::translate(model, v3(0.5f * data->size.x, 0.0f * data->size.y, 0.0f));
 		//model = glm::rotate(model, obj->rotation, v3(0.0f, 0.0f, 1.0f));
-		//model = glm::translate(model, v3(-0.5f * obj->size.x, -0.5f * obj->size.y, 0.0f));
+		//model = glm::translate(model, v3(-0.5f * data->size.x, -0.5f * data->size.y, 0.0f));
 
 		//model = glm::scale(model, v3(data->size, 1.0f));
 
@@ -1269,7 +1267,7 @@ namespace MonGL
 
 	}
 
-	void DrawMap(CommonProgram* shader, unsigned int textureID)
+	void DrawMap(CommonProgram* shader, unsigned int textureID, bool wireFrame)
 	{
 		// TODO(ck): If we want the ability to change the map at runtime we need to constantly
 		// be filling and binding the batch (if things have changed)
@@ -1277,7 +1275,13 @@ namespace MonGL
 		// bind vertices
 
 
-		//glUseProgram(shader->id);
+		mat4 model = mat4(1.0f);
+		glUniformMatrix4fv(glGetUniformLocation(shader->handle, "model"), 1, GL_FALSE, glm::value_ptr(model));
+		//v3 tilePosition = {};
+		//tilePosition.x = data->pos.x;
+		//tilePosition.y = data->pos.y;
+		//model = glm::translate(model, tilePosition);
+
 
 		//glActiveTexture(GL_TEXTURE0);
 		// IMPORTANT(ck):
@@ -1286,9 +1290,12 @@ namespace MonGL
 		glUniform1i(glGetUniformLocation(shader->handle, "image"), 0);
 		glBindTexture(GL_TEXTURE_2D, textureID);
 
-		glBindVertexArray(batch->VAO);
+		glBindVertexArray(batch->mesh.VAO);
 		// (void*)(index_size * pass.index_start)
-		glDrawElements(GL_TRIANGLES, usedIndices, GL_UNSIGNED_INT, (void*)(2 * 0));
+		wireFrame ?
+			glDrawElements(GL_LINES, usedIndices, GL_UNSIGNED_INT, (void*)(2 * 0))
+			: glDrawElements(GL_TRIANGLES, usedIndices, GL_UNSIGNED_INT, (void*)(2 * 0));
+
 		glBindVertexArray(0);
 
 		//reset buffer
@@ -1313,8 +1320,8 @@ namespace MonGL
 		// 2 extra vertices are needed for degenerate triangles between each strip 
 		//unsigned uNumExtraVertices = ( GL_TRIANGLE_STRIP == _config.uRenderType && _uNumUsedVertices > 0 ? 2 : 0 ); 
 
-		glBindVertexArray(batch->VAO);
-		glBindBuffer(GL_ARRAY_BUFFER, batch->VBO);
+		glBindVertexArray(batch->mesh.VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, batch->mesh.VBO);
 		//if (uNumExtraVertices > 0)
 		//{
 		//	//need to add 2 vertex copies to create degenerate triangles between this strip 
@@ -1350,7 +1357,6 @@ namespace MonGL
 		//_lastVertex = vVertices[vVertices.size() - 1];
 
 
-
 		//
 		// Render batch
 		//
@@ -1364,7 +1370,7 @@ namespace MonGL
 		glUniform1i(glGetUniformLocation(shader->handle, "image"), 0);
 		glBindTexture(GL_TEXTURE_2D, textureID);
 
-		glBindVertexArray(batch->VAO);
+		glBindVertexArray(batch->mesh.VAO);
 		// (void*)(index_size * pass.index_start)
 		glDrawElements(GL_TRIANGLES, usedIndices, GL_UNSIGNED_INT, (void*)(2 * 0));
 		glBindVertexArray(0);
@@ -1372,9 +1378,6 @@ namespace MonGL
 		//reset buffer
 		//_uNumUsedVertices = 0;
 		//_config.iPriority = 0;
-
-
-
 
 		// clear batch
 	}

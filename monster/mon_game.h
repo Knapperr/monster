@@ -63,7 +63,9 @@ namespace Mon
 		// Shader lives in the opengl renderer
 		// Need a shader store or something
 		MonGL::CommonProgram shader;
+		
 		//MonGL::WaterDataProgram waterShader;
+		MonGL::CommonProgram waterShader;
 		MonGL::Light light;
 	};
 

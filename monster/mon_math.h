@@ -12,10 +12,13 @@ namespace Mon
 {
 #define ArrayCount(Array) (sizeof(Array) / sizeof((Array)[0]))
 
+	// TODO(ck): Should be in platform layer
+	typedef int32_t int32;
 	// TODO(ck): Slowly remove glm
 	typedef glm::vec2 v2;
 	typedef glm::vec3 v3;
 	typedef glm::vec4 v4;
+
 
 	typedef glm::mat4 mat4;
 
@@ -62,9 +65,15 @@ namespace Mon
 		return result;
 	}
 
-	inline float lerp(float a, float time, float b)
+	inline float lerp(float a, float b, float t)
 	{
-		float result = (1.0f - time) * a + time * b;
+		float result = (1.0f - t) * a + b * t;
+		return result;
+	}
+
+	inline float inverse_lerp(float a, float b, float v)
+	{
+		float result = (v - a) / (b - a);
 		return result;
 	}
 

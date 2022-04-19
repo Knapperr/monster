@@ -28,7 +28,7 @@ namespace Mon
 	{
 		float x, y;
 		int height, width;
-		int offsetX, offsetY;
+		int textureOffsetX, textureOffsetY;
 
 
 		// TODO(ck): TILE_PART_ONE - this is linked to mon_world.cpp 
@@ -46,8 +46,8 @@ namespace Mon
 			height = TILE_SIZE;
 			width = TILE_SIZE;
 			id = 0;
-			offsetX = 0;
-			offsetY = 0;
+			textureOffsetX = 0;
+			textureOffsetY = 0;
 		}
 
 		Tile(int tileId, float x, float y) : x(x), y(y)
@@ -55,8 +55,8 @@ namespace Mon
 			height = TILE_SIZE;
 			width = TILE_SIZE;
 			id = tileId;
-			offsetX = 0;
-			offsetY = 0;
+			textureOffsetX = 0;
+			textureOffsetY = 0;
 		}
 	};
 
@@ -99,6 +99,8 @@ namespace Mon
 		float tileSideInMeters;
 		float metersToPixels;
 		int tileSideInPixels;
+
+		bool wireFrame;
 	};
 
 	void InitTileMap(TileMap* map, TileSheet* sheet);

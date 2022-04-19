@@ -10,7 +10,7 @@ namespace Mon
 		// Reserve slot 1 for player entity
 		AddEntity2D(world);
 		Entity2D* player = GetPlayer(world);
-		InitEntity(player, "res/textures/ch_witch.png", true, v2(0, 0), 32);
+		InitEntity(player, "res/textures/ch_witch.png", true, v2(1, 1), 32);
 		// InitPlayer(player, shaderHandle);
 		//Entity2D* collider = new Entity2D();
 		//initEntity(collider, "res/textures/p1.png", true, v2(50, 50), 32);

@@ -1054,6 +1054,9 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game2D* game2D)
 
 	ImGui::DragFloat("cam zoom", &game2D->cameras[game2D->currentCameraIndex].zoom, 0.1f, 1.0f, 200.0f, "%.02f");
 	//ImGui::SliderInt("Tile 0 ID: ", &game->world2D->map->tiles[0].tileId, 0, 3, NULL);
+	ImGui::DragFloat("x", &game2D->world->entities[1].pos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");
+	ImGui::DragFloat("y", &game2D->world->entities[1].pos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
+	ImGui::Checkbox("Wireframe", &game2D->world->map->wireFrame);
 
 	{
 		//char entitysizebuf[64];

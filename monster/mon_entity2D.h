@@ -36,5 +36,8 @@ namespace Mon
 	// should velocity be acceleration?
 	void movePlayer(TileMap* map, Entity2D* p, v2* velocity, float deltaTime);
 
+	// "factory" methods for creating entities
+	Entity2D* InitPlayer();
+	Entity2D* InitEnemy();
 }
 #endif

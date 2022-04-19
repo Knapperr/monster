@@ -109,13 +109,10 @@ namespace Mon
 		state->mode = Mode::Debug;
 
 		state->shader = {};
-		//waterShader = {};
+		state->waterShader = {};
 		MonGL::LoadShader(&state->shader, "res/shaders/vert_colors.glsl", "res/shaders/frag_colors.glsl", NULL);
-		//MonGL::LoadShader(&waterShader.common, "res/shaders/vert_water.glsl", "res/shaders/frag_water.glsl", NULL);
+		MonGL::LoadShader(&state->waterShader, "res/shaders/vert_water.glsl", "res/shaders/frag_water.glsl", NULL);
 		state->mainShaderID = state->shader.handle;
-
-
-
 
 		state->light = {};
 		v3 lightColor = v3(0.2f, 0.3f, 0.6f);
@@ -175,7 +172,7 @@ namespace Mon
 		// Init the game world
 		// TODO(ck): MEMORY MANAGEMENT
 		state->world = new World();
-		InitWorld(state->world, state->shader.handle, state->config->angleDegrees);
+		InitWorld(state->world, state->shader.handle, state->waterShader.handle, state->config->angleDegrees);
 
 		return true;
 	}
@@ -351,6 +348,7 @@ namespace Mon
 		Camera* cam = GetCamera(state, state->currCameraIndex);
 
 		MonGL::BeginRender(state->config, Projection(cam), ViewMatrix(cam), state->shader.handle);
+		MonGL::BeginRender(state->config, Projection(cam), ViewMatrix(cam), state->waterShader.handle);
 
 		// TODO(ck): use shader
 		glUseProgram(state->shader.handle);

@@ -4,7 +4,7 @@
 @file:		monster.cpp
 @author:	Cole Fidler-Knapp
 @date:		April 2021
-@desc:		3D Engine for learning game development from scratch
+@desc:		Engine for learning game development from scratch
 
 	___  ________ _   _  _____ _____ ___________      _____ _   _ _____ _____ _   _  _____
 	|  \/  |  _  | \ | |/  ___|_   _|  ___| ___ \    |  ___| \ | |  __ \_   _| \ | ||  ___|

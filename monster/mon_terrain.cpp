@@ -3,7 +3,8 @@
 
 
 #define SIZE 64
-#define VERTEX_COUNT 32
+#define VERTEX_COUNT 64
+
 Terrain::Terrain(int gridX, int gridZ)
 {
 	x = (float)gridX * SIZE;
@@ -13,10 +14,16 @@ Terrain::Terrain(int gridX, int gridZ)
 	drawTexture = true;
 
 	mesh = {};
-	heightMap = new float[VERTEX_COUNT * VERTEX_COUNT];
-	MonGL::GenerateTerrain(&mesh, heightMap);
+	heightMap = new float[(SIZE + 1) * (SIZE + 1)];
+	// NOTE(ck): Power of 2 needs to be used for SIZE so that
+	//			texture coords to be proper on the cells
+	/*I think the proper way to do this is have a map structure with the positions as int32 and then 
+	have the mesh that just gets the vertices from the positions just like a tilemap this way the 
+	grid is its own thing and then the 
+	*/
 
-	// TODO(ck): Switch to plane shape
+	MonGL::InitGrid(&mesh, SIZE, SIZE, heightMap);
+
 	Mon::InitBoxCollider(&collider);
 	collider.data.color = Mon::v3(0.1f, 0.4f, 0.95f);
 	collider.worldPos = Mon::v3(-2.0f, -6.40f, -1.10f);

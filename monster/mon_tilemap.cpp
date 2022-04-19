@@ -30,13 +30,13 @@ namespace Mon
 	void SetTile(Tile* tile, int tileId, int offsetX, int offsetY)
 	{
 		tile->id = tileId;
-		tile->offsetX = offsetX;
-		tile->offsetY = offsetY;
+		tile->textureOffsetX = offsetX;
+		tile->textureOffsetY = offsetY;
 	}
 
 	void SetTile(Tile* tile, Tile* newTile)
 	{
-		SetTile(tile, newTile->id, newTile->offsetX, newTile->offsetY);
+		SetTile(tile, newTile->id, newTile->textureOffsetX, newTile->textureOffsetY);
 	}
 
 
@@ -62,85 +62,85 @@ namespace Mon
 		sheet->tiles = new Tile[sheet->tileCount];
 
 		sheet->tiles[0].id = 0; // top
-		sheet->tiles[0].offsetX = 4;
-		sheet->tiles[0].offsetY = 2;
+		sheet->tiles[0].textureOffsetX = 4;
+		sheet->tiles[0].textureOffsetY = 2;
 
 		sheet->tiles[1].id = 1; // left
-		sheet->tiles[1].offsetX = 0;
-		sheet->tiles[1].offsetY = 4;
+		sheet->tiles[1].textureOffsetX = 0;
+		sheet->tiles[1].textureOffsetY = 4;
 
 		sheet->tiles[2].id = 2; // right
-		sheet->tiles[2].offsetX = 5;
-		sheet->tiles[2].offsetY = 5;
+		sheet->tiles[2].textureOffsetX = 5;
+		sheet->tiles[2].textureOffsetY = 5;
 
 		sheet->tiles[3].id = 3; // field
-		sheet->tiles[3].offsetX = 1;
-		sheet->tiles[3].offsetY = 0;
+		sheet->tiles[3].textureOffsetX = 1;
+		sheet->tiles[3].textureOffsetY = 0;
 
 		sheet->tiles[4].id = 4; // bottom left
-		sheet->tiles[4].offsetX = 0;
-		sheet->tiles[4].offsetY = 7;
+		sheet->tiles[4].textureOffsetX = 0;
+		sheet->tiles[4].textureOffsetY = 7;
 
 		sheet->tiles[5].id = 5; // bottom right
-		sheet->tiles[5].offsetX = 5;
-		sheet->tiles[5].offsetY = 7;
+		sheet->tiles[5].textureOffsetX = 5;
+		sheet->tiles[5].textureOffsetY = 7;
 
 		sheet->tiles[6].id = 6; // top right
-		sheet->tiles[6].offsetX = 5;
-		sheet->tiles[6].offsetY = 2;
+		sheet->tiles[6].textureOffsetX = 5;
+		sheet->tiles[6].textureOffsetY = 2;
 
 		sheet->tiles[7].id = 7; // top left
-		sheet->tiles[7].offsetX = 0;
-		sheet->tiles[7].offsetY = 2;
+		sheet->tiles[7].textureOffsetX = 0;
+		sheet->tiles[7].textureOffsetY = 2;
 
 		sheet->tiles[8].id = 8; // bottom
-		sheet->tiles[8].offsetX = 3;
-		sheet->tiles[8].offsetY = 6;
+		sheet->tiles[8].textureOffsetX = 3;
+		sheet->tiles[8].textureOffsetY = 6;
 
 
 		sheet->tiles[9].id = 9; // bush
-		sheet->tiles[9].offsetX = 0;
-		sheet->tiles[9].offsetY = 1;
+		sheet->tiles[9].textureOffsetX = 0;
+		sheet->tiles[9].textureOffsetY = 1;
 
 		sheet->tiles[10].id = 10; // rock
-		sheet->tiles[10].offsetX = 1;
-		sheet->tiles[10].offsetY = 1;
+		sheet->tiles[10].textureOffsetX = 1;
+		sheet->tiles[10].textureOffsetY = 1;
 
 		sheet->tiles[11].id = 11; // road top
-		sheet->tiles[11].offsetX = 6;
-		sheet->tiles[11].offsetY = 2;
+		sheet->tiles[11].textureOffsetX = 6;
+		sheet->tiles[11].textureOffsetY = 2;
 
 		sheet->tiles[12].id = 12; // road mid
-		sheet->tiles[12].offsetX = 6;
-		sheet->tiles[12].offsetY = 3;
+		sheet->tiles[12].textureOffsetX = 6;
+		sheet->tiles[12].textureOffsetY = 3;
 
 		sheet->tiles[13].id = 13; // road bot
-		sheet->tiles[13].offsetX = 6;
-		sheet->tiles[13].offsetY = 5;
+		sheet->tiles[13].textureOffsetX = 6;
+		sheet->tiles[13].textureOffsetY = 5;
 
 		sheet->tiles[14].id = 14; // topleft tree
-		sheet->tiles[14].offsetX = 7;
-		sheet->tiles[14].offsetY = 2;
+		sheet->tiles[14].textureOffsetX = 7;
+		sheet->tiles[14].textureOffsetY = 2;
 
 		sheet->tiles[15].id = 15; // topright tree
-		sheet->tiles[15].offsetX = 8;
-		sheet->tiles[15].offsetY = 2;
+		sheet->tiles[15].textureOffsetX = 8;
+		sheet->tiles[15].textureOffsetY = 2;
 
 		sheet->tiles[16].id = 16; // midleft bush
-		sheet->tiles[16].offsetX = 7;
-		sheet->tiles[16].offsetY = 3;
+		sheet->tiles[16].textureOffsetX = 7;
+		sheet->tiles[16].textureOffsetY = 3;
 
 		sheet->tiles[17].id = 17; // midright bush
-		sheet->tiles[17].offsetX = 8;
-		sheet->tiles[17].offsetY = 3;
+		sheet->tiles[17].textureOffsetX = 8;
+		sheet->tiles[17].textureOffsetY = 3;
 
 		sheet->tiles[18].id = 18; // bottomleft bush
-		sheet->tiles[18].offsetX = 7;
-		sheet->tiles[18].offsetY = 4;
+		sheet->tiles[18].textureOffsetX = 7;
+		sheet->tiles[18].textureOffsetY = 4;
 
 		sheet->tiles[19].id = 19; // bottomright bush
-		sheet->tiles[19].offsetX = 8;
-		sheet->tiles[19].offsetY = 4;
+		sheet->tiles[19].textureOffsetX = 8;
+		sheet->tiles[19].textureOffsetY = 4;
 	}
 
 	// TODO(ck): MEMORY MANAGEMENT
@@ -172,8 +172,8 @@ namespace Mon
 	{
 		assert(sheet->tileCount > 0);
 
-		map->tileSideInMeters = 1.6f;
-		map->tileSideInPixels = 32;
+		map->tileSideInMeters = 1.7f; // 1.7 meters = 5.5feet
+		map->tileSideInPixels = 16; // 16 pixels = 1 unit
 		map->metersToPixels = (float)map->tileSideInPixels / map->tileSideInMeters;
 
 
@@ -183,10 +183,10 @@ namespace Mon
 	// TODO(ck): Load from file
 		int testmap[MAP_SIZE][MAP_SIZE] =
 		{
-			{7, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6},
+			{7, 0, 0, 0, 99,  0, 99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6},
 			{1, 2, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2},
 			{1, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2},
-			{1, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2},
+			{1, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 99, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2},
 			{1, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2},
 			 																														
 			{1, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2},
@@ -232,18 +232,12 @@ namespace Mon
 			{4, 8, 8, 8, 8,  8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,  8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5},
 		};
 
-		int width = 16;
-		int height = 16;
+		int tileSize = 16;
 		
 		for (int y = 0; y < MAP_SIZE; ++y)
 		{
 			for (int x = 0; x < MAP_SIZE; ++x)
 			{
-				// this gets the x and y position for the vertice since its screenpos
-				// absTileX = screenX * tilesPerWidth + tileX;
-				// absTileY = screenY * tilesPerHeight + tileY;
-
-
 				if (testmap[y][x] != 99)
 				{
 					// TODO(ck): NOTE(ck): a Tile and a TileSheet can not be the same thing... all of the pointers are pointing to the same x and y coordinates
@@ -256,15 +250,17 @@ namespace Mon
 					newTile->id = sheetTile.id;
 					newTile->width = sheetTile.width;
 					newTile->height = sheetTile.height;
-					newTile->offsetX = sheetTile.offsetX;
-					newTile->offsetY = sheetTile.offsetY;
-					newTile->x = x * width;
-					newTile->y = y * width;
+					newTile->textureOffsetX = sheetTile.textureOffsetX;
+					newTile->textureOffsetY = sheetTile.textureOffsetY;
+					// TODO(ck): keep x and y as 0,1,2,3 1x1m unit  --- draw position?
+					newTile->x = x;
+					newTile->y = y;
 					map->tiles.push_back(newTile);
 				}
 			}
 		}
 
+		map->wireFrame = false;
 		MonGL::InitTileMap(map->tiles.size());
 	}
 
@@ -277,11 +273,11 @@ namespace Mon
 	{
 		for (int i = 0; i < map->tiles.size(); ++i)
 		{
-			MonGL::FillBatch(map->tiles[i]->offsetX, map->tiles[i]->offsetY, map->tiles[i]->x, map->tiles[i]->y, 16);
+			MonGL::FillBatch(map->tiles[i]->textureOffsetX, map->tiles[i]->textureOffsetY, map->tiles[i]->x, map->tiles[i]->y, 16);
 		}
 
 		MonGL::BindVertices();
-		MonGL::DrawMap(shader, textureID);
+		MonGL::DrawMap(shader, textureID, map->wireFrame);
 	}
 
 	void RecanonicalizeCoord(TileMap* tileMap, uint32_t* tile, float* tileRel)

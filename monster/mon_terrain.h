@@ -12,6 +12,25 @@ struct TerrainPosition
 	Mon::v2 offset;
 };
 
+struct Cell
+{
+	Mon::int32 absX;
+	Mon::int32 absY;
+	Mon::int32 absZ;
+
+	Mon::v2 offset;
+};
+
+struct Grid
+{
+	Mon::int32* tiles;
+};
+
+inline void CreateGrid(Grid* grid)
+{
+
+}
+
 class Terrain
 {
 public:

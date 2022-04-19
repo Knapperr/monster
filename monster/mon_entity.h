@@ -37,6 +37,23 @@ namespace Mon {
 
 	};
 
+	struct Component
+	{
+		int id;
+	};
+
+	enum ChargeBarType
+	{
+		CLASSIC,
+		HOLD
+	};
+
+	struct ChargeBarComponent : public Component
+	{
+		float charge;
+		ChargeBarType type;
+	};
+
 	struct Entity
 	{
 		std::string name;
@@ -76,7 +93,6 @@ namespace Mon {
 			if (e->rb.velocity.z > 0)
 			{
 				e->facingDir = Direction::Backward;
-
 			}
 			else
 			{

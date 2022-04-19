@@ -86,6 +86,27 @@ namespace MonGL
 	struct RenderData
 	{
 		Mesh mesh;
+		// TODO(ck): Index into shader ... this should get the correct shader
+		// and then go through its uniforms and activate them using the Program
+		// and the render setup
+		// the render setup has everything in it so it just needs to find the right 
+		// program and then use the RenderData setup
+		/*
+		    UseProgramBegin(OpenGL, &Prog->Common);
+    
+			OpenGL->glUniformMatrix4fv(Prog->TransformID, 1, GL_TRUE, Setup->Proj.E[0]);
+			OpenGL->glUniform3fv(Prog->CameraP, 1, Setup->CameraP.E);
+			OpenGL->glUniform3fv(Prog->FogDirection, 1, Setup->FogDirection.E);
+			OpenGL->glUniform3fv(Prog->FogColor, 1, Setup->FogColor.E);
+			OpenGL->glUniform1f(Prog->FogStartDistance, Setup->FogStartDistance);
+		
+			you can see here it just calls the programs uniforms and then the setup just activates it
+			our setup is going to have everything in it because who cares? if we start having a ton
+			of unique shaders we can also differentiate the setups as well.
+		
+		*/
+		RenderSetup setup;
+		int shaderIndex;
 
 		// NOTE(ck): Vertices and indices are outside of the Mesh as they are uploaded to it.
 		Vertex3D* vertices;
@@ -162,7 +183,6 @@ namespace MonGL
 		RenderData data;
 	};
 
-
 	//
 	// 2D structs 
 	//
@@ -176,11 +196,14 @@ namespace MonGL
 
 	struct BatchData
 	{
-		unsigned int VAO;
-		unsigned int VBO;
-
+		Mesh mesh;
 		mat4 matrix = mat4(1.0f);
 		std::stack<mat4> matrixStack;
+
+		uint32_t* indices;
+		int maxVertices;
+		int indicesLength;
+		int quadCount;
 	};
 
 	struct RenderData2D
@@ -236,7 +259,7 @@ namespace MonGL
 	void InitModel(RenderData* data);
 	void InitBoundingBox(RenderData* data);
 	void InitDistortedWater(RenderData* renderData, RenderSetup* setup);
-	void GenerateTerrain(RenderData* data, float* heightMap);
+	void InitGrid(RenderData* data, int xSize, int zSize, float* heightMap);
 	void LoadTexture(RenderData* data, int index, TextureType type, int shaderID, std::string path, bool pixelTexture = true);
 	
 	void Draw(Config* config, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera,
@@ -253,6 +276,8 @@ namespace MonGL
 	// 2d
 	//
 
+	void InitOpenGLBatchMesh(Mesh* mesh);
+
 	void PushMatrix(BatchData* batch, mat4 matrix);
 	void PopMatrix(BatchData* batch);
 
@@ -263,13 +288,12 @@ namespace MonGL
 	
 	void FillTileVertices(RenderData2D* sprite, int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize);
 	void InitTileMap(int tileAmount);
-	void InitTileMap(RenderData2D* sprite, int tileAmount);
 	void FillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize);
 	void BindVertices();
 	
 	void DrawObject(CommonProgram* shader, RenderData2D* data);
 	void DrawMap(CommonProgram* shader, RenderData2D* sprite, unsigned int textureID);
-	void DrawMap(CommonProgram* shader, unsigned int textureID);
+	void DrawMap(CommonProgram* shader, unsigned int textureID, bool wireFrame);
 	void DrawMap(CommonProgram* shader, unsigned int textureID, int batchThing);
 
 

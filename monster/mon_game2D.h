@@ -28,7 +28,6 @@ namespace Mon {
 
 		MonGL::Config* config;
 		MonGL::CommonProgram shader;
-		MonGL::CommonProgram tileShader;
 
 		// Note(ck): Current game state - State::Debug is default
 		int state;

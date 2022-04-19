@@ -10,8 +10,6 @@ namespace Mon {
 		InitWorld(game->world);
 
 		MonGL::LoadShader(&game->shader, "res/shaders/vert_sprite.glsl", "res/shaders/frag_sprite.glsl", NULL);
-		// TODO(ck): REMOVE TESTING TILE SHADER use above shader for both tiles and quads
-		MonGL::LoadShader(&game->tileShader, "res/shaders/vert_tile.glsl", "res/shaders/frag_tile.glsl", NULL);
 
 		// Set up the shader locations for our objects
 		glUseProgram(game->shader.handle);
@@ -35,27 +33,15 @@ namespace Mon {
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 
-		// TODO(ck): REMOVE TESTING TILE SHADER
-		glUseProgram(game->tileShader.handle);
-		imgLoc = glGetUniformLocation(game->tileShader.handle, "image");
-		glUniform1i(imgLoc, 0);
-
-		projLoc = glGetUniformLocation(game->tileShader.handle, "projection");
-		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
-		mat4 model = mat4(1.0f);
-		v3 pos = v3(0, 0, 1.0f);
-		model = glm::translate(model, pos);
-		model = glm::scale(model, v3(v2(32, 32), 1.0f));
-		glUniformMatrix4fv(glGetUniformLocation(game->tileShader.handle, "model"), 1, GL_FALSE, glm::value_ptr(model));
-
 		int screenWidth = 1440;
 		int screenHeight = 900;
 		int portWidth = 960;
 		int portHeight = 540;
 		game->config = new MonGL::Config();
 
-		game->config->viewPort = { (float)(screenWidth - portWidth) / 2 , (float)(screenHeight - portHeight) / 2, (float)portWidth, (float)portHeight };
+		// TODO(ck): View Port in Middle of screen
+		//game->config->viewPort = { (float)(screenWidth - portWidth) / 2 , (float)(screenHeight - portHeight) / 2, (float)portWidth, (float)portHeight };
+		game->config->viewPort = { 0.0f , 0.0f, (float)portWidth, (float)portHeight };
 		MonGL::ViewPort(&game->config->viewPort);
 
 		AddCamera(game);
@@ -72,7 +58,7 @@ namespace Mon {
 	void Update(Game2D* game, double dt, Input* input)
 	{
 		//if (dt > deltaTime || dt < deltaTime)
-	//printf("dt: %f\n", dt);
+		//printf("dt: %f\n", dt);
 		//game->deltaTime = dt;
 		game->input = *input;
 
@@ -90,34 +76,43 @@ namespace Mon {
 
 				if (input->up.endedDown)
 				{
-#if 0
+//#define USE_VELOCITY
+#ifdef USE_VELOCITY
 					velocity.y = -1.0f;
 #else
 					p->pos.y -= 1.0f * p->speed * dt;
+					//p->pos.y -= 1.0f;
+					//game->cameras[1].pos.y -= 1.0f * p->speed * dt;
 #endif
 				}
 				if (input->down.endedDown)
 				{
-#if 0
+#ifdef USE_VELOCITY
 					velocity.y = 1.0f;
 #else
 					p->pos.y += 1.0f * p->speed * dt;
+					//p->pos.y += 1.0f;
+					//game->cameras[1].pos.y += 1.0f * p->speed * dt;
 #endif
 				}
 				if (input->left.endedDown)
 				{
-#if 0
+#ifdef USE_VELOCITY
 					velocity.x = -1.0f;
 #else
 					p->pos.x -= 1.0f * p->speed * dt;
+					//p->pos.x -= 1.0f;
+					//game->cameras[1].pos.x -= 1.0f * p->speed * dt;
 #endif
 				}
 				if (input->right.endedDown)
 				{
-#if 0
+#ifdef USE_VELOCITY
 					velocity.x = 1.0f;
 #else
 					p->pos.x += 1.0f * p->speed * dt;
+					//p->pos.x += 1.0f;
+					//game->cameras[1].pos.x += 1.0f * p->speed * dt;
 #endif
 				}
 				if (input->space.endedDown)
@@ -139,7 +134,7 @@ namespace Mon {
 						UpdateTile(game->world->map, &game->world->sheet, 500, 3);
 				}
 			}
-			//Mon::movePlayer(world->map, p, &velocity, deltaTime);
+			//Mon::movePlayer(game->world->map, p, &velocity, dt);
 
 			// TODO(ck): link sprite position to camera...  
 			// https://www.reddit.com/r/gamedev/comments/7cnqpg/lerping_camera_position_causes_jitters_as_it/
@@ -151,24 +146,10 @@ namespace Mon {
 			// positions should be relative to the map the camera shouldn't come into play with real positions..
 			game->cameras[game->currentCameraIndex].update(&p->pos, dt);
 
-
-
-			// TODO(ck): These do not work but they prove that the camera is causing the jitter to happen.
-			// the player must be drawn relative to camera same with everything else
-#if 0
-			int tileSize = 16;
-			int visibleTilesX = 960 / tileSize;
-			int visibleTilesY = 540 / tileSize;
-			float offsetX = camera.pos.x - (float)visibleTilesX / 2.0f;
-			float offsetY = camera.pos.y - (float)visibleTilesY / 2.0f;
-			p->sprite.pos.x = (p->pos.x - offsetX) * tileSize;
-			p->sprite.pos.y = (p->pos.y - offsetY) * tileSize;
-#else
 			p->sprite.pos = p->pos;
-#endif
 
-			v2 windowSize = v2{ game->config->viewPort.w, game->config->viewPort.h };
 
+			//v2 windowSize = v2{ 1440, 900 };
 			// screenCoord(worldCoord) .. not working
 			//p->sprite.pos = v2{ p->pos.x - camera.pos.x, camera.pos.y - p->pos.y } + windowSize / 2.0f;
 
@@ -176,7 +157,7 @@ namespace Mon {
 			// it seems that its trying the sprite position to the camera position but the camera is still "looking" at the old player position?
 			// worldCoord(screenCoord) ???
 			//v2 q = p->pos - windowSize / 2.0f;
-			//p->sprite.pos = v2{ q.x + camera.pos.x, (q.y + camera.pos.y) };
+			//p->sprite.pos = v2{ q.x + game->cameras[game->currentCameraIndex].pos.x, (q.y + game->cameras[game->currentCameraIndex].pos.y) };
 
 			// Get screen coords 
 			// world coord = screen coord - windowsize / 2
@@ -192,31 +173,53 @@ namespace Mon {
 	{
 		MonGL::ViewPort(&game->config->viewPort);
 
-		// test stack
-		//MonGL::PushMatrix(&batch, camera.projectionMatrix());
+#if 0 
+		// NOTE(ck): Meters to pixel conversions - this is for drawing the tilemap 
+		// Im not sure if I need this.. the tilemap is drawn with the vertices built i dont think you need to convert anything? 
+		// unless this gets put into the Renderer when we build vertices?
 
-		//	mat4 newerMat = mat4(10.0f);
-		//	MonGL::PushMatrix(&batch, newerMat);
-		//	MonGL::PopMatrix(&batch);
+		// Getting the center and tileSide -- this is for drawing the tilemap in handmade
+		int tileSideInPixels = 16;
+		float tileSideInMeters = 1.6f;
+		float metersToPixels = (float)tileSideInPixels / tileSideInMeters;
+		
+		//real32 screenCenterX = 0.5f * (real32)buffer->width;
+		//real32 screenCenterY = 0.5f * (real32)buffer->height;
+		int screenCenterX = 0.5f * game->config->viewPort.w;
+		int screenCenterY = 0.5f * game->config->viewPort.h;
+		
+		v2 tileSide = { 0.5f * tileSideInPixels, 0.5f * tileSideInPixels };
+		// relColumn and relRow are i&j from a loop
+		// gameState->cameraP.offset_.x
+		// gameState->cameraP.offset_.y
+		float offsetX = 0.35f;
+		float offsetY = 0.45;
+		int relColumn = 1;
+		int relRow = 1;
+		v2 cen = { screenCenterX - metersToPixels * offsetX + ((float)relColumn) * tileSideInPixels,
+				   screenCenterY + metersToPixels * offsetY - ((float)relRow) * tileSideInPixels };
 
-		//	mat4 newMat = mat4(2.0f);
-		//	MonGL::PushMatrix(&batch, newMat);
 
-		//MonGL::PopMatrix(&batch);
-
-		// TEST DRAW
-		glUseProgram(game->tileShader.handle);
-		int projLoc = glGetUniformLocation(game->tileShader.handle, "projection");
-		mat4 projection = game->cameras[game->currentCameraIndex].projectionMatrix();
-		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
-		//MonGL::drawMap(&tileShader, world->sheet.texture.id);
-		DrawTileMap(game->world->map, &game->tileShader, game->world->sheet.texture.id);
+		// NOTE(ck): Getting the positions and drawing for entities
+		float playerGroundPointX = screenCenterX + metersToPixels * e.pos.x;
+		float playerGroundPointY = screenCenterY - metersToPixels * e.pos.y;
+		v2 playerLeftTop = { playerGroundPointX - 0.5f * metersToPixels * e.sprite.size.x , playerGroundPointY - 0.5f * metersToPixels * e.sprite.size.y };
+		v2 playerWidthHeight = { e.sprite.size.x, e.sprite.size. };
+		DrawRectangle(buffer, playerLeftTop,
+					  playerLeftTop + metersToPixels * playerWidthHeight,
+					  playerR, playerG, playerB);
+#endif
 
 
 		glUseProgram(game->shader.handle);
-		projLoc = glGetUniformLocation(game->shader.handle, "projection");
-		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+		mat4 projection = game->cameras[game->currentCameraIndex].projectionMatrix();
+		glUniformMatrix4fv(glGetUniformLocation(game->shader.handle, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+
+		mat4 view = game->cameras[game->currentCameraIndex].viewMatrix();
+		glUniformMatrix4fv(glGetUniformLocation(game->shader.handle, "view"), 1, GL_FALSE, glm::value_ptr(view));
+
+		DrawTileMap(game->world->map, &game->shader, game->world->sheet.texture.id);
 
 		for (unsigned int i = 1; i < game->world->entityCount; ++i)
 		{
@@ -225,11 +228,8 @@ namespace Mon {
 			//state->world->entities[i]->pos.y *= time;
 			MonGL::DrawObject(&game->shader, &e.sprite);
 		}
-
-
-		//MonGL::DrawObject(&game->shader, &game->world->player->sprite);
-
-
+		//state->world->entities[i]->pos.x *= time;
+		//state->world->entities[i]->pos.y *= time;
 	}
 
 	void SetViewPort(MonGL::Config *config, int width, int height)
