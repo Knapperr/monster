@@ -48,7 +48,7 @@ namespace Mon {
 		HOLD
 	};
 
-	struct ChargeBarComponent : public Component
+	struct ChargeBar : public Component
 	{
 		float charge;
 		ChargeBarType type;

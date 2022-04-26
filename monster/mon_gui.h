@@ -19,6 +19,15 @@
 #include "mon_game.h"
 #endif
 
+
+/*
+TODO(ck): 
+	Right now SDL is included in the game.h. This is bad the platform and the game should not be tied together
+	this is because we need sdl imgui specific calls in the platform layer. The game is included in here(gui) for operating
+	on its data and then gui.h gets included in platform.h so we can call the gui and functions 
+	- Separate from SDL - we want this to be platform agnostic
+*/
+
 struct Settings
 {
 	const char* title;
@@ -52,4 +61,4 @@ bool GuiActive(bool SDLRelativeMouseMode);
 void ShutdownGui();
 #endif
 
-#endif
+#endif // MON_GUI_H

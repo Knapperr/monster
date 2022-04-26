@@ -18,22 +18,100 @@ namespace MonGL
 		glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
 	}
 
-	void InitOpenGLMesh(RenderData* data)
+	void LoadTexture(Texture* texture, TextureType type, int shaderID, std::string path, bool pixelTexture)
 	{
-		Mesh* mesh = &data->mesh;
+		LoadTextureFile(texture, path.c_str(), type, false, true, true, pixelTexture);
+		glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
+	}
 
+#include <fstream>
+#include <string>
+	void LoadImpFile(Mesh* mesh, const char* fileName)
+	{
+		std::ifstream file(fileName);
+		file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+		int index;
+		try
+		{
+			if (!file.is_open())
+			{
+				Mon::Log::print("Failure to open file");
+			}
+
+			std::string line;
+			while (file >> line)
+			{
+				// TODO(ck): Remove name from .imp file shouldn't have a name
+				// its just triangles that the entity is quickly loading
+				std::string nameLine = line;
+				file >> mesh->verticeCount;
+				file >> mesh->indiceCount;
+				break;
+			}
+
+			mesh->vertices = new MonGL::Vertex3D[mesh->verticeCount];
+			mesh->indices = new unsigned int[mesh->indiceCount];
+
+			while (file >> line)
+			{
+				for (int i = 0; i < mesh->verticeCount; ++i)
+				{
+					index = i;
+
+					if (i == 0)
+						mesh->vertices[i].position.x = std::stof(line);
+					else
+						file >> mesh->vertices[i].position.x;
+
+					file >> mesh->vertices[i].position.y;
+					file >> mesh->vertices[i].position.z;
+					file >> mesh->vertices[i].normal.x;
+					file >> mesh->vertices[i].normal.y;
+					file >> mesh->vertices[i].normal.z;
+					file >> mesh->vertices[i].texCoords.x;
+					file >> mesh->vertices[i].texCoords.y;
+					file >> mesh->vertices[i].tangent.x;
+					file >> mesh->vertices[i].tangent.y;
+					file >> mesh->vertices[i].tangent.z;
+					file >> mesh->vertices[i].bitangent.x;
+					file >> mesh->vertices[i].bitangent.y;
+					file >> mesh->vertices[i].bitangent.z;
+				}
+
+				for (int j = 0; j < mesh->indiceCount; ++j)
+				{
+					index = j;
+					file >> mesh->indices[j];
+				}
+
+				// finished
+				break;
+			}
+		}
+		catch (std::ifstream::failure& ex)
+		{
+			Mon::Log::print("File read failed");
+			Mon::Log::print(ex.what());
+			int x = index;
+		}
+
+		file.close();
+	}
+
+	void UploadOpenGLMesh(Mesh* mesh)
+	{
 		glGenVertexArrays(1, &mesh->VAO);
 		glGenBuffers(1, &mesh->VBO);
-		
+
 		glBindVertexArray(mesh->VAO);
 		glBindBuffer(GL_ARRAY_BUFFER, mesh->VBO);
-		glBufferData(GL_ARRAY_BUFFER, mesh->verticeCount * sizeof(Vertex3D), data->vertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, mesh->verticeCount * sizeof(Vertex3D), mesh->vertices, GL_STATIC_DRAW);
 
 		if (mesh->indiceCount > 0)
 		{
 			glGenBuffers(1, &mesh->IBO);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->IBO);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->indiceCount * sizeof(unsigned int), data->indices, GL_STATIC_DRAW);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->indiceCount * sizeof(unsigned int), mesh->indices, GL_STATIC_DRAW);
 		}
 
 		glEnableVertexAttribArray(0);
@@ -45,7 +123,7 @@ namespace MonGL
 		glEnableVertexAttribArray(2);
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, texCoords));
 
-		if (data->type == RenderType::Model)
+		if (mesh->type == RenderType::Model)
 		{
 			glEnableVertexAttribArray(3);
 			glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, tangent));
@@ -70,29 +148,184 @@ namespace MonGL
 	}
 
 	///
+	/// [BEGIN] Renderer
+	///	
+	/*
+		This needs to be able to init DirectX and other platforms
+		Eventually I will add a layer above opengl
+	*/
+	void InitRenderer(OpenGL* gl)
+	{
+		// Data that renderdata can hold
+		//Mesh meshes[10]; // TODO(ck): SQLite config for size
+		//Texture textures[30]; // TODO(ck): SQLite config for size
+
+		// TODO(ck): Wrangle up the data
+		// go around the code base and find out where these are all loaded and load them in here
+		// everything must have an index into these things
+		gl->program = {};
+		gl->waterProgram = {};
+		MonGL::LoadShader(&gl->program, "res/shaders/vert_colors.glsl", "res/shaders/frag_colors.glsl", NULL);
+		MonGL::LoadShader(&gl->waterProgram.common, "res/shaders/vert_water.glsl", "res/shaders/frag_water.glsl", NULL);
+		// TODO(ck): Do not need this now?
+		//state->mainShaderID = state->shader.handle;
+
+		/*
+		// might need dynamic mesh for animations 
+		// if a vao needs to change it has to be updated
+		// and these are going to stay the same
+
+		// quad mesh - only need one because everything is using it
+		we can batch later 
+		*/
+		//empty mesh #0
+		AddMesh(gl);
+
+		// quad mesh #1
+		AddMesh(gl);
+		Mesh* quadMesh = GetMesh(gl, 1);
+		MonGL::InitQuad(quadMesh);
+
+		//cube mesh #2
+		AddMesh(gl);
+		Mesh* cubeMesh = GetMesh(gl, 2);
+		MonGL::InitCube(cubeMesh);
+		
+		//grass mesh #3 
+		AddMesh(gl);
+		Mesh* grassMesh = GetMesh(gl, 3);
+		InitModel(grassMesh, "test_grass.imp");
+
+		// This is for the terrain
+		//grid mesh #4 ??
+		AddMesh(gl);
+		Mesh* gridMesh = GetMesh(gl, 4);
+		InitGrid(gridMesh, 64, 64);
+
+		// empty #0 for texture
+		AddTexture(gl);
+		
+		//
+		// TODO(ck): Need a texture atlas rather than loading all of these
+		// textures for the entities
+		//
+
+		AddTexture(gl);
+		Texture* t1 = GetTexture(gl, 1);
+		AddTexture(gl);
+		Texture* t2 = GetTexture(gl, 2);
+		AddTexture(gl);
+		Texture* t3 = GetTexture(gl, 3);
+		AddTexture(gl);
+		Texture* t4 = GetTexture(gl, 4);
+		LoadTexture(t1, MonGL::TextureType::Diffuse, gl->program.handle, "res/textures/ch_witch.png");
+		LoadTexture(t2, MonGL::TextureType::Diffuse, gl->program.handle, "res/textures/p1.png");
+		LoadTexture(t3, MonGL::TextureType::Diffuse, gl->program.handle, "res/textures/p1SIDE.png");
+		LoadTexture(t4, MonGL::TextureType::Diffuse, gl->program.handle, "res/textures/p1BACK.png");
+
+		AddTexture(gl);
+		Texture* t5 = GetTexture(gl, 5);
+		LoadTexture(t5, MonGL::TextureType::Diffuse, gl->program.handle, "res/textures/water/ripples-derivative-height.png");
+		AddTexture(gl);
+		Texture* t6 = GetTexture(gl, 6);
+		LoadTexture(t6, MonGL::TextureType::Normal, gl->program.handle, "res/textures/water/flow-speed-noise.png");
+		
+		// more textures 
+	
+		// minion
+
+		// tree
+		
+		// flower
+
+		// terrain grid textures
+
+
+	}
+
+ 
+	///
+	/// [END] 
+	///	
+
+	///
+	/// [BEGIN] Shader Programs
+	/// 
+
+
+	void UseProgram(CommonProgram* program, RenderSetup setup)
+	{
+
+		//bool useTexture = (ArrayCount(data->textures) > 0);
+		//glUniform1i(glGetUniformLocation(shaderID, "useTexture"), useTexture);
+		//glUniform1i(glGetUniformLocation(shaderID, "pixelTexture"), useTexture);
+		//// bind textures on corresponding texture units
+		////glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_2D, data->textures[selectedTexture].id);
+
+		////glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
+		//glUniform1i(glGetUniformLocation(shaderID, "collider"), false);
+
+		//OpenGL->glUseProgram(Prog->ProgHandle);
+		// glUseProgram(program->handle);
+
+		//UseProgramBegin(OpenGL, &Prog->Common);
+
+		//OpenGL->glUniformMatrix4fv(Prog->TransformID, 1, GL_TRUE, Setup->Proj.E[0]);
+		//OpenGL->glUniform3fv(Prog->CameraP, 1, Setup->CameraP.E);
+		//OpenGL->glUniform3fv(Prog->FogDirection, 1, Setup->FogDirection.E);
+		//OpenGL->glUniform3fv(Prog->FogColor, 1, Setup->FogColor.E);
+		//OpenGL->glUniform1f(Prog->FogStartDistance, Setup->FogStartDistance);
+		//OpenGL->glUniform1f(Prog->FogEndDistance, Setup->FogEndDistance);
+		//OpenGL->glUniform1f(Prog->ClipAlphaStartDistance, Setup->ClipAlphaStartDistance);
+		//OpenGL->glUniform1f(Prog->ClipAlphaEndDistance, Setup->ClipAlphaEndDistance);
+		//OpenGL->glUniform1f(Prog->AlphaThreshold, AlphaThreshold);
+		//OpenGL->glUniform3fv(Prog->VoxelMinCorner, 1, Commands->LightingVoxelMinCorner.E);
+		//OpenGL->glUniform3fv(Prog->VoxelInvTotalDim, 1, Commands->LightingVoxelInvTotalDim.E);
+
+	}
+
+	void UseProgram(WaterProgram* program, RenderSetup setup)
+	{
+		UseProgram(program, setup);
+
+		// TODO(ck):
+		// somehow get entity's water component data into here
+		// Once we solve this we will have a semi generic way of writing shaders
+		/*
+		need to call the glUniform1f(program->)
+
+		maybe we can have a render setup that gets changed by each entity
+		when it comes through
+		
+		*/
+	
+	}
+
+	///
 	/// [BEGIN] Init RenderData
 	///
 
-	void InitQuad(RenderData* data, bool tangents)
+	void InitQuad(Mesh* mesh, bool tangents)
 	{
 		int verticeCount = 4;
 		// TODO(ck): Memory Allocation
-		data->vertices = new Vertex3D[verticeCount];
-		data->vertices[0].position = v3(0.5f, 0.5f, 0.0f);
-		data->vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[0].texCoords = v2(1.0f, 1.0f);
+		mesh->vertices = new Vertex3D[verticeCount];
+		mesh->vertices[0].position = v3(0.5f, 0.5f, 0.0f);
+		mesh->vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[0].texCoords = v2(1.0f, 1.0f);
 
-		data->vertices[1].position = v3(0.5f, -0.5f, 0.0f);
-		data->vertices[1].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[1].texCoords = v2(1.0f, 0.0f);
+		mesh->vertices[1].position = v3(0.5f, -0.5f, 0.0f);
+		mesh->vertices[1].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[1].texCoords = v2(1.0f, 0.0f);
 
-		data->vertices[2].position = v3(-0.5f, -0.5f, 0.0f);
-		data->vertices[2].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[2].texCoords = v2(0.0f, 0.0f);
+		mesh->vertices[2].position = v3(-0.5f, -0.5f, 0.0f);
+		mesh->vertices[2].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[2].texCoords = v2(0.0f, 0.0f);
 
-		data->vertices[3].position = v3(-0.5f, 0.5f, 0.0f);
-		data->vertices[3].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[3].texCoords = v2(0.0f, 1.0f);
+		mesh->vertices[3].position = v3(-0.5f, 0.5f, 0.0f);
+		mesh->vertices[3].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[3].texCoords = v2(0.0f, 1.0f);
 
 		// TODO(ck): split out
 		if (tangents)
@@ -125,22 +358,28 @@ namespace MonGL
 		}
 
 		int indiceCount = 6;
-		data->indices = new unsigned int[indiceCount];
-		data->indices[0] = 0;
-		data->indices[1] = 1;
-		data->indices[2] = 3;
-		data->indices[3] = 1;
-		data->indices[4] = 2;
-		data->indices[5] = 3;
+		mesh->indices = new unsigned int[indiceCount];
+		mesh->indices[0] = 0;
+		mesh->indices[1] = 1;
+		mesh->indices[2] = 3;
+		mesh->indices[3] = 1;
+		mesh->indices[4] = 2;
+		mesh->indices[5] = 3;
 
-		data->type = RenderType::Quad;
-		data->mesh = {};
-		data->mesh.verticeCount = verticeCount;
-		data->mesh.indiceCount = indiceCount;
-		InitOpenGLMesh(data);
-
-		data->visible = true;
+		mesh->verticeCount = verticeCount;
+		mesh->indiceCount = indiceCount;
+		mesh->type = RenderType::Quad;
+		UploadOpenGLMesh(mesh);
 	}
+
+	void InitQuad(RenderData* data)
+	{
+		// TODO(CK): WOnt need this naymore just setting an index
+		// REMOVE THIS
+		data->mesh = {};
+		InitQuad(&data->mesh);
+	}
+
 
 	void InitBatchData(int amount)
 	{
@@ -153,8 +392,6 @@ namespace MonGL
 
 		// TODO(ck): MEMORY 
 		//batch = new BatchData();
-		BatchData3D batch = {};
-
 
 		//glGenVertexArrays(1, &batch->VAO);
 		//glBindVertexArray(batch->VAO);
@@ -202,37 +439,38 @@ namespace MonGL
 
 	void InitBoundingBox(RenderData* data)
 	{
+		data->mesh = {};
 		data->lineWidth = 2;
 		data->color = v3(0.7f, 0.15f, 0.4f);
 
 		int verticeCount = 8;
 		// TODO(ck): Memory Allocation
-		data->vertices = new Vertex3D[verticeCount];
-		data->vertices[0].position = v3(-0.5, -0.5, -0.5);
-		data->vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[0].texCoords = v2(0.0f, 0.0f);
-		data->vertices[1].position = v3(0.5, -0.5, -0.5);
-		data->vertices[1].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[1].texCoords = v2(0.0f, 0.0f);
-		data->vertices[2].position = v3(0.5, 0.5, -0.5);
-		data->vertices[2].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[2].texCoords = v2(0.0f, 0.0f);
-		data->vertices[3].position = v3(-0.5, 0.5, -0.5);
-		data->vertices[3].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[3].texCoords = v2(0.0f, 0.0f);
+		data->mesh.vertices = new Vertex3D[verticeCount];
+		data->mesh.vertices[0].position = v3(-0.5, -0.5, -0.5);
+		data->mesh.vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
+		data->mesh.vertices[0].texCoords = v2(0.0f, 0.0f);
+		data->mesh.vertices[1].position = v3(0.5, -0.5, -0.5);
+		data->mesh.vertices[1].normal = v3(1.0f, 1.0f, 1.0f);
+		data->mesh.vertices[1].texCoords = v2(0.0f, 0.0f);
+		data->mesh.vertices[2].position = v3(0.5, 0.5, -0.5);
+		data->mesh.vertices[2].normal = v3(1.0f, 1.0f, 1.0f);
+		data->mesh.vertices[2].texCoords = v2(0.0f, 0.0f);
+		data->mesh.vertices[3].position = v3(-0.5, 0.5, -0.5);
+		data->mesh.vertices[3].normal = v3(1.0f, 1.0f, 1.0f);
+		data->mesh.vertices[3].texCoords = v2(0.0f, 0.0f);
 
-		data->vertices[4].position = v3(-0.5, -0.5, 0.5);
-		data->vertices[4].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[4].texCoords = v2(0.0f, 0.0f);
-		data->vertices[5].position = v3(0.5, -0.5, 0.5);
-		data->vertices[5].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[5].texCoords = v2(0.0f, 0.0f);
-		data->vertices[6].position = v3(0.5, 0.5, 0.5);
-		data->vertices[6].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[6].texCoords = v2(0.0f, 0.0f);
-		data->vertices[7].position = v3(-0.5, 0.5, 0.5);
-		data->vertices[7].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[7].texCoords = v2(0.0f, 0.0f);
+		data->mesh.vertices[4].position = v3(-0.5, -0.5, 0.5);
+		data->mesh.vertices[4].normal = v3(1.0f, 1.0f, 1.0f);
+		data->mesh.vertices[4].texCoords = v2(0.0f, 0.0f);
+		data->mesh.vertices[5].position = v3(0.5, -0.5, 0.5);
+		data->mesh.vertices[5].normal = v3(1.0f, 1.0f, 1.0f);
+		data->mesh.vertices[5].texCoords = v2(0.0f, 0.0f);
+		data->mesh.vertices[6].position = v3(0.5, 0.5, 0.5);
+		data->mesh.vertices[6].normal = v3(1.0f, 1.0f, 1.0f);
+		data->mesh.vertices[6].texCoords = v2(0.0f, 0.0f);
+		data->mesh.vertices[7].position = v3(-0.5, 0.5, 0.5);
+		data->mesh.vertices[7].normal = v3(1.0f, 1.0f, 1.0f);
+		data->mesh.vertices[7].texCoords = v2(0.0f, 0.0f);
 
 		GLushort elements[] = {
 			0, 1, 2, 3, // front 
@@ -240,162 +478,172 @@ namespace MonGL
 			0, 4, 1, 5, 2, 6, 3, 7 // back
 		};
 		int indiceCount = sizeof(elements) / sizeof(elements[0]);
-		data->indices = (unsigned int*)elements;
+		data->mesh.indices = (unsigned int*)elements;
 
 		// Set world matrix to be the same size as the bounding box
 		//data->worldMatrix = GetTransform(&data->size);
 
-		data->mesh = {};
 		data->mesh.verticeCount = verticeCount;
 		data->mesh.indiceCount = indiceCount;
-		InitOpenGLMesh(data);
+		UploadOpenGLMesh(&data->mesh);
 
 		data->visible = true;
 	}
 
 
-	void InitCube(RenderData* data)
+	void InitCube(Mesh* mesh)
 	{
 		// Load from .vt file (need to do efficient as possible)
 		// maybe dont need to do this but?? tilemap does a quad and its a huge
 		// cubes can just be created with a macro PUSH_CUBE PUSH_QUAD x4?
 		int verticeCount = 36;
 		// TODO(ck): Memory Allocation
-		data->vertices = new Vertex3D[verticeCount];
+		mesh->vertices = new Vertex3D[verticeCount];
 		
 		// TODO(ck): ADD QUAD method
-		data->vertices[0].position = v3(-0.5f, -0.5f, -0.5f);
-		data->vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[0].texCoords = v2(0.0f, 0.0f);
-		data->vertices[1].position = v3(0.5f, -0.5f, -0.5f);
-		data->vertices[1].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[1].texCoords = v2(1.0f, 0.0f);
-		data->vertices[2].position = v3(0.5f, 0.5f, -0.5f);
-		data->vertices[2].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[2].texCoords = v2(1.0f, 1.0f);
-		data->vertices[3].position = v3(0.5f, 0.5f, -0.5f);
-		data->vertices[3].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[3].texCoords = v2(1.0f, 1.0f);
-		data->vertices[4].position = v3(-0.5f, 0.5f, -0.5f);
-		data->vertices[4].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[4].texCoords = v2(0.0f, 1.0f);
-		data->vertices[5].position = v3(-0.5f, -0.5f, -0.5f);
-		data->vertices[5].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[5].texCoords = v2(0.0f, 0.0f);
+		mesh->vertices[0].position = v3(-0.5f, -0.5f, -0.5f);
+		mesh->vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[0].texCoords = v2(0.0f, 0.0f);
+		mesh->vertices[1].position = v3(0.5f, -0.5f, -0.5f);
+		mesh->vertices[1].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[1].texCoords = v2(1.0f, 0.0f);
+		mesh->vertices[2].position = v3(0.5f, 0.5f, -0.5f);
+		mesh->vertices[2].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[2].texCoords = v2(1.0f, 1.0f);
+		mesh->vertices[3].position = v3(0.5f, 0.5f, -0.5f);
+		mesh->vertices[3].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[3].texCoords = v2(1.0f, 1.0f);
+		mesh->vertices[4].position = v3(-0.5f, 0.5f, -0.5f);
+		mesh->vertices[4].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[4].texCoords = v2(0.0f, 1.0f);
+		mesh->vertices[5].position = v3(-0.5f, -0.5f, -0.5f);
+		mesh->vertices[5].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[5].texCoords = v2(0.0f, 0.0f);
+		  
+		mesh->vertices[6].position = v3(-0.5f, -0.5f, 0.5f);
+		mesh->vertices[6].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[6].texCoords = v2(0.0f, 0.0f);
+		mesh->vertices[7].position = v3(0.5f, -0.5f, 0.5f);
+		mesh->vertices[7].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[7].texCoords = v2(1.0f, 0.0f);
+		mesh->vertices[8].position = v3(0.5f, 0.5f, 0.5f);
+		mesh->vertices[8].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[8].texCoords = v2(1.0f, 1.0f);
+		mesh->vertices[9].position = v3(0.5f, 0.5f, 0.5f);
+		mesh->vertices[9].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[9].texCoords = v2(1.0f, 1.0f);
+		mesh->vertices[10].position = v3(-0.5f, 0.5f, 0.5f);
+		mesh->vertices[10].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[10].texCoords = v2(0.0f, 1.0f);
+		mesh->vertices[11].position = v3(-0.5f, -0.5f, 0.5f);
+		mesh->vertices[11].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[11].texCoords = v2(0.0f, 0.0f);
+		
+		mesh->vertices[12].position = v3(-0.5f, 0.5f, 0.5f);
+		mesh->vertices[12].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[12].texCoords = v2(1.0f, 0.0f);
+		mesh->vertices[13].position = v3(-0.5f, 0.5f, -0.5f);
+		mesh->vertices[13].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[13].texCoords = v2(1.0f, 1.0f);
+		mesh->vertices[14].position = v3(-0.5f, -0.5f, -0.5f);
+		mesh->vertices[14].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[14].texCoords = v2(0.0f, 1.0f);
+		mesh->vertices[15].position = v3(-0.5f, -0.5f, -0.5f);
+		mesh->vertices[15].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[15].texCoords = v2(0.0f, 1.0f);
+		mesh->vertices[16].position = v3(-0.5f, -0.5f, 0.5f);
+		mesh->vertices[16].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[16].texCoords = v2(0.0f, 0.0f);
+		mesh->vertices[17].position = v3(-0.5f, 0.5f, 0.5f);
+		mesh->vertices[17].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[17].texCoords = v2(1.0f, 0.0f);
 
-		data->vertices[6].position = v3(-0.5f, -0.5f, 0.5f);
-		data->vertices[6].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[6].texCoords = v2(0.0f, 0.0f);
-		data->vertices[7].position = v3(0.5f, -0.5f, 0.5f);
-		data->vertices[7].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[7].texCoords = v2(1.0f, 0.0f);
-		data->vertices[8].position = v3(0.5f, 0.5f, 0.5f);
-		data->vertices[8].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[8].texCoords = v2(1.0f, 1.0f);
-		data->vertices[9].position = v3(0.5f, 0.5f, 0.5f);
-		data->vertices[9].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[9].texCoords = v2(1.0f, 1.0f);
-		data->vertices[10].position = v3(-0.5f, 0.5f, 0.5f);
-		data->vertices[10].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[10].texCoords = v2(0.0f, 1.0f);
-		data->vertices[11].position = v3(-0.5f, -0.5f, 0.5f);
-		data->vertices[11].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[11].texCoords = v2(0.0f, 0.0f);
+		mesh->vertices[18].position = v3(0.5f, 0.5f, 0.5f);
+		mesh->vertices[18].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[18].texCoords = v2(1.0f, 0.0f);
+		mesh->vertices[19].position = v3(0.5f, 0.5f, -0.5f);
+		mesh->vertices[19].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[19].texCoords = v2(1.0f, 1.0f);
+		mesh->vertices[20].position = v3(0.5f, -0.5f, -0.5f);
+		mesh->vertices[20].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[20].texCoords = v2(0.0f, 1.0f);
+		mesh->vertices[21].position = v3(0.5f, -0.5f, -0.5f);
+		mesh->vertices[21].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[21].texCoords = v2(0.0f, 1.0f);
+		mesh->vertices[22].position = v3(0.5f, -0.5f, 0.5f);
+		mesh->vertices[22].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[22].texCoords = v2(0.0f, 0.0f);
+		mesh->vertices[23].position = v3(0.5f, 0.5f, 0.5f);
+		mesh->vertices[23].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[23].texCoords = v2(1.0f, 0.0f);
 
-		data->vertices[12].position = v3(-0.5f, 0.5f, 0.5f);
-		data->vertices[12].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[12].texCoords = v2(1.0f, 0.0f);
-		data->vertices[13].position = v3(-0.5f, 0.5f, -0.5f);
-		data->vertices[13].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[13].texCoords = v2(1.0f, 1.0f);
-		data->vertices[14].position = v3(-0.5f, -0.5f, -0.5f);
-		data->vertices[14].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[14].texCoords = v2(0.0f, 1.0f);
-		data->vertices[15].position = v3(-0.5f, -0.5f, -0.5f);
-		data->vertices[15].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[15].texCoords = v2(0.0f, 1.0f);
-		data->vertices[16].position = v3(-0.5f, -0.5f, 0.5f);
-		data->vertices[16].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[16].texCoords = v2(0.0f, 0.0f);
-		data->vertices[17].position = v3(-0.5f, 0.5f, 0.5f);
-		data->vertices[17].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[17].texCoords = v2(1.0f, 0.0f);
+		mesh->vertices[24].position = v3(-0.5f, -0.5f, -0.5f);
+		mesh->vertices[24].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[24].texCoords = v2(0.0f, 1.0f);
+		mesh->vertices[25].position = v3(0.5f, -0.5f, -0.5f);
+		mesh->vertices[25].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[25].texCoords = v2(1.0f, 1.0f);
+		mesh->vertices[26].position = v3(0.5f, -0.5f, 0.5f);
+		mesh->vertices[26].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[26].texCoords = v2(1.0f, 0.0f);
+		mesh->vertices[27].position = v3(0.5f, -0.5f, 0.5f);
+		mesh->vertices[27].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[27].texCoords = v2(1.0f, 0.0f);
+		mesh->vertices[28].position = v3(-0.5f, -0.5f, 0.5f);
+		mesh->vertices[28].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[28].texCoords = v2(0.0f, 0.0f);
+		mesh->vertices[29].position = v3(-0.5f, -0.5f, -0.5f);
+		mesh->vertices[29].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[29].texCoords = v2(0.0f, 1.0f);
 
-		data->vertices[18].position = v3(0.5f, 0.5f, 0.5f);
-		data->vertices[18].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[18].texCoords = v2(1.0f, 0.0f);
-		data->vertices[19].position = v3(0.5f, 0.5f, -0.5f);
-		data->vertices[19].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[19].texCoords = v2(1.0f, 1.0f);
-		data->vertices[20].position = v3(0.5f, -0.5f, -0.5f);
-		data->vertices[20].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[20].texCoords = v2(0.0f, 1.0f);
-		data->vertices[21].position = v3(0.5f, -0.5f, -0.5f);
-		data->vertices[21].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[21].texCoords = v2(0.0f, 1.0f);
-		data->vertices[22].position = v3(0.5f, -0.5f, 0.5f);
-		data->vertices[22].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[22].texCoords = v2(0.0f, 0.0f);
-		data->vertices[23].position = v3(0.5f, 0.5f, 0.5f);
-		data->vertices[23].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[23].texCoords = v2(1.0f, 0.0f);
-
-		data->vertices[24].position = v3(-0.5f, -0.5f, -0.5f);
-		data->vertices[24].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[24].texCoords = v2(0.0f, 1.0f);
-		data->vertices[25].position = v3(0.5f, -0.5f, -0.5f);
-		data->vertices[25].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[25].texCoords = v2(1.0f, 1.0f);
-		data->vertices[26].position = v3(0.5f, -0.5f, 0.5f);
-		data->vertices[26].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[26].texCoords = v2(1.0f, 0.0f);
-		data->vertices[27].position = v3(0.5f, -0.5f, 0.5f);
-		data->vertices[27].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[27].texCoords = v2(1.0f, 0.0f);
-		data->vertices[28].position = v3(-0.5f, -0.5f, 0.5f);
-		data->vertices[28].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[28].texCoords = v2(0.0f, 0.0f);
-		data->vertices[29].position = v3(-0.5f, -0.5f, -0.5f);
-		data->vertices[29].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[29].texCoords = v2(0.0f, 1.0f);
-
-		data->vertices[30].position = v3(-0.5f, 0.5f, -0.5f);
-		data->vertices[30].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[30].texCoords = v2(0.0f, 1.0f);
-		data->vertices[31].position = v3(0.5f, 0.5f, -0.5f);
-		data->vertices[31].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[31].texCoords = v2(1.0f, 1.0f);
-		data->vertices[32].position = v3(0.5f, 0.5f, 0.5f);
-		data->vertices[32].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[32].texCoords = v2(1.0f, 0.0f);
-		data->vertices[33].position = v3(0.5f, 0.5f, 0.5f);
-		data->vertices[33].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[33].texCoords = v2(1.0f, 0.0f);
-		data->vertices[34].position = v3(-0.5f, 0.5f, 0.5f);
-		data->vertices[34].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[34].texCoords = v2(0.0f, 0.0f);
-		data->vertices[35].position = v3(-0.5f, 0.5f, -0.5f);
-		data->vertices[35].normal = v3(1.0f, 1.0f, 1.0f);
-		data->vertices[35].texCoords = v2(0.0f, 1.0f);
+		mesh->vertices[30].position = v3(-0.5f, 0.5f, -0.5f);
+		mesh->vertices[30].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[30].texCoords = v2(0.0f, 1.0f);
+		mesh->vertices[31].position = v3(0.5f, 0.5f, -0.5f);
+		mesh->vertices[31].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[31].texCoords = v2(1.0f, 1.0f);
+		mesh->vertices[32].position = v3(0.5f, 0.5f, 0.5f);
+		mesh->vertices[32].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[32].texCoords = v2(1.0f, 0.0f);
+		mesh->vertices[33].position = v3(0.5f, 0.5f, 0.5f);
+		mesh->vertices[33].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[33].texCoords = v2(1.0f, 0.0f);
+		mesh->vertices[34].position = v3(-0.5f, 0.5f, 0.5f);
+		mesh->vertices[34].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[34].texCoords = v2(0.0f, 0.0f);
+		mesh->vertices[35].position = v3(-0.5f, 0.5f, -0.5f);
+		mesh->vertices[35].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[35].texCoords = v2(0.0f, 1.0f);
 
 
-		data->type = RenderType::Cube;
-		data->mesh = {};
-		data->mesh.verticeCount = verticeCount;
-		data->mesh.indiceCount = 0;
-		InitOpenGLMesh(data);
-
-		data->visible = true;
-		data->scale = v3(1.0f);
+		mesh->type = RenderType::Cube;
+		mesh->verticeCount = verticeCount;
+		mesh->indiceCount = 0;
+		UploadOpenGLMesh(mesh);
 	}
 
-	// NOTE(ck): Assume the vertices and indices have been loaded
-	void InitModel(RenderData* data)
-	{		
-		InitOpenGLMesh(data);
-		data->type = RenderType::Model;
+	void InitCube(RenderData* data)
+	{
 		data->visible = true;
 		data->scale = v3(1.0f);
+		InitCube(&data->mesh);
+	}
+
+	void InitModel(Mesh* mesh, const char* fileName)
+	{
+		LoadImpFile(mesh, fileName);
+		mesh->type = RenderType::Model;
+		UploadOpenGLMesh(mesh);
+	}
+
+	// TODO(ck): can remove this?
+	// NOTE(ck): Assume the vertices and indices have been loaded
+	void InitModel(RenderData* data)
+	{
+		data->scale = v3(1.0f);
+		data->visible = true;
+		data->mesh.type = RenderType::Model;
+		UploadOpenGLMesh(&data->mesh);
 	}
 
 	void InitInstancedData(InstancedData* data, int amount)
@@ -403,6 +651,138 @@ namespace MonGL
 		data->amount = amount;
 		InitModel(&data->renderData);
 		data->matrices = new mat4[data->amount];
+	}
+
+	void InitGrid(Mesh* mesh, int xSize, int zSize)
+	{
+		// TODO(ck): 
+/*
+	Keep this as basic grid but make a new grid that is batched?
+	can create the Grid struct and then have a batcher that it uploads
+	itself too. that way we can start creating terrain?
+
+	each cell is about the same size as 16 pixel texture wide... is there a way to define
+	this in our vertices?
+
+	can try and use ArrayTextures for this as well so there is no texture bleeding???
+	we can get that DS game look using this
+
+
+*/
+		int verticeCount = (xSize + 1) * (zSize + 1);
+		mesh->vertices = new Vertex3D[verticeCount];
+		for (int index = 0, z = 0; z <= zSize; z++)
+		{
+			for (int x = 0; x <= xSize; x++, index++)
+			{
+				mesh->vertices[index] = {};
+				mesh->vertices[index].position.x = x;
+				mesh->vertices[index].position.y = -0.5f;
+				mesh->vertices[index].position.z = z;
+
+				mesh->vertices[index].normal.x = 0;
+				mesh->vertices[index].normal.y = 1;
+				mesh->vertices[index].normal.z = 0;
+
+				mesh->vertices[index].texCoords.x = (float)x / (float)xSize;
+				mesh->vertices[index].texCoords.y = (float)z / (float)zSize;
+			}
+		}
+
+		/*
+		*   NOTE(ck):
+			build our grid using this method?
+
+			for (int index = 0; i < sizeof(Grid); ++i)
+			{
+				data->vertices[index].position.x = grid[index].x;
+				data->vertices[index].position.y = -0.5;
+				data->vertices[index].position.z = grid[index].z;
+
+			}
+
+
+			NOTE(ck): This is from RPG Paper Maker they use a square size
+			void Grid::initializeVertices(int w, int h, int squareSize) {
+				m_vertices.clear();
+
+				float w_f = (float)w, h_f = (float)h, squareSize_f = (float)squareSize;
+
+				for (int i = 0; i <= w; i++){
+					m_vertices.push_back(QVector3D((i * squareSize_f), 0.0f, 0.0f));
+					m_vertices.push_back(QVector3D((i * squareSize_f), 0.0f,
+												   squareSize_f * h_f));
+				}
+				for (int i = 0; i <= h; i++){
+					m_vertices.push_back(QVector3D(0.0f, 0.0f,(i*squareSize_f)));
+					m_vertices.push_back(QVector3D(squareSize_f * w_f, 0.0f,
+												   (i * squareSize_f)));
+				}
+			}
+
+			NOTE(ck): looks like they are adding 0.5 to the world position just like i am in the verts
+			I wonder why they are doing the grid size like that? why does mine work?
+
+			void Grid::paintGL(QMatrix4x4& modelviewProjection, int y) {
+				m_program->bind();
+				m_program->setUniformValue(u_modelviewProjection, modelviewProjection);
+				m_program->setUniformValue(u_yPosition, y + 0.5f);
+				{
+				  m_vao.bind();
+				  glDrawArrays(GL_LINES, 0, m_vertices.size());
+				  m_vao.release();
+				}
+				m_program->release();
+			}
+
+
+		*/
+
+		int indiceCount = xSize * zSize * 6;
+		mesh->indices = new unsigned int[indiceCount];
+		for (int ti = 0, vi = 0, z = 0; z < zSize; z++, vi++)
+		{
+			for (int x = 0; x < xSize; x++, ti += 6, vi++)
+			{
+				mesh->indices[ti] = vi;
+				mesh->indices[ti + 3] = mesh->indices[ti + 2] = vi + 1;
+				mesh->indices[ti + 4] = mesh->indices[ti + 1] = vi + xSize + 1;
+				mesh->indices[ti + 5] = vi + xSize + 2;
+			}
+		}
+
+		mesh->verticeCount = verticeCount;
+		mesh->indiceCount = indiceCount;
+		UploadOpenGLMesh(mesh);
+
+		//data->mat = {};
+		//data->mat.ambient = v3(1.0f, 0.5f, 0.6f);
+		//data->mat.diffuse = v3(1.0f, 0.5f, 0.31f);
+		//data->mat.specular = v3(0.5f, 0.5f, 0.5f);
+		//data->mat.shininess = 32.0f;
+		
+		
+		// Set texture indexes
+		//std::string textPath = "res/textures/terrain/1024multi.png";
+		//Texture text = {};
+		//data->textures[0] = text;
+		//LoadTextureFile(&data->textures[0], textPath.c_str(), TextureType::Diffuse, false, false, true, false);
+
+		//textPath = "res/textures/terrain/grass.jpg";
+		//Texture text1 = {};
+		//data->textures[1] = text1;
+		//LoadTextureFile(&data->textures[1], textPath.c_str(), TextureType::Diffuse, false, false, true, false);
+
+		//textPath = "res/textures/terrain/pix_grass.png";
+		//Texture text2 = {};
+		//data->textures[2] = text2;
+		//LoadTextureFile(&data->textures[2], textPath.c_str(), TextureType::Diffuse, false, false, true, true);
+
+		//textPath = "res/textures/terrain/snow.jpg";
+		//Texture text3 = {};
+		//data->textures[3] = text3;
+		//LoadTextureFile(&data->textures[3], textPath.c_str(), TextureType::Diffuse, false, false, true, false);
+
 	}
 
 	void InitGrid(RenderData* data, int xSize, int zSize, float* heightMap)
@@ -421,25 +801,26 @@ namespace MonGL
 
 			
 		*/
+		data->mesh = {};
 		int verticeCount = (xSize + 1) * (zSize + 1);
-		data->vertices = new Vertex3D[verticeCount];
+		data->mesh.vertices = new Vertex3D[verticeCount];
 		for (int index = 0, z = 0; z <= zSize; z++)
 		{
 			for (int x = 0; x <= xSize; x++, index++)
 			{
-				data->vertices[index] = {};
-				data->vertices[index].position.x = x;
-				data->vertices[index].position.y = -0.5f;
-				data->vertices[index].position.z = z;
+				data->mesh.vertices[index] = {};
+				data->mesh.vertices[index].position.x = x;
+				data->mesh.vertices[index].position.y = -0.5f;
+				data->mesh.vertices[index].position.z = z;
 
 				heightMap[index] = -0.5f;
 				
-				data->vertices[index].normal.x = 0;
-				data->vertices[index].normal.y = 1;
-				data->vertices[index].normal.z = 0;
+				data->mesh.vertices[index].normal.x = 0;
+				data->mesh.vertices[index].normal.y = 1;
+				data->mesh.vertices[index].normal.z = 0;
 
-				data->vertices[index].texCoords.x = (float)x / (float)xSize;
-				data->vertices[index].texCoords.y = (float)z / (float)zSize;
+				data->mesh.vertices[index].texCoords.x = (float)x / (float)xSize;
+				data->mesh.vertices[index].texCoords.y = (float)z / (float)zSize;
 			}
 		}
 
@@ -493,28 +874,27 @@ namespace MonGL
 		*/
 
 		int indiceCount = xSize * zSize * 6;
-		data->indices = new unsigned int[indiceCount];
+		data->mesh.indices = new unsigned int[indiceCount];
 		for (int ti = 0, vi = 0, z = 0; z < zSize; z++, vi++)
 		{
 			for (int x = 0; x < xSize; x++, ti += 6, vi++)
 			{
-				data->indices[ti] = vi;
-				data->indices[ti + 3] = data->indices[ti + 2] = vi + 1;
-				data->indices[ti + 4] = data->indices[ti + 1] = vi + xSize + 1;
-				data->indices[ti + 5] = vi + xSize + 2;
+				data->mesh.indices[ti] = vi;
+				data->mesh.indices[ti + 3] = data->mesh.indices[ti + 2] = vi + 1;
+				data->mesh.indices[ti + 4] = data->mesh.indices[ti + 1] = vi + xSize + 1;
+				data->mesh.indices[ti + 5] = vi + xSize + 2;
 			}
 		}
 
-		data->mesh = {};
 		data->mesh.verticeCount = verticeCount;
 		data->mesh.indiceCount = indiceCount;
-		InitOpenGLMesh(data);
+		UploadOpenGLMesh(&data->mesh);
 
-		data->mat = {};
-		data->mat.ambient = v3(1.0f, 0.5f, 0.6f);
-		data->mat.diffuse = v3(1.0f, 0.5f, 0.31f);
-		data->mat.specular = v3(0.5f, 0.5f, 0.5f);
-		data->mat.shininess = 32.0f;
+		//data->mat = {};
+		//data->mat.ambient = v3(1.0f, 0.5f, 0.6f);
+		//data->mat.diffuse = v3(1.0f, 0.5f, 0.31f);
+		//data->mat.specular = v3(0.5f, 0.5f, 0.5f);
+		//data->mat.shininess = 32.0f;
 
 		std::string textPath = "res/textures/terrain/1024multi.png";
 		Texture text = {};
@@ -535,55 +915,6 @@ namespace MonGL
 		Texture text3 = {};
 		data->textures[3] = text3;
 		LoadTextureFile(&data->textures[3], textPath.c_str(), TextureType::Diffuse, false, false, true, false);
-	}
-
-	void InitDistortedWater(RenderData* renderData, RenderSetup* setup)
-	{
-		/*
-		TODO(ck): Can I have some kind of uniform structure.
-			I dont think I need a uniform abstract. It looks like in handmade hero in
-			handmade_renderer_opengl.cpp / .h
-			that you use a program.. I'll have to research this because it looks like they
-			hold all of the uniforms and data its just a matching struct to the shader im assuming
-			casey doesn't use any inheritance he just has struct opengl_program_common
-		*/
-
-		// Create a quad first
-		InitQuad(renderData, true);
-
-		setup->tiling = 5.0f;
-		setup->speed = 0.3f;
-		setup->flowStrength = 0.05f;
-		setup->flowOffset = -0.23f;
-		setup->heightScale = 0.1f;
-		setup->heightScaleModulated = 8.0f;
-
-		// CREATE A BASIC SHAPE LOADER replace ASSIMP
-		// WE WILL HAVE TO PUSH THIS TEXTURE TO THE TEXUTES OF THE QUAD 
-		// IN model.h
-		// data->texturePath = texturePath;
-
-		// type = "texture_diffuse"
-		std::string path = "res/textures/water/water.png";
-		Texture uv = {};
-		LoadTextureFile(&uv, path.c_str(), TextureType::Diffuse, false, true);
-
-
-		renderData->textures[0] = uv;
-
-		// type = "texture_normal"
-		path = "res/textures/water/flow-speed-noise.png";
-		Texture flow = {};
-		LoadTextureFile(&flow, path.c_str(), TextureType::Normal, false, true);
-
-		renderData->textures[1] = flow;
-
-		// type = "texture_normal"
-		path = "res/textures/water/water-derivative-height.png";
-		Texture normal = {};
-		LoadTextureFile(&normal, path.c_str(), TextureType::Normal, false, true);
-		renderData->textures[2] = normal;
-
 	}
 
 	/// 
@@ -614,24 +945,24 @@ namespace MonGL
 	void InitLine(Line* line)
 	{
 		// TODO(ck): Memory Allocation
-		int verticeCount = 2;
-		line->data.vertices = new Vertex3D[verticeCount];
-
-		line->data.vertices[0].position = v3(0.0f, 0.0f, 1.0f);
-		line->data.vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
-		line->data.vertices[0].texCoords = v2(1.0f, 1.0f);
-
-		line->data.vertices[1].position = v3(0.0f, 0.0f, 50.0f);
-		line->data.vertices[1].normal = v3(1.0f, 1.0f, 1.0f);
-		line->data.vertices[1].texCoords = v2(1.0f, 1.0f);
-
 		line->data.mesh = {};
+		int verticeCount = 2;
+		line->data.mesh.vertices = new Vertex3D[verticeCount];
+
+		line->data.mesh.vertices[0].position = v3(0.0f, 0.0f, 1.0f);
+		line->data.mesh.vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
+		line->data.mesh.vertices[0].texCoords = v2(1.0f, 1.0f);
+
+		line->data.mesh.vertices[1].position = v3(0.0f, 0.0f, 50.0f);
+		line->data.mesh.vertices[1].normal = v3(1.0f, 1.0f, 1.0f);
+		line->data.mesh.vertices[1].texCoords = v2(1.0f, 1.0f);
+
 		line->data.mesh.verticeCount = verticeCount;
 		line->data.mesh.indiceCount = 0;
-		InitOpenGLMesh(&line->data);
+		line->data.mesh.type = RenderType::Debug;
+		UploadOpenGLMesh(&line->data.mesh);
 
 		line->data.color = v3(0.1f, 0.5f, 1.0f);
-		line->data.type = RenderType::Debug;
 		line->data.visible = true;
 	}
 
@@ -697,14 +1028,38 @@ namespace MonGL
 		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), useTexture);
 		glUniform1i(glGetUniformLocation(shaderID, "pixelTexture"), useTexture);
 		// bind textures on corresponding texture units
-		//glActiveTexture(GL_TEXTURE0);
+		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, data->textures[selectedTexture].id);
 
 		//glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
 		glUniform1i(glGetUniformLocation(shaderID, "collider"), false);
 
-		// TODO(ck): Does this happen at the end of update. the data gets its mat4 updated 
-		// and then we can just call glUniformMatrix on this
+		// TODO(ck):
+		// All uniforms get called in 
+		
+		// struct OpenGL
+		// for holding our programs(shaders) 
+		/*
+		I have no idea the best way to do this...
+
+		 RenderSetup is for things that are common between 
+		 all entities 
+		 these are things that are the same between all entities we 
+		 dont want them to all have one
+
+		 commands are what the entities create i believe that are unique between
+		 them when drawing. Still need to define when to use the water program 
+		 over the 
+
+			switch data->programType
+				case 1:
+					UseProgram(gl->common, setup)
+				case 2:
+					UseProgram(gl->water, setup, data->water) ?? something like this
+				// i want it to be a material 
+				could have data->material[0]
+		*/
+	
 		data->worldMatrix = mat4(1.0f);
 		data->worldMatrix = glm::translate(data->worldMatrix, pos);
 		if (data->mesh.indiceCount > 0)
@@ -727,7 +1082,74 @@ namespace MonGL
 		globalDrawCalls++;
 	}
 
-	void DrawWater(RenderData* data, RenderSetup* setup, WaterDataProgram* waterData, Light* light, v3 pos, v3 scale, v3 camPos, unsigned int shaderID)
+	// TODO(ck): Maybe pass OpenGL to this then we have all the data?
+	void Draw(OpenGL* gl, Config* config, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera)
+	{
+		Mesh* mesh = GetMesh(gl, data->meshIndex);
+
+		// which program to use is determined by renderData program type?
+		// gl->program.handle
+
+		bool useTexture = (ArrayCount(data->textures) > 0);
+		useTexture = true;
+		glUniform1i(glGetUniformLocation(gl->program.handle, "useTexture"), useTexture);
+		glUniform1i(glGetUniformLocation(gl->program.handle, "pixelTexture"), useTexture);
+		// bind textures on corresponding texture units
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, data->textures[data->selectedTexture].id);
+
+		//glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
+		glUniform1i(glGetUniformLocation(gl->program.handle, "collider"), false);
+
+		// TODO(ck):
+		// All uniforms get called in 
+
+		// struct OpenGL
+		// for holding our programs(shaders) 
+		/*
+		I have no idea the best way to do this...
+
+		 RenderSetup is for things that are common between
+		 all entities
+		 these are things that are the same between all entities we
+		 dont want them to all have one
+
+		 commands are what the entities create i believe that are unique between
+		 them when drawing. Still need to define when to use the water program
+		 over the
+
+			switch data->programType
+				case 1:
+					UseProgram(gl->common, setup)
+				case 2:
+					UseProgram(gl->water, setup, data->water) ?? something like this
+				// i want it to be a material
+				could have data->material[0]
+		*/
+
+		data->worldMatrix = mat4(1.0f);
+		data->worldMatrix = glm::translate(data->worldMatrix, pos);
+		if (data->mesh.indiceCount > 0)
+		{
+			data->worldMatrix = glm::rotate(data->worldMatrix, glm::radians(spriteAngleDegrees), v3{ 1.0f, 0.0f, 0.0f });
+		}
+		data->worldMatrix = glm::scale(data->worldMatrix, data->scale);
+		glUniformMatrix4fv(glGetUniformLocation(gl->program.handle, "model"), 1, GL_FALSE, glm::value_ptr(data->worldMatrix));
+
+		glBindVertexArray(mesh->VAO);
+		if (mesh->indiceCount > 0)
+		{
+			glDrawElements(GL_TRIANGLES, mesh->indiceCount, GL_UNSIGNED_INT, 0);
+		}
+		else
+		{
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
+
+		globalDrawCalls++;
+	}
+
+	void DrawWater(RenderData* data, RenderSetup* setup, WaterProgram* waterData, Light* light, v3 pos, v3 scale, v3 camPos, unsigned int shaderID)
 	{
 
 		// ==============================================================================
@@ -826,10 +1248,10 @@ namespace MonGL
 		glUniform3fv(glGetUniformLocation(shaderID, "light.diffuse"), 1, &light->diffuse[0]);
 		glUniform3fv(glGetUniformLocation(shaderID, "light.specular"), 1, &light->specular[0]);
 
-		glUniform3fv(glGetUniformLocation(shaderID, "material.ambient"), 1, &data->mat.ambient[0]);
-		glUniform3fv(glGetUniformLocation(shaderID, "material.diffuse"), 1, &data->mat.diffuse[0]);
-		glUniform3fv(glGetUniformLocation(shaderID, "material.specular"), 1, &data->mat.specular[0]);
-		glUniform1f(glGetUniformLocation(shaderID, "material.shininess"), data->mat.shininess);
+		//glUniform3fv(glGetUniformLocation(shaderID, "material.ambient"), 1, &data->mat.ambient[0]);
+		//glUniform3fv(glGetUniformLocation(shaderID, "material.diffuse"), 1, &data->mat.diffuse[0]);
+		//glUniform3fv(glGetUniformLocation(shaderID, "material.specular"), 1, &data->mat.specular[0]);
+		//glUniform1f(glGetUniformLocation(shaderID, "material.shininess"), data->mat.shininess);
 
 		glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camera->pos[0]);
 

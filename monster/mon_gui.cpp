@@ -19,7 +19,7 @@ void WriteEntities(Mon::Entity* entities, unsigned int entityCount, int shaderID
 	for (int i = 1; i < entityCount; ++i)
 	{
 		file << entities[i].name << "\n"
-			<< (int)entities[i].data.type << "\n"
+			<< (int)entities[i].data.mesh.type << "\n"
 			<< entities[i].rb.pos.x << "\n" << entities[i].rb.pos.y << "\n" << entities[i].rb.pos.z << "\n"
 			<< entities[i].data.scale.x << "\n" << entities[i].data.scale.y << "\n" << entities[i].data.scale.z << "\n"
 			<< shaderID << "\n"
@@ -58,8 +58,8 @@ void LoadImpFile(Mon::Entity* e, std::string fileName)
 			break;
 		}
 
-		e->data.vertices = new MonGL::Vertex3D[e->data.mesh.verticeCount];
-		e->data.indices = new unsigned int[e->data.mesh.indiceCount];
+		e->data.mesh.vertices = new MonGL::Vertex3D[e->data.mesh.verticeCount];
+		e->data.mesh.indices = new unsigned int[e->data.mesh.indiceCount];
 
 		while (file >> line)
 		{
@@ -68,29 +68,29 @@ void LoadImpFile(Mon::Entity* e, std::string fileName)
 				index = i;
 
 				if (i == 0)
-					e->data.vertices[i].position.x = std::stof(line);
+					e->data.mesh.vertices[i].position.x = std::stof(line);
 				else
-					file >> e->data.vertices[i].position.x;
+					file >> e->data.mesh.vertices[i].position.x;
 
-				file >> e->data.vertices[i].position.y;
-				file >> e->data.vertices[i].position.z;
-				file >> e->data.vertices[i].normal.x;
-				file >> e->data.vertices[i].normal.y;
-				file >> e->data.vertices[i].normal.z;
-				file >> e->data.vertices[i].texCoords.x;
-				file >> e->data.vertices[i].texCoords.y;
-				file >> e->data.vertices[i].tangent.x;
-				file >> e->data.vertices[i].tangent.y;
-				file >> e->data.vertices[i].tangent.z;
-				file >> e->data.vertices[i].bitangent.x;
-				file >> e->data.vertices[i].bitangent.y;
-				file >> e->data.vertices[i].bitangent.z;
+				file >> e->data.mesh.vertices[i].position.y;
+				file >> e->data.mesh.vertices[i].position.z;
+				file >> e->data.mesh.vertices[i].normal.x;
+				file >> e->data.mesh.vertices[i].normal.y;
+				file >> e->data.mesh.vertices[i].normal.z;
+				file >> e->data.mesh.vertices[i].texCoords.x;
+				file >> e->data.mesh.vertices[i].texCoords.y;
+				file >> e->data.mesh.vertices[i].tangent.x;
+				file >> e->data.mesh.vertices[i].tangent.y;
+				file >> e->data.mesh.vertices[i].tangent.z;
+				file >> e->data.mesh.vertices[i].bitangent.x;
+				file >> e->data.mesh.vertices[i].bitangent.y;
+				file >> e->data.mesh.vertices[i].bitangent.z;
 			}
 
 			for (int j = 0; j < e->data.mesh.indiceCount; ++j)
 			{
 				index = j;
-				file >> e->data.indices[j];
+				file >> e->data.mesh.indices[j];
 			}
 
 			// finished
@@ -131,41 +131,41 @@ void LoadImpGrassFile(Mon::GameState* game)
 		break;
 	}
 
-	e->data.vertices = new MonGL::Vertex3D[e->data.mesh.verticeCount];
-	e->data.indices = new unsigned int[e->data.mesh.indiceCount];
+	e->data.mesh.vertices = new MonGL::Vertex3D[e->data.mesh.verticeCount];
+	e->data.mesh.indices = new unsigned int[e->data.mesh.indiceCount];
 
 	while (file >> line)
 	{
 		for (int i = 0; i < e->data.mesh.verticeCount; ++i)
 		{
 			if (i == 0)
-				e->data.vertices[i].position.x = std::stof(line);
+				e->data.mesh.vertices[i].position.x = std::stof(line);
 			else
-				file >> e->data.vertices[i].position.x;
+				file >> e->data.mesh.vertices[i].position.x;
 
-			file >> e->data.vertices[i].position.y;
-			file >> e->data.vertices[i].position.z;
-			file >> e->data.vertices[i].normal.x;
-			file >> e->data.vertices[i].normal.y;
-			file >> e->data.vertices[i].normal.z;
-			file >> e->data.vertices[i].texCoords.x;
-			file >> e->data.vertices[i].texCoords.y;
-			file >> e->data.vertices[i].tangent.x;
-			file >> e->data.vertices[i].tangent.y;
-			file >> e->data.vertices[i].tangent.z;
-			file >> e->data.vertices[i].bitangent.x;
-			file >> e->data.vertices[i].bitangent.y;
-			file >> e->data.vertices[i].bitangent.z;
+			file >> e->data.mesh.vertices[i].position.y;
+			file >> e->data.mesh.vertices[i].position.z;
+			file >> e->data.mesh.vertices[i].normal.x;
+			file >> e->data.mesh.vertices[i].normal.y;
+			file >> e->data.mesh.vertices[i].normal.z;
+			file >> e->data.mesh.vertices[i].texCoords.x;
+			file >> e->data.mesh.vertices[i].texCoords.y;
+			file >> e->data.mesh.vertices[i].tangent.x;
+			file >> e->data.mesh.vertices[i].tangent.y;
+			file >> e->data.mesh.vertices[i].tangent.z;
+			file >> e->data.mesh.vertices[i].bitangent.x;
+			file >> e->data.mesh.vertices[i].bitangent.y;
+			file >> e->data.mesh.vertices[i].bitangent.z;
 		}
 		for (int j = 0; j < e->data.mesh.indiceCount; ++j)
 		{
-			file >> e->data.indices[j];
+			file >> e->data.mesh.indices[j];
 		}
 	}
 	file.close();
 
 	MonGL::InitModel(&e->data);
-	MonGL::LoadTexture(&e->data, 0, MonGL::TextureType::Diffuse, game->shader.handle, "res/textures/grass.png", false);
+	MonGL::LoadTexture(&e->data, 0, MonGL::TextureType::Diffuse, game->renderer.program.handle, "res/textures/grass.png", false);
 	e->rb.pos = Mon::v3(10.0f, 0.3f, 20.0f);
 	MonGL::InitBoundingBox(&e->collider.data);
 	e->impPath = "test_grass.imp";
@@ -186,15 +186,15 @@ void writeImpFile(Mon::GameState* game)
 
 	for (int i = 0; i < e->data.mesh.verticeCount; ++i)
 	{
-	   file << e->data.vertices[i].position.x << "\n" << e->data.vertices[i].position.y << "\n" << e->data.vertices[i].position.z << "\n"
-			<< e->data.vertices[i].normal.x << "\n" << e->data.vertices[i].normal.y << "\n" << e->data.vertices[i].normal.z << "\n"
-			<< e->data.vertices[i].texCoords.x << "\n" << e->data.vertices[i].texCoords.y << "\n"
-			<< e->data.vertices[i].tangent.x << "\n" << e->data.vertices[i].tangent.y << "\n" << e->data.vertices[i].tangent.z << "\n"
-			<< e->data.vertices[i].bitangent.x << "\n" << e->data.vertices[i].bitangent.y << "\n" << e->data.vertices[i].bitangent.z << "\n";
+	   file << e->data.mesh.vertices[i].position.x << "\n" << e->data.mesh.vertices[i].position.y << "\n" << e->data.mesh.vertices[i].position.z << "\n"
+			<< e->data.mesh.vertices[i].normal.x << "\n" << e->data.mesh.vertices[i].normal.y << "\n" << e->data.mesh.vertices[i].normal.z << "\n"
+			<< e->data.mesh.vertices[i].texCoords.x << "\n" << e->data.mesh.vertices[i].texCoords.y << "\n"
+			<< e->data.mesh.vertices[i].tangent.x << "\n" << e->data.mesh.vertices[i].tangent.y << "\n" << e->data.mesh.vertices[i].tangent.z << "\n"
+			<< e->data.mesh.vertices[i].bitangent.x << "\n" << e->data.mesh.vertices[i].bitangent.y << "\n" << e->data.mesh.vertices[i].bitangent.z << "\n";
 	}
 	for (int j = 0; j < e->data.mesh.indiceCount; ++j)
 	{
-		file << e->data.indices[j] << "\n";
+		file << e->data.mesh.indices[j] << "\n";
 	}
 }
 
@@ -251,7 +251,7 @@ void LoadSceneFile(Mon::GameState* game)
 
 			if (e->name == "player")
 			{
-				Mon::InitPlayer(e, game->shader.handle);
+				Mon::InitPlayer(e, game->renderer.program.handle);
 			}
 
 			file >> renderType;
@@ -274,16 +274,16 @@ void LoadSceneFile(Mon::GameState* game)
 
 			// TODO(ck): IMPORTANT(ck): Remove the rendertype we don't need this anymore EVERYTHING WILL USE AN IMP FILE
 			// Init Render data
-			e->data.type = (MonGL::RenderType)renderType;
+			e->data.mesh.type = (MonGL::RenderType)renderType;
 			if (e->name != "player")
 			{
-				switch (e->data.type)
+				switch (e->data.mesh.type)
 				{
 				case MonGL::RenderType::Quad:
-					MonGL::InitQuad(&e->data);
+					MonGL::InitQuad(&e->data.mesh);
 					break;
 				case MonGL::RenderType::Cube:
-					MonGL::InitCube(&e->data);
+					MonGL::InitCube(&e->data.mesh);
 					break;
 				case MonGL::RenderType::Model:
 					// Load Imp File 
@@ -394,13 +394,13 @@ static void TerrainMaterialWindow(Terrain* terrain)
 	if (ImGui::TreeNode("Materials"))
 	{
 		ImGui::PushItemWidth(100.0f);
-		ImGui::DragFloat("Mat diffuse r", &terrain->mesh.mat.diffuse.x, 0.01f, 0.0f, 1.0f, "%.02f");
-		ImGui::DragFloat("Mat diffuse g", &terrain->mesh.mat.diffuse.y, 0.01f, 0.0f, 1.0f, "%.02f");
-		ImGui::DragFloat("Mat diffuse b", &terrain->mesh.mat.diffuse.z, 0.01f, 0.0f, 1.0f, "%.02f");
+		//ImGui::DragFloat("Mat diffuse r", &terrain->mesh.mat.diffuse.x, 0.01f, 0.0f, 1.0f, "%.02f");
+		//ImGui::DragFloat("Mat diffuse g", &terrain->mesh.mat.diffuse.y, 0.01f, 0.0f, 1.0f, "%.02f");
+		//ImGui::DragFloat("Mat diffuse b", &terrain->mesh.mat.diffuse.z, 0.01f, 0.0f, 1.0f, "%.02f");
 		ImGui::Separator();
-		ImGui::DragFloat("Mat ambient r", &terrain->mesh.mat.ambient.x, 0.01f, 0.0f, 1.0f, "%.02f");
-		ImGui::DragFloat("Mat ambient g", &terrain->mesh.mat.ambient.y, 0.01f, 0.0f, 1.0f, "%.02f");
-		ImGui::DragFloat("Mat ambient b", &terrain->mesh.mat.ambient.z, 0.01f, 0.0f, 1.0f, "%.02f");
+		//ImGui::DragFloat("Mat ambient r", &terrain->mesh.mat.ambient.x, 0.01f, 0.0f, 1.0f, "%.02f");
+		//ImGui::DragFloat("Mat ambient g", &terrain->mesh.mat.ambient.y, 0.01f, 0.0f, 1.0f, "%.02f");
+		//ImGui::DragFloat("Mat ambient b", &terrain->mesh.mat.ambient.z, 0.01f, 0.0f, 1.0f, "%.02f");
 		ImGui::PopItemWidth();
 
 
@@ -436,26 +436,6 @@ void CameraWindow(bool* p_open, Mon::GameState* game)
 {
 	ImGui::Begin("Cammy", p_open);
 
-	//float velocity = game->cam->speed * game->deltaTime;
-	
-	ImGui::PushButtonRepeat(true);
-	ImGui::Indent(32);
-	//if (ImGui::ArrowButton("##up", ImGuiDir_Up))
-	//	&game->cam->pos += &game->cam->front * velocity;	
-	//ImGui::Unindent(32);
-
-	//if (ImGui::ArrowButton("##left", ImGuiDir_Left))
-	//	&game->cam->pos -= game->cam->right * velocity;
-	//ImGui::SameLine(30, 40);
-	//if (ImGui::ArrowButton("##right", ImGuiDir_Right))
-	//	&game->cam->pos += &game->cam->right * velocity;
-
-	//ImGui::Indent(32);
-	//if (ImGui::ArrowButton("##down", ImGuiDir_Down))
-	//	&game->cam->pos -= &game->cam->front * velocity;
-	ImGui::Unindent(32);
-	ImGui::PopButtonRepeat();
-
 	ImGui::LabelText(game->cameras[game->currCameraIndex].name, "Current Camera");
 	if (ImGui::ArrowButton("##left", ImGuiDir_Left))
 	{
@@ -487,7 +467,7 @@ void CameraWindow(bool* p_open, Mon::GameState* game)
 	ImGui::DragFloat("far plane", &game->cameras[game->currCameraIndex].farPlane, 0.5f, 100.0f, 1000.0f, "%.02f");
 	
 	ImGui::SliderFloat("pitch", &game->cameras[game->currCameraIndex].pitch, -1.10f, 100.0f, "%1.0f");
-	//ImGui::SliderFloat("angle", &game->cameras[game->currCameraIndex].angleAroundTarget, -360.0f, 180.0f);
+	ImGui::SliderFloat("angle", &game->cameras[game->currCameraIndex].angleAroundTarget, -360.0f, 180.0f);
 	ImGui::SliderFloat("lerp", &game->cameras[game->currCameraIndex].lerpSpeed, 0.0f, 100.0f);
 	ImGui::SliderFloat("smooth", &game->cameras[game->currCameraIndex].smoothness, 0.1f, 10.0f);
 
@@ -513,7 +493,7 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 	
 	if (ImGui::Button("Add Cube"))
 	{
-		Mon::AddCube(game->world, game->shader.handle);
+		Mon::AddCube(game->world, game->renderer.program.handle);
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Load imp file"))
@@ -557,7 +537,7 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 	}
 	if (game->input.f.endedDown && inputTimer <= 0.0f)
 	{
-		inputTimer = game->deltaTime * 10.0f;
+		inputTimer = game->deltaTime * 15.0f;
 		if (game->selectedIndex < (game->world->entityCount - 1))
 		{
 			game->selectedIndex++;
@@ -623,7 +603,7 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 				ImGui::DragFloat("z", &game->world->entities[selected].rb.pos.z, 0.1f, -1000.0f, 1000.0f, "%.02f");
 
 
-				ImGui::SliderFloat3("scale", &game->world->entities[selected].data.scale[0], 0.0f, 100.0f);
+				ImGui::SliderFloat3("scale", &game->world->entities[selected].data.scale[0], 1.0f, 100.0f, "%1.0f");
 				ImGui::SliderFloat3("collider min", &game->world->entities[selected].collider.min[0], 0.0f, 100.0f);
 				ImGui::SliderFloat3("collider max", &game->world->entities[selected].collider.max[0], 0.0f, 100.0f);
 				
@@ -1069,9 +1049,6 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game2D* game2D)
 
 #endif // _3D_GUI_
 #endif // USE_SDL
-
-
-
 
 
 /// 

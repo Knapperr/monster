@@ -60,12 +60,18 @@ namespace Mon
 		double deltaTime;
 
 		// TODO(ck): 
+		/*
+		struct OpenGL
+		{
+			MonGL::CommonProgram common;
+			MonGL::WaterPRogram
+		};
+		*/
 		// Shader lives in the opengl renderer
 		// Need a shader store or something
-		MonGL::CommonProgram shader;
+		MonGL::OpenGL renderer;
+		MonGL::RenderSetup setup;
 		
-		//MonGL::WaterDataProgram waterShader;
-		MonGL::CommonProgram waterShader;
 		MonGL::Light light;
 	};
 

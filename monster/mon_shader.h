@@ -24,7 +24,7 @@ namespace MonGL
 	};
 
 	// TODO(ck): Match struct in the shader also make a 
-	struct WaterDataProgram
+	struct WaterProgram
 	{
 		CommonProgram common;
 
@@ -80,6 +80,7 @@ namespace MonGL
 	void SetUniforms(CommonProgram* program, RenderSetup)
 	
 	*/
+
 
 	void LoadShader(CommonProgram* program, const char* vertexSource, const char* fragmentSource, const char* geometrySource = nullptr);
 	void CheckCompileErrors(unsigned int object, ERROR_TYPE type);

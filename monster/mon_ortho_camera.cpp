@@ -57,7 +57,7 @@ namespace Mon
 		float width = 960.0f;
 		float height = 540.0f;
 		float half = 4.0f;
-#if 0
+#if 1
 		// TODO(ck): compute in update?
 		// TODO(ck): Remove half prefer zoom
 		float left = pos.x - width / half;

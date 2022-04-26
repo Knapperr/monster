@@ -91,8 +91,11 @@ namespace Mon {
 		e->setup = {};
 		e->name = name;
 		e->impPath = "none";
+		// RenderData
+		// data->meshIndex = 1;
+		// TEXTURE INDEX
+
 		MonGL::InitQuad(&e->data);
-		e->data.shaderIndex = shaderHandle;
 		e->data.scale = scale;
 		MonGL::LoadTexture(&e->data, 0, MonGL::TextureType::Diffuse, shaderHandle, texturePath);
 		e->rb.pos = pos;
@@ -123,10 +126,10 @@ namespace Mon {
 		player->rb.damping = 0.9f;
 		player->rb.speed = 40.0f;
 
-		player->data.mat.ambient = v3(1.0f, 0.5f, 0.6f);
-		player->data.mat.diffuse = v3(1.0f, 0.5f, 0.31f);
-		player->data.mat.specular = v3(0.5f, 0.5f, 0.5f);
-		player->data.mat.shininess = 32.0f;
+		//player->data.mat.ambient = v3(1.0f, 0.5f, 0.6f);
+		//player->data.mat.diffuse = v3(1.0f, 0.5f, 0.31f);
+		//player->data.mat.specular = v3(0.5f, 0.5f, 0.5f);
+		//player->data.mat.shininess = 32.0f;
 
 		player->impPath = "none";
 		player->spriteAngleDegrees = -45.0f;
@@ -222,7 +225,7 @@ namespace Mon {
 		cube->setup = {};
 		cube->name = "cube_" + std::to_string(world->entityCount-1);
 		cube->impPath = "none";
-		MonGL::InitCube(&cube->data);
+		MonGL::InitCube(&cube->data.mesh);
 		MonGL::LoadTexture(&cube->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/container2.png");
 		cube->rb.pos = v3(10.0f, 0.3f, 20.0f);
 		MonGL::InitBoundingBox(&cube->collider.data);

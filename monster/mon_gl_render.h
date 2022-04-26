@@ -32,14 +32,6 @@ namespace MonGL
 		v3 specular;
 	};
 
-	struct Material
-	{
-		v3 ambient;
-		v3 diffuse;
-		v3 specular;
-		float shininess;
-	};
-
 	struct Config
 	{
 		float angleDegrees;
@@ -80,37 +72,50 @@ namespace MonGL
 		unsigned int IBO;
 		int verticeCount;
 		int indiceCount;
-	};
+		RenderType type;
 
-	// for now we need the RenderData to hold our vertices and textures though.
-	struct RenderData
-	{
-		Mesh mesh;
-		// TODO(ck): Index into shader ... this should get the correct shader
-		// and then go through its uniforms and activate them using the Program
-		// and the render setup
-		// the render setup has everything in it so it just needs to find the right 
-		// program and then use the RenderData setup
-		/*
-		    UseProgramBegin(OpenGL, &Prog->Common);
-    
-			OpenGL->glUniformMatrix4fv(Prog->TransformID, 1, GL_TRUE, Setup->Proj.E[0]);
-			OpenGL->glUniform3fv(Prog->CameraP, 1, Setup->CameraP.E);
-			OpenGL->glUniform3fv(Prog->FogDirection, 1, Setup->FogDirection.E);
-			OpenGL->glUniform3fv(Prog->FogColor, 1, Setup->FogColor.E);
-			OpenGL->glUniform1f(Prog->FogStartDistance, Setup->FogStartDistance);
-		
-			you can see here it just calls the programs uniforms and then the setup just activates it
-			our setup is going to have everything in it because who cares? if we start having a ton
-			of unique shaders we can also differentiate the setups as well.
-		
-		*/
-		RenderSetup setup;
-		int shaderIndex;
-
-		// NOTE(ck): Vertices and indices are outside of the Mesh as they are uploaded to it.
 		Vertex3D* vertices;
 		unsigned int* indices;
+	};
+
+	struct RenderSetup
+	{
+		/*
+		*  RenderSetup is for the common attributes that are shared among shaders
+		*  these are found in CommonProgram
+			model ???
+			viewPosition,
+			cameraPosition
+		*/
+	};
+
+	struct Material {
+		v3 ambient;
+		v3 diffuse;
+		v3 specular;
+		float shininess;
+	};
+
+	struct ProgramData
+	{
+		// water uniform data
+		float tiling;
+		float speed;
+		float flowStrength;
+		float flowOffset;
+		float heightScale;
+		float heightScaleModulated;
+	};
+
+	struct RenderData
+	{
+		// TODO(ck): Index for the OpenGL meshes 
+		int meshIndex;
+		Mesh mesh;
+		Material materials[10];
+		ProgramData programData;
+		int programType;
+
 		int lineWidth;
 
 		v3 color;
@@ -120,22 +125,10 @@ namespace MonGL
 		std::string texturePath;
 		int selectedTexture;
 	
-		// TODO(ck): hold id to an array of textures
+		// TODO(ck): hold array of indexes to texture resources
 		Texture textures[4];
-		Material mat;
-
-		// Note(ck): For saving and loading scene files
-		RenderType type;
 
 		bool visible;
-	};
-
-	// Change to batch data
-	struct BatchData3D
-	{
-		unsigned int VAO;
-		unsigned int VBO;
-		unsigned int EBO;
 	};
 
 	struct InstancedData
@@ -145,43 +138,39 @@ namespace MonGL
 		RenderData renderData;
 	};
 
-
-	//struct render_setup
-	//{
-	//	rectangle2 ClipRect;
-	//	u32 RenderTargetIndex;
-	//	m4x4 Proj;
-	//	v3 CameraP;
-	//	v3 FogDirection;
-	//	v3 FogColor;
-	//	f32 FogStartDistance;
-	//	f32 FogEndDistance;
-	//	f32 ClipAlphaStartDistance;
-	//	f32 ClipAlphaEndDistance;
-	//};
-
-	struct RenderSetup
-	{
-		/*
-			model ??? 
-			viewPosition,
-			cameraPosition
-		*/
-
-		// Water Data
-		float tiling;
-		float speed;
-		float flowStrength;
-		float flowOffset;
-		float heightScale;
-		float heightScaleModulated;
-	};
-
 	struct Line
 	{
 		v3 pos;
 		RenderData data;
 	};
+
+	
+	//
+	// opengl renderer data is held in here
+	//
+	/*
+		Enlighten moment about data oriented.
+		this is the beauty of more data oriented coding. we have all of our data in the 
+		main renderer. The data is all here and the renderdata that a game object acceses 
+		just gets everything the same way as a database. this makes it super easy to hook up
+		sql lite configs to this
+		
+		This is the main renderer that holds all of our data
+
+		resource manager for this?
+	*/
+	struct OpenGL
+	{
+		// Data that renderdata can hold
+		Mesh meshes[10]; // TODO(ck): SQLite config for size
+		Texture textures[30]; // TODO(ck): SQLite config for size
+		int meshCount;
+		int textureCount;
+
+		CommonProgram program;
+		WaterProgram waterProgram;
+	};
+
 
 	//
 	// 2D structs 
@@ -223,6 +212,7 @@ namespace MonGL
 	};
 
 
+
 	// TODO(ck): TODO(ck): Somehow put into game so we can call from gui
 	// can have a getter method that retrieves the globalDrawCalls from here
 	extern int globalDrawCalls;
@@ -242,11 +232,22 @@ namespace MonGL
 	//	shaders[]
 	//	Textures[]
 
+	//
+	// Renderer 
+	//
+	void LoadTexture(RenderData* data, int index, TextureType type, int shaderID, std::string path, bool pixelTexture = true);
+	void LoadTexture(Texture* texture, TextureType type, int shaderID, std::string path, bool pixelTexture = true);
+	void InitRenderer(OpenGL* gl);
+
+
 	void BeginRender(Config* config, mat4 projection, mat4 view, int shaderID);
 	void ViewPort(Rect* port);
 	void CreateFramebuffer(Framebuffer* buffer);
 
 	void LoadImpFile(RenderData* data);
+
+	void UseProgram(CommonProgram* program, RenderSetup setup);
+	void UseProgram(WaterProgram* program, RenderSetup setup);
 
 	// Debug lines
 	void InitLine(Line* data);
@@ -254,22 +255,64 @@ namespace MonGL
 
 	// Models and assets
 	void InitInstancedData(InstancedData* data, int amount);
-	void InitQuad(RenderData* data, bool tangents = false);
-	void InitCube(RenderData* data);
+	void InitQuad(Mesh* mesh, bool tangents = false);
+	void InitQuad(RenderData* data);
+	void InitCube(Mesh* mesh);
 	void InitModel(RenderData* data);
+	void InitModel(Mesh* mesh, const char* fileName);
 	void InitBoundingBox(RenderData* data);
-	void InitDistortedWater(RenderData* renderData, RenderSetup* setup);
 	void InitGrid(RenderData* data, int xSize, int zSize, float* heightMap);
-	void LoadTexture(RenderData* data, int index, TextureType type, int shaderID, std::string path, bool pixelTexture = true);
-	
+	void InitGrid(Mesh* mesh, int xSize, int zSize);
+
+
 	void Draw(Config* config, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera,
 			  unsigned int shaderID, int selectedTexture = 0);	
 	void DrawBoundingBox(RenderData* data, Camera* camera, unsigned int shaderID);
 	void DrawTerrain(unsigned int shaderID, RenderData* data, Light* light, Camera* camera, bool wireFrame);
 	
-	void DrawWater(RenderData* data, RenderSetup* setup, WaterDataProgram* waterData, Light* light, v3 pos, v3 scale, v3 camPos, unsigned int shaderID);
+	void DrawWater(RenderData* data, RenderSetup* setup, WaterProgram* waterData, Light* light, v3 pos, v3 scale, v3 camPos, unsigned int shaderID);
 
 	void EndRender();
+
+	static unsigned int AddMesh(OpenGL* gl)
+	{
+		unsigned int index = gl->meshCount++;
+
+		Mesh* mesh = &gl->meshes[index];
+		mesh = {};
+
+		return index;
+	}
+
+	static Mesh* GetMesh(OpenGL* gl, unsigned int index)
+	{
+		Mesh* mesh = 0;
+		if ((index > 0) && (index < ArrayCount(gl->meshes)))
+		{
+			mesh = &gl->meshes[index];
+		}
+		return mesh;
+	}
+
+	static unsigned int AddTexture(OpenGL* gl)
+	{
+		unsigned int index = gl->textureCount++;
+
+		Texture* texture = &gl->textures[index];
+		texture = {};
+
+		return index;
+	}
+
+	static Texture* GetTexture(OpenGL* gl, unsigned int index)
+	{
+		Texture* t = 0;
+		if ((index > 0) && (index < ArrayCount(gl->textures)))
+		{
+			t = &gl->textures[index];
+		}
+		return t;
+	}
 
 
 	//

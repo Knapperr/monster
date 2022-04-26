@@ -107,12 +107,9 @@ namespace Mon
 	bool InitGame(GameState* state, int windowWidth, int windowHeight, float portWidth, float portHeight)
 	{
 		state->mode = Mode::Debug;
+		state->renderer = {};
+		MonGL::InitRenderer(&state->renderer);
 
-		state->shader = {};
-		state->waterShader = {};
-		MonGL::LoadShader(&state->shader, "res/shaders/vert_colors.glsl", "res/shaders/frag_colors.glsl", NULL);
-		MonGL::LoadShader(&state->waterShader, "res/shaders/vert_water.glsl", "res/shaders/frag_water.glsl", NULL);
-		state->mainShaderID = state->shader.handle;
 
 		state->light = {};
 		v3 lightColor = v3(0.2f, 0.3f, 0.6f);
@@ -172,7 +169,7 @@ namespace Mon
 		// Init the game world
 		// TODO(ck): MEMORY MANAGEMENT
 		state->world = new World();
-		InitWorld(state->world, state->shader.handle, state->waterShader.handle, state->config->angleDegrees);
+		InitWorld(state->world, state->renderer.program.handle, state->renderer.waterProgram.common.handle, state->config->angleDegrees);
 
 		return true;
 	}
@@ -228,7 +225,7 @@ namespace Mon
 	void Update(GameState* state, double dt, Input* newInput)
 	{
 		state->deltaTime = dt;
-
+		state->input = *newInput;
 		//
 		// Input start
 		//
@@ -347,19 +344,21 @@ namespace Mon
 	{
 		Camera* cam = GetCamera(state, state->currCameraIndex);
 
-		MonGL::BeginRender(state->config, Projection(cam), ViewMatrix(cam), state->shader.handle);
-		MonGL::BeginRender(state->config, Projection(cam), ViewMatrix(cam), state->waterShader.handle);
-
 		// TODO(ck): use shader
-		glUseProgram(state->shader.handle);
+		MonGL::UseProgram(&state->renderer.program, state->setup);
+
+
+		MonGL::BeginRender(state->config, Projection(cam), ViewMatrix(cam), state->renderer.program.handle);
+		//MonGL::BeginRender(state->config, Projection(cam), ViewMatrix(cam), state->waterShader.handle);
+
 		//
 		// TERRAIN
 		//
 		if (state->drawCollisions)
 		{
-			MonGL::DrawBoundingBox(&state->terrain->collider.data, cam, state->shader.handle);
+			MonGL::DrawBoundingBox(&state->terrain->collider.data, cam, state->renderer.program.handle);
 		}
-		MonGL::DrawTerrain(state->shader.handle, &state->terrain->mesh, &state->light, cam, state->terrain->wireFrame);
+		MonGL::DrawTerrain(state->renderer.program.handle, &state->terrain->mesh, &state->light, cam, state->terrain->wireFrame);
 
 		//
 		// ENTITIES
@@ -370,16 +369,16 @@ namespace Mon
 			Entity e = state->world->entities[i];
 
 			if (state->drawCollisions)
-				MonGL::DrawBoundingBox(&e.collider.data, cam, state->shader.handle);
+				MonGL::DrawBoundingBox(&e.collider.data, cam, state->renderer.program.handle);
 
-			MonGL::Draw(state->config, e.spriteAngleDegrees, &e.data, e.rb.pos, cam, state->shader.handle);
+			MonGL::Draw(state->config, e.spriteAngleDegrees, &e.data, e.rb.pos, cam, state->renderer.program.handle);
 		}
 
 		//
 		// DEBUG TOOLS
 		// 
-		MonGL::DrawLine(&state->lineOne, state->shader.handle);
-		MonGL::DrawLine(&state->lineTwo, state->shader.handle);
+		MonGL::DrawLine(&state->lineOne, state->renderer.program.handle);
+		MonGL::DrawLine(&state->lineTwo, state->renderer.program.handle);
 
 		MonGL::EndRender();
 
@@ -392,7 +391,7 @@ namespace Mon
 		//glDeleteVertexArrays(1, &world->player->data.VAO);
 		//glDeleteBuffers(1, &world->player->data.VBO);
 		delete state->terrain;
-		MonGL::DeleteShader(&state->shader);
+		MonGL::DeleteShader(&state->renderer.program);
 	}
 
 	void SetViewPort(GameState* state, int width, int height)
