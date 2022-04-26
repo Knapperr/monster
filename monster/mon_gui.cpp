@@ -609,6 +609,8 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 				
 				ImGui::DragFloat("speed", &game->world->entities[selected].rb.speed, 0.10f, 0.0f, 200.0f, "%.10f");
 				ImGui::DragFloat("angle", &game->world->entities[selected].spriteAngleDegrees, 0.10f, -180.0f, 360.0f, "%.10f");
+				
+				ImGui::SliderInt("mesh index", &game->world->entities[selected].data.meshIndex, 1, 4);
 				//ImGui::DragFloat("rot x", &g_Game->objects[selected]->orientation.x, 0.05f, -1000.0f, 1000.0f, "%.02f");
 				//ImGui::DragFloat("rot y", &g_Game->objects[selected]->orientation.y, 0.05f, -1000.0f, 1000.0f, "%.02f");
 				//ImGui::DragFloat("rot z", &g_Game->objects[selected]->orientation.z, 0.05f, -1000.0f, 1000.0f, "%.02f");

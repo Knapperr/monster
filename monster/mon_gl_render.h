@@ -107,6 +107,14 @@ namespace MonGL
 		float heightScaleModulated;
 	};
 
+	// TODO(ck): Better name for this
+	// the mesh is inside that is technically the data to render
+	// is this more of a render command or something?
+	// renderoptions 
+	// drawdata
+	// Model? its holding the mesh and data which is often just
+	// called a Model
+	// glModel ?
 	struct RenderData
 	{
 		// TODO(ck): Index for the OpenGL meshes 
@@ -265,8 +273,7 @@ namespace MonGL
 	void InitGrid(Mesh* mesh, int xSize, int zSize);
 
 
-	void Draw(Config* config, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera,
-			  unsigned int shaderID, int selectedTexture = 0);	
+	void Draw(OpenGL* gl, Config* config, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera);
 	void DrawBoundingBox(RenderData* data, Camera* camera, unsigned int shaderID);
 	void DrawTerrain(unsigned int shaderID, RenderData* data, Light* light, Camera* camera, bool wireFrame);
 	

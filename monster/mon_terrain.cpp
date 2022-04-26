@@ -21,7 +21,8 @@ Terrain::Terrain(int gridX, int gridZ)
 	have the mesh that just gets the vertices from the positions just like a tilemap this way the 
 	grid is its own thing and then the 
 	*/
-
+	// data.meshIndex = GetMesh("grid");
+	mesh.meshIndex = 4;
 	MonGL::InitGrid(&mesh, SIZE, SIZE, heightMap);
 
 	Mon::InitBoxCollider(&collider);

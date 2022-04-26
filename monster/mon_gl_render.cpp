@@ -1018,69 +1018,8 @@ namespace MonGL
 	/// 
 
 	///
-	/// [BEGIN]  Draw RenderData  
+	/// [BEGIN]  Draw Mesh with RenderData 
 	///
-
-	void Draw(Config* config, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera,
-			  unsigned int shaderID, int selectedTexture)
-	{
-		bool useTexture = (ArrayCount(data->textures) > 0);
-		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), useTexture);
-		glUniform1i(glGetUniformLocation(shaderID, "pixelTexture"), useTexture);
-		// bind textures on corresponding texture units
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, data->textures[selectedTexture].id);
-
-		//glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
-		glUniform1i(glGetUniformLocation(shaderID, "collider"), false);
-
-		// TODO(ck):
-		// All uniforms get called in 
-		
-		// struct OpenGL
-		// for holding our programs(shaders) 
-		/*
-		I have no idea the best way to do this...
-
-		 RenderSetup is for things that are common between 
-		 all entities 
-		 these are things that are the same between all entities we 
-		 dont want them to all have one
-
-		 commands are what the entities create i believe that are unique between
-		 them when drawing. Still need to define when to use the water program 
-		 over the 
-
-			switch data->programType
-				case 1:
-					UseProgram(gl->common, setup)
-				case 2:
-					UseProgram(gl->water, setup, data->water) ?? something like this
-				// i want it to be a material 
-				could have data->material[0]
-		*/
-	
-		data->worldMatrix = mat4(1.0f);
-		data->worldMatrix = glm::translate(data->worldMatrix, pos);
-		if (data->mesh.indiceCount > 0)
-		{
-			data->worldMatrix = glm::rotate(data->worldMatrix, glm::radians(spriteAngleDegrees), v3{ 1.0f, 0.0f, 0.0f });
-		}
-		data->worldMatrix = glm::scale(data->worldMatrix, data->scale);
-		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(data->worldMatrix));
-
-		glBindVertexArray(data->mesh.VAO);
-		if (data->mesh.indiceCount > 0)
-		{
-			glDrawElements(GL_TRIANGLES, data->mesh.indiceCount, GL_UNSIGNED_INT, 0);
-		}
-		else
-		{
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
-
-		globalDrawCalls++;
-	}
 
 	// TODO(ck): Maybe pass OpenGL to this then we have all the data?
 	void Draw(OpenGL* gl, Config* config, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera)

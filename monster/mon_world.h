@@ -91,10 +91,10 @@ namespace Mon {
 		e->setup = {};
 		e->name = name;
 		e->impPath = "none";
-		// RenderData
-		// data->meshIndex = 1;
-		// TEXTURE INDEX
+		// TEXTURE INDEXES
 
+		// e->data.meshIndex = GetMesh("quad");
+		e->data.meshIndex = 1;
 		MonGL::InitQuad(&e->data);
 		e->data.scale = scale;
 		MonGL::LoadTexture(&e->data, 0, MonGL::TextureType::Diffuse, shaderHandle, texturePath);
@@ -107,6 +107,7 @@ namespace Mon {
 	{
 		player->name = "player";
 		player->setup = {};
+		player->data.meshIndex = 1;
 		MonGL::InitQuad(&player->data);
 
 		// IMPORTANT(ck): These cant be loaded again if they are already loaded..
@@ -139,6 +140,7 @@ namespace Mon {
 	{
 		e->name = "water";
 		e->setup = {};
+		e->data.meshIndex = 1;
 		MonGL::InitQuad(&e->data);
 
 		// IMPORTANT(ck): These cant be loaded again if they are already loaded..

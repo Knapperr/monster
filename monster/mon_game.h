@@ -59,16 +59,8 @@ namespace Mon
 		int mainShaderID;
 		double deltaTime;
 
-		// TODO(ck): 
-		/*
-		struct OpenGL
-		{
-			MonGL::CommonProgram common;
-			MonGL::WaterPRogram
-		};
-		*/
-		// Shader lives in the opengl renderer
-		// Need a shader store or something
+		// This should be a global static struct that gets called outside
+		// of the game?
 		MonGL::OpenGL renderer;
 		MonGL::RenderSetup setup;
 		

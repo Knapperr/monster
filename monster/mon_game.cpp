@@ -370,8 +370,7 @@ namespace Mon
 
 			if (state->drawCollisions)
 				MonGL::DrawBoundingBox(&e.collider.data, cam, state->renderer.program.handle);
-
-			MonGL::Draw(state->config, e.spriteAngleDegrees, &e.data, e.rb.pos, cam, state->renderer.program.handle);
+			MonGL::Draw(&state->renderer, state->config, e.spriteAngleDegrees, &e.data, e.rb.pos, cam);
 		}
 
 		//
