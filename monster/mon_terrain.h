@@ -41,7 +41,7 @@ public:
 	bool wireFrame;
 	bool drawTexture;
 
-	MonGL::RenderData mesh;
+	MonGL::RenderData data;
 	Mon::Collider collider;
 	
 	float* heightMap;
@@ -49,9 +49,6 @@ public:
 	Terrain(int gridX, int gridZ);
 	~Terrain();
 
-	float barryCentric(Mon::v3 p1, Mon::v3 p2, Mon::v3 p3, Mon::v2 pos);
-	float getHeight(int x, int z);
-	float lookUpHeight(int x, int z);
 };
 
 struct MousePicker
@@ -63,16 +60,19 @@ struct MousePicker
 };
 
 void InitMousePicker(MousePicker* picker);
-void UpdatePicker(MousePicker* picker, Terrain* terrain, Mon::v2 mousePos, Mon::mat4 viewMatrix, Mon::mat4 projection, Mon::v3 cameraPos);
+void UpdatePicker(MousePicker* picker, MonGL::Mesh* mesh, Mon::v2 mousePos, Mon::mat4 viewMatrix, Mon::mat4 projection, Mon::v3 cameraPos);
 Mon::v3 CalculateMouseRay(MousePicker* picker, Mon::v2 mousePos, Mon::mat4 viewMatrix);
 Mon::v4 ToEyeCoords(MousePicker* picker, Mon::v4 clipCoords);
 Mon::v3 ToWorldCoords(Mon::v4 eyeCoords, Mon::mat4 viewMatrix);
 Mon::v2 GetNormalizedDeviceCoords(Mon::v2 mousePos);
 
-Mon::v3 binarySearch(Terrain* terrain, int count, float start, float finish, Mon::v3 ray, Mon::v3 cameraPosition);
-Mon::v3 getPointOnRay(Mon::v3 ray, float distance, Mon::v3 cameraPosition);
-bool intersectionInRange(Terrain* terrain, float start, float finish, Mon::v3 ray, Mon::v3 cameraPosition);
-bool isUnderGround(Terrain* terrain, Mon::v3 testPoint);
+Mon::v3 GetPointOnRay(Mon::v3 ray, float distance, Mon::v3 cameraPosition);
+Mon::v3 BinarySearch(MonGL::Mesh* mesh, int count, float start, float finish, Mon::v3 ray, Mon::v3 cameraPosition);
+bool IntersectionInRange(MonGL::Mesh* mesh, float start, float finish, Mon::v3 ray, Mon::v3 cameraPosition);
+bool IsUnderGround(MonGL::Mesh* mesh, Mon::v3 testPoint);
 
+float BarryCentric(Mon::v3 p1, Mon::v3 p2, Mon::v3 p3, Mon::v2 pos);
+float GetHeight(MonGL::Mesh* mesh, int x, int z);
+float LookUpHeight(MonGL::Mesh* mesh, int x, int z);
 
 #endif

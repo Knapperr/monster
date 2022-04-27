@@ -19,7 +19,8 @@ void WriteEntities(Mon::Entity* entities, unsigned int entityCount, int shaderID
 	for (int i = 1; i < entityCount; ++i)
 	{
 		file << entities[i].name << "\n"
-			<< (int)entities[i].data.mesh.type << "\n"
+			<< (int)1 << "\n"
+			//<< (int)entities[i].data.mesh.type << "\n"
 			<< entities[i].rb.pos.x << "\n" << entities[i].rb.pos.y << "\n" << entities[i].rb.pos.z << "\n"
 			<< entities[i].data.scale.x << "\n" << entities[i].data.scale.y << "\n" << entities[i].data.scale.z << "\n"
 			<< shaderID << "\n"
@@ -53,45 +54,45 @@ void LoadImpFile(Mon::Entity* e, std::string fileName)
 		{
 			// Get the name and the size of the vertices & indices here
 			e->name = line;
-			file >> e->data.mesh.verticeCount;
-			file >> e->data.mesh.indiceCount;
+			//file >> e->data.mesh.verticeCount;
+			//file >> e->data.mesh.indiceCount;
 			break;
 		}
 
-		e->data.mesh.vertices = new MonGL::Vertex3D[e->data.mesh.verticeCount];
-		e->data.mesh.indices = new unsigned int[e->data.mesh.indiceCount];
+		//e->data.mesh.vertices = new MonGL::Vertex3D[e->data.mesh.verticeCount];
+		//e->data.mesh.indices = new unsigned int[e->data.mesh.indiceCount];
 
 		while (file >> line)
 		{
-			for (int i = 0; i < e->data.mesh.verticeCount; ++i)
-			{
-				index = i;
+			//for (int i = 0; i < e->data.mesh.verticeCount; ++i)
+			//{
+			//	index = i;
 
-				if (i == 0)
-					e->data.mesh.vertices[i].position.x = std::stof(line);
-				else
-					file >> e->data.mesh.vertices[i].position.x;
+			//	if (i == 0)
+			//		e->data.mesh.vertices[i].position.x = std::stof(line);
+			//	else
+			//		file >> e->data.mesh.vertices[i].position.x;
 
-				file >> e->data.mesh.vertices[i].position.y;
-				file >> e->data.mesh.vertices[i].position.z;
-				file >> e->data.mesh.vertices[i].normal.x;
-				file >> e->data.mesh.vertices[i].normal.y;
-				file >> e->data.mesh.vertices[i].normal.z;
-				file >> e->data.mesh.vertices[i].texCoords.x;
-				file >> e->data.mesh.vertices[i].texCoords.y;
-				file >> e->data.mesh.vertices[i].tangent.x;
-				file >> e->data.mesh.vertices[i].tangent.y;
-				file >> e->data.mesh.vertices[i].tangent.z;
-				file >> e->data.mesh.vertices[i].bitangent.x;
-				file >> e->data.mesh.vertices[i].bitangent.y;
-				file >> e->data.mesh.vertices[i].bitangent.z;
-			}
+			//	file >> e->data.mesh.vertices[i].position.y;
+			//	file >> e->data.mesh.vertices[i].position.z;
+			//	file >> e->data.mesh.vertices[i].normal.x;
+			//	file >> e->data.mesh.vertices[i].normal.y;
+			//	file >> e->data.mesh.vertices[i].normal.z;
+			//	file >> e->data.mesh.vertices[i].texCoords.x;
+			//	file >> e->data.mesh.vertices[i].texCoords.y;
+			//	file >> e->data.mesh.vertices[i].tangent.x;
+			//	file >> e->data.mesh.vertices[i].tangent.y;
+			//	file >> e->data.mesh.vertices[i].tangent.z;
+			//	file >> e->data.mesh.vertices[i].bitangent.x;
+			//	file >> e->data.mesh.vertices[i].bitangent.y;
+			//	file >> e->data.mesh.vertices[i].bitangent.z;
+			//}
 
-			for (int j = 0; j < e->data.mesh.indiceCount; ++j)
-			{
-				index = j;
-				file >> e->data.mesh.indices[j];
-			}
+			//for (int j = 0; j < e->data.mesh.indiceCount; ++j)
+			//{
+			//	index = j;
+			//	file >> e->data.mesh.indices[j];
+			//}
 
 			// finished
 			break;
@@ -101,7 +102,6 @@ void LoadImpFile(Mon::Entity* e, std::string fileName)
 	{
 		Mon::Log::print("File read failed");
 		Mon::Log::print(ex.what());
-		int x = index;
 	}
 
 	file.close();
@@ -126,41 +126,41 @@ void LoadImpGrassFile(Mon::GameState* game)
 	{
 		// Get the name and the size of the vertices & indices here
 		e->name = line;
-		file >> e->data.mesh.verticeCount;
-		file >> e->data.mesh.indiceCount;
+		//file >> e->data.mesh.verticeCount;
+		//file >> e->data.mesh.indiceCount;
 		break;
 	}
 
-	e->data.mesh.vertices = new MonGL::Vertex3D[e->data.mesh.verticeCount];
-	e->data.mesh.indices = new unsigned int[e->data.mesh.indiceCount];
+	//e->data.mesh.vertices = new MonGL::Vertex3D[e->data.mesh.verticeCount];
+	//e->data.mesh.indices = new unsigned int[e->data.mesh.indiceCount];
 
 	while (file >> line)
 	{
-		for (int i = 0; i < e->data.mesh.verticeCount; ++i)
-		{
-			if (i == 0)
-				e->data.mesh.vertices[i].position.x = std::stof(line);
-			else
-				file >> e->data.mesh.vertices[i].position.x;
+		//for (int i = 0; i < e->data.mesh.verticeCount; ++i)
+		//{
+		//	if (i == 0)
+		//		e->data.mesh.vertices[i].position.x = std::stof(line);
+		//	else
+		//		file >> e->data.mesh.vertices[i].position.x;
 
-			file >> e->data.mesh.vertices[i].position.y;
-			file >> e->data.mesh.vertices[i].position.z;
-			file >> e->data.mesh.vertices[i].normal.x;
-			file >> e->data.mesh.vertices[i].normal.y;
-			file >> e->data.mesh.vertices[i].normal.z;
-			file >> e->data.mesh.vertices[i].texCoords.x;
-			file >> e->data.mesh.vertices[i].texCoords.y;
-			file >> e->data.mesh.vertices[i].tangent.x;
-			file >> e->data.mesh.vertices[i].tangent.y;
-			file >> e->data.mesh.vertices[i].tangent.z;
-			file >> e->data.mesh.vertices[i].bitangent.x;
-			file >> e->data.mesh.vertices[i].bitangent.y;
-			file >> e->data.mesh.vertices[i].bitangent.z;
-		}
-		for (int j = 0; j < e->data.mesh.indiceCount; ++j)
-		{
-			file >> e->data.mesh.indices[j];
-		}
+		//	file >> e->data.mesh.vertices[i].position.y;
+		//	file >> e->data.mesh.vertices[i].position.z;
+		//	file >> e->data.mesh.vertices[i].normal.x;
+		//	file >> e->data.mesh.vertices[i].normal.y;
+		//	file >> e->data.mesh.vertices[i].normal.z;
+		//	file >> e->data.mesh.vertices[i].texCoords.x;
+		//	file >> e->data.mesh.vertices[i].texCoords.y;
+		//	file >> e->data.mesh.vertices[i].tangent.x;
+		//	file >> e->data.mesh.vertices[i].tangent.y;
+		//	file >> e->data.mesh.vertices[i].tangent.z;
+		//	file >> e->data.mesh.vertices[i].bitangent.x;
+		//	file >> e->data.mesh.vertices[i].bitangent.y;
+		//	file >> e->data.mesh.vertices[i].bitangent.z;
+		//}
+		//for (int j = 0; j < e->data.mesh.indiceCount; ++j)
+		//{
+		//	file >> e->data.mesh.indices[j];
+		//}
 	}
 	file.close();
 
@@ -181,21 +181,21 @@ void writeImpFile(Mon::GameState* game)
 	file.open(path);
 
 	file << e->name << "\n";
-	file << e->data.mesh.verticeCount << "\n";
-	file << e->data.mesh.indiceCount << "\n";
+	//file << e->data.mesh.verticeCount << "\n";
+	//file << e->data.mesh.indiceCount << "\n";
 
-	for (int i = 0; i < e->data.mesh.verticeCount; ++i)
-	{
-	   file << e->data.mesh.vertices[i].position.x << "\n" << e->data.mesh.vertices[i].position.y << "\n" << e->data.mesh.vertices[i].position.z << "\n"
-			<< e->data.mesh.vertices[i].normal.x << "\n" << e->data.mesh.vertices[i].normal.y << "\n" << e->data.mesh.vertices[i].normal.z << "\n"
-			<< e->data.mesh.vertices[i].texCoords.x << "\n" << e->data.mesh.vertices[i].texCoords.y << "\n"
-			<< e->data.mesh.vertices[i].tangent.x << "\n" << e->data.mesh.vertices[i].tangent.y << "\n" << e->data.mesh.vertices[i].tangent.z << "\n"
-			<< e->data.mesh.vertices[i].bitangent.x << "\n" << e->data.mesh.vertices[i].bitangent.y << "\n" << e->data.mesh.vertices[i].bitangent.z << "\n";
-	}
-	for (int j = 0; j < e->data.mesh.indiceCount; ++j)
-	{
-		file << e->data.mesh.indices[j] << "\n";
-	}
+	//for (int i = 0; i < e->data.mesh.verticeCount; ++i)
+	//{
+	//   file << e->data.mesh.vertices[i].position.x << "\n" << e->data.mesh.vertices[i].position.y << "\n" << e->data.mesh.vertices[i].position.z << "\n"
+	//		<< e->data.mesh.vertices[i].normal.x << "\n" << e->data.mesh.vertices[i].normal.y << "\n" << e->data.mesh.vertices[i].normal.z << "\n"
+	//		<< e->data.mesh.vertices[i].texCoords.x << "\n" << e->data.mesh.vertices[i].texCoords.y << "\n"
+	//		<< e->data.mesh.vertices[i].tangent.x << "\n" << e->data.mesh.vertices[i].tangent.y << "\n" << e->data.mesh.vertices[i].tangent.z << "\n"
+	//		<< e->data.mesh.vertices[i].bitangent.x << "\n" << e->data.mesh.vertices[i].bitangent.y << "\n" << e->data.mesh.vertices[i].bitangent.z << "\n";
+	//}
+	//for (int j = 0; j < e->data.mesh.indiceCount; ++j)
+	//{
+	//	file << e->data.mesh.indices[j] << "\n";
+	//}
 }
 
 void LoadSceneFile(Mon::GameState* game)
@@ -274,30 +274,30 @@ void LoadSceneFile(Mon::GameState* game)
 
 			// TODO(ck): IMPORTANT(ck): Remove the rendertype we don't need this anymore EVERYTHING WILL USE AN IMP FILE
 			// Init Render data
-			e->data.mesh.type = (MonGL::RenderType)renderType;
-			if (e->name != "player")
-			{
-				switch (e->data.mesh.type)
-				{
-				case MonGL::RenderType::Quad:
-					MonGL::InitQuad(&e->data.mesh);
-					break;
-				case MonGL::RenderType::Cube:
-					MonGL::InitCube(&e->data.mesh);
-					break;
-				case MonGL::RenderType::Model:
-					// Load Imp File 
-					LoadImpFile(e, e->impPath);
-					MonGL::InitModel(&e->data);
-					break;
-				default:
-					MonGL::InitModel(&e->data);
-					break;
-				}
+			//e->data.mesh.type = (MonGL::RenderType)renderType;
+			//if (e->name != "player")
+			//{
+			//	switch (e->data.mesh.type)
+			//	{
+			//	case MonGL::RenderType::Quad:
+			//		MonGL::InitQuad(&e->data.mesh);
+			//		break;
+			//	case MonGL::RenderType::Cube:
+			//		MonGL::InitCube(&e->data.mesh);
+			//		break;
+			//	case MonGL::RenderType::Model:
+			//		// Load Imp File 
+			//		LoadImpFile(e, e->impPath);
+			//		MonGL::InitModel(&e->data);
+			//		break;
+			//	default:
+			//		MonGL::InitModel(&e->data);
+			//		break;
+			//	}
 
-				// Load textures
-				MonGL::LoadTexture(&e->data, 0, MonGL::TextureType::Diffuse, shaderID, textPath);
-			}
+			//	// Load textures
+			//	MonGL::LoadTexture(&e->data, 0, MonGL::TextureType::Diffuse, shaderID, textPath);
+			//}
 
 
 			Mon::Log::print("Entity loaded");
@@ -414,13 +414,13 @@ void TerrainWindow(bool* p_open, Mon::GameState* game)
 
 	ImGui::Text("Texture");
 	ImGui::Separator();
-	if (ImGui::Button("UV")) { game->terrain->mesh.selectedTexture = 0; }
+	if (ImGui::Button("UV")) { game->terrain->data.selectedTexture = 0; }
 	ImGui::SameLine();
-	if (ImGui::Button("Grass")) { game->terrain->mesh.selectedTexture = 1; }
+	if (ImGui::Button("Grass")) { game->terrain->data.selectedTexture = 1; }
 	ImGui::SameLine();
-	if (ImGui::Button("Pixel Grass")) { game->terrain->mesh.selectedTexture = 2; }
+	if (ImGui::Button("Pixel Grass")) { game->terrain->data.selectedTexture = 2; }
 	ImGui::SameLine();
-	if (ImGui::Button("Snow")) { game->terrain->mesh.selectedTexture = 3; }
+	if (ImGui::Button("Snow")) { game->terrain->data.selectedTexture = 3; }
 	ImGui::Separator();
 
 	ImGui::Checkbox("Wireframe", &game->terrain->wireFrame);

@@ -330,8 +330,8 @@ namespace Mon
 		// MOUSE PICKER
 		//
 		// TODO(ck): Only update the picker if we are in "picking" mode
-
-		UpdatePicker(&state->picker, state->terrain, newInput->mouseScreen, ViewMatrix(cam), Projection(cam), cam->pos);
+		MonGL::Mesh grid = state->renderer.meshes[state->terrain->data.meshIndex];
+		UpdatePicker(&state->picker, &grid, newInput->mouseScreen, ViewMatrix(cam), Projection(cam), cam->pos);
 
 		// DebugModule update?
 		// DebugManager update?
@@ -356,9 +356,9 @@ namespace Mon
 		//
 		if (state->drawCollisions)
 		{
-			MonGL::DrawBoundingBox(&state->terrain->collider.data, cam, state->renderer.program.handle);
+			//MonGL::DrawBoundingBox(&state->terrain->collider.data, cam, state->renderer.program.handle);
 		}
-		MonGL::DrawTerrain(state->renderer.program.handle, &state->terrain->mesh, &state->light, cam, state->terrain->wireFrame);
+		MonGL::DrawTerrain(&state->renderer, &state->terrain->data, &state->light, cam, state->terrain->wireFrame);
 
 		//
 		// ENTITIES
@@ -368,16 +368,16 @@ namespace Mon
 		{
 			Entity e = state->world->entities[i];
 
-			if (state->drawCollisions)
-				MonGL::DrawBoundingBox(&e.collider.data, cam, state->renderer.program.handle);
+			//if (state->drawCollisions)
+				//MonGL::DrawBoundingBox(&e.collider.data, cam, state->renderer.program.handle);
 			MonGL::Draw(&state->renderer, state->config, e.spriteAngleDegrees, &e.data, e.rb.pos, cam);
 		}
 
 		//
 		// DEBUG TOOLS
 		// 
-		MonGL::DrawLine(&state->lineOne, state->renderer.program.handle);
-		MonGL::DrawLine(&state->lineTwo, state->renderer.program.handle);
+		//MonGL::DrawLine(&state->lineOne, state->renderer.program.handle);
+		//MonGL::DrawLine(&state->lineTwo, state->renderer.program.handle);
 
 		MonGL::EndRender();
 

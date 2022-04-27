@@ -119,7 +119,6 @@ namespace MonGL
 	{
 		// TODO(ck): Index for the OpenGL meshes 
 		int meshIndex;
-		Mesh mesh;
 		Material materials[10];
 		ProgramData programData;
 		int programType;
@@ -264,18 +263,16 @@ namespace MonGL
 	// Models and assets
 	void InitInstancedData(InstancedData* data, int amount);
 	void InitQuad(Mesh* mesh, bool tangents = false);
-	void InitQuad(RenderData* data);
 	void InitCube(Mesh* mesh);
 	void InitModel(RenderData* data);
 	void InitModel(Mesh* mesh, const char* fileName);
 	void InitBoundingBox(RenderData* data);
-	void InitGrid(RenderData* data, int xSize, int zSize, float* heightMap);
 	void InitGrid(Mesh* mesh, int xSize, int zSize);
 
 
 	void Draw(OpenGL* gl, Config* config, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera);
 	void DrawBoundingBox(RenderData* data, Camera* camera, unsigned int shaderID);
-	void DrawTerrain(unsigned int shaderID, RenderData* data, Light* light, Camera* camera, bool wireFrame);
+	void DrawTerrain(OpenGL* gl, RenderData* data, Light* light, Camera* camera, bool wireFrame);
 	
 	void DrawWater(RenderData* data, RenderSetup* setup, WaterProgram* waterData, Light* light, v3 pos, v3 scale, v3 camPos, unsigned int shaderID);
 

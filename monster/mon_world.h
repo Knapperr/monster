@@ -95,7 +95,6 @@ namespace Mon {
 
 		// e->data.meshIndex = GetMesh("quad");
 		e->data.meshIndex = 1;
-		MonGL::InitQuad(&e->data);
 		e->data.scale = scale;
 		MonGL::LoadTexture(&e->data, 0, MonGL::TextureType::Diffuse, shaderHandle, texturePath);
 		e->rb.pos = pos;
@@ -108,7 +107,6 @@ namespace Mon {
 		player->name = "player";
 		player->setup = {};
 		player->data.meshIndex = 1;
-		MonGL::InitQuad(&player->data);
 
 		// IMPORTANT(ck): These cant be loaded again if they are already loaded..
 		MonGL::LoadTexture(&player->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/ch_witch.png");
@@ -141,7 +139,6 @@ namespace Mon {
 		e->name = "water";
 		e->setup = {};
 		e->data.meshIndex = 1;
-		MonGL::InitQuad(&e->data);
 
 		// IMPORTANT(ck): These cant be loaded again if they are already loaded..
 		MonGL::LoadTexture(&e->data, 0, MonGL::TextureType::Normal, shaderHandle, "res/textures/water/ripples-derivative-height.png");
@@ -227,7 +224,7 @@ namespace Mon {
 		cube->setup = {};
 		cube->name = "cube_" + std::to_string(world->entityCount-1);
 		cube->impPath = "none";
-		MonGL::InitCube(&cube->data.mesh);
+		cube->data.meshIndex = 2;
 		MonGL::LoadTexture(&cube->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/container2.png");
 		cube->rb.pos = v3(10.0f, 0.3f, 20.0f);
 		MonGL::InitBoundingBox(&cube->collider.data);
