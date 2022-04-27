@@ -210,13 +210,13 @@ namespace MonGL
 		// debug meshes
 		// collider mesh
 		AddMesh(gl);
-		//Mesh* collider = GetMesh(gl, 5);
-		//InitBoundingBox(collider);
+		Mesh* collider = GetMesh(gl, 5);
+		InitBoundingBoxMesh(collider);
 
 		// line mesh
 		AddMesh(gl);
-		//Mesh* line = GetMesh(gl, 6);
-		//InitLine(line);
+		Mesh* line = GetMesh(gl, 6);
+		InitLineMesh(line);
 
 		// empty #0 for texture
 		AddTexture(gl);
@@ -445,7 +445,7 @@ namespace MonGL
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	};
 
-	void InitBoundingBox(Mesh* mesh)
+	void InitBoundingBoxMesh(Mesh* mesh)
 	{
 		int verticeCount = 8;
 		// TODO(ck): Memory Allocation
@@ -818,7 +818,7 @@ namespace MonGL
 	/// [BEGIN] Debug Drawing
 	///
 
-	void InitLine(Mesh* mesh)
+	void InitLineMesh(Mesh* mesh)
 	{
 		int verticeCount = 2;
 		mesh->vertices = new Vertex3D[verticeCount];
@@ -845,9 +845,11 @@ namespace MonGL
 		line->data.visible = true;
 	}
 
-	void DrawLine(Line* line, unsigned int shaderID)
+	void DrawLine(OpenGL* gl, Line* line)
 	{
-		//Mesh* mesh = GetMesh(gl, line->data.meshIndex);
+		Mesh* mesh = GetMesh(gl, line->data.meshIndex);
+		unsigned int shaderID = gl->program.handle;
+
 
 		line->data.worldMatrix = mat4(1.0f);
 		line->data.worldMatrix = glm::translate(line->data.worldMatrix, line->pos);
@@ -867,10 +869,13 @@ namespace MonGL
 	}
 
 
-	void DrawBoundingBox(RenderData* data, Camera* camera, unsigned int shaderID)
+	void DrawBoundingBox(OpenGL* gl, RenderData* data, Camera* camera)
 	{
 		if (false == data->visible)
 			return;
+
+		Mesh* mesh = GetMesh(gl, data->meshIndex);
+		unsigned int shaderID = gl->program.handle;
 
 		glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camera->pos[0]);
 
@@ -882,7 +887,7 @@ namespace MonGL
 		glUniform1i(glGetUniformLocation(shaderID, "collider"), true);
 
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(data->worldMatrix));
-		//glBindVertexArray(data->mesh.VAO);
+		glBindVertexArray(mesh->VAO);
 
 		glEnable(GL_LINE_SMOOTH);
 		glLineWidth((float)data->lineWidth);
@@ -1059,10 +1064,8 @@ namespace MonGL
 	void DrawTerrain(OpenGL* gl, RenderData* data, Light* light, Camera* camera, bool wireFrame)
 	{
 		mat4 matModel = mat4(1.0f);
-		Mesh mesh = gl->meshes[data->meshIndex];
+		Mesh* mesh = GetMesh(gl, data->meshIndex);
 		unsigned int shaderID = gl->program.handle;
-
-		glUseProgram(shaderID);
 
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(Projection(camera)));
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(ViewMatrix(camera)));
@@ -1091,11 +1094,11 @@ namespace MonGL
 		glBindTexture(GL_TEXTURE_2D, data->textures[data->selectedTexture].id);
 
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
-		glBindVertexArray(mesh.VAO);
+		glBindVertexArray(mesh->VAO);
 
 		wireFrame ?
-			glDrawElements(GL_LINES, mesh.indiceCount, GL_UNSIGNED_INT, 0)
-			: glDrawElements(GL_TRIANGLES, mesh.indiceCount, GL_UNSIGNED_INT, 0);
+			glDrawElements(GL_LINES, mesh->indiceCount, GL_UNSIGNED_INT, 0)
+			: glDrawElements(GL_TRIANGLES, mesh->indiceCount, GL_UNSIGNED_INT, 0);
 
 		glBindVertexArray(0);
 		// Always good practice to set everything back to defaults once configured

@@ -257,8 +257,9 @@ namespace MonGL
 	void UseProgram(WaterProgram* program, RenderSetup setup);
 
 	// Debug lines
+	void InitLineMesh(Mesh* mesh);
 	void InitLine(Line* data);
-	void DrawLine(Line* data, unsigned int shaderID);
+	void DrawLine(OpenGL* gl, Line* data);
 
 	// Models and assets
 	void InitInstancedData(InstancedData* data, int amount);
@@ -266,12 +267,13 @@ namespace MonGL
 	void InitCube(Mesh* mesh);
 	void InitModel(RenderData* data);
 	void InitModel(Mesh* mesh, const char* fileName);
+	void InitBoundingBoxMesh(Mesh* mesh);
 	void InitBoundingBox(RenderData* data);
 	void InitGrid(Mesh* mesh, int xSize, int zSize);
 
 
 	void Draw(OpenGL* gl, Config* config, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera);
-	void DrawBoundingBox(RenderData* data, Camera* camera, unsigned int shaderID);
+	void DrawBoundingBox(OpenGL* gl, RenderData* data, Camera* camera);
 	void DrawTerrain(OpenGL* gl, RenderData* data, Light* light, Camera* camera, bool wireFrame);
 	
 	void DrawWater(RenderData* data, RenderSetup* setup, WaterProgram* waterData, Light* light, v3 pos, v3 scale, v3 camPos, unsigned int shaderID);

@@ -330,8 +330,8 @@ namespace Mon
 		// MOUSE PICKER
 		//
 		// TODO(ck): Only update the picker if we are in "picking" mode
-		MonGL::Mesh grid = state->renderer.meshes[state->terrain->data.meshIndex];
-		UpdatePicker(&state->picker, &grid, newInput->mouseScreen, ViewMatrix(cam), Projection(cam), cam->pos);
+		MonGL::Mesh* grid = MonGL::GetMesh(&state->renderer, state->terrain->data.meshIndex);
+		UpdatePicker(&state->picker, grid, newInput->mouseScreen, ViewMatrix(cam), Projection(cam), cam->pos);
 
 		// DebugModule update?
 		// DebugManager update?
@@ -347,7 +347,7 @@ namespace Mon
 		// TODO(ck): use shader
 		MonGL::UseProgram(&state->renderer.program, state->setup);
 
-
+		// TODO(ck): Remove begin render need to go through shaders after another
 		MonGL::BeginRender(state->config, Projection(cam), ViewMatrix(cam), state->renderer.program.handle);
 		//MonGL::BeginRender(state->config, Projection(cam), ViewMatrix(cam), state->waterShader.handle);
 
@@ -356,7 +356,7 @@ namespace Mon
 		//
 		if (state->drawCollisions)
 		{
-			//MonGL::DrawBoundingBox(&state->terrain->collider.data, cam, state->renderer.program.handle);
+			MonGL::DrawBoundingBox(&state->renderer, &state->terrain->collider.data, cam);
 		}
 		MonGL::DrawTerrain(&state->renderer, &state->terrain->data, &state->light, cam, state->terrain->wireFrame);
 
@@ -368,16 +368,16 @@ namespace Mon
 		{
 			Entity e = state->world->entities[i];
 
-			//if (state->drawCollisions)
-				//MonGL::DrawBoundingBox(&e.collider.data, cam, state->renderer.program.handle);
+			if (state->drawCollisions)
+				MonGL::DrawBoundingBox(&state->renderer, &e.collider.data, cam);
 			MonGL::Draw(&state->renderer, state->config, e.spriteAngleDegrees, &e.data, e.rb.pos, cam);
 		}
 
 		//
 		// DEBUG TOOLS
 		// 
-		//MonGL::DrawLine(&state->lineOne, state->renderer.program.handle);
-		//MonGL::DrawLine(&state->lineTwo, state->renderer.program.handle);
+		MonGL::DrawLine(&state->renderer, &state->lineOne);
+		MonGL::DrawLine(&state->renderer, &state->lineTwo);
 
 		MonGL::EndRender();
 
