@@ -546,7 +546,6 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 	}
 #endif
 
-
 	for (unsigned int i = 1; i < game->world->entityCount; ++i)
 	{
 		char label[128];

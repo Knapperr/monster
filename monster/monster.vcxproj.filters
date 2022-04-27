@@ -108,6 +108,9 @@
     <ClCompile Include="mon_collider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="mon_assets.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mon_texture.h">
@@ -201,6 +204,9 @@
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="mon_collider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mon_assets.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

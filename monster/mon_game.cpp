@@ -106,6 +106,12 @@ namespace Mon
 
 	bool InitGame(GameState* state, int windowWidth, int windowHeight, float portWidth, float portHeight)
 	{
+		//
+		// Initialize Assets for game here
+		//
+		InitAssets(g_Assets);
+
+
 		state->mode = Mode::Debug;
 		state->renderer = {};
 		MonGL::InitRenderer(&state->renderer);
@@ -330,7 +336,7 @@ namespace Mon
 		// MOUSE PICKER
 		//
 		// TODO(ck): Only update the picker if we are in "picking" mode
-		MonGL::Mesh* grid = MonGL::GetMesh(&state->renderer, state->terrain->data.meshIndex);
+		MonGL::Mesh* grid = MonGL::GetMesh(g_Assets, state->terrain->data.meshIndex);
 		UpdatePicker(&state->picker, grid, newInput->mouseScreen, ViewMatrix(cam), Projection(cam), cam->pos);
 
 		// DebugModule update?

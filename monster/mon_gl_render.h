@@ -2,8 +2,7 @@
 #define MON_GL_RENDER_H
 
 #include "mon_shader.h"
-#include "mon_texture.h"
-#include "mon_camera.h"
+#include "mon_assets.h"
 
 #include <vector>
 #include <stack>
@@ -48,15 +47,6 @@ namespace MonGL
 		v3 tangent;
 		v3 bitangent;
 	};
-
-	enum class RenderType
-	{
-		None,
-		Model,
-		Quad,
-		Cube,
-		Debug,
-	};
 	
 	// TODO(ck): RenderData is the entities draw data I can
 	// probably get rid of it and have an openGL struct that has the VAO, VBO, IBO 
@@ -64,19 +54,6 @@ namespace MonGL
 	// of the entity?
 	// I guess the opengl struct even keeps the textures and stuff in it too its controlling
 	// and doing everything.
-
-	struct Mesh
-	{
-		unsigned int VAO;
-		unsigned int VBO;
-		unsigned int IBO;
-		int verticeCount;
-		int indiceCount;
-		RenderType type;
-
-		Vertex3D* vertices;
-		unsigned int* indices;
-	};
 
 	struct RenderSetup
 	{
@@ -166,14 +143,9 @@ namespace MonGL
 
 		resource manager for this?
 	*/
+	
 	struct OpenGL
 	{
-		// Data that renderdata can hold
-		Mesh meshes[10]; // TODO(ck): SQLite config for size
-		Texture textures[30]; // TODO(ck): SQLite config for size
-		int meshCount;
-		int textureCount;
-
 		CommonProgram program;
 		WaterProgram waterProgram;
 	};
@@ -243,8 +215,8 @@ namespace MonGL
 	// Renderer 
 	//
 	void LoadTexture(RenderData* data, int index, TextureType type, int shaderID, std::string path, bool pixelTexture = true);
-	void LoadTexture(Texture* texture, TextureType type, int shaderID, std::string path, bool pixelTexture = true);
 	void InitRenderer(OpenGL* gl);
+	void UploadOpenGLMesh(Mesh* mesh);
 
 
 	void BeginRender(Config* config, mat4 projection, mat4 view, int shaderID);
@@ -261,16 +233,10 @@ namespace MonGL
 	void InitLine(Line* data);
 	void DrawLine(OpenGL* gl, Line* data);
 
-	// Models and assets
+	// Render data 
 	void InitInstancedData(InstancedData* data, int amount);
-	void InitQuad(Mesh* mesh, bool tangents = false);
-	void InitCube(Mesh* mesh);
 	void InitModel(RenderData* data);
-	void InitModel(Mesh* mesh, const char* fileName);
-	void InitBoundingBoxMesh(Mesh* mesh);
 	void InitBoundingBox(RenderData* data);
-	void InitGrid(Mesh* mesh, int xSize, int zSize);
-
 
 	void Draw(OpenGL* gl, Config* config, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera);
 	void DrawBoundingBox(OpenGL* gl, RenderData* data, Camera* camera);
@@ -279,47 +245,6 @@ namespace MonGL
 	void DrawWater(RenderData* data, RenderSetup* setup, WaterProgram* waterData, Light* light, v3 pos, v3 scale, v3 camPos, unsigned int shaderID);
 
 	void EndRender();
-
-	static unsigned int AddMesh(OpenGL* gl)
-	{
-		unsigned int index = gl->meshCount++;
-
-		Mesh* mesh = &gl->meshes[index];
-		mesh = {};
-
-		return index;
-	}
-
-	static Mesh* GetMesh(OpenGL* gl, unsigned int index)
-	{
-		Mesh* mesh = 0;
-		if ((index > 0) && (index < ArrayCount(gl->meshes)))
-		{
-			mesh = &gl->meshes[index];
-		}
-		return mesh;
-	}
-
-	static unsigned int AddTexture(OpenGL* gl)
-	{
-		unsigned int index = gl->textureCount++;
-
-		Texture* texture = &gl->textures[index];
-		texture = {};
-
-		return index;
-	}
-
-	static Texture* GetTexture(OpenGL* gl, unsigned int index)
-	{
-		Texture* t = 0;
-		if ((index > 0) && (index < ArrayCount(gl->textures)))
-		{
-			t = &gl->textures[index];
-		}
-		return t;
-	}
-
 
 	//
 	// 2d
@@ -347,4 +272,6 @@ namespace MonGL
 
 
 }
-#endif
+#endif // MON_GL_RENDER_H
+
+

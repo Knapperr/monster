@@ -18,85 +18,11 @@ namespace MonGL
 		glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
 	}
 
-	void LoadTexture(Texture* texture, TextureType type, int shaderID, std::string path, bool pixelTexture)
-	{
-		LoadTextureFile(texture, path.c_str(), type, false, true, true, pixelTexture);
-		glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
-	}
-
-#include <fstream>
-#include <string>
-	void LoadImpFile(Mesh* mesh, const char* fileName)
-	{
-		std::ifstream file(fileName);
-		file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-		int index;
-		try
-		{
-			if (!file.is_open())
-			{
-				Mon::Log::print("Failure to open file");
-			}
-
-			std::string line;
-			while (file >> line)
-			{
-				// TODO(ck): Remove name from .imp file shouldn't have a name
-				// its just triangles that the entity is quickly loading
-				std::string nameLine = line;
-				file >> mesh->verticeCount;
-				file >> mesh->indiceCount;
-				break;
-			}
-
-			mesh->vertices = new MonGL::Vertex3D[mesh->verticeCount];
-			mesh->indices = new unsigned int[mesh->indiceCount];
-
-			while (file >> line)
-			{
-				for (int i = 0; i < mesh->verticeCount; ++i)
-				{
-					index = i;
-
-					if (i == 0)
-						mesh->vertices[i].position.x = std::stof(line);
-					else
-						file >> mesh->vertices[i].position.x;
-
-					file >> mesh->vertices[i].position.y;
-					file >> mesh->vertices[i].position.z;
-					file >> mesh->vertices[i].normal.x;
-					file >> mesh->vertices[i].normal.y;
-					file >> mesh->vertices[i].normal.z;
-					file >> mesh->vertices[i].texCoords.x;
-					file >> mesh->vertices[i].texCoords.y;
-					file >> mesh->vertices[i].tangent.x;
-					file >> mesh->vertices[i].tangent.y;
-					file >> mesh->vertices[i].tangent.z;
-					file >> mesh->vertices[i].bitangent.x;
-					file >> mesh->vertices[i].bitangent.y;
-					file >> mesh->vertices[i].bitangent.z;
-				}
-
-				for (int j = 0; j < mesh->indiceCount; ++j)
-				{
-					index = j;
-					file >> mesh->indices[j];
-				}
-
-				// finished
-				break;
-			}
-		}
-		catch (std::ifstream::failure& ex)
-		{
-			Mon::Log::print("File read failed");
-			Mon::Log::print(ex.what());
-			int x = index;
-		}
-
-		file.close();
-	}
+	//void LoadTexture(Texture* texture, TextureType type, int shaderID, std::string path, bool pixelTexture)
+	//{
+	//	LoadTextureFile(texture, path.c_str(), type, false, true, true, pixelTexture);
+	//	glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
+	//}
 
 	void UploadOpenGLMesh(Mesh* mesh)
 	{
@@ -175,86 +101,7 @@ namespace MonGL
 		// TODO(ck): Do not need this now?
 		//state->mainShaderID = state->shader.handle;
 
-		/*
-		// might need dynamic mesh for animations 
-		// if a vao needs to change it has to be updated
-		// and these are going to stay the same
 
-		// quad mesh - only need one because everything is using it
-		we can batch later 
-		*/
-		//empty mesh #0
-		AddMesh(gl);
-
-		// quad mesh #1
-		AddMesh(gl);
-		Mesh* quadMesh = GetMesh(gl, 1);
-		MonGL::InitQuad(quadMesh);
-
-		//cube mesh #2
-		AddMesh(gl);
-		Mesh* cubeMesh = GetMesh(gl, 2);
-		MonGL::InitCube(cubeMesh);
-		
-		//grass mesh #3 
-		AddMesh(gl);
-		Mesh* grassMesh = GetMesh(gl, 3);
-		InitModel(grassMesh, "test_grass.imp");
-
-		// This is for the terrain
-		//grid mesh #4 ??
-		AddMesh(gl);
-		Mesh* gridMesh = GetMesh(gl, 4);
-		InitGrid(gridMesh, 64, 64);
-
-		// debug meshes
-		// collider mesh
-		AddMesh(gl);
-		Mesh* collider = GetMesh(gl, 5);
-		InitBoundingBoxMesh(collider);
-
-		// line mesh
-		AddMesh(gl);
-		Mesh* line = GetMesh(gl, 6);
-		InitLineMesh(line);
-
-		// empty #0 for texture
-		AddTexture(gl);
-		
-		//
-		// TODO(ck): Need a texture atlas rather than loading all of these
-		// textures for the entities
-		//
-
-		AddTexture(gl);
-		Texture* t1 = GetTexture(gl, 1);
-		AddTexture(gl);
-		Texture* t2 = GetTexture(gl, 2);
-		AddTexture(gl);
-		Texture* t3 = GetTexture(gl, 3);
-		AddTexture(gl);
-		Texture* t4 = GetTexture(gl, 4);
-		LoadTexture(t1, MonGL::TextureType::Diffuse, gl->program.handle, "res/textures/ch_witch.png");
-		LoadTexture(t2, MonGL::TextureType::Diffuse, gl->program.handle, "res/textures/p1.png");
-		LoadTexture(t3, MonGL::TextureType::Diffuse, gl->program.handle, "res/textures/p1SIDE.png");
-		LoadTexture(t4, MonGL::TextureType::Diffuse, gl->program.handle, "res/textures/p1BACK.png");
-
-		AddTexture(gl);
-		Texture* t5 = GetTexture(gl, 5);
-		LoadTexture(t5, MonGL::TextureType::Diffuse, gl->program.handle, "res/textures/water/ripples-derivative-height.png");
-		AddTexture(gl);
-		Texture* t6 = GetTexture(gl, 6);
-		LoadTexture(t6, MonGL::TextureType::Normal, gl->program.handle, "res/textures/water/flow-speed-noise.png");
-		
-		// more textures 
-	
-		// minion
-
-		// tree
-		
-		// flower
-
-		// terrain grid textures
 
 
 	}
@@ -323,73 +170,6 @@ namespace MonGL
 	/// [BEGIN] Init RenderData
 	///
 
-	void InitQuad(Mesh* mesh, bool tangents)
-	{
-		int verticeCount = 4;
-		// TODO(ck): Memory Allocation
-		mesh->vertices = new Vertex3D[verticeCount];
-		mesh->vertices[0].position = v3(0.5f, 0.5f, 0.0f);
-		mesh->vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[0].texCoords = v2(1.0f, 1.0f);
-
-		mesh->vertices[1].position = v3(0.5f, -0.5f, 0.0f);
-		mesh->vertices[1].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[1].texCoords = v2(1.0f, 0.0f);
-
-		mesh->vertices[2].position = v3(-0.5f, -0.5f, 0.0f);
-		mesh->vertices[2].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[2].texCoords = v2(0.0f, 0.0f);
-
-		mesh->vertices[3].position = v3(-0.5f, 0.5f, 0.0f);
-		mesh->vertices[3].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[3].texCoords = v2(0.0f, 1.0f);
-
-		// TODO(ck): split out
-		if (tangents)
-		{
-			//data->vertices.clear();
-			v3 pos1(0.5f, 0.5f, 0.0f);
-			v3 pos2(0.5f, -0.5f, 0.0f);
-			v3 pos3(-0.5f, -0.5f, 0.0f);
-			v3 pos4(-0.5f, 0.5f, 0.0f);
-
-			v2 uv1(1.0f, 1.0f);
-			v2 uv2(1.0f, 0.0f);
-			v2 uv3(0.0f, 0.0f);
-			v2 uv4(0.0f, 1.0f);
-
-			v3 normal(1.0f, 1.0f, 1.0f);
-
-			v3 edge1 = pos2 - pos1;
-			v3 edge2 = pos3 - pos1;
-			v2 deltaUV1 = uv2 - uv1;
-			v2 deltaUV2 = uv3 - uv1;
-
-			float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
-
-			//v3 tangent1, bitangent1;
-			//v3 tangent2, bitangent2;
-
-
-			f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
-		}
-
-		int indiceCount = 6;
-		mesh->indices = new unsigned int[indiceCount];
-		mesh->indices[0] = 0;
-		mesh->indices[1] = 1;
-		mesh->indices[2] = 3;
-		mesh->indices[3] = 1;
-		mesh->indices[4] = 2;
-		mesh->indices[5] = 3;
-
-		mesh->verticeCount = verticeCount;
-		mesh->indiceCount = indiceCount;
-		mesh->type = RenderType::Quad;
-		UploadOpenGLMesh(mesh);
-	}
-
-
 	void InitBatchData(int amount)
 	{
 		// These will be figured out after looping our tilemap and pushing quads
@@ -445,53 +225,6 @@ namespace MonGL
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	};
 
-	void InitBoundingBoxMesh(Mesh* mesh)
-	{
-		int verticeCount = 8;
-		// TODO(ck): Memory Allocation
-		mesh->vertices = new Vertex3D[verticeCount];
-		mesh->vertices[0].position = v3(-0.5, -0.5, -0.5);
-		mesh->vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[0].texCoords = v2(0.0f, 0.0f);
-		mesh->vertices[1].position = v3(0.5, -0.5, -0.5);
-		mesh->vertices[1].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[1].texCoords = v2(0.0f, 0.0f);
-		mesh->vertices[2].position = v3(0.5, 0.5, -0.5);
-		mesh->vertices[2].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[2].texCoords = v2(0.0f, 0.0f);
-		mesh->vertices[3].position = v3(-0.5, 0.5, -0.5);
-		mesh->vertices[3].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[3].texCoords = v2(0.0f, 0.0f);
-
-		mesh->vertices[4].position = v3(-0.5, -0.5, 0.5);
-		mesh->vertices[4].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[4].texCoords = v2(0.0f, 0.0f);
-		mesh->vertices[5].position = v3(0.5, -0.5, 0.5);
-		mesh->vertices[5].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[5].texCoords = v2(0.0f, 0.0f);
-		mesh->vertices[6].position = v3(0.5, 0.5, 0.5);
-		mesh->vertices[6].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[6].texCoords = v2(0.0f, 0.0f);
-		mesh->vertices[7].position = v3(-0.5, 0.5, 0.5);
-		mesh->vertices[7].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[7].texCoords = v2(0.0f, 0.0f);
-
-		GLushort elements[] = {
-			0, 1, 2, 3, // front 
-			4, 5, 6, 7, // back
-			0, 4, 1, 5, 2, 6, 3, 7 // back
-		};
-		int indiceCount = sizeof(elements) / sizeof(elements[0]);
-		mesh->indices = (unsigned int*)elements;
-
-		// Set world matrix to be the same size as the bounding box
-		//data->worldMatrix = GetTransform(&data->size);
-
-		mesh->verticeCount = verticeCount;
-		mesh->indiceCount = indiceCount;
-		UploadOpenGLMesh(mesh);
-	}
-
 	void InitBoundingBox(RenderData* data)
 	{
 		data->lineWidth = 2;
@@ -500,150 +233,11 @@ namespace MonGL
 		data->visible = true;
 	}
 
-
-	void InitCube(Mesh* mesh)
-	{
-		// Load from .vt file (need to do efficient as possible)
-		// maybe dont need to do this but?? tilemap does a quad and its a huge
-		// cubes can just be created with a macro PUSH_CUBE PUSH_QUAD x4?
-		int verticeCount = 36;
-		// TODO(ck): Memory Allocation
-		mesh->vertices = new Vertex3D[verticeCount];
-		
-		// TODO(ck): ADD QUAD method
-		mesh->vertices[0].position = v3(-0.5f, -0.5f, -0.5f);
-		mesh->vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[0].texCoords = v2(0.0f, 0.0f);
-		mesh->vertices[1].position = v3(0.5f, -0.5f, -0.5f);
-		mesh->vertices[1].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[1].texCoords = v2(1.0f, 0.0f);
-		mesh->vertices[2].position = v3(0.5f, 0.5f, -0.5f);
-		mesh->vertices[2].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[2].texCoords = v2(1.0f, 1.0f);
-		mesh->vertices[3].position = v3(0.5f, 0.5f, -0.5f);
-		mesh->vertices[3].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[3].texCoords = v2(1.0f, 1.0f);
-		mesh->vertices[4].position = v3(-0.5f, 0.5f, -0.5f);
-		mesh->vertices[4].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[4].texCoords = v2(0.0f, 1.0f);
-		mesh->vertices[5].position = v3(-0.5f, -0.5f, -0.5f);
-		mesh->vertices[5].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[5].texCoords = v2(0.0f, 0.0f);
-		  
-		mesh->vertices[6].position = v3(-0.5f, -0.5f, 0.5f);
-		mesh->vertices[6].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[6].texCoords = v2(0.0f, 0.0f);
-		mesh->vertices[7].position = v3(0.5f, -0.5f, 0.5f);
-		mesh->vertices[7].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[7].texCoords = v2(1.0f, 0.0f);
-		mesh->vertices[8].position = v3(0.5f, 0.5f, 0.5f);
-		mesh->vertices[8].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[8].texCoords = v2(1.0f, 1.0f);
-		mesh->vertices[9].position = v3(0.5f, 0.5f, 0.5f);
-		mesh->vertices[9].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[9].texCoords = v2(1.0f, 1.0f);
-		mesh->vertices[10].position = v3(-0.5f, 0.5f, 0.5f);
-		mesh->vertices[10].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[10].texCoords = v2(0.0f, 1.0f);
-		mesh->vertices[11].position = v3(-0.5f, -0.5f, 0.5f);
-		mesh->vertices[11].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[11].texCoords = v2(0.0f, 0.0f);
-		
-		mesh->vertices[12].position = v3(-0.5f, 0.5f, 0.5f);
-		mesh->vertices[12].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[12].texCoords = v2(1.0f, 0.0f);
-		mesh->vertices[13].position = v3(-0.5f, 0.5f, -0.5f);
-		mesh->vertices[13].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[13].texCoords = v2(1.0f, 1.0f);
-		mesh->vertices[14].position = v3(-0.5f, -0.5f, -0.5f);
-		mesh->vertices[14].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[14].texCoords = v2(0.0f, 1.0f);
-		mesh->vertices[15].position = v3(-0.5f, -0.5f, -0.5f);
-		mesh->vertices[15].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[15].texCoords = v2(0.0f, 1.0f);
-		mesh->vertices[16].position = v3(-0.5f, -0.5f, 0.5f);
-		mesh->vertices[16].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[16].texCoords = v2(0.0f, 0.0f);
-		mesh->vertices[17].position = v3(-0.5f, 0.5f, 0.5f);
-		mesh->vertices[17].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[17].texCoords = v2(1.0f, 0.0f);
-
-		mesh->vertices[18].position = v3(0.5f, 0.5f, 0.5f);
-		mesh->vertices[18].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[18].texCoords = v2(1.0f, 0.0f);
-		mesh->vertices[19].position = v3(0.5f, 0.5f, -0.5f);
-		mesh->vertices[19].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[19].texCoords = v2(1.0f, 1.0f);
-		mesh->vertices[20].position = v3(0.5f, -0.5f, -0.5f);
-		mesh->vertices[20].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[20].texCoords = v2(0.0f, 1.0f);
-		mesh->vertices[21].position = v3(0.5f, -0.5f, -0.5f);
-		mesh->vertices[21].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[21].texCoords = v2(0.0f, 1.0f);
-		mesh->vertices[22].position = v3(0.5f, -0.5f, 0.5f);
-		mesh->vertices[22].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[22].texCoords = v2(0.0f, 0.0f);
-		mesh->vertices[23].position = v3(0.5f, 0.5f, 0.5f);
-		mesh->vertices[23].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[23].texCoords = v2(1.0f, 0.0f);
-
-		mesh->vertices[24].position = v3(-0.5f, -0.5f, -0.5f);
-		mesh->vertices[24].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[24].texCoords = v2(0.0f, 1.0f);
-		mesh->vertices[25].position = v3(0.5f, -0.5f, -0.5f);
-		mesh->vertices[25].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[25].texCoords = v2(1.0f, 1.0f);
-		mesh->vertices[26].position = v3(0.5f, -0.5f, 0.5f);
-		mesh->vertices[26].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[26].texCoords = v2(1.0f, 0.0f);
-		mesh->vertices[27].position = v3(0.5f, -0.5f, 0.5f);
-		mesh->vertices[27].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[27].texCoords = v2(1.0f, 0.0f);
-		mesh->vertices[28].position = v3(-0.5f, -0.5f, 0.5f);
-		mesh->vertices[28].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[28].texCoords = v2(0.0f, 0.0f);
-		mesh->vertices[29].position = v3(-0.5f, -0.5f, -0.5f);
-		mesh->vertices[29].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[29].texCoords = v2(0.0f, 1.0f);
-
-		mesh->vertices[30].position = v3(-0.5f, 0.5f, -0.5f);
-		mesh->vertices[30].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[30].texCoords = v2(0.0f, 1.0f);
-		mesh->vertices[31].position = v3(0.5f, 0.5f, -0.5f);
-		mesh->vertices[31].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[31].texCoords = v2(1.0f, 1.0f);
-		mesh->vertices[32].position = v3(0.5f, 0.5f, 0.5f);
-		mesh->vertices[32].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[32].texCoords = v2(1.0f, 0.0f);
-		mesh->vertices[33].position = v3(0.5f, 0.5f, 0.5f);
-		mesh->vertices[33].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[33].texCoords = v2(1.0f, 0.0f);
-		mesh->vertices[34].position = v3(-0.5f, 0.5f, 0.5f);
-		mesh->vertices[34].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[34].texCoords = v2(0.0f, 0.0f);
-		mesh->vertices[35].position = v3(-0.5f, 0.5f, -0.5f);
-		mesh->vertices[35].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[35].texCoords = v2(0.0f, 1.0f);
-
-
-		mesh->type = RenderType::Cube;
-		mesh->verticeCount = verticeCount;
-		mesh->indiceCount = 0;
-		UploadOpenGLMesh(mesh);
-	}
-
 	void InitCube(RenderData* data)
 	{
 		data->visible = true;
 		data->scale = v3(1.0f);
 		data->meshIndex = 2;
-	}
-
-	void InitModel(Mesh* mesh, const char* fileName)
-	{
-		LoadImpFile(mesh, fileName);
-		mesh->type = RenderType::Model;
-		UploadOpenGLMesh(mesh);
 	}
 
 	// TODO(ck): can remove this?
@@ -659,138 +253,6 @@ namespace MonGL
 		data->amount = amount;
 		InitModel(&data->renderData);
 		data->matrices = new mat4[data->amount];
-	}
-
-	void InitGrid(Mesh* mesh, int xSize, int zSize)
-	{
-		// TODO(ck): 
-/*
-	Keep this as basic grid but make a new grid that is batched?
-	can create the Grid struct and then have a batcher that it uploads
-	itself too. that way we can start creating terrain?
-
-	each cell is about the same size as 16 pixel texture wide... is there a way to define
-	this in our vertices?
-
-	can try and use ArrayTextures for this as well so there is no texture bleeding???
-	we can get that DS game look using this
-
-
-*/
-		int verticeCount = (xSize + 1) * (zSize + 1);
-		mesh->vertices = new Vertex3D[verticeCount];
-		for (int index = 0, z = 0; z <= zSize; z++)
-		{
-			for (int x = 0; x <= xSize; x++, index++)
-			{
-				mesh->vertices[index] = {};
-				mesh->vertices[index].position.x = x;
-				mesh->vertices[index].position.y = -0.5f;
-				mesh->vertices[index].position.z = z;
-
-				mesh->vertices[index].normal.x = 0;
-				mesh->vertices[index].normal.y = 1;
-				mesh->vertices[index].normal.z = 0;
-
-				mesh->vertices[index].texCoords.x = (float)x / (float)xSize;
-				mesh->vertices[index].texCoords.y = (float)z / (float)zSize;
-			}
-		}
-
-		/*
-		*   NOTE(ck):
-			build our grid using this method?
-
-			for (int index = 0; i < sizeof(Grid); ++i)
-			{
-				data->vertices[index].position.x = grid[index].x;
-				data->vertices[index].position.y = -0.5;
-				data->vertices[index].position.z = grid[index].z;
-
-			}
-
-
-			NOTE(ck): This is from RPG Paper Maker they use a square size
-			void Grid::initializeVertices(int w, int h, int squareSize) {
-				m_vertices.clear();
-
-				float w_f = (float)w, h_f = (float)h, squareSize_f = (float)squareSize;
-
-				for (int i = 0; i <= w; i++){
-					m_vertices.push_back(QVector3D((i * squareSize_f), 0.0f, 0.0f));
-					m_vertices.push_back(QVector3D((i * squareSize_f), 0.0f,
-												   squareSize_f * h_f));
-				}
-				for (int i = 0; i <= h; i++){
-					m_vertices.push_back(QVector3D(0.0f, 0.0f,(i*squareSize_f)));
-					m_vertices.push_back(QVector3D(squareSize_f * w_f, 0.0f,
-												   (i * squareSize_f)));
-				}
-			}
-
-			NOTE(ck): looks like they are adding 0.5 to the world position just like i am in the verts
-			I wonder why they are doing the grid size like that? why does mine work?
-
-			void Grid::paintGL(QMatrix4x4& modelviewProjection, int y) {
-				m_program->bind();
-				m_program->setUniformValue(u_modelviewProjection, modelviewProjection);
-				m_program->setUniformValue(u_yPosition, y + 0.5f);
-				{
-				  m_vao.bind();
-				  glDrawArrays(GL_LINES, 0, m_vertices.size());
-				  m_vao.release();
-				}
-				m_program->release();
-			}
-
-
-		*/
-
-		int indiceCount = xSize * zSize * 6;
-		mesh->indices = new unsigned int[indiceCount];
-		for (int ti = 0, vi = 0, z = 0; z < zSize; z++, vi++)
-		{
-			for (int x = 0; x < xSize; x++, ti += 6, vi++)
-			{
-				mesh->indices[ti] = vi;
-				mesh->indices[ti + 3] = mesh->indices[ti + 2] = vi + 1;
-				mesh->indices[ti + 4] = mesh->indices[ti + 1] = vi + xSize + 1;
-				mesh->indices[ti + 5] = vi + xSize + 2;
-			}
-		}
-
-		mesh->verticeCount = verticeCount;
-		mesh->indiceCount = indiceCount;
-		UploadOpenGLMesh(mesh);
-
-		//data->mat = {};
-		//data->mat.ambient = v3(1.0f, 0.5f, 0.6f);
-		//data->mat.diffuse = v3(1.0f, 0.5f, 0.31f);
-		//data->mat.specular = v3(0.5f, 0.5f, 0.5f);
-		//data->mat.shininess = 32.0f;
-		
-		
-		// Set texture indexes
-		//std::string textPath = "res/textures/terrain/1024multi.png";
-		//Texture text = {};
-		//data->textures[0] = text;
-		//LoadTextureFile(&data->textures[0], textPath.c_str(), TextureType::Diffuse, false, false, true, false);
-
-		//textPath = "res/textures/terrain/grass.jpg";
-		//Texture text1 = {};
-		//data->textures[1] = text1;
-		//LoadTextureFile(&data->textures[1], textPath.c_str(), TextureType::Diffuse, false, false, true, false);
-
-		//textPath = "res/textures/terrain/pix_grass.png";
-		//Texture text2 = {};
-		//data->textures[2] = text2;
-		//LoadTextureFile(&data->textures[2], textPath.c_str(), TextureType::Diffuse, false, false, true, true);
-
-		//textPath = "res/textures/terrain/snow.jpg";
-		//Texture text3 = {};
-		//data->textures[3] = text3;
-		//LoadTextureFile(&data->textures[3], textPath.c_str(), TextureType::Diffuse, false, false, true, false);
-
 	}
 
 	/// 
@@ -818,25 +280,6 @@ namespace MonGL
 	/// [BEGIN] Debug Drawing
 	///
 
-	void InitLineMesh(Mesh* mesh)
-	{
-		int verticeCount = 2;
-		mesh->vertices = new Vertex3D[verticeCount];
-
-		mesh->vertices[0].position = v3(0.0f, 0.0f, 1.0f);
-		mesh->vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[0].texCoords = v2(1.0f, 1.0f);
-
-		mesh->vertices[1].position = v3(0.0f, 0.0f, 50.0f);
-		mesh->vertices[1].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[1].texCoords = v2(1.0f, 1.0f);
-
-		mesh->verticeCount = verticeCount;
-		mesh->indiceCount = 0;
-		mesh->type = RenderType::Debug;
-		UploadOpenGLMesh(mesh);
-	}
-
 	void InitLine(Line* line)
 	{
 		// TODO(ck): Memory Allocation
@@ -847,7 +290,7 @@ namespace MonGL
 
 	void DrawLine(OpenGL* gl, Line* line)
 	{
-		Mesh* mesh = GetMesh(gl, line->data.meshIndex);
+		Mesh* mesh = GetMesh(g_Assets, line->data.meshIndex);
 		unsigned int shaderID = gl->program.handle;
 
 
@@ -874,7 +317,7 @@ namespace MonGL
 		if (false == data->visible)
 			return;
 
-		Mesh* mesh = GetMesh(gl, data->meshIndex);
+		Mesh* mesh = GetMesh(g_Assets, data->meshIndex);
 		unsigned int shaderID = gl->program.handle;
 
 		glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camera->pos[0]);
@@ -910,7 +353,7 @@ namespace MonGL
 	// TODO(ck): Maybe pass OpenGL to this then we have all the data?
 	void Draw(OpenGL* gl, Config* config, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera)
 	{
-		Mesh* mesh = GetMesh(gl, data->meshIndex);
+		Mesh* mesh = GetMesh(g_Assets, data->meshIndex);
 
 		// which program to use is determined by renderData program type?
 		// gl->program.handle
@@ -1064,7 +507,7 @@ namespace MonGL
 	void DrawTerrain(OpenGL* gl, RenderData* data, Light* light, Camera* camera, bool wireFrame)
 	{
 		mat4 matModel = mat4(1.0f);
-		Mesh* mesh = GetMesh(gl, data->meshIndex);
+		Mesh* mesh = GetMesh(g_Assets, data->meshIndex);
 		unsigned int shaderID = gl->program.handle;
 
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(Projection(camera)));
