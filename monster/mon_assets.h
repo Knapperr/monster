@@ -1,7 +1,6 @@
 #ifndef MON_ASSETS_H
 #define MON_ASSETS_H
 
-#include "mon_texture.h"
 #include "mon_camera.h"
 
 namespace MonGL
@@ -18,6 +17,26 @@ namespace Mon
 		Quad,
 		Cube,
 		Debug,
+	};
+
+	enum class ImageType
+	{
+		PNG,
+		JPG,
+		BITMAP
+	};
+
+	struct Image
+	{
+		unsigned char* data;
+		int width;
+		int height;
+		int nrChannels;
+		ImageType type;
+
+		// check to see if loaded and return back texture to it?
+		// set this texture index and if its not 0 that means we have loaded it
+		int textureIndex;
 	};
 
 	struct Mesh
@@ -40,12 +59,16 @@ namespace Mon
 	void InitBoundingBoxMesh(Mesh* mesh);
 	void InitLineMesh(Mesh* mesh);
 
+	void InitImage(Image* image, const char* file);
+	void FreeStbImage(Image* image);
+
+
 	// global struct for accessing assets
 	struct Assets
 	{
 		Mesh meshes[10];				// TODO(ck): SQLite config for size
-		MonGL::Texture textures[30];	// TODO(ck): SQLite config for size
-
+		Image images[20];				// TODO(ck): SQLite config for size
+		
 		int meshCount;
 		int textureCount;
 	};
@@ -70,31 +93,26 @@ namespace Mon
 		return mesh;
 	}
 
-	static unsigned int AddTexture(Assets* assets)
+	static unsigned int AddImage(Assets* assets)
 	{
 		unsigned int index = assets->textureCount++;
 
-		MonGL::Texture* texture = &assets->textures[index];
-		texture = {};
+		Image* img = &assets->images[index];
+		img = {};
 
 		return index;
 	}
 
-	static MonGL::Texture* GetTexture(Assets* assets, unsigned int index)
+	static Image* GetImage(Assets* assets, unsigned int index)
 	{
-		MonGL::Texture* t = 0;
-		if ((index > 0) && (index < ArrayCount(assets->textures)))
+		Image* img = 0;
+		if ((index > 0) && (index < ArrayCount(assets->images)))
 		{
-			t = &assets->textures[index];
+			img = &assets->images[index];
 		}
-		return t;
+		return img;
 	}
 
-
-	static void LoadTexture(MonGL::Texture* texture, MonGL::TextureType type, std::string path, bool pixelTexture = false)
-	{
-		LoadTextureFile(texture, path.c_str(), type, false, true, true, pixelTexture);
-	}
 
 	static void InitAssets(Assets* assets)
 	{
@@ -142,43 +160,49 @@ namespace Mon
 		Mesh* line = GetMesh(assets, 6);
 		InitLineMesh(line);
 
-		// empty #0 for texture
-		AddTexture(assets);
 
-		//
-		// TODO(ck): Need a texture atlas rather than loading all of these
-		// textures for the entities
-		//
+		// empty #0 for image
+		AddImage(assets);
 
-		AddTexture(assets);
-		MonGL::Texture* t1 = GetTexture(assets, 1);
-		AddTexture(assets);
-		MonGL::Texture* t2 = GetTexture(assets, 2);
-		AddTexture(assets);
-		MonGL::Texture* t3 = GetTexture(assets, 3);
-		AddTexture(assets);
-		MonGL::Texture* t4 = GetTexture(assets, 4);
-		LoadTexture(t1, MonGL::TextureType::Diffuse, "res/textures/ch_witch.png");
-		LoadTexture(t2, MonGL::TextureType::Diffuse, "res/textures/p1.png");
-		LoadTexture(t3, MonGL::TextureType::Diffuse, "res/textures/p1SIDE.png");
-		LoadTexture(t4, MonGL::TextureType::Diffuse, "res/textures/p1BACK.png");
+		AddImage(assets);
+		Image* witchImg = GetImage(assets, 1);
+		InitImage(witchImg, "res/textures/ch_witch.png");
 
-		AddTexture(assets);
-		MonGL::Texture* t5 = GetTexture(assets, 5);
-		LoadTexture(t5, MonGL::TextureType::Diffuse, "res/textures/water/ripples-derivative-height.png");
-		AddTexture(assets);
-		MonGL::Texture* t6 = GetTexture(assets, 6);
-		LoadTexture(t6, MonGL::TextureType::Normal, "res/textures/water/flow-speed-noise.png");
+		AddImage(assets);
+		Image* p1 = GetImage(assets, 2);
+		InitImage(p1, "res/textures/p1.png");
 
-		// more textures 
+		AddImage(assets);
+		Image* p1Side = GetImage(assets, 3);
+		InitImage(p1Side, "res/textures/p1SIDE.png");
 
-		// minion
+		AddImage(assets);
+		Image* p1Back = GetImage(assets, 4);
+		InitImage(p1Back, "res/textures/p1BACK.png");
 
-		// tree
+		AddImage(assets);
+		Image* waterDeriv = GetImage(assets, 5);
+		InitImage(waterDeriv, "res/textures/water/ripples-derivative-height.png");
 
-		// flower
+		AddImage(assets);
+		Image* waterFlow = GetImage(assets, 6);
+		InitImage(waterFlow, "res/textures/water/flow-speed-noise.png");
 
-		// terrain grid textures
+		AddImage(assets);
+		Image* tree = GetImage(assets, 7);
+		InitImage(tree, "res/textures/tree.png");
+
+		AddImage(assets);
+		Image* container = GetImage(assets, 8);
+		InitImage(container, "res/textures/container2.png");
+
+		AddImage(assets);
+		Image* minion = GetImage(assets, 9);
+		InitImage(minion, "res/textures/ch_minion.png");
+
+		AddImage(assets);
+		Image* witch2 = GetImage(assets, 10);
+		InitImage(witch2, "res/textures/ch_witch2.png");
 	}
 
 	extern Assets* g_Assets; // NULL

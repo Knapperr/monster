@@ -32,22 +32,22 @@ Terrain::Terrain(int gridX, int gridZ)
 	std::string textPath = "res/textures/terrain/1024multi.png";
 	MonGL::Texture text = {};
 	data.textures[0] = text;
-	MonGL::LoadTextureFile(&data.textures[0], textPath.c_str(), MonGL::TextureType::Diffuse, false, false, true, false);
+	//MonGL::LoadTextureFile(&data.textures[0], textPath.c_str(), MonGL::TextureType::Diffuse, false, false, true, false);
 
 	textPath = "res/textures/terrain/grass.jpg";
 	MonGL::Texture text1 = {};
 	data.textures[1] = text1;
-	MonGL::LoadTextureFile(&data.textures[1], textPath.c_str(), MonGL::TextureType::Diffuse, false, false, true, false);
+	//MonGL::LoadTextureFile(&data.textures[1], textPath.c_str(), MonGL::TextureType::Diffuse, false, false, true, false);
 
 	textPath = "res/textures/terrain/pix_grass.png";
 	MonGL::Texture text2 = {};
 	data.textures[2] = text2;
-	MonGL::LoadTextureFile(&data.textures[2], textPath.c_str(), MonGL::TextureType::Diffuse, false, false, true, true);
+	//MonGL::LoadTextureFile(&data.textures[2], textPath.c_str(), MonGL::TextureType::Diffuse, false, false, true, true);
 
 	textPath = "res/textures/terrain/snow.jpg";
 	MonGL::Texture text3 = {};
 	data.textures[3] = text3;
-	MonGL::LoadTextureFile(&data.textures[3], textPath.c_str(), MonGL::TextureType::Diffuse, false, false, true, false);
+	//MonGL::LoadTextureFile(&data.textures[3], textPath.c_str(), MonGL::TextureType::Diffuse, false, false, true, false);
 }
 
 Terrain::~Terrain()

@@ -1,5 +1,4 @@
 #include "mon_texture.h"
-#include <stb_image/stb_image.h>
 
 #include <glad/glad.h>
 
@@ -42,110 +41,60 @@ namespace MonGL
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	// Generates the texture as well
-	void LoadTextureFile(Texture* texture, const char* file, TextureType type, bool alpha, bool flip, bool linearFilter, bool pixelArtTexture)
-	{
-		texture->type = type;
-		// TODO(CK): Clean up
-		// set wrap and filter here for now same with internal formats
-		if (pixelArtTexture == false)
-		{
-			texture->wrapS = GL_REPEAT;
-			texture->wrapT = GL_REPEAT;
-			texture->filterMin = GL_LINEAR_MIPMAP_LINEAR;
-			texture->filterMax = GL_LINEAR;
-		}
-		else
-		{
-			texture->wrapS = GL_CLAMP_TO_EDGE;
-			texture->wrapT = GL_CLAMP_TO_EDGE;
-			
-			// Linear for 3D and Texture Atlas
-			if (linearFilter)
-			{
-				//texture->filterMin = GL_LINEAR_MIPMAP_LINEAR;
-				texture->filterMin = GL_LINEAR;
-				texture->filterMax = GL_LINEAR;
-			}
-			else
-			{
-				texture->filterMin = GL_NEAREST;
-				texture->filterMax = GL_NEAREST;
-			}
-		}
-
-		int nrChannels;
-		stbi_set_flip_vertically_on_load(flip);
-		unsigned char* image = stbi_load(file, &texture->width, &texture->height, &nrChannels, 0);
-		if (image)
-		{
-			Generate2DTexture(texture, texture->width, texture->height, nrChannels, image);
-		}
-		else
-		{
-			// TODO(ck): no strings
-			std::string fileString = file;
-			std::string msg = "failed to load texture: " + fileString;
-			Mon::Log::warn(msg.c_str());
-		}
-
-		stbi_image_free(image);
-	}
-
 	// TODO(ck): Clean up
 	// I THINK I CAN DELETE THIS?
-	unsigned int LoadTextureFile(const char* path, const std::string& directory, bool gamma)
-	{
-		std::string filename = std::string(path);
-		filename = directory + '/' + filename;
+	//unsigned int LoadTextureFile(const char* path, const std::string& directory, bool gamma)
+	//{
+	//	std::string filename = std::string(path);
+	//	filename = directory + '/' + filename;
 
-		unsigned int textureID;
-		glGenTextures(1, &textureID);
+	//	unsigned int textureID;
+	//	glGenTextures(1, &textureID);
 
-		int width, height, nrComponents;
-		stbi_set_flip_vertically_on_load(false); // use stbi to flip a texture on y-axis
-		unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
+	//	int width, height, nrComponents;
+	//	stbi_set_flip_vertically_on_load(false); // use stbi to flip a texture on y-axis
+	//	unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
 
-		if (data)
-		{
-			GLenum format = GL_RGB;
-			if (nrComponents == 1)
-				format = GL_ALPHA;
-			else if (nrComponents == 3)
-				format = GL_RGB;
-			else if (nrComponents == 4)
-				format = GL_RGBA;
+	//	if (data)
+	//	{
+	//		GLenum format = GL_RGB;
+	//		if (nrComponents == 1)
+	//			format = GL_ALPHA;
+	//		else if (nrComponents == 3)
+	//			format = GL_RGB;
+	//		else if (nrComponents == 4)
+	//			format = GL_RGBA;
 
-			//GLenum format;
-			//if (nrComponents == 1)
-			//	format = GL_RED;
-			//else if (nrComponents == 3)
-			//	format = GL_RGB;
-			//else if (nrComponents == 4)
-			//	format = GL_RGBA;
+	//		//GLenum format;
+	//		//if (nrComponents == 1)
+	//		//	format = GL_RED;
+	//		//else if (nrComponents == 3)
+	//		//	format = GL_RGB;
+	//		//else if (nrComponents == 4)
+	//		//	format = GL_RGBA;
 
 
-			glBindTexture(GL_TEXTURE_2D, textureID);
-			glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-			//glGenerateMipmap(GL_TEXTURE_2D);
+	//		glBindTexture(GL_TEXTURE_2D, textureID);
+	//		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+	//		//glGenerateMipmap(GL_TEXTURE_2D);
 
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-			// unbind after using
-			glBindTexture(GL_TEXTURE_2D, 0);
-			stbi_image_free(data);
-		}
-		else
-		{
-			//std::string msg = "Texture failed to load at path: " + (std::string)path;
-			//LOG_WARN(msg.c_str());
-			stbi_image_free(data);
-		}
-		return textureID;
-	}
+	//		// unbind after using
+	//		glBindTexture(GL_TEXTURE_2D, 0);
+	//		stbi_image_free(data);
+	//	}
+	//	else
+	//	{
+	//		//std::string msg = "Texture failed to load at path: " + (std::string)path;
+	//		//LOG_WARN(msg.c_str());
+	//		stbi_image_free(data);
+	//	}
+	//	return textureID;
+	//}
 
 	void LoadFrameBufferTexture(Texture* texture, int screenWidth, int screenHeight)
 	{
@@ -166,6 +115,7 @@ namespace MonGL
 
 	void Load2DTextureArrayFile(Texture* texture, const char* file)
 	{
+#if 0
 		// Get pixel data
 		int nrChannels;
 		unsigned char* image = stbi_load(file, &texture->width, &texture->height, &nrChannels, 0); // STBI_rgb_alpha <-- for last param?
@@ -234,6 +184,7 @@ namespace MonGL
 		}
 
 		stbi_image_free(image);
+#endif
 	}
 
 }

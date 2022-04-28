@@ -8,21 +8,71 @@ namespace MonGL
 	// can have a getter method that retrieves the globalDrawCalls from here
 	int globalDrawCalls = 0;
 
-	void LoadTexture(RenderData* data, int index, TextureType type, int shaderID, std::string path, bool pixelTexture)
+	void LoadTexture(RenderData* data, Image* image, int index, TextureType type, int shaderID, bool pixelTexture)
 	{
-		data->texturePath = path;
+		data->texturePath = "";
 		Texture text = {};
-		LoadTextureFile(&text, path.c_str(), type, false, true, true, pixelTexture);
+		LoadTextureFile(&text, image, type, true, pixelTexture);
 		data->textures[index] = text;
 		data->selectedTexture = 0;
 		glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
 	}
+
+	void LoadTexture(Texture* texture, TextureType type, int shaderID, Image* image)
+	{
+		LoadTextureFile(texture, image, type, true, true);
+	}
+
 
 	//void LoadTexture(Texture* texture, TextureType type, int shaderID, std::string path, bool pixelTexture)
 	//{
 	//	LoadTextureFile(texture, path.c_str(), type, false, true, true, pixelTexture);
 	//	glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
 	//}
+
+		// Generates the texture as well
+	void LoadTextureFile(Texture* texture, Image* image, TextureType type, bool linearFilter, bool pixelArtTexture)
+	{
+		texture->type = type;
+		// TODO(CK): Clean up
+		// set wrap and filter here for now same with internal formats
+		if (pixelArtTexture == false)
+		{
+			texture->wrapS = GL_REPEAT;
+			texture->wrapT = GL_REPEAT;
+			texture->filterMin = GL_LINEAR_MIPMAP_LINEAR;
+			texture->filterMax = GL_LINEAR;
+		}
+		else
+		{
+			texture->wrapS = GL_CLAMP_TO_EDGE;
+			texture->wrapT = GL_CLAMP_TO_EDGE;
+
+			// Linear for 3D and Texture Atlas
+			if (linearFilter)
+			{
+				//texture->filterMin = GL_LINEAR_MIPMAP_LINEAR;
+				texture->filterMin = GL_LINEAR;
+				texture->filterMax = GL_LINEAR;
+			}
+			else
+			{
+				texture->filterMin = GL_NEAREST;
+				texture->filterMax = GL_NEAREST;
+			}
+		}
+
+		if (image->data)
+		{
+			Generate2DTexture(texture, image->width, image->height, image->nrChannels, image->data);
+		}
+		else
+		{
+			// TODO(ck): no strings
+			std::string msg = "failed to load texture";
+			Mon::Log::warn(msg.c_str());
+		}
+	}
 
 	void UploadOpenGLMesh(Mesh* mesh)
 	{
@@ -102,6 +152,54 @@ namespace MonGL
 		//state->mainShaderID = state->shader.handle;
 
 
+				//
+		// TODO(ck): Need a texture atlas rather than loading all of these
+		// textures for the entities
+		//
+
+		AddTexture(gl);
+		MonGL::Texture* t1 = GetTexture(gl, 1);
+		AddTexture(gl);
+		MonGL::Texture* t2 = GetTexture(gl, 2);
+		AddTexture(gl);
+		MonGL::Texture* t3 = GetTexture(gl, 3);
+		AddTexture(gl);
+		MonGL::Texture* t4 = GetTexture(gl, 4);
+		AddTexture(gl);
+		MonGL::Texture* t5 = GetTexture(gl, 5);
+		AddTexture(gl);
+		MonGL::Texture* t6 = GetTexture(gl, 6);
+		AddTexture(gl);
+		MonGL::Texture* t7 = GetTexture(gl, 7);
+		AddTexture(gl);
+		MonGL::Texture* t8 = GetTexture(gl, 8);
+		AddTexture(gl);
+		MonGL::Texture* t9 = GetTexture(gl, 9);
+		AddTexture(gl);
+		MonGL::Texture* t10 = GetTexture(gl, 10);
+
+		int shaderID = gl->program.handle;
+		LoadTexture(t1, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 1));
+		LoadTexture(t2, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 2));
+		LoadTexture(t3, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 3));
+		LoadTexture(t4, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 4));
+		LoadTexture(t5, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 5));
+		LoadTexture(t6, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 6));
+		LoadTexture(t7, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 7));
+		LoadTexture(t8, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 8));
+		LoadTexture(t9, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 9));
+		LoadTexture(t10, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 10));
+
+
+		// more textures 
+
+		// minion
+
+		// tree
+
+		// flower
+
+		// terrain grid textures
 
 
 	}
@@ -354,6 +452,7 @@ namespace MonGL
 	void Draw(OpenGL* gl, Config* config, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera)
 	{
 		Mesh* mesh = GetMesh(g_Assets, data->meshIndex);
+		Texture* texture = GetTexture(gl, data->textureIndex);
 
 		// which program to use is determined by renderData program type?
 		// gl->program.handle
@@ -364,7 +463,7 @@ namespace MonGL
 		glUniform1i(glGetUniformLocation(gl->program.handle, "pixelTexture"), useTexture);
 		// bind textures on corresponding texture units
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, data->textures[data->selectedTexture].id);
+		glBindTexture(GL_TEXTURE_2D, texture->id);
 
 		//glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
 		glUniform1i(glGetUniformLocation(gl->program.handle, "collider"), false);

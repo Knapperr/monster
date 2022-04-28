@@ -42,7 +42,7 @@ namespace Mon
 
 	void InitTileSheet(TileSheet* sheet, const char* fileName)
 	{
-		MonGL::LoadTextureFile(&sheet->texture, fileName, MonGL::TextureType::Diffuse, true, false, false, true);
+		//MonGL::LoadTextureFile(&sheet->texture, fileName, MonGL::TextureType::Diffuse, true, false, false, true);
 		//MonGL::Load2DTextureArrayFile(&sheet->texture, fileName);
 
 		// TODO(ck): 

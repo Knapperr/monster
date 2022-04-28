@@ -1,6 +1,8 @@
 #include "mon_assets.h"
 #include "mon_gl_render.h"
 
+#include <stb_image/stb_image.h>
+
 namespace Mon
 {
 	// IMPORTANT(ck): Asset manager defined here
@@ -81,6 +83,20 @@ namespace Mon
 		file.close();
 	}
 
+
+	void InitImage(Image* image, const char* file)
+	{
+		bool flip = true;
+		stbi_set_flip_vertically_on_load(flip);
+		image->data = stbi_load(file, &image->width, &image->height, &image->nrChannels, 0);
+
+	}
+
+	// If a texture is not using an image should it be freed?
+	void FreeImage(Image* image)
+	{
+		stbi_image_free(image->data);
+	}
 
 	void InitQuadMesh(Mesh* mesh, bool tangents)
 	{

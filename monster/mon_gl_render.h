@@ -2,6 +2,7 @@
 #define MON_GL_RENDER_H
 
 #include "mon_shader.h"
+#include "mon_texture.h"
 #include "mon_assets.h"
 
 #include <vector>
@@ -96,6 +97,7 @@ namespace MonGL
 	{
 		// TODO(ck): Index for the OpenGL meshes 
 		int meshIndex;
+		int textureIndex;
 		Material materials[10];
 		ProgramData programData;
 		int programType;
@@ -146,6 +148,10 @@ namespace MonGL
 	
 	struct OpenGL
 	{
+		// Textures[30] -- these are loaded from the Assets.Images
+		Texture textures[30];
+		int textureCount;
+
 		CommonProgram program;
 		WaterProgram waterProgram;
 	};
@@ -224,6 +230,8 @@ namespace MonGL
 	void CreateFramebuffer(Framebuffer* buffer);
 
 	void LoadImpFile(RenderData* data);
+	void LoadTextureFile(Texture* texture, Image* image, TextureType type, bool linearFilter = false, bool pixelArtTexture = false);
+
 
 	void UseProgram(CommonProgram* program, RenderSetup setup);
 	void UseProgram(WaterProgram* program, RenderSetup setup);
@@ -245,6 +253,28 @@ namespace MonGL
 	void DrawWater(RenderData* data, RenderSetup* setup, WaterProgram* waterData, Light* light, v3 pos, v3 scale, v3 camPos, unsigned int shaderID);
 
 	void EndRender();
+
+
+	static unsigned int AddTexture(OpenGL* gl)
+	{
+		unsigned int index = gl->textureCount++;
+
+		MonGL::Texture* texture = &gl->textures[index];
+		texture = {};
+
+		return index;
+	}
+
+	static MonGL::Texture* GetTexture(OpenGL* gl, unsigned int index)
+	{
+		MonGL::Texture* t = 0;
+		if ((index > 0) && (index < ArrayCount(gl->textures)))
+		{
+			t = &gl->textures[index];
+		}
+		return t;
+	}
+
 
 	//
 	// 2d

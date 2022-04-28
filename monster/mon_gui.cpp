@@ -165,7 +165,7 @@ void LoadImpGrassFile(Mon::GameState* game)
 	file.close();
 
 	MonGL::InitModel(&e->data);
-	MonGL::LoadTexture(&e->data, 0, MonGL::TextureType::Diffuse, game->renderer.program.handle, "res/textures/grass.png", false);
+	//MonGL::LoadTexture(&e->data, 0, MonGL::TextureType::Diffuse, game->renderer.program.handle, "res/textures/grass.png", false);
 	e->rb.pos = Mon::v3(10.0f, 0.3f, 20.0f);
 	MonGL::InitBoundingBox(&e->collider.data);
 	e->impPath = "test_grass.imp";

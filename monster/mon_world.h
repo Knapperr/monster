@@ -86,17 +86,17 @@ namespace Mon {
 		return data;
 	}
 
-	static void InitEntity(Entity* e, std::string name, v3 pos, v3 scale, float angleDegrees, int shaderHandle, std::string texturePath)
+	static void InitEntity(Entity* e, std::string name, v3 pos, v3 scale, float angleDegrees, int shaderHandle, int textureIndex)
 	{
 		e->setup = {};
 		e->name = name;
 		e->impPath = "none";
 		// TEXTURE INDEXES
 
-		// e->data.meshIndex = GetMesh("quad");
+		// e->data.meshIndex = GetMesh("quad"); and GetTexture("nameFromParams")
 		e->data.meshIndex = 1;
+		e->data.textureIndex = textureIndex;
 		e->data.scale = scale;
-		MonGL::LoadTexture(&e->data, 0, MonGL::TextureType::Diffuse, shaderHandle, texturePath);
 		e->rb.pos = pos;
 		InitBoxCollider(&e->collider);
 		e->spriteAngleDegrees = angleDegrees;
@@ -109,10 +109,11 @@ namespace Mon {
 		player->data.meshIndex = 1;
 
 		// IMPORTANT(ck): These cant be loaded again if they are already loaded..
-		MonGL::LoadTexture(&player->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/ch_witch.png");
+		player->data.textureIndex = 1;
+		/*MonGL::LoadTexture(&player->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/ch_witch.png");
 		MonGL::LoadTexture(&player->data, 1, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/p1.png");
 		MonGL::LoadTexture(&player->data, 2, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/p1SIDE.png");
-		MonGL::LoadTexture(&player->data, 3, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/p1BACK.png");
+		MonGL::LoadTexture(&player->data, 3, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/p1BACK.png");*/
 		player->facingDir = Direction::Forward;
 
 		InitBoxCollider(&player->collider);
@@ -141,9 +142,9 @@ namespace Mon {
 		e->data.meshIndex = 1;
 
 		// IMPORTANT(ck): These cant be loaded again if they are already loaded..
-		MonGL::LoadTexture(&e->data, 0, MonGL::TextureType::Normal, shaderHandle, "res/textures/water/ripples-derivative-height.png");
-		MonGL::LoadTexture(&e->data, 1, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/water/flow-speed-noise.png");
-	
+		/*MonGL::LoadTexture(&e->data, 0, MonGL::TextureType::Normal, shaderHandle, "res/textures/water/ripples-derivative-height.png");
+		MonGL::LoadTexture(&e->data, 1, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/water/flow-speed-noise.png");*/
+		e->data.textureIndex = 6;
 
 		InitBoxCollider(&e->collider);
 		e->rb.pos = v3(30.0f, 0.0f, 30.0);
@@ -173,7 +174,7 @@ namespace Mon {
 			AddEntity(world);
 			Entity* tree = GetEntity(world, i);
 			std::string name = "tree_" + std::to_string(i);
-			InitEntity(tree, name, v3(6.0f * (i + 1), 1.70f, 5.5f * i), v3(6.0f), angleDegrees, shaderHandle, "res/textures/tree.png");
+			InitEntity(tree, name, v3(6.0f * (i + 1), 1.70f, 5.5f * i), v3(6.0f), angleDegrees, shaderHandle, 7);
 		}
 
 		int length = world->entityCount + 5;
@@ -182,35 +183,35 @@ namespace Mon {
 			AddEntity(world);
 			Entity* flower = GetEntity(world, i);
 			std::string name = "flower_" + std::to_string(i);
-			InitEntity(flower, name, v3(10.0f, 0.1f, 6.0f), v3(1.0f), angleDegrees, shaderHandle, "res/textures/sflow_tall.png");
+			InitEntity(flower, name, v3(10.0f, 0.1f, 6.0f), v3(1.0f), angleDegrees, shaderHandle, 7);
 		}
 		
 		AddEntity(world);
 		Entity* cube = GetEntity(world, world->entityCount - 1);
-		InitEntity(cube, "cube_1", v3(50.0f, 0.3f, 20.0f), v3(1.0f), angleDegrees, shaderHandle, "res/textures/container2.png");
+		InitEntity(cube, "cube_1", v3(50.0f, 0.3f, 20.0f), v3(1.0f), angleDegrees, shaderHandle, 8);
 
 		// ch_minion
 		AddEntity(world);
 		Entity* ent = GetEntity(world, world->entityCount - 1);
-		InitEntity(ent, "minion1", v3(10.0f,4.0f,10.0f), v3(1.0f), angleDegrees, shaderHandle, "res/textures/ch_minion.png");
+		InitEntity(ent, "minion1", v3(10.0f,4.0f,10.0f), v3(1.0f), angleDegrees, shaderHandle, 9);
 		ent->facingDir = Direction::Right;
 
 		AddEntity(world);
 		Entity* ent1 = GetEntity(world, world->entityCount - 1);
-		InitEntity(ent1, "minion2", v3(30.0f, 4.0f, 5.0f), v3(1.0f), angleDegrees, shaderHandle, "res/textures/ch_minion.png");
+		InitEntity(ent1, "minion2", v3(30.0f, 4.0f, 5.0f), v3(1.0f), angleDegrees, shaderHandle, 9);
 		ent1->facingDir = Direction::Right;
 
 		AddEntity(world);
 		Entity* ent2 = GetEntity(world, world->entityCount - 1);
-		InitEntity(ent2, "minion3", v3(26.0f, 2.0f, 7.0f), v3(1.0f), angleDegrees, shaderHandle, "res/textures/ch_minion.png");
+		InitEntity(ent2, "minion3", v3(26.0f, 2.0f, 7.0f), v3(1.0f), angleDegrees, shaderHandle, 9);
 
 		AddEntity(world);
 		Entity* ent3 = GetEntity(world, world->entityCount - 1);
-		InitEntity(ent3, "minion4", v3(2.0f, 6.0f, 1.0f), v3(1.0f), angleDegrees, shaderHandle, "res/textures/ch_minion.png");
+		InitEntity(ent3, "minion4", v3(2.0f, 6.0f, 1.0f), v3(1.0f), angleDegrees, shaderHandle, 9);
 
 		AddEntity(world);
 		Entity* ent4 = GetEntity(world, world->entityCount - 1);
-		InitEntity(ent4, "ch_witch2", v3(12.0f, 0.0f, 9.0f), v3(1.0f), angleDegrees, shaderHandle, "res/textures/ch_witch2.png");
+		InitEntity(ent4, "ch_witch2", v3(12.0f, 0.0f, 9.0f), v3(1.0f), angleDegrees, shaderHandle, 10);
 
 		AddEntity(world);
 		Entity* water = GetEntity(world, world->entityCount - 1);
@@ -225,7 +226,7 @@ namespace Mon {
 		cube->name = "cube_" + std::to_string(world->entityCount-1);
 		cube->impPath = "none";
 		cube->data.meshIndex = 2;
-		MonGL::LoadTexture(&cube->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/container2.png");
+		cube->data.textureIndex = 7;
 		cube->rb.pos = v3(10.0f, 0.3f, 20.0f);
 		MonGL::InitBoundingBox(&cube->collider.data);
 	}
@@ -235,7 +236,7 @@ namespace Mon {
 		AddInstancedData(world);
 		MonGL::InstancedData* data = GetInstancedData(world, world->instancedDataCount - 1);
 		MonGL::InitInstancedData(data, 100);
-		MonGL::LoadTexture(&data->renderData, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/grass.png", false);
+		//MonGL::LoadTexture(&data->renderData, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/grass.png", false);
 
 
 	}
