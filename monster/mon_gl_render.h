@@ -109,11 +109,6 @@ namespace MonGL
 		mat4 worldMatrix;
 
 		std::string texturePath;
-		int selectedTexture;
-	
-		// TODO(ck): hold array of indexes to texture resources
-		Texture textures[4];
-
 		bool visible;
 	};
 

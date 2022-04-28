@@ -84,16 +84,15 @@ namespace Mon
 	}
 
 
-	void InitImage(Image* image, const char* file)
+	void InitImage(Image* image, const char* file, bool flip)
 	{
-		bool flip = true;
 		stbi_set_flip_vertically_on_load(flip);
 		image->data = stbi_load(file, &image->width, &image->height, &image->nrChannels, 0);
 
 	}
 
 	// If a texture is not using an image should it be freed?
-	void FreeImage(Image* image)
+	void FreeStbiImage(Image* image)
 	{
 		stbi_image_free(image->data);
 	}

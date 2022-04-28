@@ -107,13 +107,7 @@ namespace Mon {
 		player->name = "player";
 		player->setup = {};
 		player->data.meshIndex = 1;
-
-		// IMPORTANT(ck): These cant be loaded again if they are already loaded..
 		player->data.textureIndex = 1;
-		/*MonGL::LoadTexture(&player->data, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/ch_witch.png");
-		MonGL::LoadTexture(&player->data, 1, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/p1.png");
-		MonGL::LoadTexture(&player->data, 2, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/p1SIDE.png");
-		MonGL::LoadTexture(&player->data, 3, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/p1BACK.png");*/
 		player->facingDir = Direction::Forward;
 
 		InitBoxCollider(&player->collider);
@@ -140,11 +134,7 @@ namespace Mon {
 		e->name = "water";
 		e->setup = {};
 		e->data.meshIndex = 1;
-
-		// IMPORTANT(ck): These cant be loaded again if they are already loaded..
-		/*MonGL::LoadTexture(&e->data, 0, MonGL::TextureType::Normal, shaderHandle, "res/textures/water/ripples-derivative-height.png");
-		MonGL::LoadTexture(&e->data, 1, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/water/flow-speed-noise.png");*/
-		e->data.textureIndex = 6;
+		e->data.textureIndex = 5;
 
 		InitBoxCollider(&e->collider);
 		e->rb.pos = v3(30.0f, 0.0f, 30.0);

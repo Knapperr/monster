@@ -13,8 +13,8 @@ namespace MonGL
 		data->texturePath = "";
 		Texture text = {};
 		LoadTextureFile(&text, image, type, true, pixelTexture);
-		data->textures[index] = text;
-		data->selectedTexture = 0;
+		//data->textures[index] = text;
+		//data->selectedTexture = 0;
 		glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
 	}
 
@@ -23,14 +23,6 @@ namespace MonGL
 		LoadTextureFile(texture, image, type, true, true);
 	}
 
-
-	//void LoadTexture(Texture* texture, TextureType type, int shaderID, std::string path, bool pixelTexture)
-	//{
-	//	LoadTextureFile(texture, path.c_str(), type, false, true, true, pixelTexture);
-	//	glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
-	//}
-
-		// Generates the texture as well
 	void LoadTextureFile(Texture* texture, Image* image, TextureType type, bool linearFilter, bool pixelArtTexture)
 	{
 		texture->type = type;
@@ -177,6 +169,14 @@ namespace MonGL
 		MonGL::Texture* t9 = GetTexture(gl, 9);
 		AddTexture(gl);
 		MonGL::Texture* t10 = GetTexture(gl, 10);
+		AddTexture(gl);
+		MonGL::Texture* t11 = GetTexture(gl, 11);
+		AddTexture(gl);
+		MonGL::Texture* t12 = GetTexture(gl, 12);
+		AddTexture(gl);
+		MonGL::Texture* t13 = GetTexture(gl, 13);
+		AddTexture(gl);
+		MonGL::Texture* t14 = GetTexture(gl, 14);
 
 		int shaderID = gl->program.handle;
 		LoadTexture(t1, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 1));
@@ -189,19 +189,10 @@ namespace MonGL
 		LoadTexture(t8, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 8));
 		LoadTexture(t9, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 9));
 		LoadTexture(t10, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 10));
-
-
-		// more textures 
-
-		// minion
-
-		// tree
-
-		// flower
-
-		// terrain grid textures
-
-
+		LoadTexture(t11, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 11));
+		LoadTexture(t12, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 12));
+		LoadTexture(t13, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 13));
+		LoadTexture(t14, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 14));
 	}
 
  
@@ -457,8 +448,7 @@ namespace MonGL
 		// which program to use is determined by renderData program type?
 		// gl->program.handle
 
-		bool useTexture = (ArrayCount(data->textures) > 0);
-		useTexture = true;
+		bool useTexture = true;
 		glUniform1i(glGetUniformLocation(gl->program.handle, "useTexture"), useTexture);
 		glUniform1i(glGetUniformLocation(gl->program.handle, "pixelTexture"), useTexture);
 		// bind textures on corresponding texture units
@@ -534,40 +524,40 @@ namespace MonGL
 
 		// Textures
 		// ==================================================================================
-		for (unsigned int i = 0; i < ArrayCount(data->textures); ++i)
-		{
-			glActiveTexture(GL_TEXTURE0 + i); // activate the proper texture unit before binding
-		//	// retrieve texture number (the N in diffuse_TextureN)
-			std::string number;
-			std::string name = "texture_";
-			switch (data->textures[i].type)
-			{
-			case TextureType::Diffuse:
-				number = std::to_string(diffuseNr++);
-				name += "diffuse";
-				break;
-			case TextureType::Specular:
-				number = std::to_string(specularNr++);
-				name += "specular";
-				break;
-			case TextureType::Normal:
-				number = std::to_string(normalNr++);
-				name += "normal";
-				break;
-			case TextureType::Height:
-				number = std::to_string(heightNr++);
-				name += "height";
-			default:
-				number = std::to_string(diffuseNr++);
-				name += "diffuse";
-				break;
-			}
+		//for (unsigned int i = 0; i < ArrayCount(data->textures); ++i)
+		//{
+		//	glActiveTexture(GL_TEXTURE0 + i); // activate the proper texture unit before binding
+		////	// retrieve texture number (the N in diffuse_TextureN)
+		//	std::string number;
+		//	std::string name = "texture_";
+		//	//switch (data->textures[i].type)
+		//	//{
+		//	//case TextureType::Diffuse:
+		//	//	number = std::to_string(diffuseNr++);
+		//	//	name += "diffuse";
+		//	//	break;
+		//	//case TextureType::Specular:
+		//	//	number = std::to_string(specularNr++);
+		//	//	name += "specular";
+		//	//	break;
+		//	//case TextureType::Normal:
+		//	//	number = std::to_string(normalNr++);
+		//	//	name += "normal";
+		//	//	break;
+		//	//case TextureType::Height:
+		//	//	number = std::to_string(heightNr++);
+		//	//	name += "height";
+		//	//default:
+		//	//	number = std::to_string(diffuseNr++);
+		//	//	name += "diffuse";
+		//	//	break;
+		//	//}
 
-			// now set the sampler to the correct texture unit
-			glUniform1i(glGetUniformLocation(shaderID, (name + number).c_str()), i);
-			// and finally bind the texture		
-			glBindTexture(GL_TEXTURE_2D, data->textures[i].id);
-		}
+		//	// now set the sampler to the correct texture unit
+		//	glUniform1i(glGetUniformLocation(shaderID, (name + number).c_str()), i);
+		//	// and finally bind the texture		
+		//	//glBindTexture(GL_TEXTURE_2D, data->textures[i].id);
+		//}
 
 		// ==================================================================================
 
@@ -605,8 +595,8 @@ namespace MonGL
 
 	void DrawTerrain(OpenGL* gl, RenderData* data, Light* light, Camera* camera, bool wireFrame)
 	{
-		mat4 matModel = mat4(1.0f);
 		Mesh* mesh = GetMesh(g_Assets, data->meshIndex);
+		Texture* texture = GetTexture(gl, data->textureIndex);
 		unsigned int shaderID = gl->program.handle;
 
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(Projection(camera)));
@@ -630,11 +620,9 @@ namespace MonGL
 
 		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), true);
 		glUniform1i(glGetUniformLocation(shaderID, "pixelTexture"), true);
+		glBindTexture(GL_TEXTURE_2D, texture->id);
 
-
-		//glBindTexture(GL_TEXTURE_2D, terrain->selectedTextureId);
-		glBindTexture(GL_TEXTURE_2D, data->textures[data->selectedTexture].id);
-
+		mat4 matModel = mat4(1.0f);
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
 		glBindVertexArray(mesh->VAO);
 

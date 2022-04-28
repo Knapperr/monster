@@ -59,15 +59,15 @@ namespace Mon
 	void InitBoundingBoxMesh(Mesh* mesh);
 	void InitLineMesh(Mesh* mesh);
 
-	void InitImage(Image* image, const char* file);
-	void FreeStbImage(Image* image);
+	void InitImage(Image* image, const char* file, bool flip = true);
+	void FreeStbiImage(Image* image);
 
 
 	// global struct for accessing assets
 	struct Assets
 	{
 		Mesh meshes[10];				// TODO(ck): SQLite config for size
-		Image images[20];				// TODO(ck): SQLite config for size
+		Image images[30];				// TODO(ck): SQLite config for size
 		
 		int meshCount;
 		int textureCount;
@@ -203,7 +203,24 @@ namespace Mon
 		AddImage(assets);
 		Image* witch2 = GetImage(assets, 10);
 		InitImage(witch2, "res/textures/ch_witch2.png");
+
+		AddImage(assets);
+		Image* terr1 = GetImage(assets, 11);
+		InitImage(terr1, "res/textures/terrain/1024multi.png", false);
+
+		AddImage(assets);
+		Image* terr2 = GetImage(assets, 12);
+		InitImage(terr2, "res/textures/terrain/grass.jpg", false);
+
+		AddImage(assets);
+		Image* terr3 = GetImage(assets, 13);
+		InitImage(terr3, "res/textures/terrain/pix_grass.png", false);
+
+		AddImage(assets);
+		Image* terr4 = GetImage(assets, 14);
+		InitImage(terr4, "res/textures/terrain/snow.jpg", false);
 	}
+
 
 	extern Assets* g_Assets; // NULL
 };

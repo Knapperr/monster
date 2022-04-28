@@ -414,13 +414,13 @@ void TerrainWindow(bool* p_open, Mon::GameState* game)
 
 	ImGui::Text("Texture");
 	ImGui::Separator();
-	if (ImGui::Button("UV")) { game->terrain->data.selectedTexture = 0; }
+	if (ImGui::Button("UV")) { game->terrain->data.textureIndex = 11; }
 	ImGui::SameLine();
-	if (ImGui::Button("Grass")) { game->terrain->data.selectedTexture = 1; }
+	if (ImGui::Button("Grass")) { game->terrain->data.textureIndex = 12; }
 	ImGui::SameLine();
-	if (ImGui::Button("Pixel Grass")) { game->terrain->data.selectedTexture = 2; }
+	if (ImGui::Button("Pixel Grass")) { game->terrain->data.textureIndex = 13; }
 	ImGui::SameLine();
-	if (ImGui::Button("Snow")) { game->terrain->data.selectedTexture = 3; }
+	if (ImGui::Button("Snow")) { game->terrain->data.textureIndex = 14; }
 	ImGui::Separator();
 
 	ImGui::Checkbox("Wireframe", &game->terrain->wireFrame);
@@ -610,6 +610,7 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 				ImGui::DragFloat("angle", &game->world->entities[selected].spriteAngleDegrees, 0.10f, -180.0f, 360.0f, "%.10f");
 				
 				ImGui::SliderInt("mesh index", &game->world->entities[selected].data.meshIndex, 1, 4);
+				ImGui::SliderInt("texture index", &game->world->entities[selected].data.textureIndex, 1, game->renderer.textureCount);
 				//ImGui::DragFloat("rot x", &g_Game->objects[selected]->orientation.x, 0.05f, -1000.0f, 1000.0f, "%.02f");
 				//ImGui::DragFloat("rot y", &g_Game->objects[selected]->orientation.y, 0.05f, -1000.0f, 1000.0f, "%.02f");
 				//ImGui::DragFloat("rot z", &g_Game->objects[selected]->orientation.z, 0.05f, -1000.0f, 1000.0f, "%.02f");
