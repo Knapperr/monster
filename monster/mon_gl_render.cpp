@@ -8,16 +8,6 @@ namespace MonGL
 	// can have a getter method that retrieves the globalDrawCalls from here
 	int globalDrawCalls = 0;
 
-	void LoadTexture(RenderData* data, Image* image, int index, TextureType type, int shaderID, bool pixelTexture)
-	{
-		data->texturePath = "";
-		Texture text = {};
-		LoadTextureFile(&text, image, type, true, pixelTexture);
-		//data->textures[index] = text;
-		//data->selectedTexture = 0;
-		glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
-	}
-
 	void LoadTexture(Texture* texture, TextureType type, int shaderID, Image* image)
 	{
 		LoadTextureFile(texture, image, type, true, true);

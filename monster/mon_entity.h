@@ -58,7 +58,15 @@ namespace Mon {
 	{
 		std::string name;
 		std::string impPath;
+		
+		// float position info is in here
 		RigidBody rb;
+		// TODO(ck): The entities need to be driven by a grid and have grid positions
+		// this will help me later on with level creation, loading and memory management
+		//int gridX; = rb.pos.x / chunk_size (grid_size) ?
+		//int gridY; = rb.pos.y / chunk_size (grid_size) ?
+		// offsets?
+
 		MonGL::RenderData data;
 		MonGL::RenderSetup setup;
 		Collider collider;

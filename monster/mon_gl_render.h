@@ -98,18 +98,16 @@ namespace MonGL
 		// TODO(ck): Index for the OpenGL meshes 
 		int meshIndex;
 		int textureIndex;
+		int programType;
+		int lineWidth;
+		bool visible;
+
 		Material materials[10];
 		ProgramData programData;
-		int programType;
-
-		int lineWidth;
 
 		v3 color;
 		v3 scale = v3(1.0f);
 		mat4 worldMatrix;
-
-		std::string texturePath;
-		bool visible;
 	};
 
 	struct InstancedData

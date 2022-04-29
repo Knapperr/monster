@@ -24,8 +24,8 @@ void WriteEntities(Mon::Entity* entities, unsigned int entityCount, int shaderID
 			<< entities[i].rb.pos.x << "\n" << entities[i].rb.pos.y << "\n" << entities[i].rb.pos.z << "\n"
 			<< entities[i].data.scale.x << "\n" << entities[i].data.scale.y << "\n" << entities[i].data.scale.z << "\n"
 			<< shaderID << "\n"
-			<< entities[i].impPath << "\n"
-			<< entities[i].data.texturePath << "\n";
+			<< entities[i].impPath << "\n";
+			//<< entities[i].data.texturePath << "\n";
 	}
 
 	// TODO(ck):
