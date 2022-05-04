@@ -86,7 +86,7 @@ namespace Mon {
 		return data;
 	}
 
-	static void InitEntity(Entity* e, std::string name, v3 pos, v3 scale, float angleDegrees, int shaderHandle, int textureIndex)
+	static void InitEntity(Entity* e, const char* name, v3 pos, v3 scale, float angleDegrees, int shaderHandle, int textureIndex)
 	{
 		e->setup = {};
 		e->name = name;
@@ -98,6 +98,7 @@ namespace Mon {
 		e->data.programType = MonGL::ProgramType::Common;
 		e->data.textureIndex = textureIndex;
 		e->data.scale = scale;
+		e->data.wireFrame = false;
 		e->rb.pos = pos;
 		InitBoxCollider(&e->collider);
 		e->spriteAngleDegrees = angleDegrees;
@@ -109,6 +110,7 @@ namespace Mon {
 		player->setup = {};
 		player->data.meshIndex = 1;
 		player->data.textureIndex = 1;
+		player->data.wireFrame = false;
 		player->facingDir = Direction::Forward;
 		player->data.programType = MonGL::ProgramType::Common;
 
@@ -139,6 +141,7 @@ namespace Mon {
 		e->data.meshIndex = 1;
 		e->data.textureIndex = 5;
 		e->data.programType = MonGL::ProgramType::Water;
+		e->data.wireFrame = false;
 
 		InitBoxCollider(&e->collider);
 		e->rb.pos = v3(30.0f, 0.0f, 30.0);
@@ -167,8 +170,7 @@ namespace Mon {
 		{
 			AddEntity(world);
 			Entity* tree = GetEntity(world, i);
-			std::string name = "tree_" + std::to_string(i);
-			InitEntity(tree, name, v3(6.0f * (i + 1), 1.70f, 5.5f * i), v3(6.0f), angleDegrees, shaderHandle, 7);
+			InitEntity(tree, "tree", v3(6.0f * (i + 1), 1.70f, 5.5f * i), v3(6.0f), angleDegrees, shaderHandle, 7);
 		}
 
 		int length = world->entityCount + 5;
@@ -176,8 +178,7 @@ namespace Mon {
 		{
 			AddEntity(world);
 			Entity* flower = GetEntity(world, i);
-			std::string name = "flower_" + std::to_string(i);
-			InitEntity(flower, name, v3(10.0f, 0.1f, 6.0f), v3(1.0f), angleDegrees, shaderHandle, 7);
+			InitEntity(flower, "flower", v3(10.0f, 0.1f, 6.0f), v3(1.0f), angleDegrees, shaderHandle, 7);
 		}
 		
 		AddEntity(world);
@@ -209,7 +210,12 @@ namespace Mon {
 
 		AddEntity(world);
 		Entity* water = GetEntity(world, world->entityCount - 1);
-		InitWater(water, shaderHandle);
+		InitWater(water, waterShaderHandle);
+
+		AddEntity(world);
+		Entity* plane64 = GetEntity(world, world->entityCount - 1);
+		InitEntity(plane64, "plane64", v3(6.0f, 0.0f, 6.0f), v3(1.0f), angleDegrees, shaderHandle, 8);
+
 	}
 
 	static void AddCube(World* world, int shaderHandle)
@@ -217,10 +223,11 @@ namespace Mon {
 		AddEntity(world);
 		Entity* cube = GetEntity(world, world->entityCount - 1);
 		cube->setup = {};
-		cube->name = "cube_" + std::to_string(world->entityCount-1);
+		cube->name = "cube";
 		cube->impPath = "none";
 		cube->data.meshIndex = 2;
 		cube->data.textureIndex = 7;
+		cube->data.wireFrame = false;
 		cube->rb.pos = v3(10.0f, 0.3f, 20.0f);
 		MonGL::InitBoundingBox(&cube->collider.data);
 	}

@@ -41,6 +41,8 @@ namespace Mon
 
 	struct Mesh
 	{
+		const char* id;
+
 		unsigned int VAO;
 		unsigned int VBO;
 		unsigned int IBO;
@@ -160,6 +162,10 @@ namespace Mon
 		Mesh* line = GetMesh(assets, 6);
 		InitLineMesh(line);
 
+		// plane_64 mesh 64x64 units
+		AddMesh(assets);
+		Mesh* plane64 = GetMesh(assets, 7);
+		InitModelMesh(plane64, "plane_64.imp");
 
 		// empty #0 for image
 		AddImage(assets);

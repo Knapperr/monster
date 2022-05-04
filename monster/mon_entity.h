@@ -56,7 +56,7 @@ namespace Mon {
 
 	struct Entity
 	{
-		std::string name;
+		const char* name;
 		std::string impPath;
 		
 		// float position info is in here

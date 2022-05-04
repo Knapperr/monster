@@ -53,7 +53,7 @@ void LoadImpFile(Mon::Entity* e, std::string fileName)
 		while (file >> line)
 		{
 			// Get the name and the size of the vertices & indices here
-			e->name = line;
+			//e->name = line;
 			//file >> e->data.mesh.verticeCount;
 			//file >> e->data.mesh.indiceCount;
 			break;
@@ -125,7 +125,7 @@ void LoadImpGrassFile(Mon::GameState* game)
 	while (file >> line)
 	{
 		// Get the name and the size of the vertices & indices here
-		e->name = line;
+		//e->name = line;
 		//file >> e->data.mesh.verticeCount;
 		//file >> e->data.mesh.indiceCount;
 		break;
@@ -245,9 +245,9 @@ void LoadSceneFile(Mon::GameState* game)
 			int renderType = -1;
 
 			if (index == 1)
-				e->name = line;
-			else
-				file >> e->name;
+				e->name = line.c_str();
+			//else
+				//file >> std::to_string(e->name);
 
 			if (e->name == "player")
 			{
@@ -423,7 +423,7 @@ void TerrainWindow(bool* p_open, Mon::GameState* game)
 	if (ImGui::Button("Snow")) { game->terrain->data.textureIndex = 14; }
 	ImGui::Separator();
 
-	ImGui::Checkbox("Wireframe", &game->terrain->wireFrame);
+	ImGui::Checkbox("Wireframe", &game->terrain->data.wireFrame);
 
 	TerrainColliderWindow(game->terrain);
 	TerrainMaterialWindow(game->terrain);
@@ -516,11 +516,12 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 	// all that matters =)
 	// Need to set a timer on this so it cant fire
 /*
-	TODO(ck): For this I need to pause the input
-	I need input delay or timer delay im not sure if the input needs to run on
-	another thread and be async?
-	
-	Find a way to stop r & f from affecting if we aren't in 'select' mode 
+	TODO(ck): Make the input have a built in delay for menus specifically
+	maybe have separate up and downs that
+
+	because we need to use this same delay in the other menus as well
+	we will leave it here for now because we dont need quick select on
+	asset menus. the entity menu is used for building a scene or chunk
 */
 #if 1
 	if (inputTimer > 0.0f)
@@ -549,7 +550,7 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 	for (unsigned int i = 1; i < game->world->entityCount; ++i)
 	{
 		char label[128];
-		sprintf_s(label, "%s %d", game->world->entities[i].name.c_str(), i);
+		sprintf_s(label, "%s %d", game->world->entities[i].name, i);
 		if (ImGui::Selectable(label, selected == i))
 		{
 			selected = i;
@@ -565,7 +566,7 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 		ImGui::BeginGroup();
 		ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
 		
-		ImGui::Text("%s", game->world->entities[selected].name.c_str());
+		ImGui::Text("%s", game->world->entities[selected].name);
 
 		// TODO(ck): Model loading modal
 		// Modal for loading meshes
@@ -609,14 +610,14 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 				ImGui::DragFloat("speed", &game->world->entities[selected].rb.speed, 0.10f, 0.0f, 200.0f, "%.10f");
 				ImGui::DragFloat("angle", &game->world->entities[selected].spriteAngleDegrees, 0.10f, -180.0f, 360.0f, "%.10f");
 				
-				ImGui::SliderInt("mesh index", &game->world->entities[selected].data.meshIndex, 1, 4);
+				ImGui::SliderInt("mesh index", &game->world->entities[selected].data.meshIndex, 1, 7);
 				ImGui::SliderInt("texture index", &game->world->entities[selected].data.textureIndex, 1, game->renderer.textureCount);
+				
+				ImGui::Checkbox("Wireframe", &game->world->entities[selected].data.wireFrame);
+				//ImGui::Checkbox("show normals", &g_Game->objects[selected]->viewNormals);
 				//ImGui::DragFloat("rot x", &g_Game->objects[selected]->orientation.x, 0.05f, -1000.0f, 1000.0f, "%.02f");
 				//ImGui::DragFloat("rot y", &g_Game->objects[selected]->orientation.y, 0.05f, -1000.0f, 1000.0f, "%.02f");
 				//ImGui::DragFloat("rot z", &g_Game->objects[selected]->orientation.z, 0.05f, -1000.0f, 1000.0f, "%.02f");
-
-				//ImGui::Checkbox("show normals", &g_Game->objects[selected]->viewNormals);
-				//ImGui::Checkbox("wire frame", &g_Game->objects[selected]->wireFrame);
 				ImGui::EndTabItem();
 			}
 			if (ImGui::BeginTabItem("Details"))
@@ -640,6 +641,51 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 		ImGui::EndChild();
 		ImGui::EndGroup();
 	}
+	ImGui::End();
+}
+
+void AssetWindow(bool* p_open, Mon::GameState* game)
+{
+	ImGui::Begin("Assets", p_open);
+
+	static unsigned int selected = 1;
+	ImGui::BeginChild("left pane assets", ImVec2(150.0f, 0.0f), true);
+
+	for (unsigned int i = 1; i < Mon::g_Assets->meshCount; ++i)
+	{
+		char label[128];
+		sprintf_s(label, "%s %d", Mon::g_Assets->meshes[i].id, i);
+		if (ImGui::Selectable(label, selected == i))
+		{
+			selected = i;
+		}
+	}
+
+	ImGui::EndChild();
+	ImGui::SameLine();
+
+	ImGui::BeginGroup();
+	ImGui::BeginChild("mesh details", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
+
+	ImGui::Text("%s", Mon::g_Assets->meshes[selected].id);
+	ImGui::Separator();
+	if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
+	{
+		if (ImGui::BeginTabItem("details"))
+		{
+			static char buf[32];
+			sprintf_s(buf, "%s", std::to_string(Mon::g_Assets->meshes[selected].VAO).c_str());
+			ImGui::Text("VAO %s", buf, IM_ARRAYSIZE(buf));
+			
+			ImGui::EndTabItem();
+		}
+
+		ImGui::EndTabBar();
+	}
+
+	ImGui::EndChild();
+	ImGui::EndGroup();
+
 	ImGui::End();
 }
 
@@ -735,13 +781,14 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::GameState* game)
 	ImGui_ImplSDL2_NewFrame(window);
 
 	ImGui::NewFrame();
-
 	static bool showDemoWindow = false;
+
 	static bool showTerrainWindow = true;
 	static bool showCameraWindow = true;
-	static bool showStatsWindow = false;
 	static bool showEntityWindow = true;
 	static bool showDebugWindow = true;
+	static bool showStatsWindow = false;
+	static bool showAssetWindow = false;
 	if (showDemoWindow)
 		ImGui::ShowDemoWindow(&showDemoWindow);
 	if (showTerrainWindow)
@@ -752,6 +799,8 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::GameState* game)
 		StatsWindow(&showStatsWindow, game);
 	if (showEntityWindow)
 		EntityWindow(&showEntityWindow, game);
+	if (showAssetWindow)
+		AssetWindow(&showAssetWindow, game);
 	if (showDebugWindow)
 		DebugWindow(&showDebugWindow, game);
 
@@ -854,9 +903,12 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::GameState* game)
 		ImGui::SameLine();
 		ImGui::Checkbox("Camera", &showCameraWindow);
 		ImGui::SameLine();
-		ImGui::Checkbox("Things", &showEntityWindow);
+		ImGui::Checkbox("Things", &showEntityWindow); 
+		ImGui::SameLine();
+		ImGui::Checkbox("Assets", &showAssetWindow);
 		ImGui::SameLine();
 		ImGui::Checkbox("Debug Info", &showDebugWindow);
+
 
 		ImGui::DragFloat("cam speed", &game->cameras[game->currCameraIndex].speed, 0.01f, 1.0f, 200.0f, "%.02f");
 	

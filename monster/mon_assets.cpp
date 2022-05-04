@@ -99,6 +99,9 @@ namespace Mon
 
 	void InitQuadMesh(Mesh* mesh, bool tangents)
 	{
+		// TODO(ck): Actual GUID
+		mesh->id = "001";
+
 		int verticeCount = 4;
 		// TODO(ck): Memory Allocation
 		mesh->vertices = new MonGL::Vertex3D[verticeCount];
@@ -163,6 +166,7 @@ namespace Mon
 
 	void InitCubeMesh(Mesh* mesh)
 	{
+		mesh->id = "002";
 		// Load from .vt file (need to do efficient as possible)
 		// maybe dont need to do this but?? tilemap does a quad and its a huge
 		// cubes can just be created with a macro PUSH_CUBE PUSH_QUAD x4?
@@ -294,6 +298,10 @@ namespace Mon
 
 	void InitModelMesh(Mesh* mesh, const char* fileName)
 	{
+		// IMPORTANT(ck):
+		// TODO(ck):  This can't be 003 there are always going to be more than one
+		//			  model mesh. the other meshes are fine but the model mesh is dynamic
+		mesh->id = "003";
 		LoadImpFile(mesh, fileName);
 		mesh->type = RenderType::Model;
 		MonGL::UploadOpenGLMesh(mesh);
@@ -316,6 +324,7 @@ namespace Mon
 
 
 */
+		mesh->id = "004";
 		int verticeCount = (xSize + 1) * (zSize + 1);
 		mesh->vertices = new MonGL::Vertex3D[verticeCount];
 		for (int index = 0, z = 0; z <= zSize; z++)
@@ -436,6 +445,7 @@ namespace Mon
 
 	void InitBoundingBoxMesh(Mesh* mesh)
 	{
+		mesh->id = "005";
 		int verticeCount = 8;
 		// TODO(ck): Memory Allocation
 		mesh->vertices = new MonGL::Vertex3D[verticeCount];
@@ -483,6 +493,7 @@ namespace Mon
 
 	void InitLineMesh(Mesh* mesh)
 	{
+		mesh->id = "006";
 		int verticeCount = 2;
 		mesh->vertices = new MonGL::Vertex3D[verticeCount];
 

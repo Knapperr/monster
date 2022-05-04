@@ -183,6 +183,8 @@ namespace MonGL
 		LoadTexture(t12, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 12));
 		LoadTexture(t13, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 13));
 		LoadTexture(t14, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 14));
+
+
 	}
 
  
@@ -550,6 +552,11 @@ namespace MonGL
 		data->worldMatrix = glm::scale(data->worldMatrix, data->scale);
 		glUniformMatrix4fv(glGetUniformLocation(shaderHandle, "model"), 1, GL_FALSE, glm::value_ptr(data->worldMatrix));
 
+		
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		if (data->wireFrame)
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
 		glBindVertexArray(mesh->VAO);
 		if (mesh->indiceCount > 0)
 		{
@@ -600,7 +607,7 @@ namespace MonGL
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	void DrawTerrain(OpenGL* gl, RenderData* data, Light* light, Camera* camera, bool wireFrame)
+	void DrawTerrain(OpenGL* gl, RenderData* data, Light* light, Camera* camera)
 	{
 		Mesh* mesh = GetMesh(g_Assets, data->meshIndex);
 		Texture* texture = GetTexture(gl, data->textureIndex);
@@ -633,9 +640,11 @@ namespace MonGL
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
 		glBindVertexArray(mesh->VAO);
 
-		wireFrame ?
-			glDrawElements(GL_LINES, mesh->indiceCount, GL_UNSIGNED_INT, 0)
-			: glDrawElements(GL_TRIANGLES, mesh->indiceCount, GL_UNSIGNED_INT, 0);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		if (data->wireFrame)
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);			
+
+		glDrawElements(GL_TRIANGLES, mesh->indiceCount, GL_UNSIGNED_INT, 0);
 
 		glBindVertexArray(0);
 		// Always good practice to set everything back to defaults once configured

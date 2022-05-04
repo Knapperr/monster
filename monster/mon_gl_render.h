@@ -107,6 +107,7 @@ namespace MonGL
 		ProgramType programType;
 		int lineWidth;
 		bool visible;
+		bool wireFrame;
 
 		Material materials[10];
 		ProgramData programData;
@@ -247,7 +248,7 @@ namespace MonGL
 	void Draw(OpenGL* gl, Config* config, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera);
 
 	void DrawBoundingBox(OpenGL* gl, RenderData* data, Camera* camera);
-	void DrawTerrain(OpenGL* gl, RenderData* data, Light* light, Camera* camera, bool wireFrame);
+	void DrawTerrain(OpenGL* gl, RenderData* data, Light* light, Camera* camera);
 	
 	void DrawWater(RenderData* data, RenderSetup* setup, WaterProgram* waterData, Light* light, v3 pos, v3 scale, v3 camPos, unsigned int shaderID);
 

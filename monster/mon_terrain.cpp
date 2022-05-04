@@ -10,7 +10,6 @@ Terrain::Terrain(int gridX, int gridZ)
 	x = (float)gridX * SIZE;
 	z = (float)gridZ * SIZE;
 
-	wireFrame = false;
 	drawTexture = true;
 
 	heightMap = new float[(SIZE + 1) * (SIZE + 1)];

@@ -376,7 +376,7 @@ namespace Mon
 		{
 			MonGL::DrawBoundingBox(&state->renderer, &state->terrain->collider.data, cam);
 		}
-		MonGL::DrawTerrain(&state->renderer, &state->terrain->data, &state->light, cam, state->terrain->wireFrame);
+		MonGL::DrawTerrain(&state->renderer, &state->terrain->data, &state->light, cam);
 
 		//
 		// ENTITIES

@@ -38,7 +38,6 @@ public:
 	float z;
 
 	int selectedTextureId;
-	bool wireFrame;
 	bool drawTexture;
 
 	MonGL::RenderData data;
