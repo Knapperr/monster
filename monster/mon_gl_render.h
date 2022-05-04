@@ -85,6 +85,12 @@ namespace MonGL
 		float heightScaleModulated;
 	};
 
+	enum ProgramType
+	{
+		Common,
+		Water
+	};
+
 	// TODO(ck): Better name for this
 	// the mesh is inside that is technically the data to render
 	// is this more of a render command or something?
@@ -98,7 +104,7 @@ namespace MonGL
 		// TODO(ck): Index for the OpenGL meshes 
 		int meshIndex;
 		int textureIndex;
-		int programType;
+		ProgramType programType;
 		int lineWidth;
 		bool visible;
 
@@ -175,9 +181,8 @@ namespace MonGL
 
 	struct RenderData2D
 	{
-		Texture texture;
-		unsigned int VAO;
-		unsigned int VBO;
+		unsigned int meshIndex;
+		unsigned int textureIndex;
 
 		// TODO(ck): Should this use a point?? probably
 		//Point pos;
@@ -213,7 +218,7 @@ namespace MonGL
 	//
 	// Renderer 
 	//
-	void LoadTexture(RenderData* data, int index, TextureType type, int shaderID, std::string path, bool pixelTexture = true);
+	void LoadTexture(RenderData* data, int index, TextureType type, bool linearFilter, int shaderID, std::string path, bool pixelTexture = true);
 	void InitRenderer(OpenGL* gl);
 	void UploadOpenGLMesh(Mesh* mesh);
 
@@ -240,6 +245,7 @@ namespace MonGL
 	void InitBoundingBox(RenderData* data);
 
 	void Draw(OpenGL* gl, Config* config, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera);
+
 	void DrawBoundingBox(OpenGL* gl, RenderData* data, Camera* camera);
 	void DrawTerrain(OpenGL* gl, RenderData* data, Light* light, Camera* camera, bool wireFrame);
 	
@@ -272,6 +278,8 @@ namespace MonGL
 	//
 	// 2d
 	//
+
+	void InitRenderer2D(OpenGL* gl);
 
 	void InitOpenGLBatchMesh(Mesh* mesh);
 

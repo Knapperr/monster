@@ -9,10 +9,11 @@ namespace Mon {
 		game->world = new World2D();
 		InitWorld(game->world);
 
-		MonGL::LoadShader(&game->shader, "res/shaders/vert_sprite.glsl", "res/shaders/frag_sprite.glsl", NULL);
+		MonGL::InitRenderer2D(&game->renderer);
 
 		// Set up the shader locations for our objects
-		glUseProgram(game->shader.handle);
+		int shaderID = game->renderer.program.handle;
+		glUseProgram(shaderID);
 
 		// TODO(CK): CAMERA
 		// So let's say you want your pixel art scale 2:1
@@ -26,10 +27,10 @@ namespace Mon {
 
 		mat4 projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
 
-		int imgLoc = glGetUniformLocation(game->shader.handle, "image");
+		int imgLoc = glGetUniformLocation(shaderID, "image");
 		glUniform1i(imgLoc, 0);
 
-		int projLoc = glGetUniformLocation(game->shader.handle, "projection");
+		int projLoc = glGetUniformLocation(shaderID, "projection");
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 
@@ -210,23 +211,23 @@ namespace Mon {
 					  playerR, playerG, playerB);
 #endif
 
-
-		glUseProgram(game->shader.handle);
+		int shaderID = game->renderer.program.handle;
+		glUseProgram(shaderID);
 
 		mat4 projection = game->cameras[game->currentCameraIndex].projectionMatrix();
-		glUniformMatrix4fv(glGetUniformLocation(game->shader.handle, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
 		mat4 view = game->cameras[game->currentCameraIndex].viewMatrix();
-		glUniformMatrix4fv(glGetUniformLocation(game->shader.handle, "view"), 1, GL_FALSE, glm::value_ptr(view));
+		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
-		DrawTileMap(game->world->map, &game->shader, game->world->sheet.texture.id);
+		DrawTileMap(game->world->map, &game->renderer.program, game->world->sheet.texture.id);
 
 		for (unsigned int i = 1; i < game->world->entityCount; ++i)
 		{
 			Entity2D e = game->world->entities[i];
 			//state->world->entities[i]->pos.x *= time;
 			//state->world->entities[i]->pos.y *= time;
-			MonGL::DrawObject(&game->shader, &e.sprite);
+			MonGL::DrawObject(&game->renderer.program, &e.sprite);
 		}
 		//state->world->entities[i]->pos.x *= time;
 		//state->world->entities[i]->pos.y *= time;

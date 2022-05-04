@@ -642,7 +642,18 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 	}
 	ImGui::End();
 }
-	
+
+void DebugWindow(bool* p_open, Mon::GameState* game)
+{
+	ImGui::Begin("Debug Info");
+
+	ImGui::DragFloat("line one x", &game->lineOne.pos.x, 0.01f, 1.0f, 2000.0f, "%.02f");
+	ImGui::DragFloat("line two z", &game->lineTwo.pos.z, 0.01f, 1.0f, 2000.0f, "%.02f");
+
+	ImGui::Checkbox("draw collisions", &game->drawCollisions);
+
+	ImGui::End();
+}
 
 void StatsWindow(bool* p_open, Mon::GameState* game)
 {
@@ -730,6 +741,7 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::GameState* game)
 	static bool showCameraWindow = true;
 	static bool showStatsWindow = false;
 	static bool showEntityWindow = true;
+	static bool showDebugWindow = true;
 	if (showDemoWindow)
 		ImGui::ShowDemoWindow(&showDemoWindow);
 	if (showTerrainWindow)
@@ -740,6 +752,8 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::GameState* game)
 		StatsWindow(&showStatsWindow, game);
 	if (showEntityWindow)
 		EntityWindow(&showEntityWindow, game);
+	if (showDebugWindow)
+		DebugWindow(&showDebugWindow, game);
 
 	ImGui::Begin("DEBUG MENU");
 
@@ -841,18 +855,10 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::GameState* game)
 		ImGui::Checkbox("Camera", &showCameraWindow);
 		ImGui::SameLine();
 		ImGui::Checkbox("Things", &showEntityWindow);
+		ImGui::SameLine();
+		ImGui::Checkbox("Debug Info", &showDebugWindow);
 
 		ImGui::DragFloat("cam speed", &game->cameras[game->currCameraIndex].speed, 0.01f, 1.0f, 200.0f, "%.02f");
-
-		ImGui::DragFloat("line one x", &game->lineOne.pos.x, 0.01f, 1.0f, 2000.0f, "%.02f");
-		ImGui::DragFloat("line two z", &game->lineTwo.pos.z, 0.01f, 1.0f, 2000.0f, "%.02f");
-
-		ImGui::Checkbox("draw collisions", &game->drawCollisions);
-		//ImGui::SliderFloat("speed", &game->player.particle.speed, 0.0f, 100.0f);
-		//ImGui::SliderFloat3("lightpos", &game->light.pos[0], 0.0f, 500.0f);
-		//ImGui::SliderFloat3("color", &game->player.collider.data.color[0], 0.0f, 1.0f);
-		//ImGui::SliderFloat3("min", &game->player.collider.size.min[0], 0.0f, 50.0f);
-		//ImGui::SliderFloat3("max", &game->player.collider.size.max[0], 0.0f, 50.0f);
 	
 	ImGui::Separator();
 	

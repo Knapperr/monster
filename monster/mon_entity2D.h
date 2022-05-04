@@ -31,7 +31,7 @@ namespace Mon
 
 	};
 
-	void InitEntity(Entity2D* e, const char* fileLocation, bool isAlpha, v2 position, int size);
+	void InitEntity(Entity2D* e, v2 position, int size);
 	// TODO(ck): Should this param be pointer?
 	// should velocity be acceleration?
 	void movePlayer(TileMap* map, Entity2D* p, v2* velocity, float deltaTime);

@@ -95,6 +95,7 @@ namespace Mon {
 
 		// e->data.meshIndex = GetMesh("quad"); and GetTexture("nameFromParams")
 		e->data.meshIndex = 1;
+		e->data.programType = MonGL::ProgramType::Common;
 		e->data.textureIndex = textureIndex;
 		e->data.scale = scale;
 		e->rb.pos = pos;
@@ -109,6 +110,8 @@ namespace Mon {
 		player->data.meshIndex = 1;
 		player->data.textureIndex = 1;
 		player->facingDir = Direction::Forward;
+		player->data.programType = MonGL::ProgramType::Common;
+
 
 		InitBoxCollider(&player->collider);
 		player->rb.pos = v3(40.0f, 0.0f, 10.0);
@@ -135,6 +138,7 @@ namespace Mon {
 		e->setup = {};
 		e->data.meshIndex = 1;
 		e->data.textureIndex = 5;
+		e->data.programType = MonGL::ProgramType::Water;
 
 		InitBoxCollider(&e->collider);
 		e->rb.pos = v3(30.0f, 0.0f, 30.0);

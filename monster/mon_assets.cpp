@@ -143,8 +143,6 @@ namespace Mon
 
 			//v3 tangent1, bitangent1;
 			//v3 tangent2, bitangent2;
-
-
 			f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
 		}
 

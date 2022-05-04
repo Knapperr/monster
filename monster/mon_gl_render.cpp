@@ -8,9 +8,9 @@ namespace MonGL
 	// can have a getter method that retrieves the globalDrawCalls from here
 	int globalDrawCalls = 0;
 
-	void LoadTexture(Texture* texture, TextureType type, int shaderID, Image* image)
+	void LoadTexture(Texture* texture, TextureType type, bool linearFilter, int shaderID, Image* image)
 	{
-		LoadTextureFile(texture, image, type, true, true);
+		LoadTextureFile(texture, image, type, linearFilter, true);
 	}
 
 	void LoadTextureFile(Texture* texture, Image* image, TextureType type, bool linearFilter, bool pixelArtTexture)
@@ -169,20 +169,20 @@ namespace MonGL
 		MonGL::Texture* t14 = GetTexture(gl, 14);
 
 		int shaderID = gl->program.handle;
-		LoadTexture(t1, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 1));
-		LoadTexture(t2, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 2));
-		LoadTexture(t3, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 3));
-		LoadTexture(t4, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 4));
-		LoadTexture(t5, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 5));
-		LoadTexture(t6, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 6));
-		LoadTexture(t7, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 7));
-		LoadTexture(t8, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 8));
-		LoadTexture(t9, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 9));
-		LoadTexture(t10, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 10));
-		LoadTexture(t11, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 11));
-		LoadTexture(t12, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 12));
-		LoadTexture(t13, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 13));
-		LoadTexture(t14, MonGL::TextureType::Diffuse, shaderID, GetImage(g_Assets, 14));
+		LoadTexture(t1, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 1));
+		LoadTexture(t2, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 2));
+		LoadTexture(t3, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 3));
+		LoadTexture(t4, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 4));
+		LoadTexture(t5, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 5));
+		LoadTexture(t6, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 6));
+		LoadTexture(t7, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 7));
+		LoadTexture(t8, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 8));
+		LoadTexture(t9, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 9));
+		LoadTexture(t10, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 10));
+		LoadTexture(t11, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 11));
+		LoadTexture(t12, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 12));
+		LoadTexture(t13, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 13));
+		LoadTexture(t14, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 14));
 	}
 
  
@@ -230,7 +230,7 @@ namespace MonGL
 
 	void UseProgram(WaterProgram* program, RenderSetup setup)
 	{
-		UseProgram(program, setup);
+		UseProgram(&program->common, setup);
 
 		// TODO(ck):
 		// somehow get entity's water component data into here
@@ -429,88 +429,32 @@ namespace MonGL
 	/// [BEGIN]  Draw Mesh with RenderData 
 	///
 
-	// TODO(ck): Maybe pass OpenGL to this then we have all the data?
-	void Draw(OpenGL* gl, Config* config, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera)
-	{
-		Mesh* mesh = GetMesh(g_Assets, data->meshIndex);
-		Texture* texture = GetTexture(gl, data->textureIndex);
 
-		// which program to use is determined by renderData program type?
-		// gl->program.handle
+	// TODO(ck): STOP PASSING TEXTUREID IMPORTANT(ck):
+	void ActivateUniforms(CommonProgram* program, int textureID)
+	{
+		glUseProgram(program->handle);
 
 		bool useTexture = true;
-		glUniform1i(glGetUniformLocation(gl->program.handle, "useTexture"), useTexture);
-		glUniform1i(glGetUniformLocation(gl->program.handle, "pixelTexture"), useTexture);
+		glUniform1i(glGetUniformLocation(program->handle, "useTexture"), useTexture);
+		glUniform1i(glGetUniformLocation(program->handle, "pixelTexture"), useTexture);
 		// bind textures on corresponding texture units
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture->id);
+		glBindTexture(GL_TEXTURE_2D, textureID);
 
 		//glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
-		glUniform1i(glGetUniformLocation(gl->program.handle, "collider"), false);
+		glUniform1i(glGetUniformLocation(program->handle, "collider"), false);
 
-		// TODO(ck):
-		// All uniforms get called in 
-
-		// struct OpenGL
-		// for holding our programs(shaders) 
-		/*
-		I have no idea the best way to do this...
-
-		 RenderSetup is for things that are common between
-		 all entities
-		 these are things that are the same between all entities we
-		 dont want them to all have one
-
-		 commands are what the entities create i believe that are unique between
-		 them when drawing. Still need to define when to use the water program
-		 over the
-
-			switch data->programType
-				case 1:
-					UseProgram(gl->common, setup)
-				case 2:
-					UseProgram(gl->water, setup, data->water) ?? something like this
-				// i want it to be a material
-				could have data->material[0]
-		*/
-
-		data->worldMatrix = mat4(1.0f);
-		data->worldMatrix = glm::translate(data->worldMatrix, pos);
-		if (mesh->indiceCount > 0)
-		{
-			data->worldMatrix = glm::rotate(data->worldMatrix, glm::radians(spriteAngleDegrees), v3{ 1.0f, 0.0f, 0.0f });
-		}
-		data->worldMatrix = glm::scale(data->worldMatrix, data->scale);
-		glUniformMatrix4fv(glGetUniformLocation(gl->program.handle, "model"), 1, GL_FALSE, glm::value_ptr(data->worldMatrix));
-
-		glBindVertexArray(mesh->VAO);
-		if (mesh->indiceCount > 0)
-		{
-			glDrawElements(GL_TRIANGLES, mesh->indiceCount, GL_UNSIGNED_INT, 0);
-		}
-		else
-		{
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
-
-		globalDrawCalls++;
 	}
 
-	void DrawWater(RenderData* data, RenderSetup* setup, WaterProgram* waterData, Light* light, v3 pos, v3 scale, v3 camPos, unsigned int shaderID)
+	// TODO(ck): STOP PASSING TEXTUREID IMPORTANT(ck):
+	void ActivateUniforms(WaterProgram* program, int textureID)
 	{
+		// need to pass struct or something to shader because they are
+		// going to be different...
+		// STUDY(ck):  can you have shader includes in glsl??????
+		ActivateUniforms(&program->common, textureID);
 
-		// ==============================================================================
-		//glUniform3fv(glGetUniformLocation(shaderID, "material.ambient"), 1, &data->mat.ambient[0]);
-		//glUniform3fv(glGetUniformLocation(shaderID, "material.diffuse"), 1, &data->mat.diffuse[0]);
-		//glUniform3fv(glGetUniformLocation(shaderID, "material.specular"), 1, &data->mat.specular[0]);
-		//glUniform1f(glGetUniformLocation(shaderID, "material.shininess"), data->mat.shininess);
-
-		// TODO(ck): Move to begin render. MonGL::beginRender(&cam);
-
-		unsigned int diffuseNr = 1;
-		unsigned int specularNr = 1;
-		unsigned int normalNr = 1;
-		unsigned int heightNr = 1;
 
 		// Textures
 		// ==================================================================================
@@ -549,23 +493,96 @@ namespace MonGL
 		//	//glBindTexture(GL_TEXTURE_2D, data->textures[i].id);
 		//}
 
-		// ==================================================================================
 
+				// ==================================================================================
+		int shaderID = program->common.handle;
 		//glUniform1f(GetLoc(waterShader, "time"), (float)glfwGetTime());
-		glUniform3fv(glGetUniformLocation(shaderID, "lightPos"), 1, &light->pos[0]);
-		glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camPos[0]);
+		
+		// GET THIS INFO
+		//glUniform3fv(glGetUniformLocation(shaderID, "lightPos"), 1, &light->pos[0]);
+		//glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camPos[0]);
+		//
 
 		glUniform1f(glGetUniformLocation(shaderID, "uJump"), 0.25f);	// water->uJump
 		glUniform1f(glGetUniformLocation(shaderID, "vJump"), 0.25f);	// water->vJump
-		glUniform1f(glGetUniformLocation(shaderID, "tiling"), (float)waterData->tiling);	// water->tiling
-		glUniform1f(glGetUniformLocation(shaderID, "speed"), (float)waterData->speed);	// water->speed 
-		glUniform1f(glGetUniformLocation(shaderID, "flowStrength"), (float)waterData->flowStrength); // water->flowStrength
-		glUniform1f(glGetUniformLocation(shaderID, "flowOffset"), (float)waterData->flowOffset);	// water->flowOffset
-		glUniform1f(glGetUniformLocation(shaderID, "heightScale"), (float)waterData->heightScale);	// water->heightScale
-		glUniform1f(glGetUniformLocation(shaderID, "heightScaleModulated"), (float)waterData->heightScaleModulated); // water->heightScaleModulated
+		glUniform1f(glGetUniformLocation(shaderID, "tiling"), (float)program->tiling);	// water->tiling
+		glUniform1f(glGetUniformLocation(shaderID, "speed"), (float)program->speed);	// water->speed 
+		glUniform1f(glGetUniformLocation(shaderID, "flowStrength"), (float)program->flowStrength); // water->flowStrength
+		glUniform1f(glGetUniformLocation(shaderID, "flowOffset"), (float)program->flowOffset);	// water->flowOffset
+		glUniform1f(glGetUniformLocation(shaderID, "heightScale"), (float)program->heightScale);	// water->heightScale
+		glUniform1f(glGetUniformLocation(shaderID, "heightScaleModulated"), (float)program->heightScaleModulated); // water->heightScaleModulated
 		//glUniform1f(glGetUniformLocation(shaderID, "waveLength"), waterData->waveLength);	//  water->waveLength
 
 		// ==============================================================================
+
+	}
+
+
+	//
+	// Public Draw Calls
+	// 
+	
+	// TODO(ck): Maybe pass OpenGL to this then we have all the data?
+	void Draw(OpenGL* gl, Config* config, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera)
+	{
+		Mesh* mesh = GetMesh(g_Assets, data->meshIndex);
+		Texture* texture = GetTexture(gl, data->textureIndex);
+
+		int shaderHandle = gl->program.handle;
+		switch (data->programType)
+		{
+		case ProgramType::Common:
+			ActivateUniforms(&gl->program, texture->id);
+			shaderHandle = gl->program.handle;
+			break;
+		case ProgramType::Water:
+			ActivateUniforms(&gl->waterProgram, texture->id);
+			shaderHandle = gl->waterProgram.common.handle;
+			break;
+		}
+
+		data->worldMatrix = mat4(1.0f);
+		data->worldMatrix = glm::translate(data->worldMatrix, pos);
+		if (mesh->indiceCount > 0)
+		{
+			data->worldMatrix = glm::rotate(data->worldMatrix, glm::radians(spriteAngleDegrees), v3{ 1.0f, 0.0f, 0.0f });
+		}
+		data->worldMatrix = glm::scale(data->worldMatrix, data->scale);
+		glUniformMatrix4fv(glGetUniformLocation(shaderHandle, "model"), 1, GL_FALSE, glm::value_ptr(data->worldMatrix));
+
+		glBindVertexArray(mesh->VAO);
+		if (mesh->indiceCount > 0)
+		{
+			glDrawElements(GL_TRIANGLES, mesh->indiceCount, GL_UNSIGNED_INT, 0);
+		}
+		else
+		{
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
+
+		globalDrawCalls++;
+	}
+
+
+
+	void DrawWater(RenderData* data, RenderSetup* setup, WaterProgram* waterData, Light* light, v3 pos, v3 scale, v3 camPos, unsigned int shaderID)
+	{
+
+		// ==============================================================================
+		//glUniform3fv(glGetUniformLocation(shaderID, "material.ambient"), 1, &data->mat.ambient[0]);
+		//glUniform3fv(glGetUniformLocation(shaderID, "material.diffuse"), 1, &data->mat.diffuse[0]);
+		//glUniform3fv(glGetUniformLocation(shaderID, "material.specular"), 1, &data->mat.specular[0]);
+		//glUniform1f(glGetUniformLocation(shaderID, "material.shininess"), data->mat.shininess);
+
+		// TODO(ck): Move to begin render. MonGL::beginRender(&cam);
+
+		unsigned int diffuseNr = 1;
+		unsigned int specularNr = 1;
+		unsigned int normalNr = 1;
+		unsigned int heightNr = 1;
+
+
+
 
 		// TODO(ck): Does this happen at the end of update. the data gets its mat4 updated 
 		// and then we can just call glUniformMatrix on this
@@ -686,6 +703,81 @@ namespace MonGL
 	std::vector<Vertex> tileVertices;
 	int usedIndices = 0;
 
+
+	void InitRenderer2D(OpenGL* gl)
+	{
+		/*
+		TODO(ck): Load from a configuration file
+		should only load meshses in current chunk or level
+		*/
+
+		// Data that renderdata can hold
+		//Mesh meshes[10]; // TODO(ck): SQLite config for size
+		//Texture textures[30]; // TODO(ck): SQLite config for size
+
+		// TODO(ck): Wrangle up the data
+		// go around the code base and find out where these are all loaded and load them in here
+		// everything must have an index into these things
+		gl->program = {};
+		gl->waterProgram = {};
+		MonGL::LoadShader(&gl->program, "res/shaders/vert_sprite.glsl", "res/shaders/frag_sprite.glsl", NULL);
+		MonGL::LoadShader(&gl->waterProgram.common, "res/shaders/vert_water.glsl", "res/shaders/frag_water.glsl", NULL);
+		// TODO(ck): Do not need this now?
+		//state->mainShaderID = state->shader.handle;
+
+		// TODO(ck): Need a texture atlas rather than loading all of these
+		// textures for the entities
+		//
+
+
+
+		AddTexture(gl);
+		MonGL::Texture* t1 = GetTexture(gl, 1);
+		AddTexture(gl);
+		MonGL::Texture* t2 = GetTexture(gl, 2);
+		AddTexture(gl);
+		MonGL::Texture* t3 = GetTexture(gl, 3);
+		AddTexture(gl);
+		MonGL::Texture* t4 = GetTexture(gl, 4);
+		AddTexture(gl);
+		MonGL::Texture* t5 = GetTexture(gl, 5);
+		AddTexture(gl);
+		MonGL::Texture* t6 = GetTexture(gl, 6);
+		AddTexture(gl);
+		MonGL::Texture* t7 = GetTexture(gl, 7);
+		AddTexture(gl);
+		MonGL::Texture* t8 = GetTexture(gl, 8);
+		AddTexture(gl);
+		MonGL::Texture* t9 = GetTexture(gl, 9);
+		AddTexture(gl);
+		MonGL::Texture* t10 = GetTexture(gl, 10);
+		AddTexture(gl);
+		MonGL::Texture* t11 = GetTexture(gl, 11);
+		AddTexture(gl);
+		MonGL::Texture* t12 = GetTexture(gl, 12);
+		AddTexture(gl);
+		MonGL::Texture* t13 = GetTexture(gl, 13);
+		AddTexture(gl);
+		MonGL::Texture* t14 = GetTexture(gl, 14);
+
+		int shaderID = gl->program.handle;
+		LoadTexture(t1, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 1));
+		LoadTexture(t2, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 2));
+		LoadTexture(t3, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 3));
+		LoadTexture(t4, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 4));
+		LoadTexture(t5, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 5));
+		LoadTexture(t6, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 6));
+		LoadTexture(t7, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 7));
+		LoadTexture(t8, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 8));
+		LoadTexture(t9, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 9));
+		LoadTexture(t10, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 10));
+		LoadTexture(t11, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 11));
+		LoadTexture(t12, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 12));
+		LoadTexture(t13, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 13));
+		LoadTexture(t14, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 14));
+
+	}
+
 	void InitOpenGLBatchMesh(BatchData* data)
 	{
 		int usedVertices = 1;
@@ -773,12 +865,15 @@ namespace MonGL
 		};
 
 		unsigned int EBO;
-		glGenVertexArrays(1, &sprite->VAO);
-		glGenBuffers(1, &sprite->VBO);
+
+		Mesh* mesh = GetMesh(g_Assets, sprite->meshIndex);
+
+		glGenVertexArrays(1, &mesh->VAO);
+		glGenBuffers(1, &mesh->VBO);
 		glGenBuffers(1, &EBO);
 
-		glBindVertexArray(sprite->VAO);
-		glBindBuffer(GL_ARRAY_BUFFER, sprite->VBO);
+		glBindVertexArray(mesh->VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, mesh->VBO);
 
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 		
@@ -986,7 +1081,8 @@ namespace MonGL
 		glUniform1i(glGetUniformLocation(shader->handle, "diffuse_layer"), 0);
 		glBindTexture(GL_TEXTURE_2D_ARRAY, textureID);
 
-		glBindVertexArray(sprite->VAO);
+		Mesh* mesh = GetMesh(g_Assets, sprite->meshIndex);
+		glBindVertexArray(mesh->VAO);
 		glDrawElements(GL_TRIANGLES, 9600, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 	}
@@ -1013,11 +1109,14 @@ namespace MonGL
 		glUniformMatrix4fv(glGetUniformLocation(shader->handle, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		
 		//glUniform3f(glGetUniformLocation(shader->handle, "spriteColor"), data->color.r, data->color.g, data->color.b);
+		Mesh* mesh = GetMesh(g_Assets, data->meshIndex);
+		Texture* texture = {};
+		//Texture* texture = GetTexture(gl, data->textureIndex);
 
 		//glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, data->texture.id);
+		glBindTexture(GL_TEXTURE_2D, texture->id);
 
-		glBindVertexArray(data->VAO);
+		glBindVertexArray(mesh->VAO);
 
 		//if (data->wireFrame)
 		//	glDrawArrays(GL_LINES, 0, 6);

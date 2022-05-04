@@ -16,9 +16,13 @@ struct Light {
     vec3 specular;
 };
 
-in vec3 FragPos;
-in vec3 Normal;
-in vec2 TexCoords;
+in VS_OUT {
+    in vec3 FragPos;
+    in vec3 Normal;
+    in vec2 TexCoords;
+} fs_in;
+
+
 
 uniform vec3 viewPos;
 uniform Material material;
@@ -48,7 +52,7 @@ void main()
     if (useTexture)
     {
         // Remove white pixels on texture
-        vec4 texColor = texture(texture_diffuse1, TexCoords);
+        vec4 texColor = texture(texture_diffuse1, fs_in.TexCoords);
         if (texColor.a < 0.1)
         {
             discard;
@@ -59,7 +63,7 @@ void main()
         if (pixelTexture)
         {
             vec2 textureSize = textureSize(texture_diffuse1, 0);
-            vec2 pixel = TexCoords * textureSize;
+            vec2 pixel = fs_in.TexCoords * textureSize;
             vec2 duDv = fwidth(pixel);
             vec2 seam = floor(pixel + 0.5);
             pixel = seam + clamp((pixel - seam)/duDv, -0.5, 0.5);
@@ -86,13 +90,13 @@ void main()
     vec3 ambient = light.ambient * material.ambient;
 
     // diffuse
-    vec3 norm = normalize(Normal);
-    vec3 lightDir = normalize(light.pos - FragPos);
+    vec3 norm = normalize(fs_in.Normal);
+    vec3 lightDir = normalize(light.pos - fs_in.FragPos);
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = light.diffuse * (diff * material.specular);
 
     // specular
-    vec3 viewDir = normalize(viewPos - FragPos);
+    vec3 viewDir = normalize(viewPos - fs_in.FragPos);
     vec3 reflectDir = reflect(-lightDir, norm);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     vec3 specular = light.specular * (spec * material.specular);

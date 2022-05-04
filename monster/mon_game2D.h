@@ -27,7 +27,7 @@ namespace Mon {
 		int cameraCount;
 
 		MonGL::Config* config;
-		MonGL::CommonProgram shader;
+		MonGL::OpenGL renderer;
 
 		// Note(ck): Current game state - State::Debug is default
 		int state;

@@ -5,14 +5,15 @@ namespace Mon
 
 
 
-	void InitEntity(Entity2D* e, const char* fileLocation, bool isAlpha, v2 position, int size)
+	void InitEntity(Entity2D* e, v2 position, int size)
 	{
 		e->sprite = {};
 		// TODO(ck): Don't automatically make opengl data... figure out what renderer we are using
 		// TODO(ck): Texture load in renderer we need the sprite size from the texture
 		MonGL::InitRenderData2D(&e->sprite, size);
-		//LoadTextureFile(&e->sprite.texture, fileLocation, MonGL::TextureType::Diffuse, isAlpha, false, false, true);
 
+		e->sprite.meshIndex = 1;
+		e->sprite.textureIndex = 1;
 		e->pos = position;
 		
 		// TODO(ck): Update this is a Point now not a v2
@@ -20,9 +21,6 @@ namespace Mon
 		e->sprite.pos.x = position.x;
 		e->sprite.pos.y = position.y;
 
-		// TODO(ck): set in renderer use texture size
-		e->sprite.size.x = e->sprite.texture.width;
-		e->sprite.size.y = e->sprite.texture.height;
 
 		// TODO(ck): Deal with speed
 		e->speed = 100.0f;
