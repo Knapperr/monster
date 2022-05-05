@@ -187,11 +187,11 @@ namespace Mon
 		InitImage(p1Back, "res/textures/p1BACK.png");
 
 		AddImage(assets);
-		Image* waterDeriv = GetImage(assets, 5);
-		InitImage(waterDeriv, "res/textures/water/ripples-derivative-height.png");
+		Image* waterDeriv = GetImage(assets, 5); // diffuse 
+		InitImage(waterDeriv, "res/textures/water/water.png");
 
 		AddImage(assets);
-		Image* waterFlow = GetImage(assets, 6);
+		Image* waterFlow = GetImage(assets, 6); // normal1
 		InitImage(waterFlow, "res/textures/water/flow-speed-noise.png");
 
 		AddImage(assets);
@@ -225,6 +225,11 @@ namespace Mon
 		AddImage(assets);
 		Image* terr4 = GetImage(assets, 14);
 		InitImage(terr4, "res/textures/terrain/snow.jpg", false);
+
+		AddImage(assets);
+		Image* waterNorm2 = GetImage(assets, 15);
+		InitImage(waterNorm2, "res/textures/water/water-derivative-height.png");
+
 	}
 
 

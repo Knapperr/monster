@@ -130,15 +130,16 @@ namespace MonGL
 		gl->waterProgram = {};
 		MonGL::LoadShader(&gl->program, "res/shaders/vert_colors.glsl", "res/shaders/frag_colors.glsl", NULL);
 		MonGL::LoadShader(&gl->waterProgram.common, "res/shaders/vert_water.glsl", "res/shaders/frag_water.glsl", NULL);
-		// TODO(ck): Do not need this now?
-		//state->mainShaderID = state->shader.handle;
 
-
-				//
+		// TODO(ck): MOVE TEXTURE IDS TO data... program can have its own textues too?? 
+		// a program can be like a material that can be applied to a mesh so it needs to have its own 
+		// textures.
+		gl->waterProgram.textureIndexDiffuse = 5;
+		gl->waterProgram.textureIndexNormal1 = 6;
+		gl->waterProgram.textureIndexNormal2 = 15;
+		
 		// TODO(ck): Need a texture atlas rather than loading all of these
-		// textures for the entities
-		//
-
+		// textures for the entities 
 		AddTexture(gl);
 		MonGL::Texture* t1 = GetTexture(gl, 1);
 		AddTexture(gl);
@@ -167,6 +168,8 @@ namespace MonGL
 		MonGL::Texture* t13 = GetTexture(gl, 13);
 		AddTexture(gl);
 		MonGL::Texture* t14 = GetTexture(gl, 14);
+		AddTexture(gl);
+		MonGL::Texture* t15 = GetTexture(gl, 15);
 
 		int shaderID = gl->program.handle;
 		LoadTexture(t1, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 1));
@@ -174,7 +177,7 @@ namespace MonGL
 		LoadTexture(t3, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 3));
 		LoadTexture(t4, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 4));
 		LoadTexture(t5, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 5));
-		LoadTexture(t6, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 6));
+		LoadTexture(t6, MonGL::TextureType::Normal,  true, shaderID, GetImage(g_Assets, 6));
 		LoadTexture(t7, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 7));
 		LoadTexture(t8, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 8));
 		LoadTexture(t9, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 9));
@@ -183,7 +186,7 @@ namespace MonGL
 		LoadTexture(t12, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 12));
 		LoadTexture(t13, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 13));
 		LoadTexture(t14, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 14));
-
+		LoadTexture(t15, MonGL::TextureType::Normal,  true, shaderID, GetImage(g_Assets, 15));
 
 	}
 
@@ -400,6 +403,7 @@ namespace MonGL
 
 		Mesh* mesh = GetMesh(g_Assets, data->meshIndex);
 		unsigned int shaderID = gl->program.handle;
+		glUseProgram(shaderID);
 
 		glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camera->pos[0]);
 
@@ -450,54 +454,30 @@ namespace MonGL
 	}
 
 	// TODO(ck): STOP PASSING TEXTUREID IMPORTANT(ck):
-	void ActivateUniforms(WaterProgram* program, int textureID)
+	void ActivateUniforms(WaterProgram* program, int textureID, int diffuseTextureID, int normal1TextureID, int normal2TextureID)
 	{
 		// need to pass struct or something to shader because they are
 		// going to be different...
 		// STUDY(ck):  can you have shader includes in glsl??????
 		ActivateUniforms(&program->common, textureID);
 
-
-		// Textures
-		// ==================================================================================
-		//for (unsigned int i = 0; i < ArrayCount(data->textures); ++i)
-		//{
-		//	glActiveTexture(GL_TEXTURE0 + i); // activate the proper texture unit before binding
-		////	// retrieve texture number (the N in diffuse_TextureN)
-		//	std::string number;
-		//	std::string name = "texture_";
-		//	//switch (data->textures[i].type)
-		//	//{
-		//	//case TextureType::Diffuse:
-		//	//	number = std::to_string(diffuseNr++);
-		//	//	name += "diffuse";
-		//	//	break;
-		//	//case TextureType::Specular:
-		//	//	number = std::to_string(specularNr++);
-		//	//	name += "specular";
-		//	//	break;
-		//	//case TextureType::Normal:
-		//	//	number = std::to_string(normalNr++);
-		//	//	name += "normal";
-		//	//	break;
-		//	//case TextureType::Height:
-		//	//	number = std::to_string(heightNr++);
-		//	//	name += "height";
-		//	//default:
-		//	//	number = std::to_string(diffuseNr++);
-		//	//	name += "diffuse";
-		//	//	break;
-		//	//}
-
-		//	// now set the sampler to the correct texture unit
-		//	glUniform1i(glGetUniformLocation(shaderID, (name + number).c_str()), i);
-		//	// and finally bind the texture		
-		//	//glBindTexture(GL_TEXTURE_2D, data->textures[i].id);
-		//}
-
-
-				// ==================================================================================
 		int shaderID = program->common.handle;
+
+		glActiveTexture(GL_TEXTURE0);
+		glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
+		glBindTexture(GL_TEXTURE_2D, diffuseTextureID);
+
+
+		glActiveTexture(GL_TEXTURE1);
+		glUniform1i(glGetUniformLocation(shaderID, "texture_normal1"), 1);
+		glBindTexture(GL_TEXTURE_2D, normal1TextureID);
+
+
+		glActiveTexture(GL_TEXTURE2);
+		glUniform1i(glGetUniformLocation(shaderID, "texture_normal2"), 2);
+		glBindTexture(GL_TEXTURE_2D, normal2TextureID);
+
+
 		//glUniform1f(GetLoc(waterShader, "time"), (float)glfwGetTime());
 		
 		// GET THIS INFO
@@ -519,6 +499,21 @@ namespace MonGL
 
 	}
 
+	int ActivateUniforms(OpenGL* gl,  ProgramType type, int baseTextureID)
+	{
+		switch (type)
+		{
+		case ProgramType::Common:
+			ActivateUniforms(&gl->program, baseTextureID);
+			return gl->program.handle;
+		case ProgramType::Water:
+			Texture* diffuse = GetTexture(gl, gl->waterProgram.textureIndexDiffuse);
+			Texture* normal1 = GetTexture(gl, gl->waterProgram.textureIndexNormal1);
+			Texture* normal2 =  GetTexture(gl, gl->waterProgram.textureIndexNormal2);
+			ActivateUniforms(&gl->waterProgram, baseTextureID, diffuse->id, normal1->id, normal2->id);
+			return gl->waterProgram.common.handle;
+		}
+	}
 
 	//
 	// Public Draw Calls
@@ -529,19 +524,7 @@ namespace MonGL
 	{
 		Mesh* mesh = GetMesh(g_Assets, data->meshIndex);
 		Texture* texture = GetTexture(gl, data->textureIndex);
-
-		int shaderHandle = gl->program.handle;
-		switch (data->programType)
-		{
-		case ProgramType::Common:
-			ActivateUniforms(&gl->program, texture->id);
-			shaderHandle = gl->program.handle;
-			break;
-		case ProgramType::Water:
-			ActivateUniforms(&gl->waterProgram, texture->id);
-			shaderHandle = gl->waterProgram.common.handle;
-			break;
-		}
+		int shaderHandle = ActivateUniforms(gl, data->programType, texture->id);
 
 		data->worldMatrix = mat4(1.0f);
 		data->worldMatrix = glm::translate(data->worldMatrix, pos);
@@ -553,9 +536,9 @@ namespace MonGL
 		glUniformMatrix4fv(glGetUniformLocation(shaderHandle, "model"), 1, GL_FALSE, glm::value_ptr(data->worldMatrix));
 
 		
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		if (data->wireFrame)
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		int polygonMode = data->wireFrame ? GL_LINE : GL_FILL;
+		glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
+
 
 		glBindVertexArray(mesh->VAO);
 		if (mesh->indiceCount > 0)
@@ -587,7 +570,6 @@ namespace MonGL
 		unsigned int specularNr = 1;
 		unsigned int normalNr = 1;
 		unsigned int heightNr = 1;
-
 
 
 
@@ -640,9 +622,9 @@ namespace MonGL
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
 		glBindVertexArray(mesh->VAO);
 
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		if (data->wireFrame)
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);			
+
+		int polygonMode = data->wireFrame ? GL_LINE : GL_FILL;
+		glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
 
 		glDrawElements(GL_TRIANGLES, mesh->indiceCount, GL_UNSIGNED_INT, 0);
 

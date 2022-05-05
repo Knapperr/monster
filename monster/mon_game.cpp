@@ -116,7 +116,6 @@ namespace Mon
 		state->renderer = {};
 		MonGL::InitRenderer(&state->renderer);
 
-
 		state->light = {};
 		v3 lightColor = v3(0.2f, 0.3f, 0.6f);
 		state->light.diffuse = lightColor * v3(0.5f);
@@ -372,10 +371,6 @@ namespace Mon
 		//
 		// TERRAIN
 		//
-		if (state->drawCollisions)
-		{
-			MonGL::DrawBoundingBox(&state->renderer, &state->terrain->collider.data, cam);
-		}
 		MonGL::DrawTerrain(&state->renderer, &state->terrain->data, &state->light, cam);
 
 		//
@@ -394,8 +389,8 @@ namespace Mon
 		//
 		// DEBUG TOOLS
 		// 
-		MonGL::DrawLine(&state->renderer, &state->lineOne);
-		MonGL::DrawLine(&state->renderer, &state->lineTwo);
+		//MonGL::DrawLine(&state->renderer, &state->lineOne);
+		//MonGL::DrawLine(&state->renderer, &state->lineTwo);
 
 		MonGL::EndRender();
 

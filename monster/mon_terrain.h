@@ -41,7 +41,6 @@ public:
 	bool drawTexture;
 
 	MonGL::RenderData data;
-	Mon::Collider collider;
 	
 	float* heightMap;
 

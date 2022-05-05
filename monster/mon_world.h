@@ -138,7 +138,7 @@ namespace Mon {
 	{
 		e->name = "water";
 		e->setup = {};
-		e->data.meshIndex = 1;
+		e->data.meshIndex = 7;
 		e->data.textureIndex = 5;
 		e->data.programType = MonGL::ProgramType::Water;
 		e->data.wireFrame = false;
@@ -214,7 +214,8 @@ namespace Mon {
 
 		AddEntity(world);
 		Entity* plane64 = GetEntity(world, world->entityCount - 1);
-		InitEntity(plane64, "plane64", v3(6.0f, 0.0f, 6.0f), v3(1.0f), angleDegrees, shaderHandle, 8);
+		InitEntity(plane64, "plane64", v3(6.0f, 0.0f, 6.0f), v3(1.0f), 0.0f, shaderHandle, 8);
+		plane64->data.meshIndex = 7;
 
 	}
 

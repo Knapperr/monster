@@ -354,41 +354,6 @@ void InitGui(SDL_Window* window, SDL_GLContext* context)
 
 
 #ifdef _3D_GUI_
-static void TerrainColliderWindow(Terrain* terrain)
-{
-	if (ImGui::TreeNode("Colliders"))
-	{
-
-		ImGui::Checkbox("draw collider", &terrain->collider.data.visible);
-
-
-		if (ImGui::SliderFloat3("collider min", &terrain->collider.min[0], 0.0f, 500.0f))
-		{
-			Mon::SetBoxTransform(&terrain->collider, terrain->collider.worldPos, Mon::v3(1.0f));
-		}
-		if (ImGui::SliderFloat3("collider max", &terrain->collider.max[0], 0.0f, 500.0f))
-		{
-			Mon::SetBoxTransform(&terrain->collider, terrain->collider.worldPos, Mon::v3(1.0f));
-		}
-		if (ImGui::DragFloat("collider x", &terrain->collider.worldPos.x, 0.1f, -1000.0f, 1000.0f, "%.02f"))
-		{
-			Mon::SetBoxTransform(&terrain->collider, terrain->collider.worldPos, Mon::v3(1.0f));
-		}
-		if (ImGui::DragFloat("collider y", &terrain->collider.worldPos.y, 0.1f, -1000.0f, 1000.0f, "%.02f"))
-		{
-			Mon::SetBoxTransform(&terrain->collider, terrain->collider.worldPos, Mon::v3(1.0f));
-		}
-		if (ImGui::DragFloat("collider z", &terrain->collider.worldPos.z, 0.1f, -1000.0f, 1000.0f, "%.02f"))
-		{
-			Mon::SetBoxTransform(&terrain->collider, terrain->collider.worldPos, Mon::v3(1.0f));
-		}
-
-
-		// End
-		ImGui::TreePop();
-	}
-}
-
 static void TerrainMaterialWindow(Terrain* terrain)
 {
 	if (ImGui::TreeNode("Materials"))
@@ -402,8 +367,6 @@ static void TerrainMaterialWindow(Terrain* terrain)
 		//ImGui::DragFloat("Mat ambient g", &terrain->mesh.mat.ambient.y, 0.01f, 0.0f, 1.0f, "%.02f");
 		//ImGui::DragFloat("Mat ambient b", &terrain->mesh.mat.ambient.z, 0.01f, 0.0f, 1.0f, "%.02f");
 		ImGui::PopItemWidth();
-
-
 		ImGui::TreePop();
 	}
 }
@@ -425,7 +388,6 @@ void TerrainWindow(bool* p_open, Mon::GameState* game)
 
 	ImGui::Checkbox("Wireframe", &game->terrain->data.wireFrame);
 
-	TerrainColliderWindow(game->terrain);
 	TerrainMaterialWindow(game->terrain);
 
 

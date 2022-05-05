@@ -21,13 +21,6 @@ Terrain::Terrain(int gridX, int gridZ)
 	*/
 	// data.meshIndex = GetMesh("grid");
 	data.meshIndex = 4;
-	
-	Mon::InitBoxCollider(&collider);
-	collider.data.color = Mon::v3(0.1f, 0.4f, 0.95f);
-	collider.worldPos = Mon::v3(-2.0f, -6.40f, -1.10f);
-	collider.max = Mon::v3(68.00f, 6.10f, 64.0f);
-	Mon::SetBoxTransform(&collider, collider.worldPos, Mon::v3(1.0f));
-
 	data.textureIndex = 11;
 }
 
@@ -35,8 +28,6 @@ Terrain::~Terrain()
 {
 	delete[] heightMap;
 }
-
-
 
 float GetHeight(MonGL::Mesh* mesh, int x, int z)
 {
@@ -148,7 +139,6 @@ Mon::v3 ToWorldCoords(Mon::v4 eyeCoords, Mon::mat4 viewMatrix)
 
 	return mouseRay;
 }
-
 
 Mon::v3 BinarySearch(MonGL::Mesh* mesh, int count, float start, float finish, Mon::v3 ray, Mon::v3 cameraPosition)
 {
