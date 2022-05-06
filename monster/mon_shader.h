@@ -29,7 +29,6 @@ namespace MonGL
 		CommonProgram common;
 
 		// TODO(ck): uniform ids for shader
-		int textureIndexDiffuse;
 		int textureIndexNormal1;
 		int textureIndexNormal2;
 

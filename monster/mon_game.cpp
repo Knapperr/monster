@@ -352,20 +352,27 @@ namespace Mon
 		mat4 viewMatrix = ViewMatrix(cam);
 
 
-		//MonGL::UseProgram(&state->renderer.waterProgram, state->setup);
-		//MonGL::BeginRender(state->config, projection, viewMatrix, state->renderer.waterProgram.common.handle);
 		
 		// TODO(ck): need to make it a normal Draw(); just have to pass program and activate uniforms
 		// in it no matter what type it is in draw? it like unwinds??? 
 		// DrawWater()
 		
+		// WHY DONT I NEED TO CALL THIS?
+		//MonGL::UseProgram(&state->renderer.waterProgram, state->setup);
+		//MonGL::BeginRender(state->config, projection, viewMatrix, state->renderer.waterProgram.common.handle);
+
 
 		// 
 		// TODO(ck): use shader
-		MonGL::UseProgram(&state->renderer.program, state->setup);
 
+	 
 		// TODO(ck): Remove begin render need to go through shaders after another
+		MonGL::UseProgram(&state->renderer.program, state->setup);
+		// THIS ONLY NEEDS TO BE CALLED ONCE AT THE BEGINNING OF DRAW CALL
+		// this was being called in the colliders and the terrain.. it only needs to be called once?
+		// doesn't need to be called for water shader though??
 		MonGL::BeginRender(state->config, projection, viewMatrix, state->renderer.program.handle);
+		
 		//MonGL::BeginRender(state->config, Projection(cam), ViewMatrix(cam), state->waterShader.handle);
 
 		//

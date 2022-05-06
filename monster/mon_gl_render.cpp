@@ -134,7 +134,6 @@ namespace MonGL
 		// TODO(ck): MOVE TEXTURE IDS TO data... program can have its own textues too?? 
 		// a program can be like a material that can be applied to a mesh so it needs to have its own 
 		// textures.
-		gl->waterProgram.textureIndexDiffuse = 5;
 		gl->waterProgram.textureIndexNormal1 = 6;
 		gl->waterProgram.textureIndexNormal2 = 15;
 		
@@ -407,9 +406,6 @@ namespace MonGL
 
 		glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camera->pos[0]);
 
-		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(Projection(camera)));
-		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(ViewMatrix(camera)));
-
 		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), false);
 		glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
 		glUniform1i(glGetUniformLocation(shaderID, "collider"), true);
@@ -439,13 +435,25 @@ namespace MonGL
 	// TODO(ck): STOP PASSING TEXTUREID IMPORTANT(ck):
 	void ActivateUniforms(CommonProgram* program, int textureID)
 	{
-		glUseProgram(program->handle);
+		// TODO(ck): Performance - Only call this if the program actually changes or find a way to call at the beginning 
+		// sort entities so that water is always at the end so that gluseprogram gets called before the water is drawn
+		
+		// IMPORTANT(ck):
+		// CANT CALL THIS EVERYTIME I DRAW SOMETHING NEED TO 
+		// have a BeginRender() that calls glUseProgram 
+		// water might have to be separated out?
+		//glUseProgram(program->handle);
 
+		// yeah this design is flawed i can just switch the water shader at the end and 
+		// call any mesh on it... 
+		// you do want to activate the uniforms but you dont want to call glUseProgram
+		
 		bool useTexture = true;
 		glUniform1i(glGetUniformLocation(program->handle, "useTexture"), useTexture);
 		glUniform1i(glGetUniformLocation(program->handle, "pixelTexture"), useTexture);
 		// bind textures on corresponding texture units
 		glActiveTexture(GL_TEXTURE0);
+		glUniform1i(glGetUniformLocation(program->handle, "texture_diffuse1"), 0);
 		glBindTexture(GL_TEXTURE_2D, textureID);
 
 		//glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
@@ -454,7 +462,7 @@ namespace MonGL
 	}
 
 	// TODO(ck): STOP PASSING TEXTUREID IMPORTANT(ck):
-	void ActivateUniforms(WaterProgram* program, int textureID, int diffuseTextureID, int normal1TextureID, int normal2TextureID)
+	void ActivateUniforms(WaterProgram* program, v3 viewPos, int textureID, int normal1TextureID, int normal2TextureID)
 	{
 		// need to pass struct or something to shader because they are
 		// going to be different...
@@ -462,10 +470,7 @@ namespace MonGL
 		ActivateUniforms(&program->common, textureID);
 
 		int shaderID = program->common.handle;
-
-		glActiveTexture(GL_TEXTURE0);
-		glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
-		glBindTexture(GL_TEXTURE_2D, diffuseTextureID);
+		//glUseProgram(program->common.handle);
 
 
 		glActiveTexture(GL_TEXTURE1);
@@ -483,7 +488,7 @@ namespace MonGL
 		// GET THIS INFO
 		//glUniform3fv(glGetUniformLocation(shaderID, "lightPos"), 1, &light->pos[0]);
 		//glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camPos[0]);
-		//
+		glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &viewPos[0]);
 
 		glUniform1f(glGetUniformLocation(shaderID, "uJump"), 0.25f);	// water->uJump
 		glUniform1f(glGetUniformLocation(shaderID, "vJump"), 0.25f);	// water->vJump
@@ -499,7 +504,7 @@ namespace MonGL
 
 	}
 
-	int ActivateUniforms(OpenGL* gl,  ProgramType type, int baseTextureID)
+	int ActivateUniforms(OpenGL* gl, ProgramType type, int baseTextureID, v3 viewPos)
 	{
 		switch (type)
 		{
@@ -507,24 +512,27 @@ namespace MonGL
 			ActivateUniforms(&gl->program, baseTextureID);
 			return gl->program.handle;
 		case ProgramType::Water:
-			Texture* diffuse = GetTexture(gl, gl->waterProgram.textureIndexDiffuse);
 			Texture* normal1 = GetTexture(gl, gl->waterProgram.textureIndexNormal1);
 			Texture* normal2 =  GetTexture(gl, gl->waterProgram.textureIndexNormal2);
-			ActivateUniforms(&gl->waterProgram, baseTextureID, diffuse->id, normal1->id, normal2->id);
+			ActivateUniforms(&gl->waterProgram, viewPos, baseTextureID, normal1->id, normal2->id);
 			return gl->waterProgram.common.handle;
 		}
 	}
 
 	//
 	// Public Draw Calls
-	// 
 	
 	// TODO(ck): Maybe pass OpenGL to this then we have all the data?
 	void Draw(OpenGL* gl, Config* config, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera)
 	{
 		Mesh* mesh = GetMesh(g_Assets, data->meshIndex);
 		Texture* texture = GetTexture(gl, data->textureIndex);
-		int shaderHandle = ActivateUniforms(gl, data->programType, texture->id);
+
+		// if programType == water && first time hitting this? view pos as well
+		//		glUseProgram(water);
+		// TODO(ck): To get this working just call glUseProgram on the water because its the only entity that has it right now
+		 
+		int shaderHandle = ActivateUniforms(gl, data->programType, texture->id, camera->pos);
 
 		data->worldMatrix = mat4(1.0f);
 		data->worldMatrix = glm::translate(data->worldMatrix, pos);
@@ -549,6 +557,12 @@ namespace MonGL
 		{
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
+
+		// TODO(ck): This is bugging us out
+		// Always good practice to set everything back to defaults once configured
+		// NOTE(CK): bind texture must be AFTER glActiveTexture or it will not unbind properly
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_2D, 0);
 
 		globalDrawCalls++;
 	}
@@ -594,9 +608,6 @@ namespace MonGL
 		Mesh* mesh = GetMesh(g_Assets, data->meshIndex);
 		Texture* texture = GetTexture(gl, data->textureIndex);
 		unsigned int shaderID = gl->program.handle;
-
-		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(Projection(camera)));
-		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(ViewMatrix(camera)));
 
 		glUniform3fv(glGetUniformLocation(shaderID, "light.pos"), 1, &light->pos[0]);
 		glUniform3fv(glGetUniformLocation(shaderID, "light.ambient"), 1, &light->ambient[0]);
