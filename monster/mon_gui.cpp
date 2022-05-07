@@ -582,10 +582,27 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 				//ImGui::DragFloat("rot z", &g_Game->objects[selected]->orientation.z, 0.05f, -1000.0f, 1000.0f, "%.02f");
 				ImGui::EndTabItem();
 			}
-			if (ImGui::BeginTabItem("Details"))
+
+
+
+			// Water render data
+			if (game->world->entities[selected].data.programType == MonGL::ProgramType::Water)
 			{
-				ImGui::Text("ID: 0123456789");
-				ImGui::EndTabItem();
+				if (ImGui::BeginTabItem("Water options"))
+				{
+					ImGui::DragFloat("uJump", &game->world->entities[selected].data.programData.uJump, 0.001f, 0.0f, 0.25f, "%.02f");
+					ImGui::DragFloat("vJump", &game->world->entities[selected].data.programData.vJump, 0.001f, 0.0f, 0.25f, "%.02f");
+					ImGui::DragFloat("tiling", &game->world->entities[selected].data.programData.tiling, 0.001f, 0.0f, 10.00f, "%.01f");
+					ImGui::DragFloat("speed", &game->world->entities[selected].data.programData.speed, 0.001f, 0.0f, 2.0f, "%.01f");
+					ImGui::DragFloat("flow strength", &game->world->entities[selected].data.programData.flowStrength, 0.001f, 0.0f, 0.5f, "%.02f");
+					ImGui::DragFloat("flow offset", &game->world->entities[selected].data.programData.flowOffset, 0.001f, -1.5f, 2.0f, "%.02f");
+					ImGui::SliderFloat("height scale", &game->world->entities[selected].data.programData.heightScale, 0.0f, 5.0f);
+					ImGui::SliderFloat("height scale modulated", &game->world->entities[selected].data.programData.heightScaleModulated, 0.0f, 20.0f);
+					ImGui::SliderFloat("wave length", &game->world->entities[selected].data.programData.waveLength, 0.0f, 100.0f);
+
+
+					ImGui::EndTabItem();
+				}
 			}
 			ImGui::EndTabBar();
 		}

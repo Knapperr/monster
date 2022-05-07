@@ -149,6 +149,16 @@ namespace Mon {
 
 		e->impPath = "none";
 		e->spriteAngleDegrees = 0.0f;
+
+		e->data.programData.tiling = 3.0f;
+		e->data.programData.flowOffset = -0.5f;
+		e->data.programData.flowStrength = 0.1f;
+		e->data.programData.heightScale = 0.1f;
+		e->data.programData.heightScaleModulated = 9.0f;
+		e->data.programData.speed = 0.5f;
+		e->data.programData.waveLength = 18.0f;
+		e->data.programData.uJump = 0.10f;
+		e->data.programData.vJump = 0.10f;
 	}
 
 	static void PlayerAttack(Entity* player)
@@ -209,13 +219,14 @@ namespace Mon {
 		InitEntity(ent4, "ch_witch2", v3(12.0f, 0.0f, 9.0f), v3(1.0f), angleDegrees, shaderHandle, 10);
 
 		AddEntity(world);
-		Entity* water = GetEntity(world, world->entityCount - 1);
-		InitWater(water, waterShaderHandle);
-
-		AddEntity(world);
 		Entity* plane64 = GetEntity(world, world->entityCount - 1);
 		InitEntity(plane64, "plane64", v3(6.0f, 0.0f, 6.0f), v3(1.0f), 0.0f, shaderHandle, 8);
 		plane64->data.meshIndex = 7;
+
+		AddEntity(world);
+		Entity* water = GetEntity(world, world->entityCount - 1);
+		InitWater(water, waterShaderHandle);
+
 
 	}
 

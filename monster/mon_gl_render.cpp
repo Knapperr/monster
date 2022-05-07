@@ -132,8 +132,7 @@ namespace MonGL
 		MonGL::LoadShader(&gl->waterProgram.common, "res/shaders/vert_water.glsl", "res/shaders/frag_water.glsl", NULL);
 
 		// TODO(ck): MOVE TEXTURE IDS TO data... program can have its own textues too?? 
-		// a program can be like a material that can be applied to a mesh so it needs to have its own 
-		// textures.
+		// a program can be like a material that can be applied to a mesh so it needs to have its own textures
 		gl->waterProgram.textureIndexNormal1 = 6;
 		gl->waterProgram.textureIndexNormal2 = 15;
 		
@@ -433,7 +432,7 @@ namespace MonGL
 
 
 	// TODO(ck): STOP PASSING TEXTUREID IMPORTANT(ck):
-	void ActivateUniforms(CommonProgram* program, int textureID)
+	void ActivateUniforms(CommonProgram* program, RenderSetup setup, int textureID)
 	{
 		// TODO(ck): Performance - Only call this if the program actually changes or find a way to call at the beginning 
 		// sort entities so that water is always at the end so that gluseprogram gets called before the water is drawn
@@ -448,6 +447,10 @@ namespace MonGL
 		// call any mesh on it... 
 		// you do want to activate the uniforms but you dont want to call glUseProgram
 		
+		// TODO(ck): Need begin render attributes in here
+		//MonGL::ViewPort(&config->viewPort);
+
+
 		bool useTexture = true;
 		glUniform1i(glGetUniformLocation(program->handle, "useTexture"), useTexture);
 		glUniform1i(glGetUniformLocation(program->handle, "pixelTexture"), useTexture);
@@ -462,16 +465,24 @@ namespace MonGL
 	}
 
 	// TODO(ck): STOP PASSING TEXTUREID IMPORTANT(ck):
-	void ActivateUniforms(WaterProgram* program, v3 viewPos, int textureID, int normal1TextureID, int normal2TextureID)
+	void ActivateUniforms(WaterProgram* program, ProgramData programData, RenderSetup setup, v3 viewPos, int textureID, int normal1TextureID, int normal2TextureID)
 	{
 		// need to pass struct or something to shader because they are
 		// going to be different...
 		// STUDY(ck):  can you have shader includes in glsl??????
-		ActivateUniforms(&program->common, textureID);
+		glUseProgram(program->common.handle);
+
+		ActivateUniforms(&program->common, setup, textureID);
 
 		int shaderID = program->common.handle;
-		//glUseProgram(program->common.handle);
 
+		// BEGIN RENDER UNIFORMS
+		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(setup.projection));
+		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(setup.viewMatrix));
+		// GET THIS INFO
+		//glUniform3fv(glGetUniformLocation(shaderID, "lightPos"), 1, &light->pos[0]);
+		//glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camPos[0]);
+		glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &viewPos[0]);
 
 		glActiveTexture(GL_TEXTURE1);
 		glUniform1i(glGetUniformLocation(shaderID, "texture_normal1"), 1);
@@ -484,37 +495,31 @@ namespace MonGL
 
 
 		//glUniform1f(GetLoc(waterShader, "time"), (float)glfwGetTime());
-		
-		// GET THIS INFO
-		//glUniform3fv(glGetUniformLocation(shaderID, "lightPos"), 1, &light->pos[0]);
-		//glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camPos[0]);
-		glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &viewPos[0]);
 
-		glUniform1f(glGetUniformLocation(shaderID, "uJump"), 0.25f);	// water->uJump
-		glUniform1f(glGetUniformLocation(shaderID, "vJump"), 0.25f);	// water->vJump
-		glUniform1f(glGetUniformLocation(shaderID, "tiling"), (float)program->tiling);	// water->tiling
-		glUniform1f(glGetUniformLocation(shaderID, "speed"), (float)program->speed);	// water->speed 
-		glUniform1f(glGetUniformLocation(shaderID, "flowStrength"), (float)program->flowStrength); // water->flowStrength
-		glUniform1f(glGetUniformLocation(shaderID, "flowOffset"), (float)program->flowOffset);	// water->flowOffset
-		glUniform1f(glGetUniformLocation(shaderID, "heightScale"), (float)program->heightScale);	// water->heightScale
-		glUniform1f(glGetUniformLocation(shaderID, "heightScaleModulated"), (float)program->heightScaleModulated); // water->heightScaleModulated
-		//glUniform1f(glGetUniformLocation(shaderID, "waveLength"), waterData->waveLength);	//  water->waveLength
+		glUniform1f(glGetUniformLocation(shaderID, "uJump"), programData.uJump);
+		glUniform1f(glGetUniformLocation(shaderID, "vJump"), programData.vJump);
+		glUniform1f(glGetUniformLocation(shaderID, "tiling"), programData.tiling);
+		glUniform1f(glGetUniformLocation(shaderID, "speed"), programData.speed);
+		glUniform1f(glGetUniformLocation(shaderID, "flowStrength"), programData.flowStrength);
+		glUniform1f(glGetUniformLocation(shaderID, "flowOffset"), programData.flowOffset);
+		glUniform1f(glGetUniformLocation(shaderID, "heightScale"), programData.heightScale);
+		glUniform1f(glGetUniformLocation(shaderID, "heightScaleModulated"), programData.heightScaleModulated);
+		glUniform1f(glGetUniformLocation(shaderID, "waveLength"), programData.waveLength);
 
-		// ==============================================================================
 
 	}
 
-	int ActivateUniforms(OpenGL* gl, ProgramType type, int baseTextureID, v3 viewPos)
+	int ActivateUniforms(OpenGL* gl, ProgramData programData, ProgramType type, RenderSetup setup, int baseTextureID, v3 viewPos)
 	{
 		switch (type)
 		{
 		case ProgramType::Common:
-			ActivateUniforms(&gl->program, baseTextureID);
+			ActivateUniforms(&gl->program, setup, baseTextureID);
 			return gl->program.handle;
 		case ProgramType::Water:
 			Texture* normal1 = GetTexture(gl, gl->waterProgram.textureIndexNormal1);
 			Texture* normal2 =  GetTexture(gl, gl->waterProgram.textureIndexNormal2);
-			ActivateUniforms(&gl->waterProgram, viewPos, baseTextureID, normal1->id, normal2->id);
+			ActivateUniforms(&gl->waterProgram, programData, setup, viewPos, baseTextureID, normal1->id, normal2->id);
 			return gl->waterProgram.common.handle;
 		}
 	}
@@ -523,7 +528,7 @@ namespace MonGL
 	// Public Draw Calls
 	
 	// TODO(ck): Maybe pass OpenGL to this then we have all the data?
-	void Draw(OpenGL* gl, Config* config, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera)
+	void Draw(OpenGL* gl, Config* config, RenderSetup setup, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera)
 	{
 		Mesh* mesh = GetMesh(g_Assets, data->meshIndex);
 		Texture* texture = GetTexture(gl, data->textureIndex);
@@ -532,7 +537,7 @@ namespace MonGL
 		//		glUseProgram(water);
 		// TODO(ck): To get this working just call glUseProgram on the water because its the only entity that has it right now
 		 
-		int shaderHandle = ActivateUniforms(gl, data->programType, texture->id, camera->pos);
+		int shaderHandle = ActivateUniforms(gl, data->programData, data->programType, setup, texture->id, camera->pos);
 
 		data->worldMatrix = mat4(1.0f);
 		data->worldMatrix = glm::translate(data->worldMatrix, pos);
@@ -627,6 +632,9 @@ namespace MonGL
 
 		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), true);
 		glUniform1i(glGetUniformLocation(shaderID, "pixelTexture"), true);
+
+		glActiveTexture(GL_TEXTURE0);
+		glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
 		glBindTexture(GL_TEXTURE_2D, texture->id);
 
 		mat4 matModel = mat4(1.0f);

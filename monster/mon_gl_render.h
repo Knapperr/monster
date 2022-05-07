@@ -60,11 +60,11 @@ namespace MonGL
 	{
 		/*
 		*  RenderSetup is for the common attributes that are shared among shaders
-		*  these are found in CommonProgram
-			model ???
-			viewPosition,
-			cameraPosition
+		*  these are found in CommonProgram cameraPosition
 		*/
+
+		mat4 viewMatrix;
+		mat4 projection;
 	};
 
 	struct Material {
@@ -77,12 +77,15 @@ namespace MonGL
 	struct ProgramData
 	{
 		// water uniform data
+		float uJump;
+		float vJump;
 		float tiling;
 		float speed;
 		float flowStrength;
 		float flowOffset;
 		float heightScale;
 		float heightScaleModulated;
+		float waveLength;
 	};
 
 	enum ProgramType
@@ -109,7 +112,6 @@ namespace MonGL
 		bool visible;
 		bool wireFrame;
 
-		Material materials[10];
 		ProgramData programData;
 
 		v3 color;
@@ -245,7 +247,7 @@ namespace MonGL
 	void InitModel(RenderData* data);
 	void InitBoundingBox(RenderData* data);
 
-	void Draw(OpenGL* gl, Config* config, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera);
+	void Draw(OpenGL* gl, Config* config, RenderSetup setup, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera);
 
 	void DrawBoundingBox(OpenGL* gl, RenderData* data, Camera* camera);
 	void DrawTerrain(OpenGL* gl, RenderData* data, Light* light, Camera* camera);

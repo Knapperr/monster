@@ -27,11 +27,10 @@ namespace MonGL
 	struct WaterProgram
 	{
 		CommonProgram common;
-
-		// TODO(ck): uniform ids for shader
 		int textureIndexNormal1;
 		int textureIndexNormal2;
 
+		// TODO(ck): uniform ids for shader
 		int tiling;
 		int speed;
 		int flowStrength;

@@ -371,6 +371,8 @@ namespace Mon
 		// THIS ONLY NEEDS TO BE CALLED ONCE AT THE BEGINNING OF DRAW CALL
 		// this was being called in the colliders and the terrain.. it only needs to be called once?
 		// doesn't need to be called for water shader though??
+		state->setup.projection = projection;
+		state->setup.viewMatrix = viewMatrix;
 		MonGL::BeginRender(state->config, projection, viewMatrix, state->renderer.program.handle);
 		
 		//MonGL::BeginRender(state->config, Projection(cam), ViewMatrix(cam), state->waterShader.handle);
@@ -390,7 +392,7 @@ namespace Mon
 
 			if (state->drawCollisions)
 				MonGL::DrawBoundingBox(&state->renderer, &e.collider.data, cam);
-			MonGL::Draw(&state->renderer, state->config, e.spriteAngleDegrees, &e.data, e.rb.pos, cam);
+			MonGL::Draw(&state->renderer, state->config, state->setup, e.spriteAngleDegrees, &e.data, e.rb.pos, cam);
 		}
 
 		//
