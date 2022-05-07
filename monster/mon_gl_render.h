@@ -62,7 +62,7 @@ namespace MonGL
 		*  RenderSetup is for the common attributes that are shared among shaders
 		*  these are found in CommonProgram cameraPosition
 		*/
-
+		float time;
 		mat4 viewMatrix;
 		mat4 projection;
 	};
@@ -221,7 +221,7 @@ namespace MonGL
 	//
 	// Renderer 
 	//
-	void LoadTexture(RenderData* data, int index, TextureType type, bool linearFilter, int shaderID, std::string path, bool pixelTexture = true);
+	void LoadTexture(RenderData* data, int index, TextureType type, bool pixelArtTexture, int shaderID, std::string path, bool pixelTexture = true);
 	void InitRenderer(OpenGL* gl);
 	void UploadOpenGLMesh(Mesh* mesh);
 

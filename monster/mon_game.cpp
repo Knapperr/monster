@@ -345,7 +345,7 @@ namespace Mon
 
 	}
 
-	void Render(GameState* state, double dt)
+	void Render(GameState* state, float time, double dt)
 	{
 		Camera* cam = GetCamera(state, state->currCameraIndex);
 		mat4 projection = Projection(cam);
@@ -373,6 +373,7 @@ namespace Mon
 		// doesn't need to be called for water shader though??
 		state->setup.projection = projection;
 		state->setup.viewMatrix = viewMatrix;
+		state->setup.time = time;
 		MonGL::BeginRender(state->config, projection, viewMatrix, state->renderer.program.handle);
 		
 		//MonGL::BeginRender(state->config, Projection(cam), ViewMatrix(cam), state->waterShader.handle);

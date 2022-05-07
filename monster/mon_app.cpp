@@ -122,7 +122,8 @@ void App::run()
 
 
 #ifdef _3D_
-		Mon::Render(gameState, 1.0f);
+		float time = float(SDL_GetTicks() / 1000.0f);
+		Mon::Render(gameState, time, 1.0f);
 #else
 		Mon::Render(game2D);
 #endif

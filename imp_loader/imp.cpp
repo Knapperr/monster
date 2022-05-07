@@ -257,6 +257,9 @@ void ExportImpFile(Model* model, std::string name, std::string impPath)
 int main(int argc, char** argv)
 {
 	printf("================\nimp loader\n================\nCole Knapp\n-----------------\n");
+	printf("2022\n");
+	printf("LAST USE - MAY 05 2022");
+	// TODO(ck): LOG THIS keep a data file of all the asset changes and stuff?
 
 	/*
 	cmd commands 
@@ -273,6 +276,9 @@ int main(int argc, char** argv)
 	LoadModel(&model, "models/tree/my_tree.obj", false);
 	ExportImpFile(&model, "tree", "tree.imp");
 
+	model = {};
+	LoadModel(&model, "models/plane_64/plane_64.obj", false);
+	ExportImpFile(&model, "plane_64", "plane_64.imp");
 
 	// Verify Exported Imp Files before check for (nan) and exponents in the data
 

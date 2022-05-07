@@ -69,7 +69,7 @@ namespace Mon
 
 	bool InitGame(GameState* state, int windowWidth, int windowHeight, float portWidth, float portHeight);
 	void Update(GameState* state, double dt, Input* newInput);
-	void Render(GameState* state, double dt);
+	void Render(GameState* state, float time, double dt);
 	void CleanUp(GameState* state);
 	void SetViewPort(GameState* state, int width, int height);
 	bool Playing(GameState* state);

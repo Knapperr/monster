@@ -146,6 +146,7 @@ namespace Mon {
 		InitBoxCollider(&e->collider);
 		e->rb.pos = v3(30.0f, 0.0f, 30.0);
 		e->rb.speed = 40.0f;
+		e->data.scale = v3(18.0f, 1.0f, 18.0f);
 
 		e->impPath = "none";
 		e->spriteAngleDegrees = 0.0f;

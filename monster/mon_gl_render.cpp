@@ -8,9 +8,9 @@ namespace MonGL
 	// can have a getter method that retrieves the globalDrawCalls from here
 	int globalDrawCalls = 0;
 
-	void LoadTexture(Texture* texture, TextureType type, bool linearFilter, int shaderID, Image* image)
+	void LoadTexture(Texture* texture, TextureType type, bool pixelArtTexture, int shaderID, Image* image)
 	{
-		LoadTextureFile(texture, image, type, linearFilter, true);
+		LoadTextureFile(texture, image, type, true, pixelArtTexture);
 	}
 
 	void LoadTextureFile(Texture* texture, Image* image, TextureType type, bool linearFilter, bool pixelArtTexture)
@@ -174,8 +174,8 @@ namespace MonGL
 		LoadTexture(t2, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 2));
 		LoadTexture(t3, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 3));
 		LoadTexture(t4, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 4));
-		LoadTexture(t5, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 5));
-		LoadTexture(t6, MonGL::TextureType::Normal,  true, shaderID, GetImage(g_Assets, 6));
+		LoadTexture(t5, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 5));
+		LoadTexture(t6, MonGL::TextureType::Normal,  false, shaderID, GetImage(g_Assets, 6));
 		LoadTexture(t7, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 7));
 		LoadTexture(t8, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 8));
 		LoadTexture(t9, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 9));
@@ -184,7 +184,7 @@ namespace MonGL
 		LoadTexture(t12, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 12));
 		LoadTexture(t13, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 13));
 		LoadTexture(t14, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 14));
-		LoadTexture(t15, MonGL::TextureType::Normal,  true, shaderID, GetImage(g_Assets, 15));
+		LoadTexture(t15, MonGL::TextureType::Normal,  false, shaderID, GetImage(g_Assets, 15));
 
 	}
 
@@ -482,7 +482,7 @@ namespace MonGL
 		// GET THIS INFO
 		//glUniform3fv(glGetUniformLocation(shaderID, "lightPos"), 1, &light->pos[0]);
 		//glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camPos[0]);
-		glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &viewPos[0]);
+		//glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &viewPos[0]);
 
 		glActiveTexture(GL_TEXTURE1);
 		glUniform1i(glGetUniformLocation(shaderID, "texture_normal1"), 1);
@@ -494,7 +494,7 @@ namespace MonGL
 		glBindTexture(GL_TEXTURE_2D, normal2TextureID);
 
 
-		//glUniform1f(GetLoc(waterShader, "time"), (float)glfwGetTime());
+		glUniform1f(glGetUniformLocation(shaderID, "time"), setup.time);
 
 		glUniform1f(glGetUniformLocation(shaderID, "uJump"), programData.uJump);
 		glUniform1f(glGetUniformLocation(shaderID, "vJump"), programData.vJump);
