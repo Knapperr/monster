@@ -576,6 +576,9 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 				ImGui::SliderInt("texture index", &game->world->entities[selected].data.textureIndex, 1, game->renderer.textureCount);
 				
 				ImGui::Checkbox("Wireframe", &game->world->entities[selected].data.wireFrame);
+				ImGui::Checkbox("Visible", &game->world->entities[selected].data.visible);
+				ImGui::SameLine();
+				ImGui::Checkbox("Show collider", &game->world->entities[selected].collider.data.visible);
 				//ImGui::Checkbox("show normals", &g_Game->objects[selected]->viewNormals);
 				//ImGui::DragFloat("rot x", &g_Game->objects[selected]->orientation.x, 0.05f, -1000.0f, 1000.0f, "%.02f");
 				//ImGui::DragFloat("rot y", &g_Game->objects[selected]->orientation.y, 0.05f, -1000.0f, 1000.0f, "%.02f");

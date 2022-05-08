@@ -77,7 +77,6 @@ namespace Mon
 		{
 			Mon::Log::print("File read failed");
 			Mon::Log::print(ex.what());
-			int x = index;
 		}
 
 		file.close();

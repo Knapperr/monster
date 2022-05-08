@@ -396,7 +396,7 @@ namespace MonGL
 
 	void DrawBoundingBox(OpenGL* gl, RenderData* data, Camera* camera)
 	{
-		if (false == data->visible)
+		if (!data->visible)
 			return;
 
 		Mesh* mesh = GetMesh(g_Assets, data->meshIndex);
@@ -530,6 +530,9 @@ namespace MonGL
 	// TODO(ck): Maybe pass OpenGL to this then we have all the data?
 	void Draw(OpenGL* gl, Config* config, RenderSetup setup, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera)
 	{
+		if (!data->visible)
+			return;
+
 		Mesh* mesh = GetMesh(g_Assets, data->meshIndex);
 		Texture* texture = GetTexture(gl, data->textureIndex);
 
@@ -570,42 +573,6 @@ namespace MonGL
 		//glBindTexture(GL_TEXTURE_2D, 0);
 
 		globalDrawCalls++;
-	}
-
-
-
-	void DrawWater(RenderData* data, RenderSetup* setup, WaterProgram* waterData, Light* light, v3 pos, v3 scale, v3 camPos, unsigned int shaderID)
-	{
-
-		// ==============================================================================
-		//glUniform3fv(glGetUniformLocation(shaderID, "material.ambient"), 1, &data->mat.ambient[0]);
-		//glUniform3fv(glGetUniformLocation(shaderID, "material.diffuse"), 1, &data->mat.diffuse[0]);
-		//glUniform3fv(glGetUniformLocation(shaderID, "material.specular"), 1, &data->mat.specular[0]);
-		//glUniform1f(glGetUniformLocation(shaderID, "material.shininess"), data->mat.shininess);
-
-		// TODO(ck): Move to begin render. MonGL::beginRender(&cam);
-
-		unsigned int diffuseNr = 1;
-		unsigned int specularNr = 1;
-		unsigned int normalNr = 1;
-		unsigned int heightNr = 1;
-
-
-
-		// TODO(ck): Does this happen at the end of update. the data gets its mat4 updated 
-		// and then we can just call glUniformMatrix on this
-		mat4 model = mat4(1.0f);
-		model = glm::translate(model, pos);
-		//model = glm::rotate(model, glm::radians(config->angleDegrees), v3{ 1.0f, 0.0f, 0.0f });
-		//model = glm::scale(model, scale);
-		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(model));
-		//glBindVertexArray(mesh.VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-		// Always good practice to set everything back to defaults once configured
-		// NOTE(CK): bind texture must be AFTER glActiveTexture or it will not unbind properly
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
 	void DrawTerrain(OpenGL* gl, RenderData* data, Light* light, Camera* camera)

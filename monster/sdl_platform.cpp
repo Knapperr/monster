@@ -211,7 +211,6 @@ namespace Mon
 			// COMBINE INTO ONE SDL_MOUSEBUTTONDOWN || SDL_MOUSEBUTTONUP
 			if (e.type == SDL_MOUSEBUTTONDOWN)
 			{
-				//if (e.button.button == SDL_BUTTON_LEFT)
 				if (e.button.button == SDL_BUTTON_LEFT && isGuiActive == false)
 				{
 					processKeyboard(&newInput->lMouseBtn, true);
