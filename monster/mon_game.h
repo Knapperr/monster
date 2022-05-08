@@ -76,7 +76,6 @@ namespace Mon
 	void PlayMode(GameState* state);
 	void DebugMode(GameState* state);
 
-
 	// TODO(ck): Camera manager
 	static unsigned int AddCamera(GameState* state)
 	{

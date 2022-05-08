@@ -22,6 +22,12 @@
     <Filter Include="Source Files\Engine">
       <UniqueIdentifier>{3f72c8fa-b8d2-4945-8d93-ef3844425b82}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Renderer">
+      <UniqueIdentifier>{cd63e71c-153f-459c-8ae0-ba7d2d709b03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Renderer">
+      <UniqueIdentifier>{374d88dd-d3c8-4bd6-8adf-d9ea5fd9e58d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="mon_texture.cpp">
@@ -60,13 +66,7 @@
     <ClCompile Include="mon_app.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="mon_gl_render.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
     <ClCompile Include="mon_gui.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="mon_shader.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
     <ClCompile Include="sdl_platform.cpp">
@@ -110,6 +110,12 @@
     </ClCompile>
     <ClCompile Include="mon_assets.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mon_shader.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="mon_gl_render.cpp">
+      <Filter>Source Files\Renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -155,9 +161,6 @@
     <ClInclude Include="mon_app.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="mon_gl_render.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="mon_gui.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
@@ -165,9 +168,6 @@
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="mon_platform.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="mon_shader.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="sdl_platform.h">
@@ -208,6 +208,12 @@
     </ClInclude>
     <ClInclude Include="mon_assets.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mon_gl_render.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="mon_shader.h">
+      <Filter>Header Files\Renderer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

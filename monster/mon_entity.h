@@ -59,6 +59,10 @@ namespace Mon {
 		const char* name;
 		std::string impPath;
 		
+		// NOTE(ck):
+		// Collider and RigidBody should be tied together???
+		// The collider is basically the real position which is where the collider will be
+		// RenderData holds the actual scale of the model that is being drawn
 		// float position info is in here
 		RigidBody rb;
 		// TODO(ck): The entities need to be driven by a grid and have grid positions

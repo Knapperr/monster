@@ -20,7 +20,17 @@ namespace MonGL
 			u32 SamplerCount;
 			GLuint Samplers[16];
 		*/
-	
+
+		int model;
+		int view;
+		int projection;
+		int viewPos;
+		int colliderColor;
+		int textureDiffuse1;
+		int useTexture;
+		int collider;
+		int pixelTexture;
+
 	};
 
 	// TODO(ck): Match struct in the shader also make a 
@@ -31,12 +41,20 @@ namespace MonGL
 		int textureIndexNormal2;
 
 		// TODO(ck): uniform ids for shader
-		int tiling;
-		int speed;
-		int flowStrength;
-		int flowOffset;
-		int heightScale;
-		int heightScaleModulated;
+		unsigned int time;
+		unsigned int waveLength;
+		unsigned int uJump;
+		unsigned int vJump;
+		unsigned int tiling;
+		unsigned int speed;
+		unsigned int flowStrength;
+		unsigned int flowOffset;
+		unsigned int heightScale;
+		unsigned int heightScaleModulated;
+
+		// textures
+		unsigned int textureNormal1;
+		unsigned int textureNormal2;
 	};
 	
 	enum class ERROR_TYPE
@@ -85,6 +103,7 @@ namespace MonGL
 
 
 	void LoadShader(CommonProgram* program, const char* vertexSource, const char* fragmentSource, const char* geometrySource = nullptr);
+	void LoadShader(WaterProgram* program, const char* vertexFile, const char* fragmentFile, const char* geometryFile = nullptr);
 	void CheckCompileErrors(unsigned int object, ERROR_TYPE type);
 	void DeleteShader(CommonProgram* program);
 }

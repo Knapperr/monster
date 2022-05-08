@@ -7,6 +7,44 @@
 
 namespace MonGL
 {
+	void LoadUniforms(CommonProgram* program)
+	{
+		int programID = program->handle;
+		// NOTE(ck): should be renderer->getAttribLocation something like that
+		program->model = glGetUniformLocation(programID, "model");
+		program->view = glGetUniformLocation(programID, "view");
+		program->projection = glGetUniformLocation(programID, "projection");
+		
+		program->viewPos = glGetUniformLocation(programID, "viewPos");
+		program->colliderColor = glGetUniformLocation(programID, "colliderColor");
+		program->textureDiffuse1 = glGetUniformLocation(programID, "textureDiffuse1");
+		program->useTexture = glGetUniformLocation(programID, "useTexture");
+		program->collider = glGetUniformLocation(programID, "collider");
+		program->pixelTexture = glGetUniformLocation(programID, "pixelTexture");
+		/*
+		uniform Material material;
+		uniform Light light;
+		*/
+	}
+
+	void LoadUniforms(WaterProgram* program)
+	{
+		int programID = program->common.handle;
+		program->time = glGetUniformLocation(programID, "time");
+		program->waveLength	= glGetUniformLocation(programID, "waveLength");
+		program->uJump = glGetUniformLocation(programID, "uJump");
+		program->vJump = glGetUniformLocation(programID, "vJump");
+		program->tiling	= glGetUniformLocation(programID, "tiling");
+		program->speed	= glGetUniformLocation(programID, "speed");
+		program->flowStrength = glGetUniformLocation(programID, "flowStrength");
+		program->flowOffset = glGetUniformLocation(programID, "flowOffset");
+		program->heightScale = glGetUniformLocation(programID, "heightScale");
+		program->heightScaleModulated = glGetUniformLocation(programID, "heightScaleModulated");
+
+		program->textureNormal1 = glGetUniformLocation(programID, "textureNormal1");
+		program->textureNormal2 = glGetUniformLocation(programID, "textureNormal2");
+	}
+
 
 	unsigned int CompileShader(const char* source, GLenum shaderType)
 	{
@@ -46,6 +84,8 @@ namespace MonGL
 		{
 			glDeleteShader(sGeometry);
 		}
+
+		LoadUniforms(program);
 	}
 
 	void LoadShader(CommonProgram* program, const char* vertexFile, const char* fragmentFile, const char* geometryFile)
@@ -93,6 +133,12 @@ namespace MonGL
 		Compile(program, vShaderCode, fShaderCode, geometryFile != nullptr ? gShaderCode : nullptr);
 	}
 
+	void LoadShader(WaterProgram* program, const char* vertexFile, const char* fragmentFile, const char* geometryFile)
+	{
+		LoadShader(&program->common, vertexFile, fragmentFile, geometryFile);
+		LoadUniforms(program);
+	}
+	
 	void CheckCompileErrors(unsigned int object, ERROR_TYPE type)
 	{
 		const int LOG_SIZE = 1024;

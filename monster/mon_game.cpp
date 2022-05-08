@@ -351,33 +351,15 @@ namespace Mon
 		mat4 projection = Projection(cam);
 		mat4 viewMatrix = ViewMatrix(cam);
 
-
-		
-		// TODO(ck): need to make it a normal Draw(); just have to pass program and activate uniforms
-		// in it no matter what type it is in draw? it like unwinds??? 
-		// DrawWater()
-		
-		// WHY DONT I NEED TO CALL THIS?
-		//MonGL::UseProgram(&state->renderer.waterProgram, state->setup);
-		//MonGL::BeginRender(state->config, projection, viewMatrix, state->renderer.waterProgram.common.handle);
-
-
-		// 
-		// TODO(ck): use shader
-
 	 
-		// TODO(ck): Remove begin render need to go through shaders after another
+		// TODO(ck): UseProgram should be called only one time before switching shaders
+		//			 DO NOT CALL every time you draw an entity glUseProgram is expensive
 		MonGL::UseProgram(&state->renderer.program, state->setup);
-		// THIS ONLY NEEDS TO BE CALLED ONCE AT THE BEGINNING OF DRAW CALL
-		// this was being called in the colliders and the terrain.. it only needs to be called once?
-		// doesn't need to be called for water shader though??
+		MonGL::BeginRender(state->config, projection, viewMatrix, state->renderer.program.handle);
 		state->setup.projection = projection;
 		state->setup.viewMatrix = viewMatrix;
 		state->setup.time = time;
-		MonGL::BeginRender(state->config, projection, viewMatrix, state->renderer.program.handle);
 		
-		//MonGL::BeginRender(state->config, Projection(cam), ViewMatrix(cam), state->waterShader.handle);
-
 		//
 		// TERRAIN
 		//
@@ -386,7 +368,6 @@ namespace Mon
 		//
 		// ENTITIES
 		//
-		// IMPORTANT(ck): start at index 2 player is being drawn above right now.
 		for (int i = 1; i < state->world->entityCount; ++i)
 		{
 			Entity e = state->world->entities[i];
@@ -401,6 +382,7 @@ namespace Mon
 		// 
 		//MonGL::DrawLine(&state->renderer, &state->lineOne);
 		//MonGL::DrawLine(&state->renderer, &state->lineTwo);
+		//DrawDebugInfo(); //MonGL:: calls inside 
 
 		MonGL::EndRender();
 

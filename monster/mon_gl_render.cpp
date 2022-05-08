@@ -129,7 +129,7 @@ namespace MonGL
 		gl->program = {};
 		gl->waterProgram = {};
 		MonGL::LoadShader(&gl->program, "res/shaders/vert_colors.glsl", "res/shaders/frag_colors.glsl", NULL);
-		MonGL::LoadShader(&gl->waterProgram.common, "res/shaders/vert_water.glsl", "res/shaders/frag_water.glsl", NULL);
+		MonGL::LoadShader(&gl->waterProgram, "res/shaders/vert_water.glsl", "res/shaders/frag_water.glsl", NULL);
 
 		// TODO(ck): MOVE TEXTURE IDS TO data... program can have its own textues too?? 
 		// a program can be like a material that can be applied to a mesh so it needs to have its own textures
@@ -452,15 +452,15 @@ namespace MonGL
 
 
 		bool useTexture = true;
-		glUniform1i(glGetUniformLocation(program->handle, "useTexture"), useTexture);
-		glUniform1i(glGetUniformLocation(program->handle, "pixelTexture"), useTexture);
+		glUniform1i(program->useTexture, useTexture);
+		glUniform1i(program->pixelTexture, useTexture);
 		// bind textures on corresponding texture units
 		glActiveTexture(GL_TEXTURE0);
-		glUniform1i(glGetUniformLocation(program->handle, "texture_diffuse1"), 0);
+		glUniform1i(program->textureDiffuse1, 0);
 		glBindTexture(GL_TEXTURE_2D, textureID);
 
 		//glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
-		glUniform1i(glGetUniformLocation(program->handle, "collider"), false);
+		glUniform1i(program->collider, false);
 
 	}
 
@@ -477,36 +477,33 @@ namespace MonGL
 		int shaderID = program->common.handle;
 
 		// BEGIN RENDER UNIFORMS
-		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(setup.projection));
-		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(setup.viewMatrix));
+		glUniformMatrix4fv(program->common.projection, 1, GL_FALSE, glm::value_ptr(setup.projection));
+		glUniformMatrix4fv(program->common.view, 1, GL_FALSE, glm::value_ptr(setup.viewMatrix));
 		// GET THIS INFO
 		//glUniform3fv(glGetUniformLocation(shaderID, "lightPos"), 1, &light->pos[0]);
 		//glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camPos[0]);
 		//glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &viewPos[0]);
 
 		glActiveTexture(GL_TEXTURE1);
-		glUniform1i(glGetUniformLocation(shaderID, "texture_normal1"), 1);
+		glUniform1i(program->textureNormal1, 1);
 		glBindTexture(GL_TEXTURE_2D, normal1TextureID);
 
 
 		glActiveTexture(GL_TEXTURE2);
-		glUniform1i(glGetUniformLocation(shaderID, "texture_normal2"), 2);
+		glUniform1i(program->textureNormal2, 2);
 		glBindTexture(GL_TEXTURE_2D, normal2TextureID);
 
 
-		glUniform1f(glGetUniformLocation(shaderID, "time"), setup.time);
-
-		glUniform1f(glGetUniformLocation(shaderID, "uJump"), programData.uJump);
-		glUniform1f(glGetUniformLocation(shaderID, "vJump"), programData.vJump);
-		glUniform1f(glGetUniformLocation(shaderID, "tiling"), programData.tiling);
-		glUniform1f(glGetUniformLocation(shaderID, "speed"), programData.speed);
-		glUniform1f(glGetUniformLocation(shaderID, "flowStrength"), programData.flowStrength);
-		glUniform1f(glGetUniformLocation(shaderID, "flowOffset"), programData.flowOffset);
-		glUniform1f(glGetUniformLocation(shaderID, "heightScale"), programData.heightScale);
-		glUniform1f(glGetUniformLocation(shaderID, "heightScaleModulated"), programData.heightScaleModulated);
-		glUniform1f(glGetUniformLocation(shaderID, "waveLength"), programData.waveLength);
-
-
+		glUniform1f(program->time, setup.time);
+		glUniform1f(program->uJump, programData.uJump);
+		glUniform1f(program->vJump, programData.vJump);
+		glUniform1f(program->tiling, programData.tiling);
+		glUniform1f(program->speed, programData.speed);
+		glUniform1f(program->flowStrength, programData.flowStrength);
+		glUniform1f(program->flowOffset, programData.flowOffset);
+		glUniform1f(program->heightScale, programData.heightScale);
+		glUniform1f(program->heightScaleModulated, programData.heightScaleModulated);
+		glUniform1f(program->waveLength, programData.waveLength);
 	}
 
 	int ActivateUniforms(OpenGL* gl, ProgramData programData, ProgramType type, RenderSetup setup, int baseTextureID, v3 viewPos)
@@ -549,6 +546,10 @@ namespace MonGL
 			data->worldMatrix = glm::rotate(data->worldMatrix, glm::radians(spriteAngleDegrees), v3{ 1.0f, 0.0f, 0.0f });
 		}
 		data->worldMatrix = glm::scale(data->worldMatrix, data->scale);
+		
+		// NOTE(ck): Need to get this with glGetUniformLocation because we are doing a shader switch in this
+		// 
+		//glUniformMatrix4fv(gl->program.model, 1, GL_FALSE, glm::value_ptr(data->worldMatrix));
 		glUniformMatrix4fv(glGetUniformLocation(shaderHandle, "model"), 1, GL_FALSE, glm::value_ptr(data->worldMatrix));
 
 		
