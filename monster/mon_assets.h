@@ -230,6 +230,12 @@ namespace Mon
 		Image* waterNorm2 = GetImage(assets, 15);
 		InitImage(waterNorm2, "res/textures/water/water-derivative-height.png");
 
+
+		// 2D TILE SHEET
+		AddImage(assets);
+		Image* tileSheet = GetImage(assets, 16);
+		InitImage(tileSheet, "res/textures/basic_16.png");
+
 	}
 
 

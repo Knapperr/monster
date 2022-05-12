@@ -1,32 +1,26 @@
-#include "mon_terrain.h"
+#include "mon_grid.h"
 #include <string>
 
 
 #define SIZE 64
 #define VERTEX_COUNT 64
 
-Terrain::Terrain(int gridX, int gridZ)
+void InitGrid(Grid* grid)
 {
-	x = (float)gridX * SIZE;
-	z = (float)gridZ * SIZE;
+	grid->x = (float)0 * SIZE;
+	grid->z = (float)0 * SIZE;
 
-	drawTexture = true;
 
-	heightMap = new float[(SIZE + 1) * (SIZE + 1)];
 	// NOTE(ck): Power of 2 needs to be used for SIZE so that
 	//			texture coords to be proper on the cells
-	/*I think the proper way to do this is have a map structure with the positions as int32 and then 
-	have the mesh that just gets the vertices from the positions just like a tilemap this way the 
-	grid is its own thing and then the 
+	/*I think the proper way to do this is have a map structure with the positions as int32 and then
+	have the mesh that just gets the vertices from the positions just like a tilemap this way the
+	grid is its own thing and then the
 	*/
 	// data.meshIndex = GetMesh("grid");
-	data.meshIndex = 4;
-	data.textureIndex = 11;
-}
-
-Terrain::~Terrain()
-{
-	delete[] heightMap;
+	grid->data = {};
+	grid->data.meshIndex = 4;
+	grid->data.textureIndex = 11;
 }
 
 float GetHeight(MonGL::Mesh* mesh, int x, int z)

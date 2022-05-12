@@ -354,22 +354,7 @@ void InitGui(SDL_Window* window, SDL_GLContext* context)
 
 
 #ifdef _3D_GUI_
-static void TerrainMaterialWindow(Terrain* terrain)
-{
-	if (ImGui::TreeNode("Materials"))
-	{
-		ImGui::PushItemWidth(100.0f);
-		//ImGui::DragFloat("Mat diffuse r", &terrain->mesh.mat.diffuse.x, 0.01f, 0.0f, 1.0f, "%.02f");
-		//ImGui::DragFloat("Mat diffuse g", &terrain->mesh.mat.diffuse.y, 0.01f, 0.0f, 1.0f, "%.02f");
-		//ImGui::DragFloat("Mat diffuse b", &terrain->mesh.mat.diffuse.z, 0.01f, 0.0f, 1.0f, "%.02f");
-		ImGui::Separator();
-		//ImGui::DragFloat("Mat ambient r", &terrain->mesh.mat.ambient.x, 0.01f, 0.0f, 1.0f, "%.02f");
-		//ImGui::DragFloat("Mat ambient g", &terrain->mesh.mat.ambient.y, 0.01f, 0.0f, 1.0f, "%.02f");
-		//ImGui::DragFloat("Mat ambient b", &terrain->mesh.mat.ambient.z, 0.01f, 0.0f, 1.0f, "%.02f");
-		ImGui::PopItemWidth();
-		ImGui::TreePop();
-	}
-}
+
 
 void TerrainWindow(bool* p_open, Mon::GameState* game)
 {
@@ -377,19 +362,16 @@ void TerrainWindow(bool* p_open, Mon::GameState* game)
 
 	ImGui::Text("Texture");
 	ImGui::Separator();
-	if (ImGui::Button("UV")) { game->terrain->data.textureIndex = 11; }
+	if (ImGui::Button("UV")) { game->grid->data.textureIndex = 11; }
 	ImGui::SameLine();
-	if (ImGui::Button("Grass")) { game->terrain->data.textureIndex = 12; }
+	if (ImGui::Button("Grass")) { game->grid->data.textureIndex = 12; }
 	ImGui::SameLine();
-	if (ImGui::Button("Pixel Grass")) { game->terrain->data.textureIndex = 13; }
+	if (ImGui::Button("Pixel Grass")) { game->grid->data.textureIndex = 13; }
 	ImGui::SameLine();
-	if (ImGui::Button("Snow")) { game->terrain->data.textureIndex = 14; }
+	if (ImGui::Button("Snow")) { game->grid->data.textureIndex = 14; }
 	ImGui::Separator();
 
-	ImGui::Checkbox("Wireframe", &game->terrain->data.wireFrame);
-
-	TerrainMaterialWindow(game->terrain);
-
+	ImGui::Checkbox("Wireframe", &game->grid->data.wireFrame);
 
 	ImGui::End();
 }
@@ -412,7 +394,7 @@ void CameraWindow(bool* p_open, Mon::GameState* game)
 	ImGui::SameLine();
 	if (ImGui::ArrowButton("##right", ImGuiDir_Right))
 	{
-		if (game->currCameraIndex < (game->cameraCount-1))
+		if (game->currCameraIndex < (game->cameraCount - 1))
 			game->currCameraIndex++;
 
 		if (game->cameras[game->currCameraIndex].type == Mon::CameraType::Follow)

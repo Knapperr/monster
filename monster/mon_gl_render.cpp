@@ -29,18 +29,14 @@ namespace MonGL
 		{
 			texture->wrapS = GL_CLAMP_TO_EDGE;
 			texture->wrapT = GL_CLAMP_TO_EDGE;
-
+			texture->filterMin = GL_NEAREST;
+			texture->filterMax = GL_NEAREST;
 			// Linear for 3D and Texture Atlas
 			if (linearFilter)
 			{
 				//texture->filterMin = GL_LINEAR_MIPMAP_LINEAR;
 				texture->filterMin = GL_LINEAR;
 				texture->filterMax = GL_LINEAR;
-			}
-			else
-			{
-				texture->filterMin = GL_NEAREST;
-				texture->filterMax = GL_NEAREST;
 			}
 		}
 
@@ -763,17 +759,15 @@ namespace MonGL
 		const int maxVertices = quadCount * 4;
 		const int indicesLength = quadCount * 6;
 
-		Mesh* mesh = &data->mesh;
+		glGenVertexArrays(1, &data->VAO);
+		glBindVertexArray(data->VAO);
 
-		glGenVertexArrays(1, &mesh->VAO);
-		glBindVertexArray(mesh->VAO);
-
-		glGenBuffers(1, &mesh->VBO);
-		glBindBuffer(GL_ARRAY_BUFFER, mesh->VBO);
+		glGenBuffers(1, &data->VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, data->VBO);
 		glBufferData(GL_ARRAY_BUFFER, maxVertices * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
 
-		glGenBuffers(1, &mesh->IBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->IBO);
+		glGenBuffers(1, &data->IBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, data->IBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesLength * sizeof(data->indices), data->indices, GL_DYNAMIC_DRAW);
 
 		// position attribute
@@ -841,37 +835,44 @@ namespace MonGL
 			0, 1, 3,
 			1, 2, 3
 		};
-
 		unsigned int EBO;
 
-		Mesh* mesh = GetMesh(g_Assets, sprite->meshIndex);
-
-		glGenVertexArrays(1, &mesh->VAO);
-		glGenBuffers(1, &mesh->VBO);
-		glGenBuffers(1, &EBO);
-
-		glBindVertexArray(mesh->VAO);
-		glBindBuffer(GL_ARRAY_BUFFER, mesh->VBO);
-
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-		
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,  sizeof(Vertex), (GLvoid*)0);
-
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
-
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
-
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindVertexArray(0);
-
+		sprite->meshIndex = 1;
 		sprite->color = v3(1.0f);
 		sprite->pos = {};
+	}
+
+	void InitQuad2D()
+	{
+		// This is for the regular meshes
+		
+
+
+
+		//glGenVertexArrays(1, &mesh->VAO);
+		//glGenBuffers(1, &mesh->VBO);
+		//glGenBuffers(1, &EBO);
+
+		//glBindVertexArray(mesh->VAO);
+		//glBindBuffer(GL_ARRAY_BUFFER, mesh->VBO);
+
+		//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+		//glEnableVertexAttribArray(0);
+		//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
+
+		//glEnableVertexAttribArray(1);
+		//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
+
+		//glEnableVertexAttribArray(2);
+		//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
+
+		//glBindBuffer(GL_ARRAY_BUFFER, 0);
+		//glBindVertexArray(0);
+
 	}
 
 	void InitAABB(RenderData2D* sprite)
@@ -905,7 +906,6 @@ namespace MonGL
 			offset += 4;
 		}
 		
-		batch->mesh = {};
 		InitOpenGLBatchMesh(batch);
 	};
 
@@ -974,8 +974,8 @@ namespace MonGL
 		float bottomRightY	= (tileOffsetY * tileSize) / sheetSize;
 
 		// TODO(ck): pushQuad(pos, color, texcoords)		
-		float x = tileXPos * tileSize;
-		float y = tileYPos * tileSize;
+		float x = tileXPos;
+		float y = tileYPos;
 		int size = tileSize;
 		Vertex vec0 = {
 			v3(x, y, 0.0f),
@@ -1013,8 +1013,8 @@ namespace MonGL
 		// 2 extra vertices are needed for degenerate triangles between each strip 
 		//unsigned uNumExtraVertices = ( GL_TRIANGLE_STRIP == _config.uRenderType && _uNumUsedVertices > 0 ? 2 : 0 ); 
 
-		glBindVertexArray(batch->mesh.VAO);
-		glBindBuffer(GL_ARRAY_BUFFER, batch->mesh.VBO);
+		glBindVertexArray(batch->VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, batch->VBO);
 		//if (uNumExtraVertices > 0)
 		//{
 		//	//need to add 2 vertex copies to create degenerate triangles between this strip 
@@ -1092,7 +1092,7 @@ namespace MonGL
 		//Texture* texture = GetTexture(gl, data->textureIndex);
 
 		//glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture->id);
+		//glBindTexture(GL_TEXTURE_2D, texture->id);
 
 		glBindVertexArray(mesh->VAO);
 
@@ -1132,7 +1132,7 @@ namespace MonGL
 		glUniform1i(glGetUniformLocation(shader->handle, "image"), 0);
 		glBindTexture(GL_TEXTURE_2D, textureID);
 
-		glBindVertexArray(batch->mesh.VAO);
+		glBindVertexArray(batch->VAO);
 		// (void*)(index_size * pass.index_start)
 		wireFrame ?
 			glDrawElements(GL_LINES, usedIndices, GL_UNSIGNED_INT, (void*)(2 * 0))
@@ -1162,8 +1162,8 @@ namespace MonGL
 		// 2 extra vertices are needed for degenerate triangles between each strip 
 		//unsigned uNumExtraVertices = ( GL_TRIANGLE_STRIP == _config.uRenderType && _uNumUsedVertices > 0 ? 2 : 0 ); 
 
-		glBindVertexArray(batch->mesh.VAO);
-		glBindBuffer(GL_ARRAY_BUFFER, batch->mesh.VBO);
+		glBindVertexArray(batch->VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, batch->VBO);
 		//if (uNumExtraVertices > 0)
 		//{
 		//	//need to add 2 vertex copies to create degenerate triangles between this strip 
@@ -1212,7 +1212,7 @@ namespace MonGL
 		glUniform1i(glGetUniformLocation(shader->handle, "image"), 0);
 		glBindTexture(GL_TEXTURE_2D, textureID);
 
-		glBindVertexArray(batch->mesh.VAO);
+		glBindVertexArray(batch->VAO);
 		// (void*)(index_size * pass.index_start)
 		glDrawElements(GL_TRIANGLES, usedIndices, GL_UNSIGNED_INT, (void*)(2 * 0));
 		glBindVertexArray(0);

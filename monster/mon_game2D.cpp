@@ -5,11 +5,18 @@ namespace Mon {
 	// New 
 	bool Init(Game2D* game)
 	{
+		//
+		// Initialize Assets for game here
+		//
+		// NOTE(ck): MUST BE CALLED FIRST - LOADS ALL ASSETS FOR GAME
+		// TODO(ck): Memory management - allocate world
+		InitAssets(g_Assets);
+		MonGL::InitRenderer2D(&game->renderer);
+		
 		// TODO(ck): Memory management - allocate world
 		game->world = new World2D();
 		InitWorld(game->world);
 
-		MonGL::InitRenderer2D(&game->renderer);
 
 		// Set up the shader locations for our objects
 		int shaderID = game->renderer.program.handle;
@@ -227,7 +234,7 @@ namespace Mon {
 			Entity2D e = game->world->entities[i];
 			//state->world->entities[i]->pos.x *= time;
 			//state->world->entities[i]->pos.y *= time;
-			MonGL::DrawObject(&game->renderer.program, &e.sprite);
+			//MonGL::DrawObject(&game->renderer.program, &e.sprite);
 		}
 		//state->world->entities[i]->pos.x *= time;
 		//state->world->entities[i]->pos.y *= time;

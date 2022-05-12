@@ -84,7 +84,7 @@
     <ClCompile Include="mon_world2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mon_terrain.cpp">
+    <ClCompile Include="mon_grid.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mon_tilemap.cpp">
@@ -179,7 +179,7 @@
     <ClInclude Include="mon_world2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mon_terrain.h">
+    <ClInclude Include="mon_grid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="mon_math.h">

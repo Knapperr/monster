@@ -275,12 +275,14 @@ namespace Mon
 					if (keyCode == SDLK_SPACE)
 						processKeyboard(&newInput->space, isDown);
 
-					if (keyCode == SDLK_1)
+					if (keyCode == SDLK_KP_1)
 						processKeyboard(&newInput->num1, isDown);
-					if (keyCode == SDLK_2)
+					if (keyCode == SDLK_KP_2)
 						processKeyboard(&newInput->num2, isDown);
-					if (keyCode == SDLK_3)
+					if (keyCode == SDLK_KP_3)
 						processKeyboard(&newInput->num3, isDown);
+					if (keyCode == SDLK_KP_4)
+						processKeyboard(&newInput->num4, isDown);
 				}
 			}
 			else if (e.type == SDL_JOYBUTTONDOWN || e.type == SDL_JOYBUTTONUP)

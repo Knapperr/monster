@@ -1,7 +1,7 @@
 #ifndef MON_WORLD_H
 #define MON_WORLD_H
 
-#include "mon_terrain.h"
+#include "mon_grid.h"
 
 
 namespace Mon {

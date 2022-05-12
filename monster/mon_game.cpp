@@ -26,14 +26,12 @@ namespace Mon
 
 	void PlayMode(GameState* state)
 	{
-		state->currCameraIndex = 1;
 		state->mode = Mode::Play;
 	}
 
 	void DebugMode(GameState* state)
 	{
-		if (state->currCameraIndex != 1)
-			state->mode = Mode::Debug;
+		state->mode = Mode::Debug;
 	}
 
 	void UpdateCollider(Collider* collider, v3 colliderPos, v3 scale)
@@ -104,47 +102,8 @@ namespace Mon
 		}
 	}
 
-	bool InitGame(GameState* state, int windowWidth, int windowHeight, float portWidth, float portHeight)
+	void InitCameras(GameState* state)
 	{
-		//
-		// Initialize Assets for game here
-		//
-		InitAssets(g_Assets);
-
-
-		state->mode = Mode::Debug;
-		state->renderer = {};
-		MonGL::InitRenderer(&state->renderer);
-
-		state->light = {};
-		v3 lightColor = v3(0.2f, 0.3f, 0.6f);
-		state->light.diffuse = lightColor * v3(0.5f);
-		state->light.ambient = state->light.diffuse * v3(0.2f);
-		state->light.specular = v3(1.0f, 1.0f, 1.0f);
-		state->light.pos = v3(16.0f, 10.0f, 16.0f);
-
-
-		//water = {};
-		//MonGL::initDistortedWater(&water.data, &water.setup);
-
-		//MonGL::initDistortedWater(water.data, wa)
-		//MonGL::initQuad(&water.data);
-		//MonGL::loadTexture(&water.data, MonGL::Type::Diffuse, shader.handle, "res/textures/water/uv.png");
-		//MonGL::initBoundingBox(&water.colliderData);
-		//water.particle.pos = v3(40.0f, 0.1f, 10.0);
-		//water.particle.orientation = v3(1.0f, 1.0f, 1.0);
-
-		// TODO(ck): Memory Allocation
-		state->terrain = new Terrain(0, 0);
-
-		state->simulate = false;
-
-		state->config = new MonGL::Config();
-		state->config->viewPort = { 5.0f, 5.0f, portWidth, portHeight };
-		MonGL::ViewPort(&state->config->viewPort);
-
-		state->config->angleDegrees = -45.0f;
-
 		// TODO(ck): Memory management
 		// reserve slot 0 for NULL camera
 		AddCamera(state);
@@ -157,7 +116,47 @@ namespace Mon
 		int debugCamIndex2 = AddCamera(state);
 		InitCamera(&state->cameras[debugCamIndex2], CameraType::Fly, "Debug 2", state->config->viewPort);
 
+		int followCam2Index = AddCamera(state);
+		InitCamera(&state->cameras[followCam2Index], CameraType::Follow, "Follow 2 (better?)", state->config->viewPort);
+		state->cameras[followCam2Index].zoom = 40.0f;
+		state->cameras[followCam2Index].pitch = 45.0f;
+
 		state->currCameraIndex = debugCamIndex;
+	}
+
+	bool InitGame(GameState* state, int windowWidth, int windowHeight, float portWidth, float portHeight)
+	{
+		//
+		// Initialize Assets for game here
+		//
+		// NOTE(ck): MUST BE CALLED FIRST - LOADS ALL ASSETS FOR GAME
+		InitAssets(g_Assets); 
+
+		state->mode = Mode::Debug;
+		state->renderer = {};
+		MonGL::InitRenderer(&state->renderer);
+
+		state->light = {};
+		v3 lightColor = v3(0.2f, 0.3f, 0.6f);
+		state->light.diffuse = lightColor * v3(0.5f);
+		state->light.ambient = state->light.diffuse * v3(0.2f);
+		state->light.specular = v3(1.0f, 1.0f, 1.0f);
+		state->light.pos = v3(16.0f, 10.0f, 16.0f);
+
+		// TODO(ck): Memory Allocation
+		state->grid = new Grid();
+		InitGrid(state->grid);
+
+		state->simulate = false;
+
+		state->config = new MonGL::Config();
+		state->config->viewPort = { 5.0f, 5.0f, portWidth, portHeight };
+		MonGL::ViewPort(&state->config->viewPort);
+
+		state->config->angleDegrees = -45.0f;
+
+		InitCameras(state);
+
 		state->selectedIndex = 1;
 		state->drawCollisions = true;
 
@@ -265,6 +264,11 @@ namespace Mon
 			state->currCameraIndex = 3;
 			DebugMode(state);
 		}
+		if (newInput->num4.endedDown)
+		{
+			state->currCameraIndex = 4;
+			PlayMode(state);
+		}
 
 		bool enabled = (state->mode == Mode::Play);
 		if (enabled)
@@ -335,7 +339,7 @@ namespace Mon
 		// MOUSE PICKER
 		//
 		// TODO(ck): Only update the picker if we are in "picking" mode
-		MonGL::Mesh* grid = MonGL::GetMesh(g_Assets, state->terrain->data.meshIndex);
+		MonGL::Mesh* grid = MonGL::GetMesh(g_Assets, state->grid->data.meshIndex);
 		UpdatePicker(&state->picker, grid, newInput->mouseScreen, ViewMatrix(cam), Projection(cam), cam->pos);
 
 		// DebugModule update?
@@ -363,7 +367,7 @@ namespace Mon
 		//
 		// TERRAIN
 		//
-		MonGL::DrawTerrain(&state->renderer, &state->terrain->data, &state->light, cam);
+		MonGL::DrawTerrain(&state->renderer, &state->grid->data, &state->light, cam);
 
 		//
 		// ENTITIES
@@ -394,7 +398,7 @@ namespace Mon
 		// TODO(ck): clean up render data 
 		//glDeleteVertexArrays(1, &world->player->data.VAO);
 		//glDeleteBuffers(1, &world->player->data.VBO);
-		delete state->terrain;
+		delete state->grid;
 		MonGL::DeleteShader(&state->renderer.program);
 	}
 

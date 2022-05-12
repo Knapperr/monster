@@ -1,13 +1,14 @@
-#ifndef MON_TERRAIN_H
-#define MON_TERRAIN_H
+#ifndef MON_GRID_H
+#define MON_GRID_H
 
 #include "mon_shader.h"
 #include "mon_entity.h"
 
-struct TerrainPosition
+struct WorldPosition
 {
 	uint32_t absTileX;
 	uint32_t absTileY;
+	uint32_t absTileZ;
 	// NOTE(casey): These are the offsets from the tile center
 	Mon::v2 offset;
 };
@@ -23,30 +24,12 @@ struct Cell
 
 struct Grid
 {
-	Mon::int32* tiles;
-};
-
-inline void CreateGrid(Grid* grid)
-{
-
-}
-
-class Terrain
-{
-public:
 	float x;
 	float z;
-
-	int selectedTextureId;
-	bool drawTexture;
-
-	MonGL::RenderData data;
+	Mon::int32* tiles;
+	int selectedTextureIndex;
 	
-	float* heightMap;
-
-	Terrain(int gridX, int gridZ);
-	~Terrain();
-
+	MonGL::RenderData data;
 };
 
 struct MousePicker
@@ -56,6 +39,8 @@ struct MousePicker
 	Mon::v3 pos;
 	Mon::mat4 projectionMatrix;
 };
+
+void InitGrid(Grid* grid);
 
 void InitMousePicker(MousePicker* picker);
 void UpdatePicker(MousePicker* picker, MonGL::Mesh* mesh, Mon::v2 mousePos, Mon::mat4 viewMatrix, Mon::mat4 projection, Mon::v3 cameraPos);
@@ -73,4 +58,4 @@ float BarryCentric(Mon::v3 p1, Mon::v3 p2, Mon::v3 p3, Mon::v2 pos);
 float GetHeight(MonGL::Mesh* mesh, int x, int z);
 float LookUpHeight(MonGL::Mesh* mesh, int x, int z);
 
-#endif
+#endif // MON_GRID_H

@@ -174,7 +174,7 @@
     <ClCompile Include="mon_log.cpp" />
     <ClCompile Include="mon_ortho_camera.cpp" />
     <ClCompile Include="mon_shader.cpp" />
-    <ClCompile Include="mon_terrain.cpp" />
+    <ClCompile Include="mon_grid.cpp" />
     <ClCompile Include="mon_texture.cpp" />
     <ClCompile Include="mon_tilemap.cpp" />
     <ClCompile Include="mon_world2D.cpp" />
@@ -207,7 +207,7 @@
     <ClInclude Include="mon_ortho_camera.h" />
     <ClInclude Include="mon_platform.h" />
     <ClInclude Include="mon_shader.h" />
-    <ClInclude Include="mon_terrain.h" />
+    <ClInclude Include="mon_grid.h" />
     <ClInclude Include="mon_texture.h" />
     <ClInclude Include="mon_tilemap.h" />
     <ClInclude Include="mon_world.h" />

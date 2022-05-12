@@ -289,8 +289,8 @@ namespace Mon
 	// 360.0f = window.y
 	// TODO(ck): my camera isn't deciding the projection that gets sent to the renderer
 	// this might be a good thing because i can separate that off here
-		float width = 960.0f;
-		float height = 540.0f;
+		float width = 1060.0f;
+		float height = 1540.0f;
 		float half = 6.0f;
 #if 1
 		// TODO(ck): compute in update?

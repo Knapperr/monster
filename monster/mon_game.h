@@ -34,8 +34,7 @@ namespace Mon
 	struct GameState
 	{
 		World* world;
-		// TODO(ck): Move terrain to World
-		Terrain* terrain;
+		Grid* grid;
 		MousePicker picker;
 		Input input;
 
@@ -43,7 +42,7 @@ namespace Mon
 		MonGL::Line lineTwo;
 
 		// TODO(ck): Camera Manager
-		Camera cameras[5];
+		Camera cameras[10];
 		int currCameraIndex = 0;
 		int cameraCount = 0;
 

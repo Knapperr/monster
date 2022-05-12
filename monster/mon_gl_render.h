@@ -35,7 +35,7 @@ namespace MonGL
 	struct Config
 	{
 		float angleDegrees;
-		Rect viewPort = {};
+		Rect viewPort;
 		int tileSize = 16;
 	};
 
@@ -172,7 +172,9 @@ namespace MonGL
 
 	struct BatchData
 	{
-		Mesh mesh;
+		unsigned int VAO;
+		unsigned int VBO;
+		unsigned int IBO;
 		mat4 matrix = mat4(1.0f);
 		std::stack<mat4> matrixStack;
 

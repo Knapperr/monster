@@ -6,7 +6,6 @@
 
 #include "mon_input.h"
 #include "mon_ortho_camera.h"
-#include "mon_gl_render.h"
 #include "mon_world2D.h"
 
 namespace Mon {
