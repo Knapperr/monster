@@ -110,12 +110,8 @@ void App::run()
 			// NOTE(ck): T is the current time ... not using this?
 			// t += deltaTime;
 		}
-			
-		// TODO(ck): Platform->Renderer->clearColor 
-		glClearColor(0.126f, 0.113f, 0.165f, 1.0f);
 
 #ifdef _3D_
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 #else
 		glClear(GL_COLOR_BUFFER_BIT);
 #endif

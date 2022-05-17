@@ -26,6 +26,8 @@ namespace MonGL
 
 	struct Light
 	{
+		const char* id;
+
 		v3 pos;
 		v3 ambient;
 		v3 diffuse;
@@ -148,14 +150,25 @@ namespace MonGL
 		resource manager for this?
 	*/
 	
+	// Not sure how to wrap this
+	struct FramebufferGL
+	{
+		unsigned int handle;
+	};
+
 	struct OpenGL
 	{
-		// Textures[30] -- these are loaded from the Assets.Images
-		Texture textures[30];
+		Light lights[30];
+		Texture textures[30]; // These use images from the asset pipeline
+		int lightCount;
 		int textureCount;
 
 		CommonProgram program;
 		WaterProgram waterProgram;
+
+		// Separate this out from the renderer?
+		FramebufferGL buffer;
+		FramebufferGL textureColorbuffer;
 	};
 
 
@@ -227,14 +240,12 @@ namespace MonGL
 	void InitRenderer(OpenGL* gl);
 	void UploadOpenGLMesh(Mesh* mesh);
 
-
-	void BeginRender(Config* config, mat4 projection, mat4 view, int shaderID);
+	void BeginRender(OpenGL* gl, Config* config, mat4 projection, mat4 view, int shaderID);
 	void ViewPort(Rect* port);
 	void CreateFramebuffer(Framebuffer* buffer);
 
 	void LoadImpFile(RenderData* data);
 	void LoadTextureFile(Texture* texture, Image* image, TextureType type, bool linearFilter = false, bool pixelArtTexture = false);
-
 
 	void UseProgram(CommonProgram* program, RenderSetup setup);
 	void UseProgram(WaterProgram* program, RenderSetup setup);
@@ -252,7 +263,7 @@ namespace MonGL
 	void Draw(OpenGL* gl, Config* config, RenderSetup setup, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera);
 
 	void DrawBoundingBox(OpenGL* gl, RenderData* data, Camera* camera);
-	void DrawTerrain(OpenGL* gl, RenderData* data, Light* light, Camera* camera);
+	void DrawTerrain(OpenGL* gl, RenderData* data, Camera* camera);
 	
 	void EndRender();
 
@@ -275,6 +286,26 @@ namespace MonGL
 			t = &gl->textures[index];
 		}
 		return t;
+	}
+
+	static unsigned int AddLight(OpenGL* gl)
+	{
+		unsigned int index = gl->lightCount++;
+
+		Light* light = &gl->lights[index];
+		light = {};
+
+		return index;
+	}
+
+	static Light* GetLight(OpenGL* gl, unsigned int index)
+	{
+		MonGL::Light* l = 0;
+		if ((index > 0) && (index < ArrayCount(gl->lights)))
+		{
+			l = &gl->lights[index];
+		}
+		return l;
 	}
 
 

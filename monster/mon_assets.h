@@ -234,7 +234,7 @@ namespace Mon
 		// 2D TILE SHEET
 		AddImage(assets);
 		Image* tileSheet = GetImage(assets, 16);
-		InitImage(tileSheet, "res/textures/basic_16.png");
+		InitImage(tileSheet, "res/textures/basic_16.png", false);
 
 	}
 

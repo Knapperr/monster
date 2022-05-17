@@ -135,33 +135,49 @@ namespace MonGL
 		// TODO(ck): Need a texture atlas rather than loading all of these
 		// textures for the entities 
 		AddTexture(gl);
+		
+		AddTexture(gl);
 		MonGL::Texture* t1 = GetTexture(gl, 1);
+		
 		AddTexture(gl);
 		MonGL::Texture* t2 = GetTexture(gl, 2);
+		
 		AddTexture(gl);
 		MonGL::Texture* t3 = GetTexture(gl, 3);
+		
 		AddTexture(gl);
 		MonGL::Texture* t4 = GetTexture(gl, 4);
+		
 		AddTexture(gl);
 		MonGL::Texture* t5 = GetTexture(gl, 5);
+		
 		AddTexture(gl);
 		MonGL::Texture* t6 = GetTexture(gl, 6);
+		
 		AddTexture(gl);
 		MonGL::Texture* t7 = GetTexture(gl, 7);
+		
 		AddTexture(gl);
 		MonGL::Texture* t8 = GetTexture(gl, 8);
+		
 		AddTexture(gl);
 		MonGL::Texture* t9 = GetTexture(gl, 9);
+		
 		AddTexture(gl);
 		MonGL::Texture* t10 = GetTexture(gl, 10);
+		
 		AddTexture(gl);
 		MonGL::Texture* t11 = GetTexture(gl, 11);
+		
 		AddTexture(gl);
 		MonGL::Texture* t12 = GetTexture(gl, 12);
+		
 		AddTexture(gl);
 		MonGL::Texture* t13 = GetTexture(gl, 13);
+		
 		AddTexture(gl);
 		MonGL::Texture* t14 = GetTexture(gl, 14);
+
 		AddTexture(gl);
 		MonGL::Texture* t15 = GetTexture(gl, 15);
 
@@ -181,6 +197,57 @@ namespace MonGL
 		LoadTexture(t13, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 13));
 		LoadTexture(t14, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 14));
 		LoadTexture(t15, MonGL::TextureType::Normal,  false, shaderID, GetImage(g_Assets, 15));
+
+		// #0 for the 
+		AddLight(gl);
+
+		int index = AddLight(gl);
+		gl->lights[index].id = "001";
+		gl->lights[index].ambient = v3(1.0f);
+		gl->lights[index].diffuse = v3(1.0f);
+		gl->lights[index].specular = v3(1.0f);
+		gl->lights[index].pos = v3(1.0f);
+		index = AddLight(gl);
+		gl->lights[index].id = "002";
+		gl->lights[index].ambient = v3(1.0f);
+		gl->lights[index].diffuse = v3(1.0f);
+		gl->lights[index].specular = v3(1.0f);
+		gl->lights[index].pos = v3(1.0f);
+
+		// Frame buffer
+		int screenWidth = 1440;
+		int screenHeight = 900;
+
+		glGenFramebuffers(1, &gl->buffer.handle);
+		glBindFramebuffer(GL_FRAMEBUFFER, gl->buffer.handle);
+
+		glGenTextures(1, &gl->textureColorbuffer.handle);
+		glBindTexture(GL_TEXTURE_2D, gl->textureColorbuffer.handle);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, screenWidth, screenHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gl->textureColorbuffer.handle, 0);
+
+		/*
+		https://www.khronos.org/opengl/wiki/Renderbuffer_Object#:~:text=Renderbuffer%20Objects%20are%20OpenGL%20Objects,shader)%20from%20the%20produced%20image.
+			Renderbuffer Objects are OpenGL Objects that contain images. They are created and used specifically with 
+			Framebuffer Objects. They are optimized for use as render targets, while Textures may not be, and are the
+			logical choice when you do not need to sample (i.e. in a post-pass shader) from the produced image.
+			If you need to resample (such as when reading depth back in a second shader pass), use Textures instead.
+			Renderbuffer objects also natively accommodate Multisampling (MSAA).
+		*/
+		// (not sampling it so just doing this locally in the method)
+		unsigned int rbo;
+		glGenRenderbuffers(1, &rbo);
+		glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screenWidth, screenHeight);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+
+
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+			Log::warn("Framebuffer is not complete!");
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 
 	}
 
@@ -341,12 +408,19 @@ namespace MonGL
 	/// [BEGIN] begin render 
 	/// 
 
-	void BeginRender(Config* config, mat4 projection, mat4 view, int shaderID)
+	void BeginRender(OpenGL* gl, Config* config, mat4 projection, mat4 view, int shaderID)
 	{
-		MonGL::ViewPort(&config->viewPort);
+		//glBindFramebuffer(GL_FRAMEBUFFER, gl->buffer.handle);
+		glEnable(GL_DEPTH_TEST);
+
+		// TODO(ck): Platform->Renderer->clearColor 
+		glClearColor(0.126f, 0.113f, 0.165f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
+		MonGL::ViewPort(&config->viewPort);
 		globalDrawCalls = 0;
 	}
 
@@ -461,7 +535,7 @@ namespace MonGL
 	}
 
 	// TODO(ck): STOP PASSING TEXTUREID IMPORTANT(ck):
-	void ActivateUniforms(WaterProgram* program, ProgramData programData, RenderSetup setup, v3 viewPos, int textureID, int normal1TextureID, int normal2TextureID)
+	void ActivateUniforms(WaterProgram* program, ProgramData programData, RenderSetup setup, v3 viewPos, Light light, int textureID, int normal1TextureID, int normal2TextureID)
 	{
 		// need to pass struct or something to shader because they are
 		// going to be different...
@@ -475,10 +549,15 @@ namespace MonGL
 		// BEGIN RENDER UNIFORMS
 		glUniformMatrix4fv(program->common.projection, 1, GL_FALSE, glm::value_ptr(setup.projection));
 		glUniformMatrix4fv(program->common.view, 1, GL_FALSE, glm::value_ptr(setup.viewMatrix));
+		
 		// GET THIS INFO
-		//glUniform3fv(glGetUniformLocation(shaderID, "lightPos"), 1, &light->pos[0]);
-		//glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camPos[0]);
-		//glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &viewPos[0]);
+		
+		glUniform3fv(program->common.lightPos, 1, &light.pos[0]);
+		glUniform3fv(program->common.lightAmbient, 1, &light.ambient[0]);
+		glUniform3fv(program->common.lightDiffuse, 1, &light.diffuse[0]);
+		glUniform3fv(program->common.lightSpecular, 1, &light.specular[0]);
+		glUniform3fv(program->common.viewPos, 1, &viewPos[0]);
+
 
 		glActiveTexture(GL_TEXTURE1);
 		glUniform1i(program->textureNormal1, 1);
@@ -512,7 +591,8 @@ namespace MonGL
 		case ProgramType::Water:
 			Texture* normal1 = GetTexture(gl, gl->waterProgram.textureIndexNormal1);
 			Texture* normal2 =  GetTexture(gl, gl->waterProgram.textureIndexNormal2);
-			ActivateUniforms(&gl->waterProgram, programData, setup, viewPos, baseTextureID, normal1->id, normal2->id);
+			Light* light = GetLight(gl, 1);
+			ActivateUniforms(&gl->waterProgram, programData, setup, viewPos, *light, baseTextureID, normal1->id, normal2->id);
 			return gl->waterProgram.common.handle;
 		}
 	}
@@ -548,10 +628,8 @@ namespace MonGL
 		//glUniformMatrix4fv(gl->program.model, 1, GL_FALSE, glm::value_ptr(data->worldMatrix));
 		glUniformMatrix4fv(glGetUniformLocation(shaderHandle, "model"), 1, GL_FALSE, glm::value_ptr(data->worldMatrix));
 
-		
 		int polygonMode = data->wireFrame ? GL_LINE : GL_FILL;
 		glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
-
 
 		glBindVertexArray(mesh->VAO);
 		if (mesh->indiceCount > 0)
@@ -568,15 +646,16 @@ namespace MonGL
 		// NOTE(CK): bind texture must be AFTER glActiveTexture or it will not unbind properly
 		//glActiveTexture(GL_TEXTURE0);
 		//glBindTexture(GL_TEXTURE_2D, 0);
-
 		globalDrawCalls++;
 	}
 
-	void DrawTerrain(OpenGL* gl, RenderData* data, Light* light, Camera* camera)
+	void DrawTerrain(OpenGL* gl, RenderData* data, Camera* camera)
 	{
 		Mesh* mesh = GetMesh(g_Assets, data->meshIndex);
 		Texture* texture = GetTexture(gl, data->textureIndex);
 		unsigned int shaderID = gl->program.handle;
+		
+		Light* light = GetLight(gl, 1);
 
 		glUniform3fv(glGetUniformLocation(shaderID, "light.pos"), 1, &light->pos[0]);
 		glUniform3fv(glGetUniformLocation(shaderID, "light.ambient"), 1, &light->ambient[0]);
@@ -631,6 +710,17 @@ namespace MonGL
 	void EndRender()
 	{
 		assert(globalDrawCalls > 0);
+		
+		// now bind back to default framebuffer and draw a quad plane with the attached framebuffer color texture
+		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		//glDisable(GL_DEPTH_TEST); // disable depth test so screen-space quad isn't discarded due to depth test.
+
+		//glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		//glClear(GL_COLOR_BUFFER_BIT);
+
+
+
+
 	}
 
 	///
@@ -973,9 +1063,10 @@ namespace MonGL
 		float bottomRightX	= ((tileOffsetX + 1) * tileSize) / sheetSize;
 		float bottomRightY	= (tileOffsetY * tileSize) / sheetSize;
 
-		// TODO(ck): pushQuad(pos, color, texcoords)		
-		float x = tileXPos;
-		float y = tileYPos;
+		// TODO(ck): pushQuad(pos, color, texcoords)	
+		// TODO(ck): The tileXpos and tileYPos need to be multiplied by the tilesize to get the proper size
+		float x = tileXPos * tileSize;
+		float y = tileYPos * tileSize;
 		int size = tileSize;
 		Vertex vec0 = {
 			v3(x, y, 0.0f),

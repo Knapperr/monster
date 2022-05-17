@@ -55,6 +55,12 @@ namespace Mon {
 		AddCamera(game);
 		game->currentCameraIndex = AddCamera(game);
 		// InitCamera
+		game->cameras[game->currentCameraIndex].lerpSpeed = 7.0f;
+		game->cameras[game->currentCameraIndex].smoothness = 0.24f;
+		game->cameras[game->currentCameraIndex].pos = v2(0.0f);
+		game->cameras[game->currentCameraIndex].vel = v2(0.0f);
+		game->cameras[game->currentCameraIndex].zoom = 1.0f;
+
 		Entity2D* player = GetPlayer(game->world);
 		//game->camera = OrthoCamera(player->pos, &game->config->viewPort);
 		

@@ -14,7 +14,16 @@ struct Material {
     sampler2D specular;    
     float shininess;
 }; 
+
+struct Light {
+    vec3 pos;
+
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
  
+uniform Light light;
 uniform Material material;
 
 uniform sampler2D texture_diffuse1;

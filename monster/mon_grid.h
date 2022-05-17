@@ -41,6 +41,7 @@ struct MousePicker
 };
 
 void InitGrid(Grid* grid);
+void GetGridPosition(Mon::v3 pos);
 
 void InitMousePicker(MousePicker* picker);
 void UpdatePicker(MousePicker* picker, MonGL::Mesh* mesh, Mon::v2 mousePos, Mon::mat4 viewMatrix, Mon::mat4 projection, Mon::v3 cameraPos);

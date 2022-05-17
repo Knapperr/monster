@@ -25,6 +25,10 @@ namespace MonGL
 		int view;
 		int projection;
 		int viewPos;
+		int lightPos;
+		int lightAmbient;
+		int lightDiffuse;
+		int lightSpecular;
 		int colliderColor;
 		int textureDiffuse1;
 		int useTexture;

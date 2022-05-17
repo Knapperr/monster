@@ -23,6 +23,19 @@ void InitGrid(Grid* grid)
 	grid->data.textureIndex = 11;
 }
 
+
+// IMPORTANT(ck): This does not work... misunderstanding something here.
+// it must be because the position is already in grid position
+// the rb.pos is not the local space. the v3 pos passed in here should be 
+// in local space
+void GetGridPosition(Mon::v3 pos)
+{
+	Mon::v3 gridPos;
+	gridPos.x = (int)(pos.x / 64.0f);
+	gridPos.y = 0.0f;
+	gridPos.z = (int)(pos.z / 64.0f);
+}
+
 float GetHeight(MonGL::Mesh* mesh, int x, int z)
 {
 	float gridSquareSize = (float)SIZE / ((float)VERTEX_COUNT);

@@ -136,13 +136,6 @@ namespace Mon
 		state->renderer = {};
 		MonGL::InitRenderer(&state->renderer);
 
-		state->light = {};
-		v3 lightColor = v3(0.2f, 0.3f, 0.6f);
-		state->light.diffuse = lightColor * v3(0.5f);
-		state->light.ambient = state->light.diffuse * v3(0.2f);
-		state->light.specular = v3(1.0f, 1.0f, 1.0f);
-		state->light.pos = v3(16.0f, 10.0f, 16.0f);
-
 		// TODO(ck): Memory Allocation
 		state->grid = new Grid();
 		InitGrid(state->grid);
@@ -347,6 +340,8 @@ namespace Mon
 		RunDebugControls(newInput, &state->picker, state->world, state->selectedIndex);
 		//world->player->particle.pos = picker.currentTerrainPoint;
 
+
+
 	}
 
 	void Render(GameState* state, float time, double dt)
@@ -359,7 +354,7 @@ namespace Mon
 		// TODO(ck): UseProgram should be called only one time before switching shaders
 		//			 DO NOT CALL every time you draw an entity glUseProgram is expensive
 		MonGL::UseProgram(&state->renderer.program, state->setup);
-		MonGL::BeginRender(state->config, projection, viewMatrix, state->renderer.program.handle);
+		MonGL::BeginRender(&state->renderer, state->config, projection, viewMatrix, state->renderer.program.handle);
 		state->setup.projection = projection;
 		state->setup.viewMatrix = viewMatrix;
 		state->setup.time = time;
@@ -367,7 +362,7 @@ namespace Mon
 		//
 		// TERRAIN
 		//
-		MonGL::DrawTerrain(&state->renderer, &state->grid->data, &state->light, cam);
+		MonGL::DrawTerrain(&state->renderer, &state->grid->data, cam);
 
 		//
 		// ENTITIES
@@ -379,6 +374,8 @@ namespace Mon
 			if (state->drawCollisions)
 				MonGL::DrawBoundingBox(&state->renderer, &e.collider.data, cam);
 			MonGL::Draw(&state->renderer, state->config, state->setup, e.spriteAngleDegrees, &e.data, e.rb.pos, cam);
+
+			GetGridPosition(e.rb.pos);
 		}
 
 		//

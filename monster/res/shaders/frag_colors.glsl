@@ -69,6 +69,28 @@ void main()
             pixel = seam + clamp((pixel - seam)/duDv, -0.5, 0.5);
             vec2 modifiedTextCoordinate = pixel / textureSize;
             vec4 tex = texture(texture_diffuse1, modifiedTextCoordinate);
+            
+            /*
+            
+            // ambient
+            vec3 ambient = light.ambient * texture(material.diffuse, TexCoords).rgb;
+            
+            // diffuse 
+            vec3 norm = normalize(Normal);
+            vec3 lightDir = normalize(light.position - FragPos);
+            float diff = max(dot(norm, lightDir), 0.0);
+            vec3 diffuse = light.diffuse * diff * texture(material.diffuse, TexCoords).rgb;  
+            
+            // specular
+            vec3 viewDir = normalize(viewPos - FragPos);
+            vec3 reflectDir = reflect(-lightDir, norm);  
+            float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+            vec3 specular = light.specular * spec * texture(material.specular, TexCoords).rgb;  
+                
+            vec3 result = ambient + diffuse + specular;
+            FragColor = vec4(result, 1.0);
+
+            */
             FragColor = tex;
             return;
             // vec2 vres = textureSize(texture_diffuse1, 0);

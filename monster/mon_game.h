@@ -62,8 +62,7 @@ namespace Mon
 		// of the game?
 		MonGL::OpenGL renderer;
 		MonGL::RenderSetup setup;
-		
-		MonGL::Light light;
+
 	};
 
 	bool InitGame(GameState* state, int windowWidth, int windowHeight, float portWidth, float portHeight);
