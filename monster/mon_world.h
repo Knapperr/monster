@@ -147,7 +147,7 @@ namespace Mon {
 		e->data.visible = true;
 
 		InitBoxCollider(&e->collider);
-		e->rb.pos = v3(30.0f, 0.0f, 30.0);
+		e->rb.pos = v3(15.00f, -0.40f, -19.95);
 		e->rb.speed = 40.0f;
 		e->data.scale = v3(18.0f, 1.0f, 18.0f);
 

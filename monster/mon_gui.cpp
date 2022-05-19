@@ -646,9 +646,9 @@ void RenderWindow(bool* p_open, Mon::GameState* game)
 			ImGui::DragFloat("x", &game->renderer.lights[selectedLight].pos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");
 			ImGui::DragFloat("y", &game->renderer.lights[selectedLight].pos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
 			ImGui::DragFloat("z", &game->renderer.lights[selectedLight].pos.z, 0.1f, -1000.0f, 1000.0f, "%.02f");
-			ImGui::SliderFloat3("ambient", &game->renderer.lights[selectedLight].ambient[0], 1.0f, 100.0f, "%1.0f");
-			ImGui::SliderFloat3("diffuse", &game->renderer.lights[selectedLight].diffuse[0], 1.0f, 100.0f, "%1.0f");
-			ImGui::SliderFloat3("specular",&game->renderer.lights[selectedLight].specular[0], 1.0f, 100.0f, "%1.0f");
+			ImGui::SliderFloat3("ambient", &game->renderer.lights[selectedLight].ambient[0], 0.0f, 1.0f, "%0.01f");
+			ImGui::SliderFloat3("diffuse", &game->renderer.lights[selectedLight].diffuse[0], 0.0f, 1.0f, "%0.01f");
+			ImGui::SliderFloat3("specular",&game->renderer.lights[selectedLight].specular[0], 0.0f, 1.0f, "%0.01f");
 
 			ImGui::EndTabItem();
 		}
@@ -934,7 +934,9 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::GameState* game)
 
 
 		ImGui::DragFloat("cam speed", &game->cameras[game->currCameraIndex].speed, 0.01f, 1.0f, 200.0f, "%.02f");
-	
+		ImGui::DragFloat("material shininess[move]", &game->setup.materialShininess, 0.01f, 1.0f, 200.0f, "%.02f");
+		
+
 	ImGui::Separator();
 	
 	ImGui::End();

@@ -136,6 +136,9 @@ namespace Mon
 		state->renderer = {};
 		MonGL::InitRenderer(&state->renderer);
 
+		state->setup = {};
+		state->setup.materialShininess = 64.0f;
+
 		// TODO(ck): Memory Allocation
 		state->grid = new Grid();
 		InitGrid(state->grid);

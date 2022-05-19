@@ -502,7 +502,7 @@ namespace MonGL
 
 
 	// TODO(ck): STOP PASSING TEXTUREID IMPORTANT(ck):
-	void ActivateUniforms(CommonProgram* program, RenderSetup setup, int textureID)
+	void ActivateUniforms(CommonProgram* program, RenderSetup setup, Light light, v3 viewPos, int textureID)
 	{
 		// TODO(ck): Performance - Only call this if the program actually changes or find a way to call at the beginning 
 		// sort entities so that water is always at the end so that gluseprogram gets called before the water is drawn
@@ -532,6 +532,15 @@ namespace MonGL
 		//glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
 		glUniform1i(program->collider, false);
 
+
+		glUniform3fv(program->lightPos, 1, &light.pos[0]);
+		glUniform3fv(program->lightAmbient, 1, &light.ambient[0]);
+		glUniform3fv(program->lightDiffuse, 1, &light.diffuse[0]);
+		glUniform3fv(program->lightSpecular, 1, &light.specular[0]);
+		glUniform3fv(program->viewPos, 1, &viewPos[0]);
+
+		glUniform1f(glGetUniformLocation(program->handle, "material.shininess"), setup.materialShininess);
+
 	}
 
 	// TODO(ck): STOP PASSING TEXTUREID IMPORTANT(ck):
@@ -542,23 +551,13 @@ namespace MonGL
 		// STUDY(ck):  can you have shader includes in glsl??????
 		glUseProgram(program->common.handle);
 
-		ActivateUniforms(&program->common, setup, textureID);
-
-		int shaderID = program->common.handle;
+		ActivateUniforms(&program->common, setup, light, viewPos, textureID);
 
 		// BEGIN RENDER UNIFORMS
 		glUniformMatrix4fv(program->common.projection, 1, GL_FALSE, glm::value_ptr(setup.projection));
 		glUniformMatrix4fv(program->common.view, 1, GL_FALSE, glm::value_ptr(setup.viewMatrix));
 		
 		// GET THIS INFO
-		
-		glUniform3fv(program->common.lightPos, 1, &light.pos[0]);
-		glUniform3fv(program->common.lightAmbient, 1, &light.ambient[0]);
-		glUniform3fv(program->common.lightDiffuse, 1, &light.diffuse[0]);
-		glUniform3fv(program->common.lightSpecular, 1, &light.specular[0]);
-		glUniform3fv(program->common.viewPos, 1, &viewPos[0]);
-
-
 		glActiveTexture(GL_TEXTURE1);
 		glUniform1i(program->textureNormal1, 1);
 		glBindTexture(GL_TEXTURE_2D, normal1TextureID);
@@ -583,15 +582,15 @@ namespace MonGL
 
 	int ActivateUniforms(OpenGL* gl, ProgramData programData, ProgramType type, RenderSetup setup, int baseTextureID, v3 viewPos)
 	{
+		Light* light = GetLight(gl, 1);
 		switch (type)
 		{
 		case ProgramType::Common:
-			ActivateUniforms(&gl->program, setup, baseTextureID);
+			ActivateUniforms(&gl->program, setup, *light, viewPos, baseTextureID);
 			return gl->program.handle;
 		case ProgramType::Water:
 			Texture* normal1 = GetTexture(gl, gl->waterProgram.textureIndexNormal1);
 			Texture* normal2 =  GetTexture(gl, gl->waterProgram.textureIndexNormal2);
-			Light* light = GetLight(gl, 1);
 			ActivateUniforms(&gl->waterProgram, programData, setup, viewPos, *light, baseTextureID, normal1->id, normal2->id);
 			return gl->waterProgram.common.handle;
 		}

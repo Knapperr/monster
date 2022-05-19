@@ -64,6 +64,8 @@ namespace MonGL
 		*  RenderSetup is for the common attributes that are shared among shaders
 		*  these are found in CommonProgram cameraPosition
 		*/
+		// TODO(ck): Move to material
+		float materialShininess;
 		float time;
 		mat4 viewMatrix;
 		mat4 projection;
