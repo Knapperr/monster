@@ -206,14 +206,14 @@
     <ClInclude Include="mon_collider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mon_assets.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="mon_gl_render.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="mon_shader.h">
       <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="mon_assets.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

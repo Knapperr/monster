@@ -31,9 +31,9 @@ void InitGrid(Grid* grid)
 void GetGridPosition(Mon::v3 pos)
 {
 	Mon::v3 gridPos;
-	gridPos.x = (int)(pos.x / 64.0f);
+	gridPos.x = (int)(pos.x / 1.0f);
 	gridPos.y = 0.0f;
-	gridPos.z = (int)(pos.z / 64.0f);
+	gridPos.z = (int)(pos.z / 1.0f);
 }
 
 float GetHeight(MonGL::Mesh* mesh, int x, int z)

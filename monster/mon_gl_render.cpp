@@ -69,12 +69,11 @@ namespace MonGL
 		}
 
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)0);
-
 		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, normal));
-
 		glEnableVertexAttribArray(2);
+
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)0);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, normal));
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, texCoords));
 
 		if (mesh->type == RenderType::Model)
@@ -203,10 +202,10 @@ namespace MonGL
 
 		int index = AddLight(gl);
 		gl->lights[index].id = "001";
-		gl->lights[index].ambient = v3(1.0f);
-		gl->lights[index].diffuse = v3(1.0f);
-		gl->lights[index].specular = v3(1.0f);
-		gl->lights[index].pos = v3(1.0f);
+		gl->lights[index].ambient = v3(0.3f);
+		gl->lights[index].diffuse = v3(0.8f);
+		gl->lights[index].specular = v3(0.3f);
+		gl->lights[index].pos = v3(35.0f, 20.0f, 22.0f);
 		index = AddLight(gl);
 		gl->lights[index].id = "002";
 		gl->lights[index].ambient = v3(1.0f);
@@ -1050,6 +1049,22 @@ namespace MonGL
 
 	void FillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize)
 	{		
+		/*
+		
+		
+		v2 PlayerLeftTop = {PlayerGroundPointX - 0.5f*MetersToPixels*LowEntity->Width,
+                PlayerGroundPointY - 0.5f*MetersToPixels*LowEntity->Height};
+        v2 EntityWidthHeight = {LowEntity->Width, LowEntity->Height};
+		
+		        {
+        DrawRectangle(Buffer,
+                        PlayerLeftTop,
+                        PlayerLeftTop + MetersToPixels*EntityWidthHeight,
+                        PlayerR, PlayerG, PlayerB);
+			}
+		*/
+
+
 		float sheetSize = 256.0f;
 
 		// Texture coords
@@ -1064,9 +1079,35 @@ namespace MonGL
 
 		// TODO(ck): pushQuad(pos, color, texcoords)	
 		// TODO(ck): The tileXpos and tileYPos need to be multiplied by the tilesize to get the proper size
-		float x = tileXPos * tileSize;
-		float y = tileYPos * tileSize;
-		int size = tileSize;
+		
+		/*
+		June 05 2022 
+		I think I just unlocked a realization. these are vertices NOT positions in 
+		the real game world. these are for drawing. you need to remember that these
+		are rendering positions. this HAS to be the same as handmade at least it 
+		seems he doesn't do the math like this until rendering time which makes sense
+		maybe we can do this!!! 
+		vertex positions != world positions remember that
+		
+		I think in the 3d the model matrix is taking care of this for us
+		although i probably need to have some kind of map positions like 
+		in handmade?
+		*/
+
+		// Create vertices from the middle of the world
+		/*
+		* 
+		* IMPORTANT(ck): June 5th 2022
+		I think this is wrong. I am meant to be building my map beforehand starting like this
+		then when I create my vertices here I won't have to do this it will be set up
+		Lets try it in the 3d first maybe?
+		*/
+		const int MAP_SIZE = 40;
+		float x = (float)(tileXPos - MAP_SIZE / 2);
+		float y = (float)(tileYPos - MAP_SIZE / 2);
+		x *= tileSize;
+		y *= tileSize;
+
 		Vertex vec0 = {
 			v3(x, y, 0.0f),
 			v3(1.0f, 0.0f, 0.0f),
@@ -1074,19 +1115,19 @@ namespace MonGL
 		};
 
 		Vertex vec1 = {
-			v3(x + size, y, 0.0f),
+			v3(x + tileSize, y, 0.0f),
 			v3(0.0f, 1.0f, 0.0f),
 			v2(bottomRightX, bottomRightY)
 		};
 
 		Vertex vec2 = {
-			v3(x + size, y + size, 0.0f),
+			v3(x + tileSize, y + tileSize, 0.0f),
 			v3(0.0f, 0.0f, 1.0f),
 			v2(topRightX, topRightY)
 		};
 
 		Vertex vec3 = {
-			v3(x, y + size, 0.0f),
+			v3(x, y + tileSize, 0.0f),
 			v3(1.0f, 1.0f, 0.0f),
 			v2(topLeftX, topLeftY)
 		};

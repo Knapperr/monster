@@ -8,6 +8,31 @@ float inputTimer = 0.0f;
 #include <fstream>
 #ifdef _3D_GUI_
 
+void CreateBinaryFile()
+{
+
+}
+
+const char * RenderTypeText(Mon::RenderType type)
+{
+	switch (type)
+	{
+		case Mon::RenderType::Model:
+			return "model";
+		case Mon::RenderType::Cube:
+			return "cube";
+		case Mon::RenderType::Quad:
+			return "quad";
+		case Mon::RenderType::Debug:
+			return "debug";
+		case Mon::RenderType::None:
+			return "none";
+		default:
+			return "none";
+	}
+	return "none";
+}
+
 // TODO(ck): Write WORLD not entities
 void WriteEntities(Mon::Entity* entities, unsigned int entityCount, int shaderID)
 {
@@ -432,21 +457,30 @@ void CameraWindow(bool* p_open, Mon::GameState* game)
 	ImGui::End();
 }
 
+void AddNewEntity(Mon::GameState* game)
+{
+	Mon::AddEntity(game->world);
+	Mon::Entity* e = Mon::GetEntity(game->world, game->world->entityCount - 1);
+	Mon::InitEntity(e, "new", Mon::v3(1.0f), Mon::v3(1.0f), -45.0f, game->renderer.program.handle, 1);
+}
+
+void AddWater(Mon::GameState* game)
+{
+	Mon::AddEntity(game->world);
+	Mon::Entity* water = Mon::GetEntity(game->world, game->world->entityCount - 1);
+	Mon::InitWater(water, game->renderer.waterProgram.common.handle);
+}
+
 void EntityWindow(bool* p_open, Mon::GameState* game)
 {
 	ImGui::Begin("entities and things", p_open);
 	
 	
-	if (ImGui::Button("Add Cube"))
-	{
-		Mon::AddCube(game->world, game->renderer.program.handle);
-	}
+	if (ImGui::Button("Add Entity")) { AddNewEntity(game); }
 	ImGui::SameLine();
-	if (ImGui::Button("Load imp file"))
-	{
-		LoadImpGrassFile(game);
-	}
-	
+	if (ImGui::Button("Add Water")) { AddWater(game); }
+	ImGui::SameLine();
+	if (ImGui::Button("Load imp file")) { LoadImpGrassFile(game); }
 	// NOTE(ck): Write the .imp model to a file 
 	/*if (ImGui::Button("Write imp file"))
 	{
@@ -556,8 +590,8 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 				ImGui::DragFloat("speed", &game->world->entities[selected].rb.speed, 0.10f, 0.0f, 200.0f, "%.10f");
 				ImGui::DragFloat("angle", &game->world->entities[selected].spriteAngleDegrees, 0.10f, -180.0f, 360.0f, "%.10f");
 				
-				ImGui::SliderInt("mesh index", &game->world->entities[selected].data.meshIndex, 1, 7);
-				ImGui::SliderInt("texture index", &game->world->entities[selected].data.textureIndex, 1, game->renderer.textureCount);
+				ImGui::SliderInt("mesh index", &game->world->entities[selected].data.meshIndex, 1, Mon::g_Assets->meshCount - 1);
+				ImGui::SliderInt("texture index", &game->world->entities[selected].data.textureIndex, 1, game->renderer.textureCount - 1);
 				
 				ImGui::Checkbox("Wireframe", &game->world->entities[selected].data.wireFrame);
 				ImGui::Checkbox("Visible", &game->world->entities[selected].data.visible);
@@ -612,10 +646,10 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 
 void RenderWindow(bool* p_open, Mon::GameState* game)
 {
-	ImGui::Begin("Open GL", p_open);
+	ImGui::Begin("Renderer", p_open);
 
 	static unsigned int selectedLight = 1;
-	ImGui::BeginChild("left pane opengl", ImVec2(150.0f, 0.0f), true);
+	ImGui::BeginChild("left pane renderer", ImVec2(150.0f, 0.0f), true);
 
 	for (unsigned int i = 1; i < game->renderer.lightCount; ++i)
 	{
@@ -648,7 +682,28 @@ void RenderWindow(bool* p_open, Mon::GameState* game)
 			ImGui::DragFloat("z", &game->renderer.lights[selectedLight].pos.z, 0.1f, -1000.0f, 1000.0f, "%.02f");
 			ImGui::SliderFloat3("ambient", &game->renderer.lights[selectedLight].ambient[0], 0.0f, 1.0f, "%0.01f");
 			ImGui::SliderFloat3("diffuse", &game->renderer.lights[selectedLight].diffuse[0], 0.0f, 1.0f, "%0.01f");
-			ImGui::SliderFloat3("specular",&game->renderer.lights[selectedLight].specular[0], 0.0f, 1.0f, "%0.01f");
+			ImGui::SliderFloat3("specular", &game->renderer.lights[selectedLight].specular[0], 0.0f, 1.0f, "%0.01f");
+
+
+			if (ImGui::Button("dim"))
+			{
+				game->renderer.lights[selectedLight].pos.x = 35.0f;
+				game->renderer.lights[selectedLight].pos.y = 3.0f;
+				game->renderer.lights[selectedLight].pos.z = 22.0f;
+				game->renderer.lights[selectedLight].ambient = Mon::v3(0.2);
+				game->renderer.lights[selectedLight].diffuse = Mon::v3(1.0f);
+				game->renderer.lights[selectedLight].specular = Mon::v3(0.3f);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("avg"))
+			{
+				game->renderer.lights[selectedLight].pos.x = 35.0f;
+				game->renderer.lights[selectedLight].pos.y = 20.0f;
+				game->renderer.lights[selectedLight].pos.z = 22.0f;
+				game->renderer.lights[selectedLight].ambient = Mon::v3(0.3);
+				game->renderer.lights[selectedLight].diffuse = Mon::v3(0.8f);
+				game->renderer.lights[selectedLight].specular = Mon::v3(0.3f);
+			}
 
 			ImGui::EndTabItem();
 		}
@@ -691,10 +746,19 @@ void AssetWindow(bool* p_open, Mon::GameState* game)
 	{
 		if (ImGui::BeginTabItem("details"))
 		{
-			static char buf[32];
+			static char buf[64];
 			sprintf_s(buf, "%s", std::to_string(Mon::g_Assets->meshes[selected].VAO).c_str());
 			ImGui::Text("VAO %s", buf, IM_ARRAYSIZE(buf));
 			
+			sprintf_s(buf, "%s", std::to_string(Mon::g_Assets->meshes[selected].verticeCount).c_str());
+			ImGui::Text("Vertice Count %s", buf, IM_ARRAYSIZE(buf));
+
+			sprintf_s(buf, "%s", std::to_string(Mon::g_Assets->meshes[selected].indiceCount).c_str());
+			ImGui::Text("Indice Count %s", buf, IM_ARRAYSIZE(buf));
+
+			sprintf_s(buf, "%s", RenderTypeText(Mon::g_Assets->meshes[selected].type));
+			ImGui::Text("Type %s", buf, IM_ARRAYSIZE(buf));
+
 			ImGui::EndTabItem();
 		}
 
@@ -804,7 +868,7 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::GameState* game)
 	static bool showTerrainWindow = true;
 	static bool showCameraWindow = true;
 	static bool showEntityWindow = true;
-	static bool showDebugWindow = true;
+	static bool showDebugWindow = false;
 	static bool showStatsWindow = false;
 	static bool showAssetWindow = false;
 	static bool showRenderWindow = true;

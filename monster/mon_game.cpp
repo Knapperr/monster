@@ -130,6 +130,7 @@ namespace Mon
 		// Initialize Assets for game here
 		//
 		// NOTE(ck): MUST BE CALLED FIRST - LOADS ALL ASSETS FOR GAME
+		
 		InitAssets(g_Assets); 
 
 		state->mode = Mode::Debug;
@@ -174,7 +175,7 @@ namespace Mon
 		return true;
 	}
 
-	void MovePlayer(World* world, v3* velocity, float dt)
+	void MovePlayer(World* world, v3* velocity, bool jumped, float dt)
 	{
 		Entity* player = GetPlayer(world);
 
@@ -190,9 +191,7 @@ namespace Mon
 			//speed *= 1.5f;
 
 		*velocity *= speed;
-
 		*velocity += -7.0f * player->rb.velocity;
-
 
 		v3 oldPos = player->rb.pos;
 		v3 newPos = oldPos;
@@ -208,7 +207,6 @@ namespace Mon
 		player->rb.velocity.x = velocity->x * dt + player->rb.velocity.x;
 		player->rb.velocity.z = velocity->z * dt + player->rb.velocity.z;
 
-
 		// Need to update the collider of the player first because we are using the position here
 		// maybe not?
 		Entity* minion = GetEntity(world, 16);
@@ -217,8 +215,8 @@ namespace Mon
 		else
 			minion->rb.speed = 40.0f;
 		
-
 		player->rb.pos = newPos;
+
 		SetFacingDirection(player);
 	}
 
@@ -270,7 +268,7 @@ namespace Mon
 		if (enabled)
 		{
 			v3 velocity = {};
-
+			bool jumped = false;
 			if (newInput->isAnalog)
 			{
 				velocity = v3{ newInput->stickAverageX, 0.0f ,newInput->stickAverageY };
@@ -285,9 +283,12 @@ namespace Mon
 					velocity.x = -1.0f;
 				if (newInput->right.endedDown)
 					velocity.x = 1.0f;
+				if (newInput->space.endedDown)
+					jumped = true;
+
 			}
 			// PIPE velocity to function
-			MovePlayer(state->world, &velocity, dt);
+			MovePlayer(state->world, &velocity, jumped, dt);
 
 
 

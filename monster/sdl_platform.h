@@ -9,6 +9,7 @@ namespace Mon
 	{
 	public:
 		bool init(Settings* settings);
+		void swapWindow();
 		void setWindowSize(Settings* settings);
 		void setTitle(Settings* settings, const char* title);
 		void sleep(int milliseconds);

@@ -139,11 +139,10 @@ namespace Mon
 			newInput->buttons[buttonIndex].endedDown = oldInput->buttons[buttonIndex].endedDown;
 		}
 
+		// TODO(ck): Add to loop mouse[] something like that
 		newInput->lMouseBtn.endedDown = oldInput->lMouseBtn.endedDown;
 		newInput->rMouseBtn.endedDown = oldInput->rMouseBtn.endedDown;
-		//newInput->wheel = oldInput->wheel;
-
-		// TODO(ck): Add to loop mouse[] something like that
+		//newInput->wheel = oldInput->wheel;	
 		newInput->mouseOffset = oldInput->mouseOffset;
 		newInput->mouseScreen = oldInput->mouseScreen;
 		newInput->rightStickValue = oldInput->rightStickValue;
@@ -345,6 +344,10 @@ namespace Mon
 		return SDL_GetPerformanceCounter();
 	}
 
+	void SDLPlatform::swapWindow()
+	{
+		SDL_GL_SwapWindow(window);
+	}
 
 	void SDLPlatform::setWindowSize(Settings* settings)
 	{

@@ -133,10 +133,7 @@ void App::run()
 #endif
 			RenderGui();
 		}
-
-		// TODO(ck): Platform->swapWindow()
-		SDL_GL_SwapWindow(platform->window);
-
+		platform->swapWindow();
 
 		// Swap input
 		Mon::Input* temp = newInput;
@@ -147,7 +144,6 @@ void App::run()
 	Mon::Log::shutdown();
 #ifdef _3D_
 	Mon::CleanUp(gameState);
-	//game->cleanUp();
 #else
 	Mon::CleanUp(game2D);
 #endif

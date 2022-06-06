@@ -18,6 +18,7 @@ namespace Mon {
 	// TODO(ck): PARTICLE CHANGE TO RIGIDBODY AND FIX PARAMS
 	struct RigidBody
 	{
+		// world position
 		v3 pos;
 		v3 velocity;
 		v3 acceleration;

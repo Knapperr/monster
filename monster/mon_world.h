@@ -228,24 +228,9 @@ namespace Mon {
 		plane64->data.meshIndex = 7;
 
 		AddEntity(world);
-		Entity* water = GetEntity(world, world->entityCount - 1);
-		InitWater(water, waterShaderHandle);
-
-
-	}
-
-	static void AddCube(World* world, int shaderHandle)
-	{
-		AddEntity(world);
-		Entity* cube = GetEntity(world, world->entityCount - 1);
-		cube->setup = {};
-		cube->name = "cube";
-		cube->impPath = "none";
-		cube->data.meshIndex = 2;
-		cube->data.textureIndex = 7;
-		cube->data.wireFrame = false;
-		cube->rb.pos = v3(10.0f, 0.3f, 20.0f);
-		MonGL::InitBoundingBox(&cube->collider.data);
+		Entity* gem = GetEntity(world, world->entityCount - 1);
+		InitEntity(gem, "gem", v3(6.0f, 0.0f, 6.0f), v3(1.0f), 0.0f, shaderHandle, 8);
+		gem->data.meshIndex = 8;
 	}
 	
 	static void CreateInstancedGrass(World* world, int shaderHandle)

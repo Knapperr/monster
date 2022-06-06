@@ -88,6 +88,9 @@ void main()
             vec3 viewDir = normalize(viewPos - fs_in.FragPos);
             vec3 reflectDir = reflect(-lightDir, norm);  
             float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+            // fix specular to use material.specular 
+            // https://learnopengl.com/code_viewer_gh.php?code=src/2.lighting/4.1.lighting_maps_diffuse_map/4.1.lighting_maps.fs
+            // the material uses sampler2D for diffuse and specular earlier version uses vec3 instead
             vec3 specular = light.specular * spec * texture(texture_diffuse1, modifiedTextCoordinate).rgb;  
                 
             vec3 result = ambient + diffuse + specular;

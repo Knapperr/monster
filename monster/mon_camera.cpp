@@ -54,7 +54,7 @@ namespace Mon
 		switch (camera->type)
 		{
 		case CameraType::Fly:
-			UpdateFlyCamera(camera, dt, input, pos, orientation, constrainPitch);
+			UpdateFlyCamera(camera, dt, input, constrainPitch);
 			break;
 		case CameraType::Follow:
 			UpdateFollowCamera(camera, dt, input, pos, orientation, constrainPitch);
@@ -63,7 +63,7 @@ namespace Mon
 			UpdateOrthoCamera(camera, dt, pos);
 			break;
 		default:
-			UpdateFlyCamera(camera, dt, input, pos, orientation, constrainPitch);
+			UpdateFlyCamera(camera, dt, input, constrainPitch);
 			break;
 		}
 	}
@@ -101,7 +101,7 @@ namespace Mon
 		return glm::perspective(glm::radians(camera->zoom), camera->aspectRatio, camera->nearPlane, camera->farPlane);
 	}
 
-	void UpdateFlyCamera(Camera* camera, double dt, Input* input, v3 pos, v3 orientation, bool constrainPitch)
+	void UpdateFlyCamera(Camera* camera, double dt, Input* input, bool constrainPitch)
 	{
 		ProcessInput(camera, dt, input);
 		if (input->lMouseBtn.endedDown)
@@ -147,7 +147,7 @@ namespace Mon
 		}
 
 		// Right stick
-		if (input->stickAvgRX != 0.0f || input->stickAvgRY)
+		if (input->stickAvgRX != 0.0f || input->stickAvgRY != 0.0f)
 		{
 			// NOTE(ck): Flip Y 
 			CalculateYawPitch(camera, v2{ input->stickAvgRX, -input->stickAvgRY }, 0.90f, true);
@@ -158,9 +158,8 @@ namespace Mon
 	
 	void ProcessScroll(Camera* camera, int yOffset)
 	{
-		if (camera->speed >= 0)
-			camera->speed += yOffset * 2;
-		else
+		camera->speed += yOffset * 2;
+		if (camera->speed <= 0)
 			camera->speed = 1;
 	}
 
@@ -217,7 +216,7 @@ namespace Mon
 		glm::mat4 viewMatrix = glm::mat4(1.0f);
 		viewMatrix = glm::rotate(viewMatrix, glm::radians(camera->pitch), glm::vec3(1, 0, 0));
 		viewMatrix = glm::rotate(viewMatrix, glm::radians(camera->yaw), glm::vec3(0, 1, 0));
-		glm::vec3 negativeCameraPos = glm::vec3(-camera->pos.x, -camera->pos.y, -camera->pos.z);
+		glm::vec3 negativeCameraPos = glm::vec3(-camera->pos);
 		glm::mat4 translate = glm::translate(glm::mat4(1.0f), negativeCameraPos);
 		viewMatrix = viewMatrix * translate;
 

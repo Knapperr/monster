@@ -16,14 +16,6 @@ namespace MonGL
 	//	3D structs
 	//
 
-	struct Framebuffer
-	{
-		unsigned int handle;
-		int width;
-		int height;
-		Texture texture[2];
-	};
-
 	struct Light
 	{
 		const char* id;
@@ -120,7 +112,25 @@ namespace MonGL
 
 		v3 color;
 		v3 scale = v3(1.0f);
+
+		// TODO(ck): We get this from object space. Need to create a world coordinate system 
+		// and each entity needs to create this world matrix based off of that space right now everything is 
+		// relative to 0,0,0
+		// world space
 		mat4 worldMatrix;
+	};
+
+	struct Batch
+	{
+		unsigned int VAO;
+		unsigned int VBO;
+		unsigned int IBO;
+
+		Vertex3D* vertices;
+		unsigned int* indices;
+
+		int verticeCount;
+		int indiceCount;
 	};
 
 	struct InstancedData
@@ -204,8 +214,6 @@ namespace MonGL
 		unsigned int meshIndex;
 		unsigned int textureIndex;
 
-		// TODO(ck): Should this use a point?? probably
-		//Point pos;
 		v2 pos;
 		v3 color;
 		v2 size;
@@ -214,26 +222,9 @@ namespace MonGL
 		std::vector<Vertex> vertices;
 	};
 
-
-
 	// TODO(ck): TODO(ck): Somehow put into game so we can call from gui
 	// can have a getter method that retrieves the globalDrawCalls from here
 	extern int globalDrawCalls;
-
-	// Some kind of shader manager for accessing shaders from the render layer
-	// dont think i need some kind of manager for generic shaders.
-	// ill have few shaders i need to focus on the render layer instead and 
-	// get frame buffers all of that stuff going. learn open gl weekend?
-	//class ShaderManager
-	//{
-	//public:
-	//	
-	//	//CommonProgram programs[];
-	//};
-
-	// ResourceManager
-	//	shaders[]
-	//	Textures[]
 
 	//
 	// Renderer 
@@ -244,7 +235,6 @@ namespace MonGL
 
 	void BeginRender(OpenGL* gl, Config* config, mat4 projection, mat4 view, int shaderID);
 	void ViewPort(Rect* port);
-	void CreateFramebuffer(Framebuffer* buffer);
 
 	void LoadImpFile(RenderData* data);
 	void LoadTextureFile(Texture* texture, Image* image, TextureType type, bool linearFilter = false, bool pixelArtTexture = false);

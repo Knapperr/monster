@@ -46,7 +46,7 @@ namespace Mon
 	void Update(Camera* camera, double dt, Input* input, v3 pos, v3 orientation, bool constrainPitch = true);
 
 	void InitFlyCamera(Camera* camera, Rect viewPort);
-	void UpdateFlyCamera(Camera* camera, double dt, Input* input, v3 pos, v3 orientation, bool constrainPitch = true);
+	void UpdateFlyCamera(Camera* camera, double dt, Input* input, bool constrainPitch = true);
 	void ProcessInput(Camera* camera, double dt, Input* input);
 	void ProcessScroll(Camera* camera, int yOffset);
 	mat4 Projection(Camera* camera);
