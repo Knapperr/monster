@@ -1213,7 +1213,9 @@ namespace MonGL
 		//model = glm::rotate(model, obj->rotation, v3(0.0f, 0.0f, 1.0f));
 		//model = glm::translate(model, v3(-0.5f * data->size.x, -0.5f * data->size.y, 0.0f));
 
-		//model = glm::scale(model, v3(data->size, 1.0f));
+		data->size = v2(16.0f);
+		model = glm::scale(model, v3(data->size, 1.0f));
+		
 
 		glUniformMatrix4fv(glGetUniformLocation(shader->handle, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		

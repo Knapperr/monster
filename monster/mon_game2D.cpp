@@ -240,7 +240,7 @@ namespace Mon {
 			Entity2D e = game->world->entities[i];
 			//state->world->entities[i]->pos.x *= time;
 			//state->world->entities[i]->pos.y *= time;
-			//MonGL::DrawObject(&game->renderer.program, &e.sprite);
+			MonGL::DrawObject(&game->renderer.program, &e.sprite);
 		}
 		//state->world->entities[i]->pos.x *= time;
 		//state->world->entities[i]->pos.y *= time;

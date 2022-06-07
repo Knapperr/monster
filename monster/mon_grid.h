@@ -1,19 +1,18 @@
 #ifndef MON_GRID_H
 #define MON_GRID_H
 
-#include "mon_shader.h"
-#include "mon_entity.h"
+#include "mon_collider.h"
 
-struct WorldPosition
-{
-	uint32_t absTileX;
-	uint32_t absTileY;
-	uint32_t absTileZ;
-	// NOTE(casey): These are the offsets from the tile center
-	Mon::v2 offset;
-};
+//struct WorldPosition
+//{
+//	int32_t absTileX;
+//	int32_t absTileY;
+//	int32_t absTileZ;
+//	// NOTE(casey): These are the offsets from the tile center
+//	Mon::v2 offset;
+//};
 
-struct Cell
+struct CellPosition
 {
 	Mon::int32 absX;
 	Mon::int32 absY;
@@ -22,11 +21,18 @@ struct Cell
 	Mon::v2 offset;
 };
 
+struct Chunk
+{
+	Mon::int32* cells;
+
+};
+
 struct Grid
 {
+	Chunk* chunks;
+
 	float x;
 	float z;
-	Mon::int32* tiles;
 	int selectedTextureIndex;
 	
 	MonGL::RenderData data;

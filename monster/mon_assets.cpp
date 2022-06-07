@@ -458,9 +458,9 @@ namespace Mon
 			for (int x = 0; x <= xSize; x++, index++)
 			{
 				mesh->vertices[index] = {};
-				mesh->vertices[index].position.x = (float)(x - (xSize/2));
+				mesh->vertices[index].position.x = (float)((x - 0.5) - (xSize/2));
 				mesh->vertices[index].position.y = -0.5f;
-				mesh->vertices[index].position.z = (float)(z - (zSize/2));
+				mesh->vertices[index].position.z = (float)((z + 0.5) - (zSize/2));
 
 				mesh->vertices[index].normal.x = 0;
 				mesh->vertices[index].normal.y = 1;

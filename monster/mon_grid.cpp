@@ -11,6 +11,8 @@ void InitGrid(Grid* grid)
 	grid->z = (float)0 * SIZE;
 
 
+
+
 	// NOTE(ck): Power of 2 needs to be used for SIZE so that
 	//			texture coords to be proper on the cells
 	/*I think the proper way to do this is have a map structure with the positions as int32 and then

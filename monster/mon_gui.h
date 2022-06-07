@@ -11,7 +11,7 @@
 #include <stdio.h>
 
 // IMPORTANT(ck): Defines for 3D game
-//#define _3D_GUI_
+#define _3D_GUI_
 
 #ifndef _3D_GUI_
 #include "mon_game2D.h"
@@ -31,11 +31,11 @@ TODO(ck):
 struct Settings
 {
 	const char* title;
-	int windowWidth;
-	int windowHeight;
 	float portWidth;
 	float portHeight;
 	int vsync;
+	int windowWidth;
+	int windowHeight;
 };
 
 // Use for showing assets from folder and loading

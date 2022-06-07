@@ -1,7 +1,7 @@
 #ifndef MON_ENTITY_H
 #define MON_ENTITY_H
 
-#include "mon_collider.h"
+#include "mon_grid.h"
 
 namespace Mon {
 
@@ -60,11 +60,13 @@ namespace Mon {
 		const char* name;
 		std::string impPath;
 		
-		// NOTE(ck):
-		// Collider and RigidBody should be tied together???
-		// The collider is basically the real position which is where the collider will be
-		// RenderData holds the actual scale of the model that is being drawn
-		// float position info is in here
+		// [06/06/2022]
+		// NOTE(ck): I think this is right. similar to handmade hero the tile position is separate from the position used in the physics
+		// you have to change the rigidbody and then map that back into cell space just like handmade?
+		// Even in handmade casey uses the rigid body physics position for drawing and the tile position is more for world structure and keeping
+		// the resolution in tact.
+		// this is an interesting realization for me. I feel like this is what casey was trying to convey the whole time.
+		CellPosition cellPos;
 		RigidBody rb;
 		// TODO(ck): The entities need to be driven by a grid and have grid positions
 		// this will help me later on with level creation, loading and memory management

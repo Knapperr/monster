@@ -1,7 +1,7 @@
 #ifndef MON_WORLD_H
 #define MON_WORLD_H
 
-#include "mon_grid.h"
+#include "mon_entity.h"
 
 
 namespace Mon {
@@ -180,11 +180,13 @@ namespace Mon {
 		Entity* player = GetPlayer(world);
 		InitPlayer(player, shaderHandle);
 		
+		v3 basePoint = v3(-32.0f, 0.0f, -32.0f);
 		for (int i = world->entityCount; i < 10; ++i)
 		{
 			AddEntity(world);
 			Entity* tree = GetEntity(world, i);
-			InitEntity(tree, "tree", v3(6.0f * (i + 1), 1.70f, 5.5f * i), v3(6.0f), angleDegrees, shaderHandle, 7);
+			v3 offset = v3(i * 4, 1.50f ,i * 4) + basePoint; 
+			InitEntity(tree, "tree", offset, v3(6.0f), angleDegrees, shaderHandle, 7);
 		}
 
 		int length = world->entityCount + 5;
