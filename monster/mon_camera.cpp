@@ -282,7 +282,7 @@ namespace Mon
 		camera->zoom = 1.0f;
 	}
 
-	mat4 OrthoViewMatrix(Camera* camera)
+	mat4 OrthoProjectionMatrix(Camera* camera)
 	{
 		// 640.0f = window.x
 	// 360.0f = window.y
@@ -309,6 +309,11 @@ namespace Mon
 		projection = projection * zoomMatrix;
 
 		return projection;
+	}
+
+	mat4 OrthoViewMatrix(Camera* camera)
+	{
+		return mat4(1.0f);
 	}
 
 	void UpdateOrthoCamera(Camera* camera, float dt, v3 pos)

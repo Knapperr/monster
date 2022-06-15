@@ -100,6 +100,34 @@ namespace MonGL
 		glBindVertexArray(0);
 	}
 
+	void UploadOpenGLMesh2D(Mesh2D* mesh)
+	{
+		glGenVertexArrays(1, &mesh->VAO);
+		glBindVertexArray(mesh->VAO);
+
+		glGenBuffers(1, &mesh->VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, mesh->VBO);
+		glBufferData(GL_ARRAY_BUFFER, mesh->verticeCount * sizeof(Vertex), mesh->vertices, GL_STATIC_DRAW);
+
+		glGenBuffers(1, &mesh->IBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->IBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->indiceCount * sizeof(unsigned int), mesh->indices, GL_STATIC_DRAW);
+
+		// position attribute
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
+		// color attribute
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
+		// texture coord attribute
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
+
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	}
+
 	///
 	/// [BEGIN] Renderer
 	///	
@@ -180,6 +208,12 @@ namespace MonGL
 		AddTexture(gl);
 		MonGL::Texture* t15 = GetTexture(gl, 15);
 
+		AddTexture(gl);
+		MonGL::Texture* t16 = GetTexture(gl, 16);
+
+		AddTexture(gl);
+		MonGL::Texture* t17 = GetTexture(gl, 17);
+
 		int shaderID = gl->program.handle;
 		LoadTexture(t1, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 1));
 		LoadTexture(t2, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 2));
@@ -196,6 +230,9 @@ namespace MonGL
 		LoadTexture(t13, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 13));
 		LoadTexture(t14, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 14));
 		LoadTexture(t15, MonGL::TextureType::Normal,  false, shaderID, GetImage(g_Assets, 15));
+		LoadTexture(t16, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 16));
+		LoadTexture(t17, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 17));
+
 
 		// #0 for the 
 		AddLight(gl);
@@ -205,7 +242,7 @@ namespace MonGL
 		gl->lights[index].ambient = v3(0.3f);
 		gl->lights[index].diffuse = v3(0.8f);
 		gl->lights[index].specular = v3(0.3f);
-		gl->lights[index].pos = v3(35.0f, 20.0f, 22.0f);
+		gl->lights[index].pos = v3(0.0f, 20.0f, 0.0f);
 		index = AddLight(gl);
 		gl->lights[index].id = "002";
 		gl->lights[index].ambient = v3(1.0f);
@@ -892,12 +929,14 @@ namespace MonGL
 	{
 		// TODO(ck): Switch to fill batch for this... can not rely on model matrix anymore if using a batch
 		// need to update the positions and the texture coordinates manually each frame.
-		int x = 0;
-		int y = 0;
-
 		// NOTE(ck): TODO(ck):
 		// size should be equal to 1 
 		// 1 unit should equal 16 pixels which is the size of a normal quad in monster 2d
+		const int MAP_SIZE = 40;
+		float x = (float)((MAP_SIZE / 2));
+		float y = (float)((MAP_SIZE / 2));
+		x *= size;
+		y *= size;
 		Vertex vertices[4];
 		vertices[0] = {};
 		vertices[0].position = v3(x, y, 0.0f);
@@ -1103,11 +1142,16 @@ namespace MonGL
 		Lets try it in the 3d first maybe?
 		*/
 		const int MAP_SIZE = 40;
-		float x = (float)(tileXPos - MAP_SIZE / 2);
-		float y = (float)(tileYPos - MAP_SIZE / 2);
-		x *= tileSize;
-		y *= tileSize;
+		if (tileXPos == 0.0f)
+		{
+			int x = 0;
+		}
+		float x = (float)(tileXPos - (MAP_SIZE / 2));
+		float y = (float)(tileYPos - (MAP_SIZE / 2));
 
+		//x *= tileSize;
+		//y *= tileSize;
+		tileSize = 1;
 		Vertex vec0 = {
 			v3(x, y, 0.0f),
 			v3(1.0f, 0.0f, 0.0f),
@@ -1185,6 +1229,10 @@ namespace MonGL
 	{
 		glUseProgram(shader->handle);
 		
+		mat4 model = mat4(1.0f);
+
+		glUniformMatrix4fv(glGetUniformLocation(shader->handle, "model"), 1, GL_FALSE, glm::value_ptr(model));
+
 		glActiveTexture(GL_TEXTURE0);
 		glUniform1i(glGetUniformLocation(shader->handle, "imageArray"), 0);
 		glUniform1i(glGetUniformLocation(shader->handle, "diffuse_layer"), 0);
@@ -1200,9 +1248,6 @@ namespace MonGL
 	{
 		//glUseProgram(shader->id);
 
-		// TODO(ck): We don't calculate the matrix here
-		// we calc it in the game and send the matrix to the
-		// renderer 
 		mat4 model = mat4(1.0f);
 		v3 tilePosition = {};
 		tilePosition.x = data->pos.x;
@@ -1213,17 +1258,20 @@ namespace MonGL
 		//model = glm::rotate(model, obj->rotation, v3(0.0f, 0.0f, 1.0f));
 		//model = glm::translate(model, v3(-0.5f * data->size.x, -0.5f * data->size.y, 0.0f));
 
-		data->size = v2(16.0f);
-		model = glm::scale(model, v3(data->size, 1.0f));
+		//data->size = v2(32.0f);
+		//model = glm::scale(model, v3(data->size, 1.0f));
 		
 
 		glUniformMatrix4fv(glGetUniformLocation(shader->handle, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		
 		//glUniform3f(glGetUniformLocation(shader->handle, "spriteColor"), data->color.r, data->color.g, data->color.b);
-		Mesh* mesh = GetMesh(g_Assets, data->meshIndex);
+		Mesh2D* mesh = &g_Assets->quad2D;
 		Texture* texture = {};
 		//Texture* texture = GetTexture(gl, data->textureIndex);
 
+		glActiveTexture(GL_TEXTURE0);
+		//glUniform1i(program->textureDiffuse1, 0);
+		glBindTexture(GL_TEXTURE_2D, data->textureIndex);
 		//glActiveTexture(GL_TEXTURE0);
 		//glBindTexture(GL_TEXTURE_2D, texture->id);
 
@@ -1248,14 +1296,17 @@ namespace MonGL
 		// be filling and binding the batch (if things have changed)
 		// Fill batch 
 		// bind vertices
-
-
+		int mapWidthHeight = 40;
+		v3 basePos = { };
+		basePos.x = 40 / 2;
+		basePos.y = 40 / 2;
 		mat4 model = mat4(1.0f);
+		model = glm::translate(model, basePos);
+		v2 size = v2(16.0f);
+		model = glm::scale(model, v3(size, 1.0f));
+
 		glUniformMatrix4fv(glGetUniformLocation(shader->handle, "model"), 1, GL_FALSE, glm::value_ptr(model));
-		//v3 tilePosition = {};
-		//tilePosition.x = data->pos.x;
-		//tilePosition.y = data->pos.y;
-		//model = glm::translate(model, tilePosition);
+
 
 
 		//glActiveTexture(GL_TEXTURE0);

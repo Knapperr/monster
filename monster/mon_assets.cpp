@@ -128,13 +128,25 @@ namespace Mon
 		Image* waterNorm2 = GetImage(assets, 15);
 		InitImage(waterNorm2, "res/textures/water/water-derivative-height.png");
 
-
 		// 2D TILE SHEET
 		AddImage(assets);
 		Image* tileSheet = GetImage(assets, 16);
 		InitImage(tileSheet, "res/textures/basic_16.png", false);
 
+		AddImage(assets);
+		Image* OnexOneSheet = GetImage(assets, 17);
+		InitImage(OnexOneSheet, "res/textures/grass1x1.png", false);
 
+		//AddImage(assets);
+		//Image* tileSheet = GetImage(assets, 18);
+		//InitImage(tileSheet, "res/textures/basic_16.png", false);
+
+		//AddImage(assets);
+		//Image* tileSheet = GetImage(assets, 19);
+		//InitImage(tileSheet, "res/textures/basic_16.png", false);
+
+		// 2d qaud mesh
+		Init2DQuadMesh(&assets->quad2D);
 	}
 
 
@@ -287,6 +299,48 @@ namespace Mon
 		mesh->indiceCount = indiceCount;
 		mesh->type = RenderType::Quad;
 		MonGL::UploadOpenGLMesh(mesh);
+	}
+
+	void Init2DQuadMesh(Mesh2D* mesh)
+	{
+		mesh->id = "2D_QUAD";
+
+		int verticeCount = 4;
+		mesh->vertices = new MonGL::Vertex[verticeCount];
+
+		const int size = 32;
+		const int MAP_SIZE = 40;
+		float x = (float)((MAP_SIZE / 2));
+		float y = (float)((MAP_SIZE / 2));
+		mesh->vertices[0].position = v3(x, y, 0.0f);
+		mesh->vertices[0].color = v3(1.0f, 0.0f, 0.0f);
+		mesh->vertices[0].texCoords = v2(0.0f, 0.0f);
+
+		mesh->vertices[1].position = v3(x + size, y, 0.0f);
+		mesh->vertices[1].color = v3(1.0f, 0.0, 0.0f);
+		mesh->vertices[1].texCoords = v2(1.0f, 0.0f);
+		
+		mesh->vertices[2].position = v3(x + size, y + size, 0.0f);
+		mesh->vertices[2].color = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[2].texCoords = v2(1.0f, 1.0f);
+
+		mesh->vertices[3].position = v3(x, y + size, 0.0f);
+		mesh->vertices[3].color = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[3].texCoords = v2(0.0f, 1.0f);
+
+		int indiceCount = 6;
+		mesh->indices = new unsigned int[indiceCount];
+		mesh->indices[0] = 0;
+		mesh->indices[1] = 1;
+		mesh->indices[2] = 3;
+		mesh->indices[3] = 1;
+		mesh->indices[4] = 2;
+		mesh->indices[5] = 3;
+
+		mesh->verticeCount = verticeCount;
+		mesh->indiceCount = indiceCount;
+		mesh->type = RenderType::Quad;
+		MonGL::UploadOpenGLMesh2D(mesh);
 	}
 
 	void InitCubeMesh(Mesh* mesh)

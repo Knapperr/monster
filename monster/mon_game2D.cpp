@@ -90,7 +90,7 @@ namespace Mon {
 
 				if (input->up.endedDown)
 				{
-//#define USE_VELOCITY
+#define USE_VELOCITY
 #ifdef USE_VELOCITY
 					velocity.y = -1.0f;
 #else
@@ -148,12 +148,13 @@ namespace Mon {
 						UpdateTile(game->world->map, &game->world->sheet, 500, 3);
 				}
 			}
-			//Mon::movePlayer(game->world->map, p, &velocity, dt);
-
+#ifdef USE_VELOCITY
+			Mon::movePlayer(game->world->map, p, &velocity, dt);
+#endif
 			// TODO(ck): link sprite position to camera...  
 			// https://www.reddit.com/r/gamedev/comments/7cnqpg/lerping_camera_position_causes_jitters_as_it/
 			// update sprite position 
-
+			 
 			// this one is better explanation for why you shouldn't tie camera to player position and only to an offset
 			//https://gamedev.stackexchange.com/questions/2642/scrolling-2d-sprites-on-a-map-with-a-camera
 

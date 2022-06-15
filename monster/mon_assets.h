@@ -3,9 +3,11 @@
 
 #include "mon_camera.h"
 
+// IMPORTANT(ck): TODO(ck): Forward decl
 namespace MonGL
 {
 	struct Vertex3D;
+	struct Vertex;
 };
 
 namespace Mon
@@ -54,7 +56,24 @@ namespace Mon
 		unsigned int* indices;
 	};
 
+	// TODO(ck): Do not have specific for 2D?
+	struct Mesh2D
+	{
+		const char* id;
+
+		unsigned int VAO;
+		unsigned int VBO;
+		unsigned int IBO;
+		int verticeCount;
+		int indiceCount;
+		RenderType type;
+
+		MonGL::Vertex* vertices;
+		unsigned int* indices;
+	};
+
 	void InitQuadMesh(Mesh* mesh, bool tangents = false);
+	void Init2DQuadMesh(Mesh2D* mesh);
 	void InitCubeMesh(Mesh* mesh);
 	void InitModelMesh(Mesh* mesh, const char* fileName);
 	void InitGridMesh(Mesh* mesh, int xSize, int zSize);
@@ -68,9 +87,10 @@ namespace Mon
 	// global struct for accessing assets
 	struct Assets
 	{
-		Mesh meshes[15];				// TODO(ck): SQLite config for size
-		Image images[30];				// TODO(ck): SQLite config for size
+		Mesh meshes[16];				// TODO(ck): SQLite config for size
+		Image images[32];				// TODO(ck): SQLite config for size
 		
+		Mesh2D quad2D;
 		int meshCount;
 		int textureCount;
 	};

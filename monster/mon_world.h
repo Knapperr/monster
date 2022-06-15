@@ -118,7 +118,7 @@ namespace Mon {
 
 
 		InitBoxCollider(&player->collider);
-		player->rb.pos = v3(40.0f, 0.0f, 10.0);
+		player->rb.pos = v3(3.0f, 0.0f, 2.0);
 		player->rb.inverseMass = 10.0f;
 		player->rb.velocity = v3(0.0f, 0.0f, 0.0f); // 35m/s
 		player->rb.gravity = 10.0f;

@@ -60,6 +60,7 @@ namespace Mon
 	void CalculateAngleAroundTarget(Camera* camera, v2 offset);
 	
 	void InitOrthoCamera(Camera* camera);
+	mat4 OrthoProjectionMatrix(Camera* camera);
 	mat4 OrthoViewMatrix(Camera* camera);
 	void UpdateOrthoCamera(Camera* camera, float dt, v3 pos);
 

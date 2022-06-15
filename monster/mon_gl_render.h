@@ -170,8 +170,8 @@ namespace MonGL
 
 	struct OpenGL
 	{
-		Light lights[30];
-		Texture textures[30]; // These use images from the asset pipeline
+		Light lights[32];
+		Texture textures[32]; // These use images from the asset pipeline
 		int lightCount;
 		int textureCount;
 
@@ -232,6 +232,7 @@ namespace MonGL
 	void LoadTexture(RenderData* data, int index, TextureType type, bool pixelArtTexture, int shaderID, std::string path, bool pixelTexture = true);
 	void InitRenderer(OpenGL* gl);
 	void UploadOpenGLMesh(Mesh* mesh);
+	void UploadOpenGLMesh2D(Mesh2D* mesh);
 
 	void BeginRender(OpenGL* gl, Config* config, mat4 projection, mat4 view, int shaderID);
 	void ViewPort(Rect* port);

@@ -395,6 +395,8 @@ void TerrainWindow(bool* p_open, Mon::GameState* game)
 	ImGui::SameLine();
 	if (ImGui::Button("Snow")) { game->grid->data.textureIndex = 14; }
 	ImGui::Separator();
+	if (ImGui::Button("1x1")) { game->grid->data.textureIndex = 17; }
+	ImGui::Separator();
 
 	ImGui::Checkbox("Wireframe", &game->grid->data.wireFrame);
 
@@ -687,9 +689,9 @@ void RenderWindow(bool* p_open, Mon::GameState* game)
 
 			if (ImGui::Button("dim"))
 			{
-				game->renderer.lights[selectedLight].pos.x = 35.0f;
+				game->renderer.lights[selectedLight].pos.x = 0.0f;
 				game->renderer.lights[selectedLight].pos.y = 3.0f;
-				game->renderer.lights[selectedLight].pos.z = 22.0f;
+				game->renderer.lights[selectedLight].pos.z = 0.0f;
 				game->renderer.lights[selectedLight].ambient = Mon::v3(0.2);
 				game->renderer.lights[selectedLight].diffuse = Mon::v3(1.0f);
 				game->renderer.lights[selectedLight].specular = Mon::v3(0.3f);
@@ -697,9 +699,9 @@ void RenderWindow(bool* p_open, Mon::GameState* game)
 			ImGui::SameLine();
 			if (ImGui::Button("avg"))
 			{
-				game->renderer.lights[selectedLight].pos.x = 35.0f;
+				game->renderer.lights[selectedLight].pos.x = 0.0f;
 				game->renderer.lights[selectedLight].pos.y = 20.0f;
-				game->renderer.lights[selectedLight].pos.z = 22.0f;
+				game->renderer.lights[selectedLight].pos.z = 0.0f;
 				game->renderer.lights[selectedLight].ambient = Mon::v3(0.3);
 				game->renderer.lights[selectedLight].diffuse = Mon::v3(0.8f);
 				game->renderer.lights[selectedLight].specular = Mon::v3(0.3f);
