@@ -234,7 +234,7 @@ namespace Mon {
 		mat4 view = game->cameras[game->currentCameraIndex].viewMatrix();
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
-		DrawTileMap(game->world->map, &game->renderer.program, game->world->sheet.texture.id);
+		DrawTileMap(game->world->map, &game->renderer.program, game->world->sheet.texture.id, game->cameras[game->currentCameraIndex].pos);
 
 		for (unsigned int i = 1; i < game->world->entityCount; ++i)
 		{

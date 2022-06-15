@@ -239,22 +239,24 @@ namespace Mon
 		// TODO(ck): Actual GUID
 		mesh->id = "001";
 
+		v2 size = v2(1.0f); // 1x1meter
 		int verticeCount = 4;
+
 		// TODO(ck): Memory Allocation
 		mesh->vertices = new MonGL::Vertex3D[verticeCount];
-		mesh->vertices[0].position = v3(0.5f, 0.5f, 0.0f);
+		mesh->vertices[0].position = v3(size.x/2.0f, size.y/2.0f, 0.0f);
 		mesh->vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[0].texCoords = v2(1.0f, 1.0f);
 
-		mesh->vertices[1].position = v3(0.5f, -0.5f, 0.0f);
+		mesh->vertices[1].position = v3(size.x/2.0f, -size.y/2.0f, 0.0f);
 		mesh->vertices[1].normal = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[1].texCoords = v2(1.0f, 0.0f);
 
-		mesh->vertices[2].position = v3(-0.5f, -0.5f, 0.0f);
+		mesh->vertices[2].position = v3(-size.x/2.0f, -size.y/2.0f, 0.0f);
 		mesh->vertices[2].normal = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[2].texCoords = v2(0.0f, 0.0f);
 
-		mesh->vertices[3].position = v3(-0.5f, 0.5f, 0.0f);
+		mesh->vertices[3].position = v3(-size.x/2.0f, size.y/2.0f, 0.0f);
 		mesh->vertices[3].normal = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[3].texCoords = v2(0.0f, 1.0f);
 
@@ -308,23 +310,33 @@ namespace Mon
 		int verticeCount = 4;
 		mesh->vertices = new MonGL::Vertex[verticeCount];
 
-		const int size = 32;
+		//const int size = 32;
 		const int MAP_SIZE = 40;
 		float x = (float)((MAP_SIZE / 2));
 		float y = (float)((MAP_SIZE / 2));
-		mesh->vertices[0].position = v3(x, y, 0.0f);
+		// TODO(ck): Vertices should be in -0.5 to 0.5 ? 
+		// I think we can do the conversion from 16pixels wide to 0.5 here? 
+		// if i used the size/2 method you would do 1=16, 2=32, 3=64 etc...
+		// 
+		// tileSizeInPixels=16 , tileSideInMeters=1
+		// real32 metersToPixels = (real32)tileSideInPixels / (real32)tileMap->tileSideInMeters;
+		// so this doesn't seem to matter here because metersToPixels will be equal to 16
+
+		// it would be -0.5 to 0.5 with an offset?
+		v2 size = v2(1.0f);
+		mesh->vertices[0].position = v3(size.x / 2.0f, size.y / 2.0f, 0.0f);
 		mesh->vertices[0].color = v3(1.0f, 0.0f, 0.0f);
 		mesh->vertices[0].texCoords = v2(0.0f, 0.0f);
 
-		mesh->vertices[1].position = v3(x + size, y, 0.0f);
+		mesh->vertices[1].position = v3(size.x / 2.0f, -size.y / 2.0f, 0.0f);
 		mesh->vertices[1].color = v3(1.0f, 0.0, 0.0f);
 		mesh->vertices[1].texCoords = v2(1.0f, 0.0f);
 		
-		mesh->vertices[2].position = v3(x + size, y + size, 0.0f);
+		mesh->vertices[2].position = v3(-size.x / 2.0f, -size.y / 2.0f, 0.0f);
 		mesh->vertices[2].color = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[2].texCoords = v2(1.0f, 1.0f);
 
-		mesh->vertices[3].position = v3(x, y + size, 0.0f);
+		mesh->vertices[3].position = v3(-size.x / 2.0f, size.y / 2.0f, 0.0f);
 		mesh->vertices[3].color = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[3].texCoords = v2(0.0f, 1.0f);
 

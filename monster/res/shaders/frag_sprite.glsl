@@ -21,6 +21,7 @@ void main()
 {
 	// TODO(ck): new pixel shader
 	vec2 textureSize = textureSize(image, 0);
+
 	vec2 pixel = TexCoord * textureSize;
 	vec2 duDv = fwidth(pixel);
 	vec2 seam = floor(pixel + 0.5);

@@ -1086,7 +1086,7 @@ namespace MonGL
 		sprite->vertices.push_back(vec3);
 	}
 
-	void FillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize)
+	void FillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize, v2 cameraPos)
 	{		
 		/*
 		
@@ -1142,15 +1142,10 @@ namespace MonGL
 		Lets try it in the 3d first maybe?
 		*/
 		const int MAP_SIZE = 40;
-		if (tileXPos == 0.0f)
-		{
-			int x = 0;
-		}
 		float x = (float)(tileXPos - (MAP_SIZE / 2));
 		float y = (float)(tileYPos - (MAP_SIZE / 2));
-
-		//x *= tileSize;
-		//y *= tileSize;
+		x = x - cameraPos.x;
+		y = y - cameraPos.y;
 		tileSize = 1;
 		Vertex vec0 = {
 			v3(x, y, 0.0f),
@@ -1258,9 +1253,6 @@ namespace MonGL
 		//model = glm::rotate(model, obj->rotation, v3(0.0f, 0.0f, 1.0f));
 		//model = glm::translate(model, v3(-0.5f * data->size.x, -0.5f * data->size.y, 0.0f));
 
-		//data->size = v2(32.0f);
-		//model = glm::scale(model, v3(data->size, 1.0f));
-		
 
 		glUniformMatrix4fv(glGetUniformLocation(shader->handle, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		
@@ -1297,13 +1289,11 @@ namespace MonGL
 		// Fill batch 
 		// bind vertices
 		int mapWidthHeight = 40;
-		v3 basePos = { };
+		v3 basePos = {};
 		basePos.x = 40 / 2;
 		basePos.y = 40 / 2;
 		mat4 model = mat4(1.0f);
-		model = glm::translate(model, basePos);
-		v2 size = v2(16.0f);
-		model = glm::scale(model, v3(size, 1.0f));
+		//model = glm::translate(model, basePos);
 
 		glUniformMatrix4fv(glGetUniformLocation(shader->handle, "model"), 1, GL_FALSE, glm::value_ptr(model));
 

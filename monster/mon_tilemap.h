@@ -104,7 +104,7 @@ namespace Mon
 	};
 
 	void InitTileMap(TileMap* map, TileSheet* sheet);
-	void DrawTileMap(TileMap* map, MonGL::CommonProgram* shader, int textureID);
+	void DrawTileMap(TileMap* map, MonGL::CommonProgram* shader, int textureID, v2 cameraPos);
 	TileMapPosition RecanonicalizePosition(TileMap* tileMap, TileMapPosition pos);
 	void UpdateTile(TileMap* map, TileSheet* sheet, int tileIndex, int newTileId);
 }

@@ -320,7 +320,7 @@ namespace MonGL
 	
 	void FillTileVertices(RenderData2D* sprite, int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize);
 	void InitTileMap(int tileAmount);
-	void FillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize);
+	void FillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize, v2 cameraPos);
 	void BindVertices();
 	
 	void DrawObject(CommonProgram* shader, RenderData2D* data);
