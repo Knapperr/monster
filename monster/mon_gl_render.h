@@ -323,7 +323,7 @@ namespace MonGL
 	void FillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize, v2 cameraPos);
 	void BindVertices();
 	
-	void DrawObject(CommonProgram* shader, RenderData2D* data);
+	void DrawObject(CommonProgram* shader, RenderData2D* data, v2 cameraPos);
 	void DrawMap(CommonProgram* shader, RenderData2D* sprite, unsigned int textureID);
 	void DrawMap(CommonProgram* shader, unsigned int textureID, bool wireFrame);
 	void DrawMap(CommonProgram* shader, unsigned int textureID, int batchThing);

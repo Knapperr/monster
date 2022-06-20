@@ -74,7 +74,7 @@ namespace Mon
 	void InitFlyCamera(Camera* camera, Rect viewPort)
 	{
 		camera->worldUp = v3(0.0f, 1.0f, 0.0f);
-		camera->pos = v3(32.0f, 24.0f, 32.0f);
+		camera->pos = v3(0.0f, 20.0f, 0.0f);
 		camera->front = v3(0.0f, 0.0f, -1.0f);
 
 		camera->speed = 30.0f;

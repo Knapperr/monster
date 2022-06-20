@@ -28,6 +28,8 @@ namespace Mon
 #if 1
 		pos.x = target->x;
 		pos.y = target->y;
+		pos.x = 0.0f;
+		pos.y = 0.0f;
 #else 
 		pos.x = smoothDamp(pos.x, target->x, vel.x, smoothness, dt);
 		pos.y = smoothDamp(pos.y, target->y, vel.y, smoothness, dt);
@@ -92,7 +94,7 @@ namespace Mon
 		//glOrtho(negative_x, positive_x, negative_y, positive_y, positive_z, negative_z);
 		//mat4 projection = glm::ortho(-16.0f, 16.0f, 9.0f, -9.0f, -1.0f, 1.0f);
 		mat4 projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
-		mat4 zoomMatrix = glm::scale(v3(zoom));
+		mat4 zoomMatrix = glm::scale(v3(64));
 		projection = projection * zoomMatrix;
 
 		return projection;
@@ -110,7 +112,22 @@ namespace Mon
 		//data->size = v2(16.0f);
 		//model = glm::scale(model, v3(data->size, 1.0f));
 
+	/*
+	translate the center to the origin. This means translate by (-400, -300).
+	zoom (scale)
+	translate the origin back to the center. This is a translation by (400, 300).
 	
+
+	view matrix for zoom?
+	void Camera2D::updateMatrix()
+	{
+    glm::vec3 center(400.0f, 300.0f, 0.0f);
+    glm::mat4 view = glm::translate(glm::mat4(1.0f), center) * 
+                     scale *
+                     glm::translate(glm::mat4(1.0f), -center);
+	}
+	*/
+
 
 		mat4 view = mat4(1.0f);
 		// camera front = target

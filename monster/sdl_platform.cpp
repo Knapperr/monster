@@ -2,6 +2,8 @@
 
 #include "mon_log.h"
 
+#include <stb_image/stb_image.h>
+
 namespace Mon
 {
 	const int JOYSTICK_DEAD_ZONE = 7849;
@@ -35,6 +37,52 @@ namespace Mon
 
 		if (window == nullptr)
 			return false;
+
+		// Window Icon
+		// https://wiki.libsdl.org/SDL_CreateRGBSurfaceFrom
+		// This example shows how to create a SDL_Surface* with the data loaded from an image
+		// file with the stb_image.h library (https://github.com/nothings/stb/)
+
+		unsigned char* pixels;
+		int width, height;
+		int originalFormat;
+		int requiredFormat = STBI_rgb_alpha;
+		//stbi_set_flip_vertically_on_load(flip);
+		pixels = stbi_load("res/textures/ch_minion.png", &width, &height, &originalFormat, requiredFormat);
+		
+		// Set up the pixel format color masks for RGB(A) byte arrays.
+		// Only STBI_rgb (3) and STBI_rgb_alpha (4) are supported here!
+		Uint32 rmask, gmask, bmask, amask;
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+		int shift = (req_format == STBI_rgb) ? 8 : 0;
+		rmask = 0xff000000 >> shift;
+		gmask = 0x00ff0000 >> shift;
+		bmask = 0x0000ff00 >> shift;
+		amask = 0x000000ff >> shift;
+#else // little endian, like x86
+		rmask = 0x000000ff;
+		gmask = 0x0000ff00;
+		bmask = 0x00ff0000;
+		amask = (requiredFormat == STBI_rgb) ? 0 : 0xff000000;
+#endif
+
+		int depth, pitch;
+		if (requiredFormat == STBI_rgb) 
+		{
+			depth = 24;
+			pitch = 3 * width; // 3 bytes per pixel * pixels per row
+		}
+		else 
+		{ // STBI_rgb_alpha (RGBA)
+			depth = 32;
+			pitch = 4 * width;
+		}
+		SDL_Surface* surface = SDL_CreateRGBSurfaceFrom((void*)pixels, width, height, depth, pitch,
+													 rmask, gmask, bmask, amask);
+		// The icon is attached to the window pointer
+		SDL_SetWindowIcon(window, surface);
+		SDL_FreeSurface(surface);
+
 
 		// TODO(ck): Platform creates the context and grabs it from this 
 		context = SDL_GL_CreateContext(window);

@@ -20,7 +20,7 @@ namespace Mon
 
 
 		// TODO(ck): Deal with speed
-		e->speed = 10.0f;
+		e->speed = 20.0f;
 		e->maxSpeed = 250.0f;
 		
 		e->rotation = 0.0f;

@@ -19,6 +19,15 @@ float sharpen(float pix_coord) {
 
 void main()
 {
+/*
+from martins to clamp uv coords??
+vec2 size = vec2(textureSize(your_texture_sampler, 0));
+uv = uv * size;
+vec2 duv = fwidth(uv);
+uv = floor(uv) + vec2(0.5) + clamp((fract(uv) - vec2(0.5) + duv)/duv, 0, 1);
+uv /= size;
+*/
+
 	// TODO(ck): new pixel shader
 	vec2 textureSize = textureSize(image, 0);
 

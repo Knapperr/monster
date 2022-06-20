@@ -1239,21 +1239,20 @@ namespace MonGL
 		glBindVertexArray(0);
 	}
 
-	void DrawObject(CommonProgram* shader, RenderData2D* data)
+	void DrawObject(CommonProgram* shader, RenderData2D* data, v2 cameraPos)
 	{
-		//glUseProgram(shader->id);
-
 		mat4 model = mat4(1.0f);
 		v3 tilePosition = {};
-		tilePosition.x = data->pos.x;
-		tilePosition.y = data->pos.y;
+		tilePosition.x = data->pos.x - cameraPos.x;
+		tilePosition.y = data->pos.y - cameraPos.y;
 		model = glm::translate(model, tilePosition);
 
 		//model = glm::translate(model, v3(0.5f * data->size.x, 0.0f * data->size.y, 0.0f));
 		//model = glm::rotate(model, obj->rotation, v3(0.0f, 0.0f, 1.0f));
 		//model = glm::translate(model, v3(-0.5f * data->size.x, -0.5f * data->size.y, 0.0f));
 
-
+		//v2 scale = v2(64.0f);
+		//model = glm::scale(model, v3(scale, 1.0f));
 		glUniformMatrix4fv(glGetUniformLocation(shader->handle, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		
 		//glUniform3f(glGetUniformLocation(shader->handle, "spriteColor"), data->color.r, data->color.g, data->color.b);
@@ -1269,14 +1268,9 @@ namespace MonGL
 
 		glBindVertexArray(mesh->VAO);
 
-		//if (data->wireFrame)
-		//	glDrawArrays(GL_LINES, 0, 6);
-		//else 
-		//	glDrawArrays(GL_TRIANGLES, 0, 6);
-
 
 		//glDrawElements(GL_TRIANGLES, indices, GL_UNSIGNED_INT, (void*)(2 * 0));
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, mesh->indiceCount, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 
 
@@ -1295,6 +1289,8 @@ namespace MonGL
 		mat4 model = mat4(1.0f);
 		//model = glm::translate(model, basePos);
 
+		//v2 worldScale = v2(64.0f);
+		//model = glm::scale(model, v3(worldScale, 1.0f));
 		glUniformMatrix4fv(glGetUniformLocation(shader->handle, "model"), 1, GL_FALSE, glm::value_ptr(model));
 
 
