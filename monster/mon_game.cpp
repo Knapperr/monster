@@ -90,7 +90,7 @@ namespace Mon
 		Entity* minion = GetEntity(world, 17);
 		Entity player = *GetEntity(world, 1);
 		minion->rb.pos.x = lerp(minion->rb.pos.x, player.rb.pos.x, dt);
-		minion->rb.pos.y = lerp(minion->rb.pos.y, player.rb.pos.y + 0.5, dt);
+		minion->rb.pos.y = lerp(minion->rb.pos.y, player.rb.pos.y + 1.15f, dt);
 		minion->rb.pos.z = lerp(minion->rb.pos.z, player.rb.pos.z, dt);
 
 		// TODO(ck): Update entity and then update entity collider right after

@@ -1244,18 +1244,17 @@ namespace MonGL
 
 	}
 
-	void DrawMap(CommonProgram* shader, unsigned int textureID, bool wireFrame)
+	void DrawMap(CommonProgram* shader, v2 cameraPos, unsigned int textureID, bool wireFrame)
 	{
 		// TODO(ck): If we want the ability to change the map at runtime we need to constantly
 		// be filling and binding the batch (if things have changed)
 		// Fill batch 
 		// bind vertices
 		int mapWidthHeight = 40;
-		v3 basePos = {};
-		basePos.x = 40 / 2;
-		basePos.y = 40 / 2;
+		v2 basePos = v2(0.0f);
+		basePos = basePos;
 		mat4 model = mat4(1.0f);
-		//model = glm::translate(model, basePos);
+		model = glm::translate(model, v3(basePos, 0.0f));
 
 		//v2 worldScale = v2(64.0f);
 		//model = glm::scale(model, v3(worldScale, 1.0f));

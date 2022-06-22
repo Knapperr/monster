@@ -276,7 +276,7 @@ namespace Mon
 		}
 
 		MonGL::BindVertices();
-		MonGL::DrawMap(shader, textureID, map->wireFrame);
+		MonGL::DrawMap(shader, cameraPos, textureID, map->wireFrame);
 	}
 
 	void RecanonicalizeCoord(TileMap* tileMap, uint32_t* tile, float* tileRel)

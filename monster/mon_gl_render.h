@@ -325,7 +325,7 @@ namespace MonGL
 	
 	void DrawObject(CommonProgram* shader, RenderData2D* data, v2 cameraPos);
 	void DrawMap(CommonProgram* shader, RenderData2D* sprite, unsigned int textureID);
-	void DrawMap(CommonProgram* shader, unsigned int textureID, bool wireFrame);
+	void DrawMap(CommonProgram* shader, v2 cameraPos, unsigned int textureID, bool wireFrame);
 	void DrawMap(CommonProgram* shader, unsigned int textureID, int batchThing);
 
 
