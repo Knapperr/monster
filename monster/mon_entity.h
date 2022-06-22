@@ -83,6 +83,7 @@ namespace Mon {
 		// NOTE(ck): Should this be in the render layer??
 		// its not really specific to drawing its just part of the 
 		// world matrix?
+		bool follow;
 		float spriteAngleDegrees;
 	};
 

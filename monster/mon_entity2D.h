@@ -32,6 +32,7 @@ namespace Mon
 	};
 
 	void InitEntity(Entity2D* e, v2 position, int size);
+	void InitMinion(Entity2D* e, v2 position, int size);
 	// TODO(ck): Should this param be pointer?
 	// should velocity be acceleration?
 	void movePlayer(TileMap* map, Entity2D* p, v2* velocity, float deltaTime);

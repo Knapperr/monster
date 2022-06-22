@@ -18,12 +18,15 @@ namespace Mon
 		
 		AddEntity2D(world);
 		Entity2D* ball = GetEntity2D(world, world->entityCount - 1);
-		InitEntity(ball, v2(75, 84), 96);
+		InitEntity(ball, v2(10, 9), 96);
 
 		AddEntity2D(world);
 		Entity2D* e = GetEntity2D(world, world->entityCount - 1);
-		InitEntity(e, v2(60, 20), 32);
+		InitEntity(e, v2(4, 5), 32);
 		
+		AddEntity2D(world);
+		Entity2D* minion = GetEntity2D(world, world->entityCount - 1);
+		InitMinion(minion, v2(0, 2), 32);
 
 		//for (int i = 0; i < 5; ++i)
 		//{

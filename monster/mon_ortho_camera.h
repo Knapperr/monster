@@ -15,6 +15,7 @@ namespace Mon
 		float zoom;
 		float smoothness;
 		float lerpSpeed;
+		v3 positionOffset; // TODO(ck): IMPORTANT(ck): IS this what this is?
 
 		OrthoCamera();
 		OrthoCamera(v2 position, Rect* viewPort);

@@ -86,6 +86,13 @@ namespace Mon
 
 		e->rb.pos.x += speed * dt;
 
+
+		Entity* minion = GetEntity(world, 17);
+		Entity player = *GetEntity(world, 1);
+		minion->rb.pos.x = lerp(minion->rb.pos.x, player.rb.pos.x, dt);
+		minion->rb.pos.y = lerp(minion->rb.pos.y, player.rb.pos.y + 0.5, dt);
+		minion->rb.pos.z = lerp(minion->rb.pos.z, player.rb.pos.z, dt);
+
 		// TODO(ck): Update entity and then update entity collider right after
 		// instead of having two separate loops for entities and their colliders.
 		for (unsigned int i = 1; i < world->entityCount; ++i)

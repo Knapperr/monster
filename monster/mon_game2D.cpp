@@ -59,7 +59,7 @@ namespace Mon {
 		game->cameras[game->currentCameraIndex].smoothness = 0.24f;
 		game->cameras[game->currentCameraIndex].pos = v2(0.0f);
 		game->cameras[game->currentCameraIndex].vel = v2(0.0f);
-		game->cameras[game->currentCameraIndex].zoom = 1.0f;
+		game->cameras[game->currentCameraIndex].zoom = 64.0f;
 
 		Entity2D* player = GetPlayer(game->world);
 		//game->camera = OrthoCamera(player->pos, &game->config->viewPort);
@@ -92,7 +92,7 @@ namespace Mon {
 				{
 #define USE_VELOCITY
 #ifdef USE_VELOCITY
-					velocity.y = -1.0f;
+					velocity.y = 1.0f;
 #else
 					p->pos.y -= 1.0f * p->speed * dt;
 					//p->pos.y -= 1.0f;
@@ -102,7 +102,7 @@ namespace Mon {
 				if (input->down.endedDown)
 				{
 #ifdef USE_VELOCITY
-					velocity.y = 1.0f;
+					velocity.y = -1.0f;
 #else
 					p->pos.y += 1.0f * p->speed * dt;
 					//p->pos.y += 1.0f;
@@ -164,6 +164,11 @@ namespace Mon {
 			p->sprite.pos = p->pos;
 
 
+			// update minion
+			Entity2D* minion = GetEntity2D(game->world, 4);
+			minion->pos.x = lerp(minion->pos.x, p->pos.x, dt);
+			minion->pos.y = lerp(minion->pos.y, p->pos.y, dt);
+			minion->sprite.pos = minion->pos;
 			//v2 windowSize = v2{ 1440, 900 };
 			// screenCoord(worldCoord) .. not working
 			//p->sprite.pos = v2{ p->pos.x - camera.pos.x, camera.pos.y - p->pos.y } + windowSize / 2.0f;
@@ -234,14 +239,14 @@ namespace Mon {
 		mat4 view = game->cameras[game->currentCameraIndex].viewMatrix();
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
-		DrawTileMap(game->world->map, &game->renderer.program, game->world->sheet.texture.id, game->cameras[game->currentCameraIndex].pos);
+		DrawTileMap(game->world->map, &game->renderer.program, game->world->sheet.texture.id, game->cameras[game->currentCameraIndex].positionOffset);
 
 		for (unsigned int i = 1; i < game->world->entityCount; ++i)
 		{
 			Entity2D e = game->world->entities[i];
 			//state->world->entities[i]->pos.x *= time;
 			//state->world->entities[i]->pos.y *= time;
-			MonGL::DrawObject(&game->renderer.program, &e.sprite, game->cameras[game->currentCameraIndex].pos);
+			MonGL::DrawObject(&game->renderer.program, &e.sprite, game->cameras[game->currentCameraIndex].positionOffset);
 		}
 		//state->world->entities[i]->pos.x *= time;
 		//state->world->entities[i]->pos.y *= time;

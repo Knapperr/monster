@@ -101,6 +101,7 @@ namespace Mon {
 		e->data.wireFrame = false;
 		e->data.visible = true;
 		e->rb.pos = pos;
+		e->follow = false;
 		InitBoxCollider(&e->collider);
 		e->spriteAngleDegrees = angleDegrees;
 	}
@@ -110,7 +111,7 @@ namespace Mon {
 		player->name = "player";
 		player->setup = {};
 		player->data.meshIndex = 1;
-		player->data.textureIndex = 1;
+		player->data.textureIndex = 17;
 		player->data.wireFrame = false;
 		player->data.visible = true;
 		player->facingDir = Direction::Forward;
@@ -211,6 +212,7 @@ namespace Mon {
 		Entity* ent1 = GetEntity(world, world->entityCount - 1);
 		InitEntity(ent1, "minion2", v3(30.0f, 4.0f, 5.0f), v3(1.0f), angleDegrees, shaderHandle, 9);
 		ent1->facingDir = Direction::Right;
+		ent1->follow = true;
 
 		AddEntity(world);
 		Entity* ent2 = GetEntity(world, world->entityCount - 1);

@@ -231,7 +231,7 @@ namespace MonGL
 		LoadTexture(t14, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 14));
 		LoadTexture(t15, MonGL::TextureType::Normal,  false, shaderID, GetImage(g_Assets, 15));
 		LoadTexture(t16, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 16));
-		LoadTexture(t17, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 17));
+		LoadTexture(t17, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 18));
 
 
 		// #0 for the 
@@ -828,8 +828,6 @@ namespace MonGL
 		// textures for the entities
 		//
 
-
-
 		AddTexture(gl);
 		MonGL::Texture* t1 = GetTexture(gl, 1);
 		AddTexture(gl);
@@ -858,6 +856,10 @@ namespace MonGL
 		MonGL::Texture* t13 = GetTexture(gl, 13);
 		AddTexture(gl);
 		MonGL::Texture* t14 = GetTexture(gl, 14);
+		AddTexture(gl);
+		MonGL::Texture* t15 = GetTexture(gl, 15);
+		AddTexture(gl);
+		MonGL::Texture* t16 = GetTexture(gl, 16);
 
 		int shaderID = gl->program.handle;
 		LoadTexture(t1, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 1));
@@ -874,6 +876,8 @@ namespace MonGL
 		LoadTexture(t12, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 12));
 		LoadTexture(t13, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 13));
 		LoadTexture(t14, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 14));
+		LoadTexture(t15, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 15));
+		LoadTexture(t16, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 18));
 
 	}
 
@@ -927,44 +931,8 @@ namespace MonGL
 
 	void InitRenderData2D(RenderData2D* sprite, int size)
 	{
-		// TODO(ck): Switch to fill batch for this... can not rely on model matrix anymore if using a batch
-		// need to update the positions and the texture coordinates manually each frame.
-		// NOTE(ck): TODO(ck):
-		// size should be equal to 1 
-		// 1 unit should equal 16 pixels which is the size of a normal quad in monster 2d
-		const int MAP_SIZE = 40;
-		float x = (float)((MAP_SIZE / 2));
-		float y = (float)((MAP_SIZE / 2));
-		x *= size;
-		y *= size;
-		Vertex vertices[4];
-		vertices[0] = {};
-		vertices[0].position = v3(x, y, 0.0f);
-		vertices[0].color = v3(1.0f, 0.0f, 0.0f);
-		vertices[0].texCoords = v2(0.0f, 0.0f);
-
-		vertices[1] = {};
-		vertices[1].position = v3(x + size, y, 0.0f);
-		vertices[1].color = v3(1.0f, 0.0, 0.0f);
-		vertices[1].texCoords = v2(1.0f, 0.0f);
-
-		vertices[2] = {};
-		vertices[2].position = v3(x + size, y + size, 0.0f);
-		vertices[2].color = v3(1.0f, 1.0f, 1.0f);
-		vertices[2].texCoords = v2(1.0f, 1.0f);
-
-		vertices[3] = {};
-		vertices[3].position = v3(x, y + size, 0.0f);
-		vertices[3].color = v3(1.0f, 1.0f, 1.0f);
-		vertices[3].texCoords = v2(0.0f, 1.0f);
-
-		unsigned int indices[] = {
-			0, 1, 3,
-			1, 2, 3
-		};
-		unsigned int EBO;
-
 		sprite->meshIndex = 1;
+		sprite->textureIndex = 1;
 		sprite->color = v3(1.0f);
 		sprite->pos = {};
 	}

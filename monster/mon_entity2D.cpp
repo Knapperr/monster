@@ -10,7 +10,7 @@ namespace Mon
 		MonGL::InitRenderData2D(&e->sprite, size);
 
 		e->sprite.meshIndex = 1;
-		e->sprite.textureIndex = 1;
+		e->sprite.textureIndex = 16;
 		e->pos = position;
 		
 		// TODO(ck): Update this is a Point now not a v2
@@ -32,6 +32,17 @@ namespace Mon
 		e->sprite.wireFrame = false;
 	}
 
+	void InitMinion(Entity2D* e, v2 position, int size)
+	{
+		InitEntity(e, position, size);
+
+		e->speed = 20.0f;
+		e->velocity = v2(1.0f);
+		e->weight = 44.0f;
+		e->sprite.textureIndex = 9;
+		e->sprite.wireFrame = false;
+	}
+
 	// TODO(ck): Should this param be pointer?
 	// should velocity be acceleration?
 	void movePlayer(TileMap* map, Entity2D* p, v2* velocity, float deltaTime)
@@ -45,7 +56,7 @@ namespace Mon
 
 		*velocity *= p->speed;
 
-		*velocity += -3.0f * p->velocity;
+		*velocity += -4.0f * p->velocity;
 
 		//TileMapPosition oldPlayerP = p->mapPos;
 		//TileMapPosition newPlayerP = oldPlayerP;
@@ -67,28 +78,6 @@ namespace Mon
 		p->velocity.y = velocity->y * deltaTime + p->velocity.y;
 
 		p->pos = newPos;
-		//p->pos.x = roundf(newPos.x);
-		//p->pos.x = roundf(newPos.y);
-		//newPlayerP = RecanonicalizePosition(map, newPlayerP);
-		//p->mapPos = newPlayerP;
-
-		// TODO(ck): Remove this we will use tile map positions like handmade hero
-		// NOTE(ck): Get the remaining time 
-		// get the amount we should move, including remainder from the previous frame
-		//p->position.x = newPos.x;
-		//p->position.y = newPos.y;
-
-		//v2 total = p->remainder + newPos;
-	
-		// round to integer values since we only move in pixels at a time
-		//Point toMove = Point{ (int)total.x, (int)total.y };
-
-		//// store remainder floating values for next frame
-		//p->remainder.x = total.x - toMove.x;
-		//p->remainder.y = total.y - toMove.y;
-
-		//p->position = toMove;
-
 		
 	}
 

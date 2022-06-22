@@ -870,7 +870,7 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::GameState* game)
 	static bool showTerrainWindow = true;
 	static bool showCameraWindow = true;
 	static bool showEntityWindow = true;
-	static bool showDebugWindow = false;
+	static bool showDebugWindow = true;
 	static bool showStatsWindow = false;
 	static bool showAssetWindow = false;
 	static bool showRenderWindow = true;

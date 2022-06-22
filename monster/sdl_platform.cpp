@@ -107,14 +107,14 @@ namespace Mon
 		SDL_GL_SetSwapInterval(1);
 		settings->vsync = SDL_GL_GetSwapInterval();
 
-		//glEnable(GL_CULL_FACE);
 		//glDepthFunc(GL_LESS);
-		glEnable(GL_BLEND);
 #ifdef _3D_
-		glEnable(GL_DEPTH_TEST); // NOTE(ck): OFF FOR 2D
+		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_MULTISAMPLE);
 		//glDepthFunc(GL_ALWAYS);
 #endif
+		//glEnable(GL_CULL_FACE);
+		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
 

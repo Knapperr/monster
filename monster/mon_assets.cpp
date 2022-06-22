@@ -131,11 +131,15 @@ namespace Mon
 		// 2D TILE SHEET
 		AddImage(assets);
 		Image* tileSheet = GetImage(assets, 16);
-		InitImage(tileSheet, "res/textures/basic_16.png", false);
+		InitImage(tileSheet, "res/textures/basic_16.png");
 
 		AddImage(assets);
 		Image* OnexOneSheet = GetImage(assets, 17);
 		InitImage(OnexOneSheet, "res/textures/grass1x1.png", false);
+
+		AddImage(assets);
+		Image* pDevil = GetImage(assets, 18);
+		InitImage(pDevil, "res/textures/ch_devil.png");
 
 		//AddImage(assets);
 		//Image* tileSheet = GetImage(assets, 18);
@@ -326,7 +330,7 @@ namespace Mon
 		v2 size = v2(1.0f);
 		mesh->vertices[0].position = v3(size.x / 2.0f, size.y / 2.0f, 0.0f);
 		mesh->vertices[0].color = v3(1.0f, 0.0f, 0.0f);
-		mesh->vertices[0].texCoords = v2(0.0f, 0.0f);
+		mesh->vertices[0].texCoords = v2(1.0f, 1.0f);
 
 		mesh->vertices[1].position = v3(size.x / 2.0f, -size.y / 2.0f, 0.0f);
 		mesh->vertices[1].color = v3(1.0f, 0.0, 0.0f);
@@ -334,7 +338,7 @@ namespace Mon
 		
 		mesh->vertices[2].position = v3(-size.x / 2.0f, -size.y / 2.0f, 0.0f);
 		mesh->vertices[2].color = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[2].texCoords = v2(1.0f, 1.0f);
+		mesh->vertices[2].texCoords = v2(0.0f, 0.0f);
 
 		mesh->vertices[3].position = v3(-size.x / 2.0f, size.y / 2.0f, 0.0f);
 		mesh->vertices[3].color = v3(1.0f, 1.0f, 1.0f);

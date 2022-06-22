@@ -9,7 +9,7 @@ namespace Mon
 		pos = v2(0.0f);
 		//target = v2(0.0f);
 		vel = v2(0.0f);
-		zoom = 1.0f;
+		zoom = 64.0f;
 	}
 
 	OrthoCamera::OrthoCamera(v2 position, Rect* viewPort)
@@ -19,30 +19,35 @@ namespace Mon
 		pos = position;
 		//target = position;
 		vel = v2(1.0f);
-		zoom = 1.0f;
+		zoom = 64.0f;
 		
 	}
 
 	void OrthoCamera::update(v2 *target, float dt)
 	{
-#if 1
-		pos.x = target->x;
-		pos.y = target->y;
-		pos.x = 0.0f;
-		pos.y = 0.0f;
-#else 
-		pos.x = smoothDamp(pos.x, target->x, vel.x, smoothness, dt);
-		pos.y = smoothDamp(pos.y, target->y, vel.y, smoothness, dt);
+#if 0
+		pos.x = target->x*0.5f; // NOTE(ck): put coords in the middle of screen
+		pos.y = target->y*0.5f;
 
-		if (pos.x < 0.0f)
-			pos.x = 0.0f;
-		if (pos.y < 0.0f)
-			pos.y = 0.0f;
-		if (pos.y > 960.0f)
-			pos.y = 0.0f;
-		if (pos.y < 0.0f)
-			pos.y = 0.0f;
+		//float x = (float)(tileXPos - (MAP_SIZE / 2));
+		//float y = (float)(tileYPos - (MAP_SIZE / 2));
+#else 
+		
+
+		pos.x = smoothDamp(pos.x, target->x*0.5f, vel.x, smoothness, dt);
+		pos.y = smoothDamp(pos.y, target->y*0.5f, vel.y, smoothness, dt);
 #endif
+
+		int mapOffset = 40 / 2;
+		if (pos.x < -((mapOffset / 2)) + 2)
+			pos.x = -(mapOffset / 2) + 2;
+		if (pos.x > (mapOffset / 2) - 2)
+			pos.x = (mapOffset / 2) - 2;
+
+		if (pos.y < -((mapOffset / 2)) + 2)
+			pos.y = -(mapOffset / 2) + 2;
+		if (pos.y > (mapOffset / 2) - 2)
+			pos.y = (mapOffset / 2) - 2;
 	}
 
 	void OrthoCamera::createOrtho()
@@ -62,6 +67,10 @@ namespace Mon
 		float half_height = height / 2.0f; // ortho size
 		float half_width = half_height * aspect;
 		float half = 4.0f;
+
+		float tileSize = 0.5f; // 16?? or is it 0.5 as in local space?
+
+
 #if 1
 		// TODO(ck): compute in update?
 		// TODO(ck): Remove half prefer zoom
@@ -71,8 +80,8 @@ namespace Mon
 		float bottom = pos.y + height;*/
 		float left = -half_width;
 		float right = half_width;
-		float top = -half_height;
-		float bottom = half_height;
+		float top = half_height;
+		float bottom = -half_height;
 		
 		//float aspect = width / height;
 		//float half_height = height / 2.0f; // ortho size?
@@ -94,7 +103,7 @@ namespace Mon
 		//glOrtho(negative_x, positive_x, negative_y, positive_y, positive_z, negative_z);
 		//mat4 projection = glm::ortho(-16.0f, 16.0f, 9.0f, -9.0f, -1.0f, 1.0f);
 		mat4 projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
-		mat4 zoomMatrix = glm::scale(v3(64));
+		mat4 zoomMatrix = glm::scale(v3(zoom));
 		projection = projection * zoomMatrix;
 
 		return projection;
@@ -131,11 +140,15 @@ namespace Mon
 
 		mat4 view = mat4(1.0f);
 		// camera front = target
-		cameraFront.x += pos.x;
-		cameraFront.y += pos.y;
-
+		//cameraFront.x += pos.x;
+		//cameraFront.y -= pos.y;
+		// Camera front is the position... pos is the target 
+		v3 targetPos = v3(pos, 0.0f);
 		v3 cameraEye = v3(pos.x, pos.y, 0.0f);
-		view = glm::lookAt(cameraEye, cameraFront, cameraUp);
+
+		positionOffset = cameraFront + targetPos;
+		// it seems that the eye is the camera position?
+		view = glm::lookAt(targetPos, cameraFront + targetPos, cameraUp);
 		return view;
 	}
 }
