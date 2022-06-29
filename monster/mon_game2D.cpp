@@ -10,6 +10,15 @@ namespace Mon {
 		//
 		// NOTE(ck): MUST BE CALLED FIRST - LOADS ALL ASSETS FOR GAME
 		// TODO(ck): Memory management - allocate world
+		
+		/*
+			g_Assets
+			game->renderer
+			World2D();
+
+		*/
+
+
 		InitAssets(g_Assets);
 		MonGL::InitRenderer2D(&game->renderer);
 		
@@ -83,7 +92,7 @@ namespace Mon {
 
 			if (input->isAnalog)
 			{
-				velocity = v2{ input->stickAverageX, input->stickAverageY };
+				velocity = v2{ input->stickAverageX, -input->stickAverageY };
 			}
 			else
 			{
@@ -95,8 +104,6 @@ namespace Mon {
 					velocity.y = 1.0f;
 #else
 					p->pos.y -= 1.0f * p->speed * dt;
-					//p->pos.y -= 1.0f;
-					//game->cameras[1].pos.y -= 1.0f * p->speed * dt;
 #endif
 				}
 				if (input->down.endedDown)
@@ -105,8 +112,6 @@ namespace Mon {
 					velocity.y = -1.0f;
 #else
 					p->pos.y += 1.0f * p->speed * dt;
-					//p->pos.y += 1.0f;
-					//game->cameras[1].pos.y += 1.0f * p->speed * dt;
 #endif
 				}
 				if (input->left.endedDown)
@@ -115,8 +120,6 @@ namespace Mon {
 					velocity.x = -1.0f;
 #else
 					p->pos.x -= 1.0f * p->speed * dt;
-					//p->pos.x -= 1.0f;
-					//game->cameras[1].pos.x -= 1.0f * p->speed * dt;
 #endif
 				}
 				if (input->right.endedDown)
@@ -125,8 +128,6 @@ namespace Mon {
 					velocity.x = 1.0f;
 #else
 					p->pos.x += 1.0f * p->speed * dt;
-					//p->pos.x += 1.0f;
-					//game->cameras[1].pos.x += 1.0f * p->speed * dt;
 #endif
 				}
 				if (input->space.endedDown)

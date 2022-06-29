@@ -88,7 +88,7 @@ namespace Mon
 	struct Assets
 	{
 		Mesh meshes[16];				// TODO(ck): SQLite config for size
-		Image images[32];				// TODO(ck): SQLite config for size
+		Image images[32];				// TODO(ck): SQLite config fokeklr size
 		
 		Mesh2D quad2D;
 		int meshCount;

@@ -25,6 +25,22 @@ namespace Mon
 	// and then come off for release
 	void RunDebugControls(Input* input, MousePicker* picker, World* world, int& selectedIndex);
 
+	struct game_memory
+	{
+		bool isInitialized;
+
+		uint64_t permanentStorageSize;
+		void* permanentStorage; // NOTE: REQUIRED to be cleared to zero at startup
+
+		uint64_t transientStorageSize;
+		void* transientStorage; // NOTE: REQUIRED to be cleared to zero at startup
+
+		//debug_platform_read_entire_file* DEBUGPlatformReadEntireFile;
+		//debug_platform_free_file_memory* DEBUGPlatformFreeFileMemory;
+		//debug_platform_write_entire_file* DEBUGPlatformWriteEntireFile;
+	};
+
+
 	enum Mode
 	{
 		Debug,

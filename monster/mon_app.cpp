@@ -40,11 +40,13 @@ bool App::init()
 	if (false == Mon::InitGame(gameState, settings.windowWidth, settings.windowHeight, settings.portWidth, settings.portHeight))
 		return false;
 #else
+
+	// memory allocation
+
 	game2D = new Mon::Game2D();
 	if (!Mon::Init(game2D))
 		return false;
 #endif
-
 
 	return true;
 }

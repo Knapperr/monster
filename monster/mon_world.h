@@ -64,16 +64,18 @@ namespace Mon {
 	static void ClearEntity(World* world, unsigned int index)
 	{
 		Entity* entity = 0;
-		if ((index > 0) && (index < ArrayCount(world->entities)))
-		{
-			entity = &world->entities[index];
 
-			entity->collider = {};
-			// TODO(ck): ClearRenderData - must call glDeleteTextures before generating new ones
-			entity->data = {};
-			entity->setup = {};
-			entity->name = "";
-		}
+		// We just add an entity like normal
+		//if ((index > 0) && (index < ArrayCount(world->entities)))
+		//{
+		//	entity = &world->entities[index];
+
+		//	entity->collider = {};
+		//	// TODO(ck): ClearRenderData - must call glDeleteTextures before generating new ones
+		//	entity->data = {};
+		//	entity->setup = {};
+		//	entity->name = "";
+		//}
 	}
 
 	static MonGL::InstancedData* GetInstancedData(World* world, unsigned int index)
@@ -86,7 +88,7 @@ namespace Mon {
 		return data;
 	}
 
-	static void InitEntity(Entity* e, const char* name, v3 pos, v3 scale, float angleDegrees, int shaderHandle, int textureIndex)
+	static void InitEntity(Entity* e, const char* name, v3 pos, v3 scale, float angleDegrees, int shaderHandle, int textureIndex, int meshIndex)
 	{
 		e->setup = {};
 		e->name = name;
@@ -94,7 +96,7 @@ namespace Mon {
 		// TEXTURE INDEXES
 
 		// e->data.meshIndex = GetMesh("quad"); and GetTexture("nameFromParams")
-		e->data.meshIndex = 1;
+		e->data.meshIndex = meshIndex;
 		e->data.programType = MonGL::ProgramType::Common;
 		e->data.textureIndex = textureIndex;
 		e->data.scale = scale;
@@ -119,14 +121,14 @@ namespace Mon {
 
 
 		InitBoxCollider(&player->collider);
-		player->rb.pos = v3(3.0f, 0.0f, 2.0);
+		player->rb.pos = v3(3.0f, -0.15f, 2.0);
 		player->rb.inverseMass = 10.0f;
 		player->rb.velocity = v3(0.0f, 0.0f, 0.0f); // 35m/s
 		player->rb.gravity = 10.0f;
 		player->rb.acceleration = v3(-40.0f, 0.0f, 0.0f);
 		player->rb.orientation = v3(1.0f, 1.0f, 1.0);
 		player->rb.damping = 0.9f;
-		player->rb.speed = 40.0f;
+		player->rb.speed = 30.0f;
 
 		//player->data.mat.ambient = v3(1.0f, 0.5f, 0.6f);
 		//player->data.mat.diffuse = v3(1.0f, 0.5f, 0.31f);
@@ -187,7 +189,7 @@ namespace Mon {
 			AddEntity(world);
 			Entity* tree = GetEntity(world, i);
 			v3 offset = v3(i * 4, 1.50f ,i * 4) + basePoint; 
-			InitEntity(tree, "tree", offset, v3(6.0f), angleDegrees, shaderHandle, 7);
+			InitEntity(tree, "tree", offset, v3(6.0f), angleDegrees, shaderHandle, 7, 1);
 		}
 
 		int length = world->entityCount + 5;
@@ -195,45 +197,45 @@ namespace Mon {
 		{
 			AddEntity(world);
 			Entity* flower = GetEntity(world, i);
-			InitEntity(flower, "flower", v3(10.0f, 0.1f, 6.0f), v3(1.0f), angleDegrees, shaderHandle, 7);
+			InitEntity(flower, "flower", v3(10.0f, 0.1f, 6.0f), v3(1.0f), angleDegrees, shaderHandle, 7, 1);
 		}
 		
 		AddEntity(world);
 		Entity* cube = GetEntity(world, world->entityCount - 1);
-		InitEntity(cube, "cube_1", v3(50.0f, 0.3f, 20.0f), v3(1.0f), angleDegrees, shaderHandle, 8);
+		InitEntity(cube, "cube_1", v3(50.0f, 0.3f, 20.0f), v3(1.0f), angleDegrees, shaderHandle, 18, 2);
 
 		// ch_minion
 		AddEntity(world);
 		Entity* ent = GetEntity(world, world->entityCount - 1);
-		InitEntity(ent, "minion1", v3(10.0f,4.0f,10.0f), v3(1.0f), angleDegrees, shaderHandle, 9);
+		InitEntity(ent, "minion1", v3(10.0f,4.0f,10.0f), v3(1.0f), angleDegrees, shaderHandle, 9, 1);
 		ent->facingDir = Direction::Right;
 
 		AddEntity(world);
 		Entity* ent1 = GetEntity(world, world->entityCount - 1);
-		InitEntity(ent1, "minion2", v3(30.0f, 4.0f, 5.0f), v3(1.0f), angleDegrees, shaderHandle, 9);
+		InitEntity(ent1, "minion2", v3(30.0f, 4.0f, 5.0f), v3(1.0f), angleDegrees, shaderHandle, 9, 1);
 		ent1->facingDir = Direction::Right;
 		ent1->follow = true;
 
 		AddEntity(world);
 		Entity* ent2 = GetEntity(world, world->entityCount - 1);
-		InitEntity(ent2, "minion3", v3(26.0f, 2.0f, 7.0f), v3(1.0f), angleDegrees, shaderHandle, 9);
+		InitEntity(ent2, "minion3", v3(26.0f, 2.0f, 7.0f), v3(1.0f), angleDegrees, shaderHandle, 9, 1);
 
 		AddEntity(world);
 		Entity* ent3 = GetEntity(world, world->entityCount - 1);
-		InitEntity(ent3, "minion4", v3(2.0f, 6.0f, 1.0f), v3(1.0f), angleDegrees, shaderHandle, 9);
+		InitEntity(ent3, "minion4", v3(2.0f, 6.0f, 1.0f), v3(1.0f), angleDegrees, shaderHandle, 9, 1);
 
 		AddEntity(world);
 		Entity* ent4 = GetEntity(world, world->entityCount - 1);
-		InitEntity(ent4, "ch_witch2", v3(12.0f, 0.0f, 9.0f), v3(1.0f), angleDegrees, shaderHandle, 10);
+		InitEntity(ent4, "ch_witch2", v3(12.0f, 0.0f, 9.0f), v3(1.0f), angleDegrees, shaderHandle, 10, 1);
 
 		AddEntity(world);
 		Entity* plane64 = GetEntity(world, world->entityCount - 1);
-		InitEntity(plane64, "plane64", v3(6.0f, 0.0f, 6.0f), v3(1.0f), 0.0f, shaderHandle, 8);
+		InitEntity(plane64, "plane64", v3(6.0f, 0.0f, 6.0f), v3(1.0f), 0.0f, shaderHandle, 8, 1);
 		plane64->data.meshIndex = 7;
 
 		AddEntity(world);
 		Entity* gem = GetEntity(world, world->entityCount - 1);
-		InitEntity(gem, "gem", v3(6.0f, 0.0f, 6.0f), v3(1.0f), 0.0f, shaderHandle, 8);
+		InitEntity(gem, "gem", v3(6.0f, 0.0f, 6.0f), v3(1.0f), 0.0f, shaderHandle, 8, 1);
 		gem->data.meshIndex = 8;
 	}
 	

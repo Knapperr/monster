@@ -10,6 +10,8 @@ namespace Mon
 
 	bool SDLPlatform::init(Settings* settings)
 	{
+		state = {};
+
 		// Required to call this for Windows
 		// I'm not sure why SDL2 doesn't do this on Windows automatically?
 		#if _WIN32

@@ -16,11 +16,15 @@ namespace Mon
 		if (selectedIndex > 0)
 			ent = GetEntity(world, selectedIndex);
 
-		if ((input->lMouseBtn.endedDown == false && input->rMouseBtn.endedDown) && ent != nullptr)
+		if ((!input->lMouseBtn.endedDown && input->rMouseBtn.endedDown) && ent != nullptr)
 		{
 			ent->rb.pos.x = picker->currentTerrainPoint.x;
 			ent->rb.pos.z = picker->currentTerrainPoint.z;
-			ent->rb.pos.y += input->wheel.y * 0.35f;
+
+			float offset = 0.35f;
+			if (input->shift.endedDown)
+				offset = 0.10f;
+			ent->rb.pos.y += input->wheel.y * offset;
 		}
 	}
 
@@ -72,11 +76,11 @@ namespace Mon
 		Entity* e = GetEntity(world, 16);
 		float speed = 4.0f;
 
-		if (e->rb.pos.x >= 40.0f && e->facingDir == Direction::Right)
+		if (e->rb.pos.x >= 20.0f && e->facingDir == Direction::Right)
 		{	
 			e->facingDir = Direction::Left;
 		}
-		if(e->rb.pos.x <= 0.0f && e->facingDir == Direction::Left)
+		if(e->rb.pos.x <= -20.0f && e->facingDir == Direction::Left)
 		{
 			e->facingDir = Direction::Right;
 		}
@@ -85,13 +89,7 @@ namespace Mon
 			speed = -speed;
 
 		e->rb.pos.x += speed * dt;
-
-
-		Entity* minion = GetEntity(world, 17);
-		Entity player = *GetEntity(world, 1);
-		minion->rb.pos.x = lerp(minion->rb.pos.x, player.rb.pos.x, dt);
-		minion->rb.pos.y = lerp(minion->rb.pos.y, player.rb.pos.y + 1.15f, dt);
-		minion->rb.pos.z = lerp(minion->rb.pos.z, player.rb.pos.z, dt);
+		
 
 		// TODO(ck): Update entity and then update entity collider right after
 		// instead of having two separate loops for entities and their colliders.
@@ -102,7 +100,7 @@ namespace Mon
 			// TODO(ck): Precise Collision check
 			
 			v3 colliderPos = { world->entities[i].rb.pos.x - (0.5f),
-								world->entities[i].rb.pos.y - (0.5),
+								world->entities[i].rb.pos.y - (0.5f),
 								world->entities[i].rb.pos.z - (0.5f) };
 
 			UpdateCollider(&world->entities[i].collider, colliderPos, world->entities[i].data.scale);
@@ -138,7 +136,16 @@ namespace Mon
 		//
 		// NOTE(ck): MUST BE CALLED FIRST - LOADS ALL ASSETS FOR GAME
 		
-		InitAssets(g_Assets); 
+		// TODO(ck): Memory allocations
+		// memory to be allocated
+		// g_Assets 
+		// state->renderer
+		// state->grid
+		// cameras
+		// world
+
+
+		InitAssets(g_Assets);
 
 		state->mode = Mode::Debug;
 		state->renderer = {};
@@ -213,14 +220,6 @@ namespace Mon
 
 		player->rb.velocity.x = velocity->x * dt + player->rb.velocity.x;
 		player->rb.velocity.z = velocity->z * dt + player->rb.velocity.z;
-
-		// Need to update the collider of the player first because we are using the position here
-		// maybe not?
-		Entity* minion = GetEntity(world, 16);
-		if (TestAABBAABB(player->collider, minion->collider))
-			minion->rb.speed = 1.0f;
-		else
-			minion->rb.speed = 40.0f;
 		
 		player->rb.pos = newPos;
 

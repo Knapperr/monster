@@ -10,6 +10,12 @@
 
 namespace Mon
 {
+	struct PlatformState
+	{
+		uint64_t totalSize;
+		void* gameMemoryBlock;
+	};
+
 	class Platform
 	{
 	public:
@@ -17,6 +23,8 @@ namespace Mon
 		SDL_Window* window;
 		SDL_GLContext context;
 		SDL_Joystick* joyStick;
+
+		PlatformState state;
 		bool quit;
 		bool cursorDisabled;
 

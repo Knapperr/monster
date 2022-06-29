@@ -74,6 +74,7 @@ namespace Mon {
 		//int gridY; = rb.pos.y / chunk_size (grid_size) ?
 		// offsets?
 
+		// TODO(ck): Switch to index so that the render list can be sorted from camera
 		MonGL::RenderData data;
 		MonGL::RenderSetup setup;
 		Collider collider;

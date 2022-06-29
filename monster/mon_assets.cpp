@@ -141,6 +141,10 @@ namespace Mon
 		Image* pDevil = GetImage(assets, 18);
 		InitImage(pDevil, "res/textures/ch_devil.png");
 
+		AddImage(assets);
+		Image* cube1m = GetImage(assets, 19);
+		InitImage(cube1m, "res/textures/debug/1m_32px.png");
+
 		//AddImage(assets);
 		//Image* tileSheet = GetImage(assets, 18);
 		//InitImage(tileSheet, "res/textures/basic_16.png", false);
@@ -243,7 +247,7 @@ namespace Mon
 		// TODO(ck): Actual GUID
 		mesh->id = "001";
 
-		v2 size = v2(1.0f); // 1x1meter
+		v2 size = v2(1.0f); // 1x1 meter
 		int verticeCount = 4;
 
 		// TODO(ck): Memory Allocation
@@ -382,19 +386,20 @@ namespace Mon
 		mesh->vertices[3].position = v3(0.5f, 0.5f, -0.5f);
 		mesh->vertices[3].normal = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[3].texCoords = v2(1.0f, 1.0f);
+
 		mesh->vertices[4].position = v3(-0.5f, 0.5f, -0.5f);
 		mesh->vertices[4].normal = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[4].texCoords = v2(0.0f, 1.0f);
 		mesh->vertices[5].position = v3(-0.5f, -0.5f, -0.5f);
 		mesh->vertices[5].normal = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[5].texCoords = v2(0.0f, 0.0f);
-
 		mesh->vertices[6].position = v3(-0.5f, -0.5f, 0.5f);
 		mesh->vertices[6].normal = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[6].texCoords = v2(0.0f, 0.0f);
 		mesh->vertices[7].position = v3(0.5f, -0.5f, 0.5f);
 		mesh->vertices[7].normal = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[7].texCoords = v2(1.0f, 0.0f);
+
 		mesh->vertices[8].position = v3(0.5f, 0.5f, 0.5f);
 		mesh->vertices[8].normal = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[8].texCoords = v2(1.0f, 1.0f);
@@ -420,19 +425,20 @@ namespace Mon
 		mesh->vertices[15].position = v3(-0.5f, -0.5f, -0.5f);
 		mesh->vertices[15].normal = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[15].texCoords = v2(0.0f, 1.0f);
+
 		mesh->vertices[16].position = v3(-0.5f, -0.5f, 0.5f);
 		mesh->vertices[16].normal = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[16].texCoords = v2(0.0f, 0.0f);
 		mesh->vertices[17].position = v3(-0.5f, 0.5f, 0.5f);
 		mesh->vertices[17].normal = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[17].texCoords = v2(1.0f, 0.0f);
-
 		mesh->vertices[18].position = v3(0.5f, 0.5f, 0.5f);
 		mesh->vertices[18].normal = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[18].texCoords = v2(1.0f, 0.0f);
 		mesh->vertices[19].position = v3(0.5f, 0.5f, -0.5f);
 		mesh->vertices[19].normal = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[19].texCoords = v2(1.0f, 1.0f);
+
 		mesh->vertices[20].position = v3(0.5f, -0.5f, -0.5f);
 		mesh->vertices[20].normal = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[20].texCoords = v2(0.0f, 1.0f);
@@ -458,19 +464,20 @@ namespace Mon
 		mesh->vertices[27].position = v3(0.5f, -0.5f, 0.5f);
 		mesh->vertices[27].normal = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[27].texCoords = v2(1.0f, 0.0f);
+
 		mesh->vertices[28].position = v3(-0.5f, -0.5f, 0.5f);
 		mesh->vertices[28].normal = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[28].texCoords = v2(0.0f, 0.0f);
 		mesh->vertices[29].position = v3(-0.5f, -0.5f, -0.5f);
 		mesh->vertices[29].normal = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[29].texCoords = v2(0.0f, 1.0f);
-
 		mesh->vertices[30].position = v3(-0.5f, 0.5f, -0.5f);
 		mesh->vertices[30].normal = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[30].texCoords = v2(0.0f, 1.0f);
 		mesh->vertices[31].position = v3(0.5f, 0.5f, -0.5f);
 		mesh->vertices[31].normal = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[31].texCoords = v2(1.0f, 1.0f);
+
 		mesh->vertices[32].position = v3(0.5f, 0.5f, 0.5f);
 		mesh->vertices[32].normal = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[32].texCoords = v2(1.0f, 0.0f);
@@ -483,7 +490,6 @@ namespace Mon
 		mesh->vertices[35].position = v3(-0.5f, 0.5f, -0.5f);
 		mesh->vertices[35].normal = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[35].texCoords = v2(0.0f, 1.0f);
-
 
 		mesh->type = RenderType::Cube;
 		mesh->verticeCount = verticeCount;

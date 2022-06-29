@@ -44,13 +44,11 @@ void WriteEntities(Mon::Entity* entities, unsigned int entityCount, int shaderID
 	for (int i = 1; i < entityCount; ++i)
 	{
 		file << entities[i].name << "\n"
-			<< (int)1 << "\n"
-			//<< (int)entities[i].data.mesh.type << "\n"
+			<< (int)entities[i].data.meshIndex << "\n"
+			<< (int)entities[i].data.textureIndex << "\n"
 			<< entities[i].rb.pos.x << "\n" << entities[i].rb.pos.y << "\n" << entities[i].rb.pos.z << "\n"
 			<< entities[i].data.scale.x << "\n" << entities[i].data.scale.y << "\n" << entities[i].data.scale.z << "\n"
-			<< shaderID << "\n"
-			<< entities[i].impPath << "\n";
-			//<< entities[i].data.texturePath << "\n";
+			<< shaderID << "\n";
 	}
 
 	// TODO(ck):
@@ -223,6 +221,33 @@ void writeImpFile(Mon::GameState* game)
 	//}
 }
 
+const char* GetFolders()
+{
+	const char* result = "";
+	return result;
+}
+
+void getFolders(std::string folder)
+{
+	/*objFile obj = {};
+	obj.loadModel = false;
+	obj.loaded = false;
+	std::string path = "content\\" + folder;
+	for (auto& d : fs::recursive_directory_iterator(path))
+	{
+		if (d.path().extension() == ".obj")
+		{
+			obj.path = d.path().generic_string();
+			obj.name = d.path().filename().generic_string();
+
+			if (folder == "objects")
+			{
+				objPaths.push_back(obj);
+			}
+		}
+	}*/
+}
+
 void LoadSceneFile(Mon::GameState* game)
 {
 	// TODO(ck): memory management should probably have something in the list to only reload part of it
@@ -235,51 +260,47 @@ void LoadSceneFile(Mon::GameState* game)
 		return;
 	}
 	
-	// I don't think the size matters because the entities[] is a fixed size...
 	unsigned int count = 0;
 	file >> count;
 	
 	// Add extra entities to increment the entityCount
-	for (unsigned int i = game->world->entityCount; i < count; i++)
+	if (count > game->world->entityCount)
 	{
-		Mon::AddEntity(game->world);
+		for (unsigned int i = game->world->entityCount; i < count; i++)
+		{
+			Mon::AddEntity(game->world);
+		}
 	}
-	// Clear all of the entities
-	for (int i = 1; i < count; ++i)
+	for (int i = 0; i < count; ++i)
 	{
+		
 		Mon::ClearEntity(game->world, i);
 	}
 
+
+	// TODO(ck): Not shader index it just needs shader type
+	Mon::Entity* e = Mon::GetPlayer(game->world);
+	//Mon::InitPlayer(e, game->renderer.program.handle);
+
 	bool finished = false;
+	std::string throwAway;
 	int index = 1;
 	while (file >> line)
 	{
-		/*
-			clear entity array
-			read entity count 
-			loop through and InitQuad, InitCube, InitModel depending on the type
-			do not forget to load their textures as well
-		*/
-		// TODO(ck):
-		// file >> line --- to get rid of the #Entities line because the world will read this file
-		//					not just the entities array
-		
+		// starts at two
 		while (index < game->world->entityCount)
 		{
 			Mon::Entity* e = Mon::GetEntity(game->world, index);
-			int renderType = -1;
+			Mon::InitEntity(e, "blank", Mon::v3(1.0f), Mon::v3(1.0f), -45.0f, game->renderer.program.handle, 1, 1);
+			// TODO(ck): Need constructor for this
+			e->name = line.c_str();
+			e->name = "a_";
+			if (index != 1)
+				file >> throwAway;
 
-			if (index == 1)
-				e->name = line.c_str();
-			//else
-				//file >> std::to_string(e->name);
-
-			if (e->name == "player")
-			{
-				Mon::InitPlayer(e, game->renderer.program.handle);
-			}
-
-			file >> renderType;
+			//file >> e->name;
+			file >> e->data.meshIndex;
+			file >> e->data.textureIndex;
 			file >> e->rb.pos.x;
 			file >> e->rb.pos.y;
 			file >> e->rb.pos.z;
@@ -288,42 +309,8 @@ void LoadSceneFile(Mon::GameState* game)
 			file >> e->data.scale.y;
 			file >> e->data.scale.z;
 
-			// TODO(ck): This is why a raw array needs to be used
-			// the render data needs to be rebuilt. Serialization I think 
-			// will take care of having to reload any rendering data.
-			int shaderID = 0;
-			std::string textPath = "";
-			file >> shaderID;
-			file >> e->impPath;
-			file >> textPath;
-
-			// TODO(ck): IMPORTANT(ck): Remove the rendertype we don't need this anymore EVERYTHING WILL USE AN IMP FILE
-			// Init Render data
-			//e->data.mesh.type = (MonGL::RenderType)renderType;
-			//if (e->name != "player")
-			//{
-			//	switch (e->data.mesh.type)
-			//	{
-			//	case MonGL::RenderType::Quad:
-			//		MonGL::InitQuad(&e->data.mesh);
-			//		break;
-			//	case MonGL::RenderType::Cube:
-			//		MonGL::InitCube(&e->data.mesh);
-			//		break;
-			//	case MonGL::RenderType::Model:
-			//		// Load Imp File 
-			//		LoadImpFile(e, e->impPath);
-			//		MonGL::InitModel(&e->data);
-			//		break;
-			//	default:
-			//		MonGL::InitModel(&e->data);
-			//		break;
-			//	}
-
-			//	// Load textures
-			//	MonGL::LoadTexture(&e->data, 0, MonGL::TextureType::Diffuse, shaderID, textPath);
-			//}
-
+			int notUsedShaderId;
+			file >> notUsedShaderId;
 
 			Mon::Log::print("Entity loaded");
 			++index;
@@ -395,7 +382,7 @@ void TerrainWindow(bool* p_open, Mon::GameState* game)
 	ImGui::SameLine();
 	if (ImGui::Button("Snow")) { game->grid->data.textureIndex = 14; }
 	ImGui::Separator();
-	if (ImGui::Button("1x1")) { game->grid->data.textureIndex = 17; }
+	if (ImGui::Button("1x1")) { game->grid->data.textureIndex = 16; }
 	ImGui::Separator();
 
 	ImGui::Checkbox("Wireframe", &game->grid->data.wireFrame);
@@ -444,7 +431,6 @@ void CameraWindow(bool* p_open, Mon::GameState* game)
 	ImGui::SliderFloat("lerp", &game->cameras[game->currCameraIndex].lerpSpeed, 0.0f, 100.0f);
 	ImGui::SliderFloat("smooth", &game->cameras[game->currCameraIndex].smoothness, 0.1f, 10.0f);
 
-
 	if (ImGui::Button("Log"))
 	{ 
 		Mon::Log::print("cam zoom", game->cameras[game->currCameraIndex].zoom);
@@ -459,11 +445,11 @@ void CameraWindow(bool* p_open, Mon::GameState* game)
 	ImGui::End();
 }
 
-void AddNewEntity(Mon::GameState* game)
+void AddNewEntity(Mon::GameState* game, int meshIndex)
 {
 	Mon::AddEntity(game->world);
 	Mon::Entity* e = Mon::GetEntity(game->world, game->world->entityCount - 1);
-	Mon::InitEntity(e, "new", Mon::v3(1.0f), Mon::v3(1.0f), -45.0f, game->renderer.program.handle, 1);
+	Mon::InitEntity(e, "new", Mon::v3(1.0f, 0.0f, 1.0f), Mon::v3(1.0f), -45.0f, game->renderer.program.handle, 18, meshIndex);
 }
 
 void AddWater(Mon::GameState* game)
@@ -477,9 +463,10 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 {
 	ImGui::Begin("entities and things", p_open);
 	
-	
-	if (ImGui::Button("Add Entity")) { AddNewEntity(game); }
+	if (ImGui::Button("Add Entity")) { AddNewEntity(game, 1); }
 	ImGui::SameLine();
+	if (ImGui::Button("Add Cube")) { AddNewEntity(game, 2); }
+
 	if (ImGui::Button("Add Water")) { AddWater(game); }
 	ImGui::SameLine();
 	if (ImGui::Button("Load imp file")) { LoadImpGrassFile(game); }
@@ -552,25 +539,28 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 
 		// TODO(ck): Model loading modal
 		// Modal for loading meshes
-		//if (ImGui::Button("Load Mesh.."))
-		//	ImGui::OpenPopup("Load Mesh");
-		//if (ImGui::BeginPopupModal("Load Mesh", NULL))
-		//{
-		//	for (unsigned int i = 0; i < objPaths.size(); i++)
-		//	{
-		//		if (ImGui::SmallButton(objPaths[i].name.c_str()))
-		//		{
-		//			LOG("Loading mesh...");
-		//			LoadEmptyObject(selected, objPaths[i].name, objPaths[i].path);
-		//			LOG("mesh loaded!");
-		//			ImGui::CloseCurrentPopup();
-		//		}
-		//	}
+		if (ImGui::Button("Load Mesh.."))
+			ImGui::OpenPopup("Load Mesh");
+		if (ImGui::BeginPopupModal("Load Mesh", NULL))
+		{
+			std::vector<std::string> objPaths;
+			objPaths.push_back("apple_sauce");
+			for (unsigned int i = 0; i < objPaths.size(); i++)
+			{
+				//if (ImGui::SmallButton(objPaths[i].name.c_str()))
+				if (ImGui::SmallButton("name"))
+				{
+					//LOG("Loading mesh...");
+					//LoadEmptyObject(selected, objPaths[i].name, objPaths[i].path);
+					//LOG("mesh loaded!");
+					ImGui::CloseCurrentPopup();
+				}
+			}
 
-		//	if (ImGui::Button("Close"))
-		//		ImGui::CloseCurrentPopup();
-		//	ImGui::EndPopup();
-		//}
+			if (ImGui::Button("Close"))
+				ImGui::CloseCurrentPopup();
+			ImGui::EndPopup();
+		}
 		ImGui::Separator();
 		if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
 		{

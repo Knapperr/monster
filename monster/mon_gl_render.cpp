@@ -165,54 +165,40 @@ namespace MonGL
 		
 		AddTexture(gl);
 		MonGL::Texture* t1 = GetTexture(gl, 1);
-		
 		AddTexture(gl);
 		MonGL::Texture* t2 = GetTexture(gl, 2);
-		
 		AddTexture(gl);
 		MonGL::Texture* t3 = GetTexture(gl, 3);
-		
 		AddTexture(gl);
 		MonGL::Texture* t4 = GetTexture(gl, 4);
-		
 		AddTexture(gl);
 		MonGL::Texture* t5 = GetTexture(gl, 5);
-		
 		AddTexture(gl);
 		MonGL::Texture* t6 = GetTexture(gl, 6);
-		
 		AddTexture(gl);
 		MonGL::Texture* t7 = GetTexture(gl, 7);
-		
 		AddTexture(gl);
 		MonGL::Texture* t8 = GetTexture(gl, 8);
-		
 		AddTexture(gl);
 		MonGL::Texture* t9 = GetTexture(gl, 9);
-		
 		AddTexture(gl);
 		MonGL::Texture* t10 = GetTexture(gl, 10);
-		
 		AddTexture(gl);
 		MonGL::Texture* t11 = GetTexture(gl, 11);
-		
 		AddTexture(gl);
 		MonGL::Texture* t12 = GetTexture(gl, 12);
-		
 		AddTexture(gl);
 		MonGL::Texture* t13 = GetTexture(gl, 13);
-		
 		AddTexture(gl);
 		MonGL::Texture* t14 = GetTexture(gl, 14);
-
 		AddTexture(gl);
 		MonGL::Texture* t15 = GetTexture(gl, 15);
-
 		AddTexture(gl);
 		MonGL::Texture* t16 = GetTexture(gl, 16);
-
 		AddTexture(gl);
 		MonGL::Texture* t17 = GetTexture(gl, 17);
+		AddTexture(gl);
+		MonGL::Texture* t18 = GetTexture(gl, 18);
 
 		int shaderID = gl->program.handle;
 		LoadTexture(t1, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 1));
@@ -230,8 +216,9 @@ namespace MonGL
 		LoadTexture(t13, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 13));
 		LoadTexture(t14, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 14));
 		LoadTexture(t15, MonGL::TextureType::Normal,  false, shaderID, GetImage(g_Assets, 15));
-		LoadTexture(t16, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 16));
+		LoadTexture(t16, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 17));
 		LoadTexture(t17, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 18));
+		LoadTexture(t18, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 19));
 
 
 		// #0 for the 
@@ -536,7 +523,6 @@ namespace MonGL
 	/// [BEGIN]  Draw Mesh with RenderData 
 	///
 
-
 	// TODO(ck): STOP PASSING TEXTUREID IMPORTANT(ck):
 	void ActivateUniforms(CommonProgram* program, RenderSetup setup, Light light, v3 viewPos, int textureID)
 	{
@@ -598,11 +584,9 @@ namespace MonGL
 		glUniform1i(program->textureNormal1, 1);
 		glBindTexture(GL_TEXTURE_2D, normal1TextureID);
 
-
 		glActiveTexture(GL_TEXTURE2);
 		glUniform1i(program->textureNormal2, 2);
 		glBindTexture(GL_TEXTURE_2D, normal2TextureID);
-
 
 		glUniform1f(program->time, setup.time);
 		glUniform1f(program->uJump, programData.uJump);
@@ -634,7 +618,8 @@ namespace MonGL
 
 	//
 	// Public Draw Calls
-	
+	//
+
 	// TODO(ck): Maybe pass OpenGL to this then we have all the data?
 	void Draw(OpenGL* gl, Config* config, RenderSetup setup, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera)
 	{
@@ -1110,6 +1095,8 @@ namespace MonGL
 		Lets try it in the 3d first maybe?
 		*/
 		const int MAP_SIZE = 40;
+		
+
 		float x = (float)(tileXPos - (MAP_SIZE / 2));
 		float y = (float)(tileYPos - (MAP_SIZE / 2));
 		x = x - cameraPos.x;
