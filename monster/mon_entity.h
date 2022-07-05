@@ -33,9 +33,7 @@ namespace Mon {
 		void integrate(float duration);
 		void clearAccumulator();
 
-		// TODO(ck): TEST REMOVE
 		float speed;
-
 	};
 
 	struct Component
@@ -75,6 +73,8 @@ namespace Mon {
 		// offsets?
 
 		// TODO(ck): Switch to index so that the render list can be sorted from camera
+		// and transparent objects need to be sorted... maybe build list of mesh indexes
+		// to send through and sort from camera
 		MonGL::RenderData data;
 		MonGL::RenderSetup setup;
 		Collider collider;

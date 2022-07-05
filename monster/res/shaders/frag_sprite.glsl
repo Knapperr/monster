@@ -29,16 +29,16 @@ uv /= size;
 */
 
 	// TODO(ck): new pixel shader
-	vec2 textureSize = textureSize(image, 0);
+	vec2 texSize = textureSize(image, 0);
 
-	vec2 pixel = TexCoord * textureSize;
-	vec2 duDv = fwidth(pixel);
+	vec2 pixel = TexCoord * texSize;
 	vec2 seam = floor(pixel + 0.5);
+	vec2 duDv = fwidth(pixel);
 	pixel = seam + clamp((pixel - seam)/duDv, -0.5, 0.5);
-	vec2 modifiedTextCoordinate = pixel / textureSize;
+	vec2 modifiedTextCoordinate = pixel / texSize;
 	vec4 tex = texture(image, modifiedTextCoordinate);
 	FragColor = tex;
-
+	
 
 	// NOTE(ck): OLD method
 	// vec2 vres = textureSize(image, 0);

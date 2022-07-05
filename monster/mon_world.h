@@ -61,10 +61,11 @@ namespace Mon {
 		return entity;
 	}
 
+
 	static void ClearEntity(World* world, unsigned int index)
 	{
-		Entity* entity = 0;
-
+		Entity* entity = &world->entities[index];
+		entity = nullptr;
 		// We just add an entity like normal
 		//if ((index > 0) && (index < ArrayCount(world->entities)))
 		//{
@@ -111,6 +112,7 @@ namespace Mon {
 	static void InitPlayer(Entity* player, int shaderHandle)
 	{
 		player->name = "player";
+		
 		player->setup = {};
 		player->data.meshIndex = 1;
 		player->data.textureIndex = 17;
@@ -118,7 +120,6 @@ namespace Mon {
 		player->data.visible = true;
 		player->facingDir = Direction::Forward;
 		player->data.programType = MonGL::ProgramType::Common;
-
 
 		InitBoxCollider(&player->collider);
 		player->rb.pos = v3(3.0f, -0.15f, 2.0);
@@ -128,13 +129,12 @@ namespace Mon {
 		player->rb.acceleration = v3(-40.0f, 0.0f, 0.0f);
 		player->rb.orientation = v3(1.0f, 1.0f, 1.0);
 		player->rb.damping = 0.9f;
-		player->rb.speed = 30.0f;
+		player->rb.speed = 32.0f;
 
 		//player->data.mat.ambient = v3(1.0f, 0.5f, 0.6f);
 		//player->data.mat.diffuse = v3(1.0f, 0.5f, 0.31f);
 		//player->data.mat.specular = v3(0.5f, 0.5f, 0.5f);
 		//player->data.mat.shininess = 32.0f;
-
 		player->impPath = "none";
 		player->spriteAngleDegrees = -45.0f;
 	}
@@ -191,14 +191,6 @@ namespace Mon {
 			v3 offset = v3(i * 4, 1.50f ,i * 4) + basePoint; 
 			InitEntity(tree, "tree", offset, v3(6.0f), angleDegrees, shaderHandle, 7, 1);
 		}
-
-		int length = world->entityCount + 5;
-		for (int i = world->entityCount; i < length; ++i)
-		{
-			AddEntity(world);
-			Entity* flower = GetEntity(world, i);
-			InitEntity(flower, "flower", v3(10.0f, 0.1f, 6.0f), v3(1.0f), angleDegrees, shaderHandle, 7, 1);
-		}
 		
 		AddEntity(world);
 		Entity* cube = GetEntity(world, world->entityCount - 1);
@@ -245,7 +237,6 @@ namespace Mon {
 		MonGL::InstancedData* data = GetInstancedData(world, world->instancedDataCount - 1);
 		MonGL::InitInstancedData(data, 100);
 		//MonGL::LoadTexture(&data->renderData, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/grass.png", false);
-
 
 	}
 

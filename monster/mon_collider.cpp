@@ -29,9 +29,9 @@ namespace Mon {
 	//	return v3(c->size.max.x - c->size.min.x, c->size.max.y - c->size.min.y, c->size.max.z - c->size.min.z);
 	//}
 
-	v3 GetBoxSize(Collider* c)
+	v3 GetBoxSize(Collider* c, v3 scale)
 	{
-		return v3(c->max.x - c->min.x, c->max.y - c->min.y, c->max.z - c->min.z);
+		return v3(c->max.x - c->min.x, c->max.y - c->min.y, c->max.z - c->min.z) * scale;
 	}
 
 	//v3 GetBoxCenter(Collider* c)
@@ -44,17 +44,14 @@ namespace Mon {
 		return v3((c->min.x + c->max.x) / 2, (c->min.y + c->max.y) / 2, (c->min.z + c->max.z) / 2);
 	}
 
-	// TODO(ck): need an offset from the entity so that the bounding box will properly
-	// go around the object 
 	mat4 GetBoxTransform(Collider* c, v3 entityPos, v3 entityScale)
 	{
+		// TODO(ck): need collision offset that can be edited in the gui and saved to the entity
 		c->max = entityPos + 1.0f;
 		c->min = entityPos;
-		
-		//mat4 translateMatrix = translate(mat4(1.0f), entityPos);
-		//mat4 scaleMatrix = scale(mat4(1.0f), entityScale);
 		mat4 translateMatrix = mat4(1.0f);
-		return translate(translateMatrix, GetBoxCenter(c)) * scale(mat4(1.0f), GetBoxSize(c));
+		entityScale = entityScale / 2.0f;
+		return translate(translateMatrix, GetBoxCenter(c)) * scale(mat4(1.0f), GetBoxSize(c, entityScale));
 	}
 
 

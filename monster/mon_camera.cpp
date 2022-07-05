@@ -74,7 +74,7 @@ namespace Mon
 	void InitFlyCamera(Camera* camera, Rect viewPort)
 	{
 		camera->worldUp = v3(0.0f, 1.0f, 0.0f);
-		camera->pos = v3(0.0f, 20.0f, 0.0f);
+		camera->pos = v3(-1.5f, 11.5f, 26.5f);
 		camera->front = v3(0.0f, 0.0f, -1.0f);
 
 		camera->speed = 30.0f;
@@ -286,14 +286,10 @@ namespace Mon
 	{
 		// 640.0f = window.x
 	// 360.0f = window.y
-	// TODO(ck): my camera isn't deciding the projection that gets sent to the renderer
-	// this might be a good thing because i can separate that off here
 		float width = 1060.0f;
 		float height = 1540.0f;
 		float half = 6.0f;
 #if 1
-		// TODO(ck): compute in update?
-		// TODO(ck): Remove half prefer zoom
 		float left = camera->pos.x - width / half;
 		float right = camera->pos.x + width / half;
 		float top = camera->pos.y - height / half;

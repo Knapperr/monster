@@ -163,6 +163,8 @@ namespace MonGL
 		// textures for the entities 
 		AddTexture(gl);
 		
+
+		// TODO(ck): Fix this
 		AddTexture(gl);
 		MonGL::Texture* t1 = GetTexture(gl, 1);
 		AddTexture(gl);
@@ -199,6 +201,14 @@ namespace MonGL
 		MonGL::Texture* t17 = GetTexture(gl, 17);
 		AddTexture(gl);
 		MonGL::Texture* t18 = GetTexture(gl, 18);
+		AddTexture(gl);
+		MonGL::Texture* t19 = GetTexture(gl, 19);
+		AddTexture(gl);
+		MonGL::Texture* t20 = GetTexture(gl, 20);
+		AddTexture(gl);
+		MonGL::Texture* t21 = GetTexture(gl, 21);
+		AddTexture(gl);
+		MonGL::Texture* t22 = GetTexture(gl, 22);
 
 		int shaderID = gl->program.handle;
 		LoadTexture(t1, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 1));
@@ -219,6 +229,10 @@ namespace MonGL
 		LoadTexture(t16, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 17));
 		LoadTexture(t17, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 18));
 		LoadTexture(t18, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 19));
+		LoadTexture(t19, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 20));
+		LoadTexture(t20, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 21));
+		LoadTexture(t21, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 22));
+		LoadTexture(t22, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 23));
 
 
 		// #0 for the 
@@ -229,7 +243,7 @@ namespace MonGL
 		gl->lights[index].ambient = v3(0.3f);
 		gl->lights[index].diffuse = v3(0.8f);
 		gl->lights[index].specular = v3(0.3f);
-		gl->lights[index].pos = v3(0.0f, 20.0f, 0.0f);
+		gl->lights[index].pos = v3(24.0f, 32.0f, 32.0f);
 		index = AddLight(gl);
 		gl->lights[index].id = "002";
 		gl->lights[index].ambient = v3(1.0f);

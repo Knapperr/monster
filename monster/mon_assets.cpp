@@ -85,7 +85,7 @@ namespace Mon
 		InitImage(p1Back, "res/textures/p1BACK.png");
 
 		AddImage(assets);
-		Image* waterDeriv = GetImage(assets, 5); // diffuse 
+		Image* waterDeriv = GetImage(assets, 5); // diffuse
 		InitImage(waterDeriv, "res/textures/water/water.png");
 
 		AddImage(assets);
@@ -143,7 +143,23 @@ namespace Mon
 
 		AddImage(assets);
 		Image* cube1m = GetImage(assets, 19);
-		InitImage(cube1m, "res/textures/debug/1m_32px.png");
+		InitImage(cube1m, "res/textures/debug/TWW_Txi_c1m.png");
+
+		AddImage(assets);
+		Image* wwBrick = GetImage(assets, 20);
+		InitImage(wwBrick, "res/textures/debug/TLoZTWW_H_bg01.png");
+
+		AddImage(assets);
+		Image* ww2m = GetImage(assets, 21);
+		InitImage(ww2m, "res/textures/debug/TWW_Txi_c2m.png");
+
+		AddImage(assets);
+		Image* ww4m = GetImage(assets, 22);
+		InitImage(ww4m, "res/textures/debug/TWW_Txi_c4m.png");
+
+		AddImage(assets);
+		Image* ww10m = GetImage(assets, 23);
+		InitImage(ww10m, "res/textures/debug/TWW_Txk_c10m.png");
 
 		//AddImage(assets);
 		//Image* tileSheet = GetImage(assets, 18);
@@ -268,7 +284,6 @@ namespace Mon
 		mesh->vertices[3].normal = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[3].texCoords = v2(0.0f, 1.0f);
 
-		// TODO(ck): split out
 		if (tangents)
 		{
 			//data->vertices.clear();

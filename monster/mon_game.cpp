@@ -377,7 +377,7 @@ namespace Mon
 		//
 		// ENTITIES
 		//
-		for (int i = 1; i < state->world->entityCount; ++i)
+		for (unsigned int i = 1; i < state->world->entityCount; ++i)
 		{
 			Entity e = state->world->entities[i];
 

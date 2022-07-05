@@ -162,8 +162,8 @@ namespace Mon
 		// TODO IMPORTANT(ck): Do I need to offset this with the port?
 		newInput->mouseScreen = v2((float)(winX), (float)(winY));
 
-		lastX = newInput->mouseOffset.x;
-		lastY = newInput->mouseOffset.y;
+		lastX = (int)newInput->mouseOffset.x;
+		lastY = (int)newInput->mouseOffset.y;
 	}
 
 	

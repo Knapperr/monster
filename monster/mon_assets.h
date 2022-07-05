@@ -56,7 +56,7 @@ namespace Mon
 		unsigned int* indices;
 	};
 
-	// TODO(ck): Do not have specific for 2D?
+	// TODO(ck): Do not have specific for 2D
 	struct Mesh2D
 	{
 		const char* id;
@@ -87,17 +87,17 @@ namespace Mon
 	// global struct for accessing assets
 	struct Assets
 	{
-		Mesh meshes[16];				// TODO(ck): SQLite config for size
-		Image images[32];				// TODO(ck): SQLite config fokeklr size
-		
-		Mesh2D quad2D;
+		Mesh meshes[16];
+		Image images[32];
+
+		Mesh2D quad2D; // Remove
 		int meshCount;
 		int textureCount;
 	};
 
 	static unsigned int AddMesh(Assets* assets)
 	{
-		unsigned int index = assets->meshCount++;
+		unsigned int index = assets->meshCount++; 
 
 		Mesh* mesh = &assets->meshes[index];
 		mesh = {};

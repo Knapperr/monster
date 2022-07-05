@@ -41,7 +41,7 @@ void WriteEntities(Mon::Entity* entities, unsigned int entityCount, int shaderID
 
 	file << entityCount << "\n";
 
-	for (int i = 1; i < entityCount; ++i)
+	for (unsigned int i = 1; i < entityCount; ++i)
 	{
 		file << entities[i].name << "\n"
 			<< (int)entities[i].data.meshIndex << "\n"
@@ -58,167 +58,6 @@ void WriteEntities(Mon::Entity* entities, unsigned int entityCount, int shaderID
 	
 
 	file.close();
-}
-
-void LoadImpFile(Mon::Entity* e, std::string fileName)
-{
-	std::ifstream file(fileName);
-	file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-	int index;
-	try
-	{
-		if (!file.is_open())
-		{
-			Mon::Log::print("Failure to open file");
-		}
-
-		std::string line;
-		while (file >> line)
-		{
-			// Get the name and the size of the vertices & indices here
-			//e->name = line;
-			//file >> e->data.mesh.verticeCount;
-			//file >> e->data.mesh.indiceCount;
-			break;
-		}
-
-		//e->data.mesh.vertices = new MonGL::Vertex3D[e->data.mesh.verticeCount];
-		//e->data.mesh.indices = new unsigned int[e->data.mesh.indiceCount];
-
-		while (file >> line)
-		{
-			//for (int i = 0; i < e->data.mesh.verticeCount; ++i)
-			//{
-			//	index = i;
-
-			//	if (i == 0)
-			//		e->data.mesh.vertices[i].position.x = std::stof(line);
-			//	else
-			//		file >> e->data.mesh.vertices[i].position.x;
-
-			//	file >> e->data.mesh.vertices[i].position.y;
-			//	file >> e->data.mesh.vertices[i].position.z;
-			//	file >> e->data.mesh.vertices[i].normal.x;
-			//	file >> e->data.mesh.vertices[i].normal.y;
-			//	file >> e->data.mesh.vertices[i].normal.z;
-			//	file >> e->data.mesh.vertices[i].texCoords.x;
-			//	file >> e->data.mesh.vertices[i].texCoords.y;
-			//	file >> e->data.mesh.vertices[i].tangent.x;
-			//	file >> e->data.mesh.vertices[i].tangent.y;
-			//	file >> e->data.mesh.vertices[i].tangent.z;
-			//	file >> e->data.mesh.vertices[i].bitangent.x;
-			//	file >> e->data.mesh.vertices[i].bitangent.y;
-			//	file >> e->data.mesh.vertices[i].bitangent.z;
-			//}
-
-			//for (int j = 0; j < e->data.mesh.indiceCount; ++j)
-			//{
-			//	index = j;
-			//	file >> e->data.mesh.indices[j];
-			//}
-
-			// finished
-			break;
-		}
-	}
-	catch (std::ifstream::failure& ex)
-	{
-		Mon::Log::print("File read failed");
-		Mon::Log::print(ex.what());
-	}
-
-	file.close();
-}
-
-void LoadImpGrassFile(Mon::GameState* game)
-{
-	std::ifstream file("test_grass.imp");
-	if (!file.is_open())
-	{
-		Mon::Log::print("Failure to open file");
-	}
-
-	// TODO(ck): RESEARCH(ck):
-	// This loads ONE model inside of the file right now. The imp asset file needs to be worked out 
-
-	std::string line;
-	// Create new entity and grab it to get it ready
-	Mon::AddEntity(game->world);
-	Mon::Entity* e = Mon::GetEntity(game->world, game->world->entityCount - 1);
-	while (file >> line)
-	{
-		// Get the name and the size of the vertices & indices here
-		//e->name = line;
-		//file >> e->data.mesh.verticeCount;
-		//file >> e->data.mesh.indiceCount;
-		break;
-	}
-
-	//e->data.mesh.vertices = new MonGL::Vertex3D[e->data.mesh.verticeCount];
-	//e->data.mesh.indices = new unsigned int[e->data.mesh.indiceCount];
-
-	while (file >> line)
-	{
-		//for (int i = 0; i < e->data.mesh.verticeCount; ++i)
-		//{
-		//	if (i == 0)
-		//		e->data.mesh.vertices[i].position.x = std::stof(line);
-		//	else
-		//		file >> e->data.mesh.vertices[i].position.x;
-
-		//	file >> e->data.mesh.vertices[i].position.y;
-		//	file >> e->data.mesh.vertices[i].position.z;
-		//	file >> e->data.mesh.vertices[i].normal.x;
-		//	file >> e->data.mesh.vertices[i].normal.y;
-		//	file >> e->data.mesh.vertices[i].normal.z;
-		//	file >> e->data.mesh.vertices[i].texCoords.x;
-		//	file >> e->data.mesh.vertices[i].texCoords.y;
-		//	file >> e->data.mesh.vertices[i].tangent.x;
-		//	file >> e->data.mesh.vertices[i].tangent.y;
-		//	file >> e->data.mesh.vertices[i].tangent.z;
-		//	file >> e->data.mesh.vertices[i].bitangent.x;
-		//	file >> e->data.mesh.vertices[i].bitangent.y;
-		//	file >> e->data.mesh.vertices[i].bitangent.z;
-		//}
-		//for (int j = 0; j < e->data.mesh.indiceCount; ++j)
-		//{
-		//	file >> e->data.mesh.indices[j];
-		//}
-	}
-	file.close();
-
-	MonGL::InitModel(&e->data);
-	//MonGL::LoadTexture(&e->data, 0, MonGL::TextureType::Diffuse, game->renderer.program.handle, "res/textures/grass.png", false);
-	e->rb.pos = Mon::v3(10.0f, 0.3f, 20.0f);
-	MonGL::InitBoundingBox(&e->collider.data);
-	e->impPath = "test_grass.imp";
-}
-
-void writeImpFile(Mon::GameState* game)
-{
-	// write the selected index to a file....
-	// this will be a good way to see if the file data is loaded properly.
-	Mon::Entity* e = Mon::GetEntity(game->world, game->selectedIndex);
-	std::string path = "test_data.imp";
-	std::ofstream file;
-	file.open(path);
-
-	file << e->name << "\n";
-	//file << e->data.mesh.verticeCount << "\n";
-	//file << e->data.mesh.indiceCount << "\n";
-
-	//for (int i = 0; i < e->data.mesh.verticeCount; ++i)
-	//{
-	//   file << e->data.mesh.vertices[i].position.x << "\n" << e->data.mesh.vertices[i].position.y << "\n" << e->data.mesh.vertices[i].position.z << "\n"
-	//		<< e->data.mesh.vertices[i].normal.x << "\n" << e->data.mesh.vertices[i].normal.y << "\n" << e->data.mesh.vertices[i].normal.z << "\n"
-	//		<< e->data.mesh.vertices[i].texCoords.x << "\n" << e->data.mesh.vertices[i].texCoords.y << "\n"
-	//		<< e->data.mesh.vertices[i].tangent.x << "\n" << e->data.mesh.vertices[i].tangent.y << "\n" << e->data.mesh.vertices[i].tangent.z << "\n"
-	//		<< e->data.mesh.vertices[i].bitangent.x << "\n" << e->data.mesh.vertices[i].bitangent.y << "\n" << e->data.mesh.vertices[i].bitangent.z << "\n";
-	//}
-	//for (int j = 0; j < e->data.mesh.indiceCount; ++j)
-	//{
-	//	file << e->data.mesh.indices[j] << "\n";
-	//}
 }
 
 const char* GetFolders()
@@ -271,34 +110,47 @@ void LoadSceneFile(Mon::GameState* game)
 			Mon::AddEntity(game->world);
 		}
 	}
-	for (int i = 0; i < count; ++i)
-	{
-		
-		Mon::ClearEntity(game->world, i);
-	}
+
+	// IMPORTANT(ck): I don't think I need to clear anything or do anytihng I just need to 
+	// alter what I already have... the data is already initialized its fine?
+
+	//// Clear and reset the entity container
+	//for (int i = 1; i < count; ++i)
+	//{
+	//	Mon::ClearEntity(game->world, i);
+	//}
+	//game->world->entityCount = 0;
+	//AddEntity(game->world); // Add our 0 entity
 
 
 	// TODO(ck): Not shader index it just needs shader type
-	Mon::Entity* e = Mon::GetPlayer(game->world);
+	//Mon::Entity* e = Mon::GetPlayer(game->world);
 	//Mon::InitPlayer(e, game->renderer.program.handle);
 
 	bool finished = false;
-	std::string throwAway;
+	std::string tempName;
 	int index = 1;
 	while (file >> line)
 	{
 		// starts at two
-		while (index < game->world->entityCount)
+		while (index < count)
 		{
 			Mon::Entity* e = Mon::GetEntity(game->world, index);
-			Mon::InitEntity(e, "blank", Mon::v3(1.0f), Mon::v3(1.0f), -45.0f, game->renderer.program.handle, 1, 1);
 			// TODO(ck): Need constructor for this
-			e->name = line.c_str();
-			e->name = "a_";
-			if (index != 1)
-				file >> throwAway;
+			if (index > 1)
+			{
+				//e->name = tempName.c_str();
+				file >> tempName;
+				//e->name tempName.c_str();
+				//Mon::InitEntity(e, tempName.c_str(), Mon::v3(1.0f), Mon::v3(1.0f), -45.0f, game->renderer.program.handle, 1, 1);
+			}
+			//else
+			//{
+				//tempName = line;
+				//e->name = line.c_str();
+				//Mon::InitEntity(e, line.c_str(), Mon::v3(1.0f), Mon::v3(1.0f), -45.0f, game->renderer.program.handle, 1, 1);
+			//}
 
-			//file >> e->name;
 			file >> e->data.meshIndex;
 			file >> e->data.textureIndex;
 			file >> e->rb.pos.x;
@@ -414,7 +266,7 @@ void CameraWindow(bool* p_open, Mon::GameState* game)
 			game->currCameraIndex++;
 
 		if (game->cameras[game->currCameraIndex].type == Mon::CameraType::Follow)
-			PlayMode(game);
+			Mon::PlayMode(game);
 		else
 			Mon::DebugMode(game);
 	}
@@ -445,11 +297,11 @@ void CameraWindow(bool* p_open, Mon::GameState* game)
 	ImGui::End();
 }
 
-void AddNewEntity(Mon::GameState* game, int meshIndex)
+void AddNewEntity(Mon::GameState* game, int meshIndex, int texIndex = 18, Mon::v3 scale = Mon::v3(1.0f))
 {
 	Mon::AddEntity(game->world);
 	Mon::Entity* e = Mon::GetEntity(game->world, game->world->entityCount - 1);
-	Mon::InitEntity(e, "new", Mon::v3(1.0f, 0.0f, 1.0f), Mon::v3(1.0f), -45.0f, game->renderer.program.handle, 18, meshIndex);
+	Mon::InitEntity(e, "new", Mon::v3(1.0f, 0.0f, 1.0f), scale, -45.0f, game->renderer.program.handle, texIndex, meshIndex);
 }
 
 void AddWater(Mon::GameState* game)
@@ -464,12 +316,20 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 	ImGui::Begin("entities and things", p_open);
 	
 	if (ImGui::Button("Add Entity")) { AddNewEntity(game, 1); }
+	
+	ImGui::Separator();
+	ImGui::Text("ADD CUBE");
+	if (ImGui::Button("1m")) { AddNewEntity(game, 2); }
 	ImGui::SameLine();
-	if (ImGui::Button("Add Cube")) { AddNewEntity(game, 2); }
+	if (ImGui::Button("2m")) { AddNewEntity(game, 2, 20, Mon::v3(2.0f)); }
+	ImGui::SameLine();
+	if (ImGui::Button("4m")) { AddNewEntity(game, 2, 21, Mon::v3(4.0f)); }
+	ImGui::SameLine();
+	if (ImGui::Button("10m")) { AddNewEntity(game, 2, 22, Mon::v3(10.0f)); }
+	ImGui::Separator();
+
 
 	if (ImGui::Button("Add Water")) { AddWater(game); }
-	ImGui::SameLine();
-	if (ImGui::Button("Load imp file")) { LoadImpGrassFile(game); }
 	// NOTE(ck): Write the .imp model to a file 
 	/*if (ImGui::Button("Write imp file"))
 	{
@@ -494,11 +354,11 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 */
 #if 1
 	if (inputTimer > 0.0f)
-		inputTimer -= game->deltaTime;
+		inputTimer -= (float)game->deltaTime;
 
 	if (game->input.r.endedDown && inputTimer <= 0.0f)
 	{
-		inputTimer = game->deltaTime * 10.0f;
+		inputTimer = (float)game->deltaTime * 10.0f;
 		if (game->selectedIndex > 1)
 		{
 			game->selectedIndex--;
@@ -507,7 +367,7 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 	}
 	if (game->input.f.endedDown && inputTimer <= 0.0f)
 	{
-		inputTimer = game->deltaTime * 15.0f;
+		inputTimer = (float)game->deltaTime * 15.0f;
 		if (game->selectedIndex < (game->world->entityCount - 1))
 		{
 			game->selectedIndex++;
@@ -682,7 +542,7 @@ void RenderWindow(bool* p_open, Mon::GameState* game)
 				game->renderer.lights[selectedLight].pos.x = 0.0f;
 				game->renderer.lights[selectedLight].pos.y = 3.0f;
 				game->renderer.lights[selectedLight].pos.z = 0.0f;
-				game->renderer.lights[selectedLight].ambient = Mon::v3(0.2);
+				game->renderer.lights[selectedLight].ambient = Mon::v3(0.2f);
 				game->renderer.lights[selectedLight].diffuse = Mon::v3(1.0f);
 				game->renderer.lights[selectedLight].specular = Mon::v3(0.3f);
 			}
@@ -692,7 +552,7 @@ void RenderWindow(bool* p_open, Mon::GameState* game)
 				game->renderer.lights[selectedLight].pos.x = 0.0f;
 				game->renderer.lights[selectedLight].pos.y = 20.0f;
 				game->renderer.lights[selectedLight].pos.z = 0.0f;
-				game->renderer.lights[selectedLight].ambient = Mon::v3(0.3);
+				game->renderer.lights[selectedLight].ambient = Mon::v3(0.3f);
 				game->renderer.lights[selectedLight].diffuse = Mon::v3(0.8f);
 				game->renderer.lights[selectedLight].specular = Mon::v3(0.3f);
 			}
@@ -928,7 +788,7 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::GameState* game)
 		{
 			SDL_SetWindowSize(window, settings->windowWidth, settings->windowHeight);
 			SDL_SetWindowFullscreen(window, 0);
-			Mon::SetViewPort(game, 960.0f, 540.0f);
+			Mon::SetViewPort(game, 960, 540);
 		}
 
 		if (ImGui::Button("720"))
