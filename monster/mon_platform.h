@@ -2,7 +2,7 @@
 #define MON_PLATFORM_H
 
 // IMPORTANT(ck): Defines for 3D game
-#define _3D_
+//#define _3D_
 
 // TODO: IMPORTANT(ck): Fix this -- gui and sdl tied together
 #include "mon_gui.h"
@@ -10,6 +10,12 @@
 
 namespace Mon
 {
+#define Kilobytes(Value) ((Value)*1024LL)
+#define Megabytes(Value) (Kilobytes(Value)*1024LL)
+#define Gigabytes(Value) (Megabytes(Value)*1024LL)
+#define Terabytes(Value) (Gigabytes(Value)*1024LL)
+
+
 	struct PlatformState
 	{
 		uint64_t totalSize;

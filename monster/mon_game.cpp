@@ -89,7 +89,6 @@ namespace Mon
 			speed = -speed;
 
 		e->rb.pos.x += speed * dt;
-		
 
 		// TODO(ck): Update entity and then update entity collider right after
 		// instead of having two separate loops for entities and their colliders.
@@ -144,10 +143,11 @@ namespace Mon
 		// cameras
 		// world
 
-
+		// allocate assets
 		InitAssets(g_Assets);
 
 		state->mode = Mode::Debug;
+		// allocate renderer
 		state->renderer = {};
 		MonGL::InitRenderer(&state->renderer);
 
@@ -155,6 +155,7 @@ namespace Mon
 		state->setup.materialShininess = 64.0f;
 
 		// TODO(ck): Memory Allocation
+		// allocate grid
 		state->grid = new Grid();
 		InitGrid(state->grid);
 
@@ -164,7 +165,7 @@ namespace Mon
 		state->config->viewPort = { 5.0f, 5.0f, portWidth, portHeight };
 		MonGL::ViewPort(&state->config->viewPort);
 
-		state->config->angleDegrees = -45.0f;
+		state->config->spriteAngleDegrees = -45.0f;
 
 		InitCameras(state);
 
@@ -176,54 +177,17 @@ namespace Mon
 
 		state->mode = Mode::Debug;
 
-
 		// debug stuff
 		MonGL::InitLine(&state->lineOne);
 		MonGL::InitLine(&state->lineTwo);
 
 		// Init the game world
 		// TODO(ck): MEMORY MANAGEMENT
+		// allocate world
 		state->world = new World();
-		InitWorld(state->world, state->renderer.program.handle, state->renderer.waterProgram.common.handle, state->config->angleDegrees);
+		InitWorld(state->world, state->renderer.program.handle, state->renderer.waterProgram.common.handle, state->config->spriteAngleDegrees);
 
 		return true;
-	}
-
-	void MovePlayer(World* world, v3* velocity, bool jumped, float dt)
-	{
-		Entity* player = GetPlayer(world);
-
-		// ddPLength
-		float velocityLength = lengthSq(*velocity);
-		if (velocityLength > 1.0f)
-		{
-			*velocity *= (1.0f / squareRoot(velocityLength));
-		}
-
-		float speed = player->rb.speed;
-		//if (input.shift.endedDown)
-			//speed *= 1.5f;
-
-		*velocity *= speed;
-		*velocity += -7.0f * player->rb.velocity;
-
-		v3 oldPos = player->rb.pos;
-		v3 newPos = oldPos;
-		float deltaX = (0.5f * velocity->x * square(dt) + player->rb.velocity.x * dt);
-		float deltaY = player->rb.velocity.y;
-		//float deltaY = velocity->y * square(deltaTime) + player.particle.velocity.y * deltaTime);
-		float deltaZ = (0.5f * velocity->z * square(dt) + player->rb.velocity.z * dt);
-		v3 delta = { deltaX, deltaY, deltaZ };
-
-		// TODO(ck): need to set an offest like casey does
-		newPos += delta;
-
-		player->rb.velocity.x = velocity->x * dt + player->rb.velocity.x;
-		player->rb.velocity.z = velocity->z * dt + player->rb.velocity.z;
-		
-		player->rb.pos = newPos;
-
-		SetFacingDirection(player);
 	}
 
 	void Update(GameState* state, double dt, Input* newInput)
@@ -364,6 +328,7 @@ namespace Mon
 		// TODO(ck): UseProgram should be called only one time before switching shaders
 		//			 DO NOT CALL every time you draw an entity glUseProgram is expensive
 		MonGL::UseProgram(&state->renderer.program, state->setup);
+
 		MonGL::BeginRender(&state->renderer, state->config, projection, viewMatrix, state->renderer.program.handle);
 		state->setup.projection = projection;
 		state->setup.viewMatrix = viewMatrix;
@@ -394,9 +359,9 @@ namespace Mon
 		//MonGL::DrawLine(&state->renderer, &state->lineOne);
 		//MonGL::DrawLine(&state->renderer, &state->lineTwo);
 		//DrawDebugInfo(); //MonGL:: calls inside 
+		MonGL::DrawLights(&state->renderer);
 
 		MonGL::EndRender();
-
 	}
 
 	void CleanUp(GameState* state)

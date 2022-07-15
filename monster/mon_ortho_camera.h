@@ -11,6 +11,7 @@ namespace Mon
 		
 		v2 vel;
 		v2 pos;
+		v2 offset;
 		//v2 target;
 		float zoom;
 		float smoothness;

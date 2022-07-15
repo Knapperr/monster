@@ -20,8 +20,6 @@ namespace Mon {
 
 		c->min = v3(entityPos.x - 0.5f, entityPos.y - 0.5f, entityPos.z - 0.5f);
 		c->max = v3(entityPos.y + 0.5f, entityPos.y + 0.5f, entityPos.z + 0.5f);
-
-
 	}
 
 	//v3 GetBoxSize(Collider* c)

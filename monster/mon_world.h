@@ -183,6 +183,18 @@ namespace Mon {
 		Entity* player = GetPlayer(world);
 		InitPlayer(player, shaderHandle);
 		
+
+		AddEntity(world);
+		Entity* light = GetEntity(world, 2);
+		InitEntity(light, "light", v3(1.0f), v3(1.0f), angleDegrees, shaderHandle, 1, 2);
+
+		/*
+		how should lights work? are they attached to an entity? right now they are part of the rendering layer which i think
+		makes them easier to manage. attaching a light to an entity is possible?
+		
+		*/
+
+
 		v3 basePoint = v3(-32.0f, 0.0f, -32.0f);
 		for (int i = world->entityCount; i < 10; ++i)
 		{
@@ -242,7 +254,44 @@ namespace Mon {
 
 	static void UpdateWorld(World* world)
 	{
+		// move entity in here?
+	}
 
+	static void MovePlayer(World* world, v3* velocity, bool jumped, float dt)
+	{
+		Entity* player = GetPlayer(world);
+
+		// ddPLength
+		float velocityLength = lengthSq(*velocity);
+		if (velocityLength > 1.0f)
+		{
+			*velocity *= (1.0f / squareRoot(velocityLength));
+		}
+
+		float speed = player->rb.speed;
+		//if (input.shift.endedDown)
+			//speed *= 1.5f;
+
+		*velocity *= speed;
+		*velocity += -7.0f * player->rb.velocity;
+
+		v3 oldPos = player->rb.pos;
+		v3 newPos = oldPos;
+		float deltaX = (0.5f * velocity->x * square(dt) + player->rb.velocity.x * dt);
+		float deltaY = player->rb.velocity.y;
+		//float deltaY = velocity->y * square(deltaTime) + player.particle.velocity.y * deltaTime);
+		float deltaZ = (0.5f * velocity->z * square(dt) + player->rb.velocity.z * dt);
+		v3 delta = { deltaX, deltaY, deltaZ };
+
+		// TODO(ck): need to set an offest like casey does
+		newPos += delta;
+
+		player->rb.velocity.x = velocity->x * dt + player->rb.velocity.x;
+		player->rb.velocity.z = velocity->z * dt + player->rb.velocity.z;
+
+		player->rb.pos = newPos;
+
+		SetFacingDirection(player);
 	}
 }
 #endif

@@ -11,7 +11,7 @@
 #include <stdio.h>
 
 // IMPORTANT(ck): Defines for 3D game
-#define _3D_GUI_
+//#define _3D_GUI_
 
 #ifndef _3D_GUI_
 #include "mon_game2D.h"
@@ -27,7 +27,6 @@ TODO(ck):
 	on its data and then gui.h gets included in platform.h so we can call the gui and functions 
 	- Separate from SDL - we want this to be platform agnostic
 */
-
 struct Settings
 {
 	const char* title;

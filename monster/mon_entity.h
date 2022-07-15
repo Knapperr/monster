@@ -53,6 +53,12 @@ namespace Mon {
 		ChargeBarType type;
 	};
 
+	struct Light : public Component
+	{
+		// Index into the renderers lighting list
+		int lightIndex;
+	};
+
 	struct Entity
 	{
 		const char* name;

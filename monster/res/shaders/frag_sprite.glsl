@@ -30,7 +30,6 @@ uv /= size;
 
 	// TODO(ck): new pixel shader
 	vec2 texSize = textureSize(image, 0);
-
 	vec2 pixel = TexCoord * texSize;
 	vec2 seam = floor(pixel + 0.5);
 	vec2 duDv = fwidth(pixel);

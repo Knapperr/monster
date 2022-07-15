@@ -108,6 +108,9 @@ void LoadSceneFile(Mon::GameState* game)
 		for (unsigned int i = game->world->entityCount; i < count; i++)
 		{
 			Mon::AddEntity(game->world);
+			Mon::Entity* e = GetEntity(game->world, i);
+			// TODO(ck): Set the name
+			Mon::InitEntity(e, "name", Mon::v3(0.0f), Mon::v3(1.0f), 0.0f, game->mainShaderID, 1, 1);
 		}
 	}
 
@@ -168,6 +171,11 @@ void LoadSceneFile(Mon::GameState* game)
 			++index;
 		}
 	}
+
+	// Set grid to use grass texture on load
+	game->grid->data.textureIndex = 12;
+	// success
+	return;
 }
 #endif
 
@@ -242,8 +250,6 @@ void TerrainWindow(bool* p_open, Mon::GameState* game)
 	ImGui::End();
 }
 
-
-
 void CameraWindow(bool* p_open, Mon::GameState* game)
 {
 	ImGui::Begin("Cammy", p_open);
@@ -274,7 +280,6 @@ void CameraWindow(bool* p_open, Mon::GameState* game)
 	ImGui::Separator();
 
 	ImGui::DragFloat("cam zoom", &game->cameras[game->currCameraIndex].zoom, 0.1f, -1000.0f, 1000.0f, "%.02f");
-
 	ImGui::DragFloat("near plane", &game->cameras[game->currCameraIndex].nearPlane, 0.01f, 0.1f, 100.0f, "%.02f");
 	ImGui::DragFloat("far plane", &game->cameras[game->currCameraIndex].farPlane, 0.5f, 100.0f, 1000.0f, "%.02f");
 	
@@ -299,9 +304,10 @@ void CameraWindow(bool* p_open, Mon::GameState* game)
 
 void AddNewEntity(Mon::GameState* game, int meshIndex, int texIndex = 18, Mon::v3 scale = Mon::v3(1.0f))
 {
-	Mon::AddEntity(game->world);
+	unsigned int entity = Mon::AddEntity(game->world);
 	Mon::Entity* e = Mon::GetEntity(game->world, game->world->entityCount - 1);
 	Mon::InitEntity(e, "new", Mon::v3(1.0f, 0.0f, 1.0f), scale, -45.0f, game->renderer.program.handle, texIndex, meshIndex);
+	game->selectedIndex = entity;
 }
 
 void AddWater(Mon::GameState* game)
@@ -319,13 +325,27 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 	
 	ImGui::Separator();
 	ImGui::Text("ADD CUBE");
-	if (ImGui::Button("1m")) { AddNewEntity(game, 2); }
+	if (ImGui::Button("1m")) 
+	{ 
+		AddNewEntity(game, 2);
+
+	}
 	ImGui::SameLine();
-	if (ImGui::Button("2m")) { AddNewEntity(game, 2, 20, Mon::v3(2.0f)); }
+	if (ImGui::Button("2m")) 
+	{ 
+		AddNewEntity(game, 2, 20, Mon::v3(2.0f)); 
+	}
 	ImGui::SameLine();
-	if (ImGui::Button("4m")) { AddNewEntity(game, 2, 21, Mon::v3(4.0f)); }
+	if (ImGui::Button("4m")) 
+	{ 
+		AddNewEntity(game, 2, 21, Mon::v3(4.0f));
+	}
 	ImGui::SameLine();
-	if (ImGui::Button("10m")) { AddNewEntity(game, 2, 22, Mon::v3(10.0f)); }
+	if (ImGui::Button("10m")) 
+	{ 
+		AddNewEntity(game, 2, 22, Mon::v3(10.0f)); 
+
+	}
 	ImGui::Separator();
 
 
@@ -336,9 +356,7 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 		writeImpFile(game);
 	}*/
 
-	static unsigned int selected = 1;
 	ImGui::BeginChild("left pane", ImVec2(150.0f, 0.0f), true);
-
 
 	// increment or decrement the selectedIndex with r and f for quick editing 
 	// this might not be a standard but it will make it quick for me and thats
@@ -362,7 +380,6 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 		if (game->selectedIndex > 1)
 		{
 			game->selectedIndex--;
-			selected--;
 		}
 	}
 	if (game->input.f.endedDown && inputTimer <= 0.0f)
@@ -371,7 +388,6 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 		if (game->selectedIndex < (game->world->entityCount - 1))
 		{
 			game->selectedIndex++;
-			selected++;
 		}
 	}
 #endif
@@ -380,9 +396,8 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 	{
 		char label[128];
 		sprintf_s(label, "%s %d", game->world->entities[i].name, i);
-		if (ImGui::Selectable(label, selected == i))
+		if (ImGui::Selectable(label, game->selectedIndex == i))
 		{
-			selected = i;
 			game->selectedIndex = i;
 		}
 	}
@@ -395,7 +410,7 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 		ImGui::BeginGroup();
 		ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
 		
-		ImGui::Text("%s", game->world->entities[selected].name);
+		ImGui::Text("%s", game->world->entities[game->selectedIndex].name);
 
 		// TODO(ck): Model loading modal
 		// Modal for loading meshes
@@ -422,6 +437,7 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 			ImGui::EndPopup();
 		}
 		ImGui::Separator();
+		int selected = game->selectedIndex;
 		if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
 		{
 			if (ImGui::BeginTabItem("Controls"))
@@ -429,11 +445,10 @@ void EntityWindow(bool* p_open, Mon::GameState* game)
 				//ImGui::TextWrapped("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ");
 				//ImGui::SliderFloat("scale", &game->entities[selected].data.size.max, 0.0f, 200.0f);
 				//ImGui::DragFloat("fine scale", &game->entities[selected].data.size, 0.0001f, 0.0f, 200.0f, "%.02f");
-
+				
 				ImGui::DragFloat("x", &game->world->entities[selected].rb.pos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");
 				ImGui::DragFloat("y", &game->world->entities[selected].rb.pos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
 				ImGui::DragFloat("z", &game->world->entities[selected].rb.pos.z, 0.1f, -1000.0f, 1000.0f, "%.02f");
-
 
 				ImGui::SliderFloat3("scale", &game->world->entities[selected].data.scale[0], 1.0f, 100.0f, "%1.0f");
 				ImGui::SliderFloat3("collider min", &game->world->entities[selected].collider.min[0], 0.0f, 100.0f);
@@ -539,9 +554,12 @@ void RenderWindow(bool* p_open, Mon::GameState* game)
 
 			if (ImGui::Button("dim"))
 			{
-				game->renderer.lights[selectedLight].pos.x = 0.0f;
-				game->renderer.lights[selectedLight].pos.y = 3.0f;
-				game->renderer.lights[selectedLight].pos.z = 0.0f;
+				if (!game->renderer.lights[selectedLight].attachedToEntity)
+				{
+					game->renderer.lights[selectedLight].pos.x = 0.0f;
+					game->renderer.lights[selectedLight].pos.y = 3.0f;
+					game->renderer.lights[selectedLight].pos.z = 0.0f;
+				}
 				game->renderer.lights[selectedLight].ambient = Mon::v3(0.2f);
 				game->renderer.lights[selectedLight].diffuse = Mon::v3(1.0f);
 				game->renderer.lights[selectedLight].specular = Mon::v3(0.3f);
@@ -555,6 +573,14 @@ void RenderWindow(bool* p_open, Mon::GameState* game)
 				game->renderer.lights[selectedLight].ambient = Mon::v3(0.3f);
 				game->renderer.lights[selectedLight].diffuse = Mon::v3(0.8f);
 				game->renderer.lights[selectedLight].specular = Mon::v3(0.3f);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("evening"))
+			{
+				game->renderer.lights[selectedLight].pos.x = 24.0f;
+				game->renderer.lights[selectedLight].pos.y = 64.0f;
+				game->renderer.lights[selectedLight].pos.z = 26.0f;
+				game->renderer.lights[selectedLight].ambient = Mon::v3(0.3f, 0.1f, 0.0f);
 			}
 
 			ImGui::EndTabItem();

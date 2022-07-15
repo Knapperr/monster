@@ -103,7 +103,7 @@ namespace Mon {
 #ifdef USE_VELOCITY
 					velocity.y = 1.0f;
 #else
-					p->pos.y -= 1.0f * p->speed * dt;
+					p->pos.y += 1.0f * p->speed * dt;
 #endif
 				}
 				if (input->down.endedDown)
@@ -111,7 +111,7 @@ namespace Mon {
 #ifdef USE_VELOCITY
 					velocity.y = -1.0f;
 #else
-					p->pos.y += 1.0f * p->speed * dt;
+					p->pos.y -= 1.0f * p->speed * dt;
 #endif
 				}
 				if (input->left.endedDown)
@@ -240,14 +240,14 @@ namespace Mon {
 		mat4 view = game->cameras[game->currentCameraIndex].viewMatrix();
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
-		DrawTileMap(game->world->map, &game->renderer.program, game->world->sheet.texture.id, game->cameras[game->currentCameraIndex].positionOffset);
+		DrawTileMap(game->world->map, &game->renderer.program, game->world->sheet.texture.id, game->cameras[game->currentCameraIndex].pos);
 
 		for (unsigned int i = 1; i < game->world->entityCount; ++i)
 		{
 			Entity2D e = game->world->entities[i];
 			//state->world->entities[i]->pos.x *= time;
 			//state->world->entities[i]->pos.y *= time;
-			MonGL::DrawObject(&game->renderer.program, &e.sprite, game->cameras[game->currentCameraIndex].positionOffset);
+			MonGL::DrawObject(&game->renderer.program, &e.sprite, game->cameras[game->currentCameraIndex].pos);
 		}
 		//state->world->entities[i]->pos.x *= time;
 		//state->world->entities[i]->pos.y *= time;

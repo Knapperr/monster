@@ -18,14 +18,7 @@ namespace MonGL
 		texture->type = type;
 		// TODO(CK): Clean up
 		// set wrap and filter here for now same with internal formats
-		if (pixelArtTexture == false)
-		{
-			texture->wrapS = GL_REPEAT;
-			texture->wrapT = GL_REPEAT;
-			texture->filterMin = GL_LINEAR_MIPMAP_LINEAR;
-			texture->filterMax = GL_LINEAR;
-		}
-		else
+		if (pixelArtTexture)
 		{
 			texture->wrapS = GL_CLAMP_TO_EDGE;
 			texture->wrapT = GL_CLAMP_TO_EDGE;
@@ -38,6 +31,13 @@ namespace MonGL
 				texture->filterMin = GL_LINEAR;
 				texture->filterMax = GL_LINEAR;
 			}
+		}
+		else
+		{
+			texture->wrapS = GL_REPEAT;
+			texture->wrapT = GL_REPEAT;
+			texture->filterMin = GL_LINEAR_MIPMAP_LINEAR;
+			texture->filterMax = GL_LINEAR;
 		}
 
 		if (image->data)
@@ -228,11 +228,11 @@ namespace MonGL
 		LoadTexture(t15, MonGL::TextureType::Normal,  false, shaderID, GetImage(g_Assets, 15));
 		LoadTexture(t16, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 17));
 		LoadTexture(t17, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 18));
-		LoadTexture(t18, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 19));
-		LoadTexture(t19, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 20));
-		LoadTexture(t20, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 21));
-		LoadTexture(t21, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 22));
-		LoadTexture(t22, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 23));
+		LoadTexture(t18, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 19));
+		LoadTexture(t19, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 20));
+		LoadTexture(t20, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 21));
+		LoadTexture(t21, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 22));
+		LoadTexture(t22, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 23));
 
 
 		// #0 for the 
@@ -244,12 +244,14 @@ namespace MonGL
 		gl->lights[index].diffuse = v3(0.8f);
 		gl->lights[index].specular = v3(0.3f);
 		gl->lights[index].pos = v3(24.0f, 32.0f, 32.0f);
+		gl->lights[index].attachedToEntity = false;
 		index = AddLight(gl);
 		gl->lights[index].id = "002";
 		gl->lights[index].ambient = v3(1.0f);
 		gl->lights[index].diffuse = v3(1.0f);
 		gl->lights[index].specular = v3(1.0f);
 		gl->lights[index].pos = v3(1.0f);
+		gl->lights[index].attachedToEntity = false;
 
 		// Frame buffer
 		int screenWidth = 1440;
@@ -459,6 +461,12 @@ namespace MonGL
 
 		MonGL::ViewPort(&config->viewPort);
 		globalDrawCalls = 0;
+
+
+		// set up lights 
+		// make a uniform buffer of the lights and send it to the shader
+
+
 	}
 
 	///
@@ -683,6 +691,34 @@ namespace MonGL
 		globalDrawCalls++;
 	}
 
+	void DrawLights(OpenGL* gl)
+	{
+		Mesh* mesh = GetMesh(g_Assets, 9);
+		Texture* texture = GetTexture(gl, 5);
+		mat4 worldMatrix = mat4(1.0f);
+
+		for (int i = 1; i < gl->lightCount; ++i)
+		{
+			worldMatrix = mat4(1.0f);
+			worldMatrix = glm::translate(worldMatrix, gl->lights[i].pos);
+			glUniformMatrix4fv(glGetUniformLocation(gl->program.handle , "model"), 1, GL_FALSE, glm::value_ptr(worldMatrix));
+
+			int polygonMode = GL_LINE; // GL_FILL
+			glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
+			
+			glBindVertexArray(mesh->VAO);
+			if (mesh->indiceCount > 0)
+			{
+				glDrawElements(GL_TRIANGLES, mesh->indiceCount, GL_UNSIGNED_INT, 0);
+			}
+			else
+			{
+				glDrawArrays(GL_TRIANGLES, 0, 36);
+			}
+			globalDrawCalls++;
+		}
+	}
+
 	void DrawTerrain(OpenGL* gl, RenderData* data, Camera* camera)
 	{
 		Mesh* mesh = GetMesh(g_Assets, data->meshIndex);
@@ -825,7 +861,6 @@ namespace MonGL
 
 		// TODO(ck): Need a texture atlas rather than loading all of these
 		// textures for the entities
-		//
 
 		AddTexture(gl);
 		MonGL::Texture* t1 = GetTexture(gl, 1);
@@ -861,22 +896,22 @@ namespace MonGL
 		MonGL::Texture* t16 = GetTexture(gl, 16);
 
 		int shaderID = gl->program.handle;
-		LoadTexture(t1, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 1));
-		LoadTexture(t2, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 2));
-		LoadTexture(t3, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 3));
-		LoadTexture(t4, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 4));
-		LoadTexture(t5, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 5));
-		LoadTexture(t6, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 6));
-		LoadTexture(t7, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 7));
-		LoadTexture(t8, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 8));
-		LoadTexture(t9, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 9));
-		LoadTexture(t10, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 10));
-		LoadTexture(t11, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 11));
-		LoadTexture(t12, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 12));
-		LoadTexture(t13, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 13));
-		LoadTexture(t14, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 14));
-		LoadTexture(t15, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 15));
-		LoadTexture(t16, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 18));
+		LoadTexture(t1, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 1));
+		LoadTexture(t2, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 2));
+		LoadTexture(t3, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 3));
+		LoadTexture(t4, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 4));
+		LoadTexture(t5, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 5));
+		LoadTexture(t6, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 6));
+		LoadTexture(t7, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 7));
+		LoadTexture(t8, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 8));
+		LoadTexture(t9, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 9));
+		LoadTexture(t10, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 10));
+		LoadTexture(t11, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 11));
+		LoadTexture(t12, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 12));
+		LoadTexture(t13, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 13));
+		LoadTexture(t14, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 14));
+		LoadTexture(t15, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 15));
+		LoadTexture(t16, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 18));
 
 	}
 
@@ -1003,74 +1038,8 @@ namespace MonGL
 		InitOpenGLBatchMesh(batch);
 	};
 
-	void FillTileVertices(RenderData2D* sprite, int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize)
-	{
-		float sheetSize = 256.0f;
-		int spriteSize = 16;
-
-		// Texture coords
-		float topRightX = ((tileOffsetX + 1) * spriteSize) / sheetSize;
-		float topRightY = ((tileOffsetY + 1) * spriteSize) / sheetSize;
-		float topLeftX = (tileOffsetX * spriteSize) / sheetSize;
-		float topLeftY = ((tileOffsetY + 1) * spriteSize) / sheetSize;
-		float bottomLeftX = (tileOffsetX * spriteSize) / sheetSize;
-		float bottomLeftY = (tileOffsetY * spriteSize) / sheetSize;
-		float bottomRightX = ((tileOffsetX + 1) * spriteSize) / sheetSize;
-		float bottomRightY = (tileOffsetY * spriteSize) / sheetSize;
-
-		// TODO(ck): pushQuad(pos, color, texcoords)		
-		float x = tileXPos;
-		float y = tileYPos;
-		int size = tileSize;
-		Vertex vec0 = {
-			v3(x, y, 0.0f),
-			v3(1.0f, 0.0f, 0.0f),
-			v2(bottomLeftX, bottomLeftY)
-		};
-
-		Vertex vec1 = {
-			v3(x + size, y, 0.0f),
-			v3(0.0f, 1.0f, 0.0f),
-			v2(bottomRightX, bottomRightY)
-		};
-
-		Vertex vec2 = {
-			v3(x + size, y + size, 0.0f),
-			v3(0.0f, 0.0f, 1.0f),
-			v2(topRightX, topRightY)
-		};
-
-		Vertex vec3 = {
-			v3(x, y + size, 0.0f),
-			v3(1.0f, 1.0f, 0.0f),
-			v2(topLeftX, topLeftY)
-		};
-
-		usedIndices += 6;
-		sprite->vertices.push_back(vec0);
-		sprite->vertices.push_back(vec1);
-		sprite->vertices.push_back(vec2);
-		sprite->vertices.push_back(vec3);
-	}
-
 	void FillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize, v2 cameraPos)
 	{		
-		/*
-		
-		
-		v2 PlayerLeftTop = {PlayerGroundPointX - 0.5f*MetersToPixels*LowEntity->Width,
-                PlayerGroundPointY - 0.5f*MetersToPixels*LowEntity->Height};
-        v2 EntityWidthHeight = {LowEntity->Width, LowEntity->Height};
-		
-		        {
-        DrawRectangle(Buffer,
-                        PlayerLeftTop,
-                        PlayerLeftTop + MetersToPixels*EntityWidthHeight,
-                        PlayerR, PlayerG, PlayerB);
-			}
-		*/
-
-
 		float sheetSize = 256.0f;
 
 		// Texture coords
@@ -1083,39 +1052,16 @@ namespace MonGL
 		float bottomRightX	= ((tileOffsetX + 1) * tileSize) / sheetSize;
 		float bottomRightY	= (tileOffsetY * tileSize) / sheetSize;
 
-		// TODO(ck): pushQuad(pos, color, texcoords)	
-		// TODO(ck): The tileXpos and tileYPos need to be multiplied by the tilesize to get the proper size
-		
-		/*
-		June 05 2022 
-		I think I just unlocked a realization. these are vertices NOT positions in 
-		the real game world. these are for drawing. you need to remember that these
-		are rendering positions. this HAS to be the same as handmade at least it 
-		seems he doesn't do the math like this until rendering time which makes sense
-		maybe we can do this!!! 
-		vertex positions != world positions remember that
-		
-		I think in the 3d the model matrix is taking care of this for us
-		although i probably need to have some kind of map positions like 
-		in handmade?
-		*/
-
-		// Create vertices from the middle of the world
-		/*
-		* 
-		* IMPORTANT(ck): June 5th 2022
-		I think this is wrong. I am meant to be building my map beforehand starting like this
-		then when I create my vertices here I won't have to do this it will be set up
-		Lets try it in the 3d first maybe?
-		*/
 		const int MAP_SIZE = 40;
-		
 
-		float x = (float)(tileXPos - (MAP_SIZE / 2));
-		float y = (float)(tileYPos - (MAP_SIZE / 2));
-		x = x - cameraPos.x;
-		y = y - cameraPos.y;
-		tileSize = 1;
+		float x = (tileXPos - (MAP_SIZE / 2));
+		float y = (tileYPos - (MAP_SIZE / 2));
+		//float x = tileXPos;
+		//float y = tileYPos;
+		// IMPORTANT(ck): Move into camera space
+		//x = x - cameraPos.x;
+		//y = y - cameraPos.y;
+		tileSize = 1.0f;
 		Vertex vec0 = {
 			v3(x, y, 0.0f),
 			v3(1.0f, 0.0f, 0.0f),
@@ -1189,29 +1135,12 @@ namespace MonGL
 		//_lastVertex = vVertices[vVertices.size() - 1];
 	}
 
-	void DrawMap(CommonProgram* shader, RenderData2D* sprite, unsigned int textureID)
-	{
-		glUseProgram(shader->handle);
-		
-		mat4 model = mat4(1.0f);
-
-		glUniformMatrix4fv(glGetUniformLocation(shader->handle, "model"), 1, GL_FALSE, glm::value_ptr(model));
-
-		glActiveTexture(GL_TEXTURE0);
-		glUniform1i(glGetUniformLocation(shader->handle, "imageArray"), 0);
-		glUniform1i(glGetUniformLocation(shader->handle, "diffuse_layer"), 0);
-		glBindTexture(GL_TEXTURE_2D_ARRAY, textureID);
-
-		Mesh* mesh = GetMesh(g_Assets, sprite->meshIndex);
-		glBindVertexArray(mesh->VAO);
-		glDrawElements(GL_TRIANGLES, 9600, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
-	}
-
 	void DrawObject(CommonProgram* shader, RenderData2D* data, v2 cameraPos)
 	{
 		mat4 model = mat4(1.0f);
 		v3 tilePosition = {};
+		
+		// IMPORTANT(ck): Move position to camera space
 		tilePosition.x = data->pos.x - cameraPos.x;
 		tilePosition.y = data->pos.y - cameraPos.y;
 		model = glm::translate(model, tilePosition);
@@ -1230,6 +1159,7 @@ namespace MonGL
 		//Texture* texture = GetTexture(gl, data->textureIndex);
 
 		glActiveTexture(GL_TEXTURE0);
+		glUniform1i(glGetUniformLocation(shader->handle, "image"), 0);
 		//glUniform1i(program->textureDiffuse1, 0);
 		glBindTexture(GL_TEXTURE_2D, data->textureIndex);
 		//glActiveTexture(GL_TEXTURE0);
@@ -1252,10 +1182,13 @@ namespace MonGL
 		// Fill batch 
 		// bind vertices
 		int mapWidthHeight = 40;
-		v2 basePos = v2(0.0f);
-		basePos = basePos;
+		v3 pos = {};
+		v3 basePos = v3(1.0f, 1.0f, 0.0f);
+
+		pos.x = basePos.x - cameraPos.x;
+		pos.y = basePos.y - cameraPos.y;
 		mat4 model = mat4(1.0f);
-		model = glm::translate(model, v3(basePos, 0.0f));
+		model = glm::translate(model, pos);
 
 		//v2 worldScale = v2(64.0f);
 		//model = glm::scale(model, v3(worldScale, 1.0f));
@@ -1272,10 +1205,10 @@ namespace MonGL
 
 		glBindVertexArray(batch->VAO);
 		// (void*)(index_size * pass.index_start)
-		wireFrame ?
-			glDrawElements(GL_LINES, usedIndices, GL_UNSIGNED_INT, (void*)(2 * 0))
-			: glDrawElements(GL_TRIANGLES, usedIndices, GL_UNSIGNED_INT, (void*)(2 * 0));
-
+		
+		int polygonMode = wireFrame ? GL_LINE : GL_FILL;
+		glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
+		glDrawElements(GL_TRIANGLES, usedIndices, GL_UNSIGNED_INT, (void*)(0));
 		glBindVertexArray(0);
 
 		//reset buffer

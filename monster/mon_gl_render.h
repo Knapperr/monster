@@ -16,6 +16,13 @@ namespace MonGL
 	//	3D structs
 	//
 
+	enum class LightType
+	{
+		Point,
+		Directional,
+		Spot
+	};
+
 	struct Light
 	{
 		const char* id;
@@ -24,11 +31,14 @@ namespace MonGL
 		v3 ambient;
 		v3 diffuse;
 		v3 specular;
+
+		bool attachedToEntity;
+		LightType type;
 	};
 
 	struct Config
 	{
-		float angleDegrees;
+		float spriteAngleDegrees;
 		Rect viewPort;
 		int tileSize = 16;
 	};
@@ -254,6 +264,7 @@ namespace MonGL
 	void InitBoundingBox(RenderData* data);
 
 	void Draw(OpenGL* gl, Config* config, RenderSetup setup, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera);
+	void DrawLights(OpenGL* gl);
 
 	void DrawBoundingBox(OpenGL* gl, RenderData* data, Camera* camera);
 	void DrawTerrain(OpenGL* gl, RenderData* data, Camera* camera);
@@ -305,9 +316,7 @@ namespace MonGL
 	//
 	// 2d
 	//
-
 	void InitRenderer2D(OpenGL* gl);
-
 	void InitOpenGLBatchMesh(Mesh* mesh);
 
 	void PushMatrix(BatchData* batch, mat4 matrix);
@@ -318,13 +327,11 @@ namespace MonGL
 
 	void InitRenderData2D(RenderData2D* sprite, int size);
 	
-	void FillTileVertices(RenderData2D* sprite, int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize);
 	void InitTileMap(int tileAmount);
 	void FillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize, v2 cameraPos);
 	void BindVertices();
 	
 	void DrawObject(CommonProgram* shader, RenderData2D* data, v2 cameraPos);
-	void DrawMap(CommonProgram* shader, RenderData2D* sprite, unsigned int textureID);
 	void DrawMap(CommonProgram* shader, v2 cameraPos, unsigned int textureID, bool wireFrame);
 	void DrawMap(CommonProgram* shader, unsigned int textureID, int batchThing);
 

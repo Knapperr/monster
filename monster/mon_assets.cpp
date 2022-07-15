@@ -7,6 +7,7 @@ namespace Mon
 {
 	// IMPORTANT(ck): Asset manager defined here
 	// TODO(ck): Memory management
+	// does this get set to null for allocation we want this to happen after the game memory has been created
 	Assets* g_Assets = new Assets();
 
 	void InitAssets(Assets* assets)
@@ -64,6 +65,11 @@ namespace Mon
 		AddMesh(assets);
 		Mesh* gem = GetMesh(assets, 8);
 		InitModelMesh(gem, "gem_1x1.imp");
+
+		AddMesh(assets);
+		Mesh* light = GetMesh(assets, 9);
+		InitModelMesh(light, "light_sphere.imp");
+
 
 		// empty #0 for image
 		AddImage(assets);

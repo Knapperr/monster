@@ -7,6 +7,7 @@ namespace Mon
 		lerpSpeed = 7.0f;
 		smoothness = 0.24f;
 		pos = v2(0.0f);
+		offset = v2(0.5f);
 		//target = v2(0.0f);
 		vel = v2(0.0f);
 		zoom = 64.0f;
@@ -17,7 +18,7 @@ namespace Mon
 		lerpSpeed = 7.0f;
 		smoothness = 0.24f;
 		pos = position;
-		//target = position;
+		offset = v2(0.5f);
 		vel = v2(1.0f);
 		zoom = 64.0f;
 		
@@ -26,16 +27,11 @@ namespace Mon
 	void OrthoCamera::update(v2 *target, float dt)
 	{
 #if 0
-		pos.x = target->x*0.5f; // NOTE(ck): put coords in the middle of screen
-		pos.y = target->y*0.5f;
-
-		//float x = (float)(tileXPos - (MAP_SIZE / 2));
-		//float y = (float)(tileYPos - (MAP_SIZE / 2));
+		pos.x = (target->x + offset.x) * 0.5f; // NOTE(ck): put coords in the middle of screen
+		pos.y = (target->y + offset.y) * 0.5f;
 #else 
-		
-
-		pos.x = smoothDamp(pos.x, target->x*0.5f, vel.x, smoothness, dt);
-		pos.y = smoothDamp(pos.y, target->y*0.5f, vel.y, smoothness, dt);
+		pos.x = smoothDamp(pos.x, (target->x + offset.x)*0.5f, vel.x, smoothness, dt);
+		pos.y = smoothDamp(pos.y, (target->y + offset.y)*0.5f, vel.y, smoothness, dt);
 #endif
 
 		int mapOffset = 40 / 2;
@@ -68,7 +64,7 @@ namespace Mon
 		float half_width = half_height * aspect;
 		float half = 4.0f;
 
-		float tileSize = 0.5f; // 16?? or is it 0.5 as in local space?
+		float tileSize = 0.5f; // 16pixels = 1.0
 
 
 #if 1
