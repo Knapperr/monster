@@ -227,79 +227,81 @@ void InitGui(SDL_Window* window, SDL_GLContext* context)
 
 #ifdef _3D_GUI_
 
-
-void TerrainWindow(bool* p_open, Mon::GameState* game)
+void TerrainTab(Mon::GameState* game)
 {
-	ImGui::Begin("Terrain", p_open);
+	if (ImGui::BeginTabItem("Terrain"))
+	{
+		ImGui::Text("Texture");
+		ImGui::Separator();
+		if (ImGui::Button("UV")) { game->grid->data.textureIndex = 11; }
+		ImGui::SameLine();
+		if (ImGui::Button("Grass")) { game->grid->data.textureIndex = 12; }
+		ImGui::SameLine();
+		if (ImGui::Button("Pixel Grass")) { game->grid->data.textureIndex = 13; }
+		ImGui::SameLine();
+		if (ImGui::Button("Snow")) { game->grid->data.textureIndex = 14; }
+		ImGui::Separator();
+		if (ImGui::Button("1x1")) { game->grid->data.textureIndex = 16; }
+		ImGui::Separator();
 
-	ImGui::Text("Texture");
-	ImGui::Separator();
-	if (ImGui::Button("UV")) { game->grid->data.textureIndex = 11; }
-	ImGui::SameLine();
-	if (ImGui::Button("Grass")) { game->grid->data.textureIndex = 12; }
-	ImGui::SameLine();
-	if (ImGui::Button("Pixel Grass")) { game->grid->data.textureIndex = 13; }
-	ImGui::SameLine();
-	if (ImGui::Button("Snow")) { game->grid->data.textureIndex = 14; }
-	ImGui::Separator();
-	if (ImGui::Button("1x1")) { game->grid->data.textureIndex = 16; }
-	ImGui::Separator();
+		ImGui::Checkbox("Wireframe", &game->grid->data.wireFrame);
 
-	ImGui::Checkbox("Wireframe", &game->grid->data.wireFrame);
-
-	ImGui::End();
+		ImGui::EndTabItem();
+	}
 }
 
-void CameraWindow(bool* p_open, Mon::GameState* game)
+void CameraTab(Mon::GameState* game)
 {
-	ImGui::Begin("Cammy", p_open);
-
-	ImGui::LabelText(game->cameras[game->currCameraIndex].name, "Current Camera");
-	if (ImGui::ArrowButton("##left", ImGuiDir_Left))
+	if (ImGui::BeginTabItem("Cammy"))
 	{
-		if (game->currCameraIndex > 1)
-			game->currCameraIndex--;
 
-		if (game->cameras[game->currCameraIndex].type == Mon::CameraType::Follow)
-			Mon::PlayMode(game);
-		else
-			Mon::DebugMode(game);
+		ImGui::LabelText(game->cameras[game->currCameraIndex].name, "Current Camera");
+		if (ImGui::ArrowButton("##left", ImGuiDir_Left))
+		{
+			if (game->currCameraIndex > 1)
+				game->currCameraIndex--;
+
+			if (game->cameras[game->currCameraIndex].type == Mon::CameraType::Follow)
+				Mon::PlayMode(game);
+			else
+				Mon::DebugMode(game);
+		}
+		ImGui::SameLine();
+		if (ImGui::ArrowButton("##right", ImGuiDir_Right))
+		{
+			if (game->currCameraIndex < (game->cameraCount - 1))
+				game->currCameraIndex++;
+
+			if (game->cameras[game->currCameraIndex].type == Mon::CameraType::Follow)
+				Mon::PlayMode(game);
+			else
+				Mon::DebugMode(game);
+		}
+
+		ImGui::Separator();
+
+		ImGui::DragFloat("cam zoom", &game->cameras[game->currCameraIndex].zoom, 0.1f, -1000.0f, 1000.0f, "%.02f");
+		ImGui::DragFloat("near plane", &game->cameras[game->currCameraIndex].nearPlane, 0.01f, 0.1f, 100.0f, "%.02f");
+		ImGui::DragFloat("far plane", &game->cameras[game->currCameraIndex].farPlane, 0.5f, 100.0f, 1000.0f, "%.02f");
+
+		ImGui::SliderFloat("pitch", &game->cameras[game->currCameraIndex].pitch, -1.10f, 100.0f, "%1.0f");
+		ImGui::SliderFloat("angle", &game->cameras[game->currCameraIndex].angleAroundTarget, -360.0f, 180.0f);
+		ImGui::SliderFloat("lerp", &game->cameras[game->currCameraIndex].lerpSpeed, 0.0f, 100.0f);
+		ImGui::SliderFloat("smooth", &game->cameras[game->currCameraIndex].smoothness, 0.1f, 10.0f);
+
+		if (ImGui::Button("Log"))
+		{
+			Mon::Log::print("cam zoom", game->cameras[game->currCameraIndex].zoom);
+			Mon::Log::print("near plane", game->cameras[game->currCameraIndex].nearPlane);
+			Mon::Log::print("far plane", game->cameras[game->currCameraIndex].farPlane);
+			Mon::Log::print("pitch", game->cameras[game->currCameraIndex].pitch);
+			Mon::Log::print("angle around target", game->cameras[game->currCameraIndex].angleAroundTarget);
+			Mon::Log::print("lerp speed", game->cameras[game->currCameraIndex].lerpSpeed);
+			Mon::Log::print("smoothness", game->cameras[game->currCameraIndex].smoothness);
+		}
+
+		ImGui::EndTabItem();
 	}
-	ImGui::SameLine();
-	if (ImGui::ArrowButton("##right", ImGuiDir_Right))
-	{
-		if (game->currCameraIndex < (game->cameraCount - 1))
-			game->currCameraIndex++;
-
-		if (game->cameras[game->currCameraIndex].type == Mon::CameraType::Follow)
-			Mon::PlayMode(game);
-		else
-			Mon::DebugMode(game);
-	}
-
-	ImGui::Separator();
-
-	ImGui::DragFloat("cam zoom", &game->cameras[game->currCameraIndex].zoom, 0.1f, -1000.0f, 1000.0f, "%.02f");
-	ImGui::DragFloat("near plane", &game->cameras[game->currCameraIndex].nearPlane, 0.01f, 0.1f, 100.0f, "%.02f");
-	ImGui::DragFloat("far plane", &game->cameras[game->currCameraIndex].farPlane, 0.5f, 100.0f, 1000.0f, "%.02f");
-	
-	ImGui::SliderFloat("pitch", &game->cameras[game->currCameraIndex].pitch, -1.10f, 100.0f, "%1.0f");
-	ImGui::SliderFloat("angle", &game->cameras[game->currCameraIndex].angleAroundTarget, -360.0f, 180.0f);
-	ImGui::SliderFloat("lerp", &game->cameras[game->currCameraIndex].lerpSpeed, 0.0f, 100.0f);
-	ImGui::SliderFloat("smooth", &game->cameras[game->currCameraIndex].smoothness, 0.1f, 10.0f);
-
-	if (ImGui::Button("Log"))
-	{ 
-		Mon::Log::print("cam zoom", game->cameras[game->currCameraIndex].zoom);
-		Mon::Log::print("near plane", game->cameras[game->currCameraIndex].nearPlane);
-		Mon::Log::print("far plane", game->cameras[game->currCameraIndex].farPlane);
-		Mon::Log::print("pitch", game->cameras[game->currCameraIndex].pitch);
-		Mon::Log::print("angle around target", game->cameras[game->currCameraIndex].angleAroundTarget);
-		Mon::Log::print("lerp speed", game->cameras[game->currCameraIndex].lerpSpeed);
-		Mon::Log::print("smoothness", game->cameras[game->currCameraIndex].smoothness);
-	}
-
-	ImGui::End();
 }
 
 void AddNewEntity(Mon::GameState* game, int meshIndex, int texIndex = 18, Mon::v3 scale = Mon::v3(1.0f))
@@ -317,283 +319,288 @@ void AddWater(Mon::GameState* game)
 	Mon::InitWater(water, game->renderer.waterProgram.common.handle);
 }
 
-void EntityWindow(bool* p_open, Mon::GameState* game)
+void EntityTab(Mon::GameState* game)
 {
-	ImGui::Begin("entities and things", p_open);
-	
-	if (ImGui::Button("Add Entity")) { AddNewEntity(game, 1); }
-	
-	ImGui::Separator();
-	ImGui::Text("ADD CUBE");
-	if (ImGui::Button("1m")) 
-	{ 
-		AddNewEntity(game, 2);
-
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("2m")) 
-	{ 
-		AddNewEntity(game, 2, 20, Mon::v3(2.0f)); 
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("4m")) 
-	{ 
-		AddNewEntity(game, 2, 21, Mon::v3(4.0f));
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("10m")) 
-	{ 
-		AddNewEntity(game, 2, 22, Mon::v3(10.0f)); 
-
-	}
-	ImGui::Separator();
-
-
-	if (ImGui::Button("Add Water")) { AddWater(game); }
-	// NOTE(ck): Write the .imp model to a file 
-	/*if (ImGui::Button("Write imp file"))
+	if (ImGui::BeginTabItem("Objects"))
 	{
-		writeImpFile(game);
-	}*/
+		if (ImGui::Button("Add Entity")) { AddNewEntity(game, 1); }
 
-	ImGui::BeginChild("left pane", ImVec2(150.0f, 0.0f), true);
-
-	// increment or decrement the selectedIndex with r and f for quick editing 
-	// this might not be a standard but it will make it quick for me and thats
-	// all that matters =)
-	// Need to set a timer on this so it cant fire
-/*
-	TODO(ck): Make the input have a built in delay for menus specifically
-	maybe have separate up and downs that
-
-	because we need to use this same delay in the other menus as well
-	we will leave it here for now because we dont need quick select on
-	asset menus. the entity menu is used for building a scene or chunk
-*/
-#if 1
-	if (inputTimer > 0.0f)
-		inputTimer -= (float)game->deltaTime;
-
-	if (game->input.r.endedDown && inputTimer <= 0.0f)
-	{
-		inputTimer = (float)game->deltaTime * 10.0f;
-		if (game->selectedIndex > 1)
+		ImGui::Separator();
+		ImGui::Text("ADD CUBE");
+		if (ImGui::Button("1m"))
 		{
-			game->selectedIndex--;
+			AddNewEntity(game, 2);
+
 		}
-	}
-	if (game->input.f.endedDown && inputTimer <= 0.0f)
-	{
-		inputTimer = (float)game->deltaTime * 15.0f;
-		if (game->selectedIndex < (game->world->entityCount - 1))
+		ImGui::SameLine();
+		if (ImGui::Button("2m"))
 		{
-			game->selectedIndex++;
+			AddNewEntity(game, 2, 20, Mon::v3(2.0f));
 		}
-	}
-#endif
-
-	for (unsigned int i = 1; i < game->world->entityCount; ++i)
-	{
-		char label[128];
-		sprintf_s(label, "%s %d", game->world->entities[i].name, i);
-		if (ImGui::Selectable(label, game->selectedIndex == i))
+		ImGui::SameLine();
+		if (ImGui::Button("4m"))
 		{
-			game->selectedIndex = i;
+			AddNewEntity(game, 2, 21, Mon::v3(4.0f));
 		}
-	}
-	
-	ImGui::EndChild();
-	ImGui::SameLine();
-
-	if (game->world->entityCount > 1)
-	{
-		ImGui::BeginGroup();
-		ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
-		
-		ImGui::Text("%s", game->world->entities[game->selectedIndex].name);
-
-		// TODO(ck): Model loading modal
-		// Modal for loading meshes
-		if (ImGui::Button("Load Mesh.."))
-			ImGui::OpenPopup("Load Mesh");
-		if (ImGui::BeginPopupModal("Load Mesh", NULL))
+		ImGui::SameLine();
+		if (ImGui::Button("10m"))
 		{
-			std::vector<std::string> objPaths;
-			objPaths.push_back("apple_sauce");
-			for (unsigned int i = 0; i < objPaths.size(); i++)
-			{
-				//if (ImGui::SmallButton(objPaths[i].name.c_str()))
-				if (ImGui::SmallButton("name"))
-				{
-					//LOG("Loading mesh...");
-					//LoadEmptyObject(selected, objPaths[i].name, objPaths[i].path);
-					//LOG("mesh loaded!");
-					ImGui::CloseCurrentPopup();
-				}
-			}
+			AddNewEntity(game, 2, 22, Mon::v3(10.0f));
 
-			if (ImGui::Button("Close"))
-				ImGui::CloseCurrentPopup();
-			ImGui::EndPopup();
 		}
 		ImGui::Separator();
-		int selected = game->selectedIndex;
+
+
+		if (ImGui::Button("Add Water")) { AddWater(game); }
+		// NOTE(ck): Write the .imp model to a file 
+		/*if (ImGui::Button("Write imp file"))
+		{
+			writeImpFile(game);
+		}*/
+
+		ImGui::BeginChild("left pane", ImVec2(150.0f, 0.0f), true);
+
+		// increment or decrement the selectedIndex with r and f for quick editing 
+		// this might not be a standard but it will make it quick for me and thats
+		// all that matters =)
+		// Need to set a timer on this so it cant fire
+	/*
+		TODO(ck): Make the input have a built in delay for menus specifically
+		maybe have separate up and downs that
+
+		because we need to use this same delay in the other menus as well
+		we will leave it here for now because we dont need quick select on
+		asset menus. the entity menu is used for building a scene or chunk
+	*/
+#if 1
+		if (inputTimer > 0.0f)
+			inputTimer -= (float)game->deltaTime;
+
+		if (game->input.r.endedDown && inputTimer <= 0.0f)
+		{
+			inputTimer = (float)game->deltaTime * 10.0f;
+			if (game->selectedIndex > 1)
+			{
+				game->selectedIndex--;
+			}
+		}
+		if (game->input.f.endedDown && inputTimer <= 0.0f)
+		{
+			inputTimer = (float)game->deltaTime * 15.0f;
+			if (game->selectedIndex < (game->world->entityCount - 1))
+			{
+				game->selectedIndex++;
+			}
+		}
+#endif
+
+		for (unsigned int i = 1; i < game->world->entityCount; ++i)
+		{
+			char label[128];
+			sprintf_s(label, "%s %d", game->world->entities[i].name, i);
+			if (ImGui::Selectable(label, game->selectedIndex == i))
+			{
+				game->selectedIndex = i;
+			}
+		}
+
+		ImGui::EndChild();
+		ImGui::SameLine();
+
+		if (game->world->entityCount > 1)
+		{
+			ImGui::BeginGroup();
+			ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
+
+			ImGui::Text("%s", game->world->entities[game->selectedIndex].name);
+
+			// TODO(ck): Model loading modal
+			// Modal for loading meshes
+			if (ImGui::Button("Load Mesh.."))
+				ImGui::OpenPopup("Load Mesh");
+			if (ImGui::BeginPopupModal("Load Mesh", NULL))
+			{
+				std::vector<std::string> objPaths;
+				objPaths.push_back("apple_sauce");
+				for (unsigned int i = 0; i < objPaths.size(); i++)
+				{
+					//if (ImGui::SmallButton(objPaths[i].name.c_str()))
+					if (ImGui::SmallButton("name"))
+					{
+						//LOG("Loading mesh...");
+						//LoadEmptyObject(selected, objPaths[i].name, objPaths[i].path);
+						//LOG("mesh loaded!");
+						ImGui::CloseCurrentPopup();
+					}
+				}
+
+				if (ImGui::Button("Close"))
+					ImGui::CloseCurrentPopup();
+				ImGui::EndPopup();
+			}
+			ImGui::Separator();
+			int selected = game->selectedIndex;
+			if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
+			{
+				if (ImGui::BeginTabItem("Controls"))
+				{
+					//ImGui::TextWrapped("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ");
+					//ImGui::SliderFloat("scale", &game->entities[selected].data.size.max, 0.0f, 200.0f);
+					//ImGui::DragFloat("fine scale", &game->entities[selected].data.size, 0.0001f, 0.0f, 200.0f, "%.02f");
+
+					ImGui::DragFloat("x", &game->world->entities[selected].rb.pos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::DragFloat("y", &game->world->entities[selected].rb.pos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::DragFloat("z", &game->world->entities[selected].rb.pos.z, 0.1f, -1000.0f, 1000.0f, "%.02f");
+
+					ImGui::SliderFloat3("scale", &game->world->entities[selected].data.scale[0], 1.0f, 100.0f, "%1.0f");
+					ImGui::SliderFloat3("collider min", &game->world->entities[selected].collider.min[0], 0.0f, 100.0f);
+					ImGui::SliderFloat3("collider max", &game->world->entities[selected].collider.max[0], 0.0f, 100.0f);
+
+					ImGui::DragFloat("speed", &game->world->entities[selected].rb.speed, 0.10f, 0.0f, 200.0f, "%.10f");
+					ImGui::DragFloat("angle", &game->world->entities[selected].spriteAngleDegrees, 0.10f, -180.0f, 360.0f, "%.10f");
+
+					ImGui::SliderInt("mesh index", &game->world->entities[selected].data.meshIndex, 1, Mon::g_Assets->meshCount - 1);
+					ImGui::SliderInt("texture index", &game->world->entities[selected].data.textureIndex, 1, game->renderer.textureCount - 1);
+
+					ImGui::Checkbox("Wireframe", &game->world->entities[selected].data.wireFrame);
+					ImGui::Checkbox("Visible", &game->world->entities[selected].data.visible);
+					ImGui::SameLine();
+					ImGui::Checkbox("Show collider", &game->world->entities[selected].collider.data.visible);
+					//ImGui::Checkbox("show normals", &g_Game->objects[selected]->viewNormals);
+					//ImGui::DragFloat("rot x", &g_Game->objects[selected]->orientation.x, 0.05f, -1000.0f, 1000.0f, "%.02f");
+					//ImGui::DragFloat("rot y", &g_Game->objects[selected]->orientation.y, 0.05f, -1000.0f, 1000.0f, "%.02f");
+					//ImGui::DragFloat("rot z", &g_Game->objects[selected]->orientation.z, 0.05f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::EndTabItem();
+				}
+
+
+
+				// Water render data
+				if (game->world->entities[selected].data.programType == MonGL::ProgramType::Water)
+				{
+					if (ImGui::BeginTabItem("Water options"))
+					{
+						ImGui::DragFloat("uJump", &game->world->entities[selected].data.programData.uJump, 0.001f, 0.0f, 0.25f, "%.02f");
+						ImGui::DragFloat("vJump", &game->world->entities[selected].data.programData.vJump, 0.001f, 0.0f, 0.25f, "%.02f");
+						ImGui::DragFloat("tiling", &game->world->entities[selected].data.programData.tiling, 0.001f, 0.0f, 10.00f, "%.01f");
+						ImGui::DragFloat("speed", &game->world->entities[selected].data.programData.speed, 0.001f, 0.0f, 2.0f, "%.01f");
+						ImGui::DragFloat("flow strength", &game->world->entities[selected].data.programData.flowStrength, 0.001f, 0.0f, 0.5f, "%.02f");
+						ImGui::DragFloat("flow offset", &game->world->entities[selected].data.programData.flowOffset, 0.001f, -1.5f, 2.0f, "%.02f");
+						ImGui::SliderFloat("height scale", &game->world->entities[selected].data.programData.heightScale, 0.0f, 5.0f);
+						ImGui::SliderFloat("height scale modulated", &game->world->entities[selected].data.programData.heightScaleModulated, 0.0f, 20.0f);
+						ImGui::SliderFloat("wave length", &game->world->entities[selected].data.programData.waveLength, 0.0f, 100.0f);
+
+
+						ImGui::EndTabItem();
+					}
+				}
+				ImGui::EndTabBar();
+			}
+
+			// TODO(ck): Delete entities
+			//if (ImGui::SmallButton("DELETE"))
+			//{
+			//	UnloadObject(selected);
+			//	// Selected is greater than size of vector
+			//	// don't move down if empty
+			//	if (selected >= g_Game->objects.size() && !g_Game->objects.empty())
+			//		selected -= 1;
+			//}
+
+			ImGui::EndChild();
+			ImGui::EndGroup();
+		}
+	
+		ImGui::EndTabItem();
+	}
+}
+
+void RendererTab(Mon::GameState* game)
+{
+	if (ImGui::BeginTabItem("Renderer"))
+	{
+
+		static unsigned int selectedLight = 1;
+		ImGui::BeginChild("left pane renderer", ImVec2(150.0f, 0.0f), true);
+
+		for (unsigned int i = 1; i < game->renderer.lightCount; ++i)
+		{
+			char label[128];
+			sprintf_s(label, "%s %d", game->renderer.lights[i].id, i);
+			if (ImGui::Selectable(label, selectedLight == i))
+			{
+				selectedLight = i;
+			}
+		}
+
+		ImGui::EndChild();
+		ImGui::SameLine();
+
+		ImGui::BeginGroup();
+		ImGui::BeginChild("light details", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
+
+		ImGui::Text("%s", game->renderer.lights[selectedLight].id);
+		ImGui::Separator();
 		if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
 		{
-			if (ImGui::BeginTabItem("Controls"))
+			if (ImGui::BeginTabItem("details"))
 			{
-				//ImGui::TextWrapped("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ");
-				//ImGui::SliderFloat("scale", &game->entities[selected].data.size.max, 0.0f, 200.0f);
-				//ImGui::DragFloat("fine scale", &game->entities[selected].data.size, 0.0001f, 0.0f, 200.0f, "%.02f");
-				
-				ImGui::DragFloat("x", &game->world->entities[selected].rb.pos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");
-				ImGui::DragFloat("y", &game->world->entities[selected].rb.pos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
-				ImGui::DragFloat("z", &game->world->entities[selected].rb.pos.z, 0.1f, -1000.0f, 1000.0f, "%.02f");
+				//static char buf[32];
+				//sprintf_s(buf, "%s", std::to_string(Mon::g_Assets->meshes[selected].VAO).c_str());
+				//ImGui::Text("VAO %s", buf, IM_ARRAYSIZE(buf));
 
-				ImGui::SliderFloat3("scale", &game->world->entities[selected].data.scale[0], 1.0f, 100.0f, "%1.0f");
-				ImGui::SliderFloat3("collider min", &game->world->entities[selected].collider.min[0], 0.0f, 100.0f);
-				ImGui::SliderFloat3("collider max", &game->world->entities[selected].collider.max[0], 0.0f, 100.0f);
-				
-				ImGui::DragFloat("speed", &game->world->entities[selected].rb.speed, 0.10f, 0.0f, 200.0f, "%.10f");
-				ImGui::DragFloat("angle", &game->world->entities[selected].spriteAngleDegrees, 0.10f, -180.0f, 360.0f, "%.10f");
-				
-				ImGui::SliderInt("mesh index", &game->world->entities[selected].data.meshIndex, 1, Mon::g_Assets->meshCount - 1);
-				ImGui::SliderInt("texture index", &game->world->entities[selected].data.textureIndex, 1, game->renderer.textureCount - 1);
-				
-				ImGui::Checkbox("Wireframe", &game->world->entities[selected].data.wireFrame);
-				ImGui::Checkbox("Visible", &game->world->entities[selected].data.visible);
+				ImGui::DragFloat("x", &game->renderer.lights[selectedLight].pos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");
+				ImGui::DragFloat("y", &game->renderer.lights[selectedLight].pos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
+				ImGui::DragFloat("z", &game->renderer.lights[selectedLight].pos.z, 0.1f, -1000.0f, 1000.0f, "%.02f");
+				ImGui::SliderFloat3("ambient", &game->renderer.lights[selectedLight].ambient[0], 0.0f, 1.0f, "%0.01f");
+				ImGui::SliderFloat3("diffuse", &game->renderer.lights[selectedLight].diffuse[0], 0.0f, 1.0f, "%0.01f");
+				ImGui::SliderFloat3("specular", &game->renderer.lights[selectedLight].specular[0], 0.0f, 1.0f, "%0.01f");
+
+
+				if (ImGui::Button("dim"))
+				{
+					if (!game->renderer.lights[selectedLight].attachedToEntity)
+					{
+						game->renderer.lights[selectedLight].pos.x = 0.0f;
+						game->renderer.lights[selectedLight].pos.y = 3.0f;
+						game->renderer.lights[selectedLight].pos.z = 0.0f;
+					}
+					game->renderer.lights[selectedLight].ambient = Mon::v3(0.2f);
+					game->renderer.lights[selectedLight].diffuse = Mon::v3(1.0f);
+					game->renderer.lights[selectedLight].specular = Mon::v3(0.3f);
+				}
 				ImGui::SameLine();
-				ImGui::Checkbox("Show collider", &game->world->entities[selected].collider.data.visible);
-				//ImGui::Checkbox("show normals", &g_Game->objects[selected]->viewNormals);
-				//ImGui::DragFloat("rot x", &g_Game->objects[selected]->orientation.x, 0.05f, -1000.0f, 1000.0f, "%.02f");
-				//ImGui::DragFloat("rot y", &g_Game->objects[selected]->orientation.y, 0.05f, -1000.0f, 1000.0f, "%.02f");
-				//ImGui::DragFloat("rot z", &g_Game->objects[selected]->orientation.z, 0.05f, -1000.0f, 1000.0f, "%.02f");
+				if (ImGui::Button("avg"))
+				{
+					game->renderer.lights[selectedLight].pos.x = 0.0f;
+					game->renderer.lights[selectedLight].pos.y = 20.0f;
+					game->renderer.lights[selectedLight].pos.z = 0.0f;
+					game->renderer.lights[selectedLight].ambient = Mon::v3(0.3f);
+					game->renderer.lights[selectedLight].diffuse = Mon::v3(0.8f);
+					game->renderer.lights[selectedLight].specular = Mon::v3(0.3f);
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("evening"))
+				{
+					game->renderer.lights[selectedLight].pos.x = 24.0f;
+					game->renderer.lights[selectedLight].pos.y = 64.0f;
+					game->renderer.lights[selectedLight].pos.z = 26.0f;
+					game->renderer.lights[selectedLight].ambient = Mon::v3(0.3f, 0.1f, 0.0f);
+				}
+
 				ImGui::EndTabItem();
 			}
 
-
-
-			// Water render data
-			if (game->world->entities[selected].data.programType == MonGL::ProgramType::Water)
-			{
-				if (ImGui::BeginTabItem("Water options"))
-				{
-					ImGui::DragFloat("uJump", &game->world->entities[selected].data.programData.uJump, 0.001f, 0.0f, 0.25f, "%.02f");
-					ImGui::DragFloat("vJump", &game->world->entities[selected].data.programData.vJump, 0.001f, 0.0f, 0.25f, "%.02f");
-					ImGui::DragFloat("tiling", &game->world->entities[selected].data.programData.tiling, 0.001f, 0.0f, 10.00f, "%.01f");
-					ImGui::DragFloat("speed", &game->world->entities[selected].data.programData.speed, 0.001f, 0.0f, 2.0f, "%.01f");
-					ImGui::DragFloat("flow strength", &game->world->entities[selected].data.programData.flowStrength, 0.001f, 0.0f, 0.5f, "%.02f");
-					ImGui::DragFloat("flow offset", &game->world->entities[selected].data.programData.flowOffset, 0.001f, -1.5f, 2.0f, "%.02f");
-					ImGui::SliderFloat("height scale", &game->world->entities[selected].data.programData.heightScale, 0.0f, 5.0f);
-					ImGui::SliderFloat("height scale modulated", &game->world->entities[selected].data.programData.heightScaleModulated, 0.0f, 20.0f);
-					ImGui::SliderFloat("wave length", &game->world->entities[selected].data.programData.waveLength, 0.0f, 100.0f);
-
-
-					ImGui::EndTabItem();
-				}
-			}
 			ImGui::EndTabBar();
 		}
-			
-		// TODO(ck): Delete entities
-		//if (ImGui::SmallButton("DELETE"))
-		//{
-		//	UnloadObject(selected);
-		//	// Selected is greater than size of vector
-		//	// don't move down if empty
-		//	if (selected >= g_Game->objects.size() && !g_Game->objects.empty())
-		//		selected -= 1;
-		//}
-	
+
 		ImGui::EndChild();
 		ImGui::EndGroup();
+
+		ImGui::EndTabItem();
 	}
-	ImGui::End();
 }
 
-void RenderWindow(bool* p_open, Mon::GameState* game)
-{
-	ImGui::Begin("Renderer", p_open);
-
-	static unsigned int selectedLight = 1;
-	ImGui::BeginChild("left pane renderer", ImVec2(150.0f, 0.0f), true);
-
-	for (unsigned int i = 1; i < game->renderer.lightCount; ++i)
-	{
-		char label[128];
-		sprintf_s(label, "%s %d", game->renderer.lights[i].id, i);
-		if (ImGui::Selectable(label, selectedLight == i))
-		{
-			selectedLight = i;
-		}
-	}
-
-	ImGui::EndChild();
-	ImGui::SameLine();
-
-	ImGui::BeginGroup();
-	ImGui::BeginChild("light details", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
-
-	ImGui::Text("%s", game->renderer.lights[selectedLight].id);
-	ImGui::Separator();
-	if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
-	{
-		if (ImGui::BeginTabItem("details"))
-		{
-			//static char buf[32];
-			//sprintf_s(buf, "%s", std::to_string(Mon::g_Assets->meshes[selected].VAO).c_str());
-			//ImGui::Text("VAO %s", buf, IM_ARRAYSIZE(buf));
-
-			ImGui::DragFloat("x", &game->renderer.lights[selectedLight].pos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");
-			ImGui::DragFloat("y", &game->renderer.lights[selectedLight].pos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
-			ImGui::DragFloat("z", &game->renderer.lights[selectedLight].pos.z, 0.1f, -1000.0f, 1000.0f, "%.02f");
-			ImGui::SliderFloat3("ambient", &game->renderer.lights[selectedLight].ambient[0], 0.0f, 1.0f, "%0.01f");
-			ImGui::SliderFloat3("diffuse", &game->renderer.lights[selectedLight].diffuse[0], 0.0f, 1.0f, "%0.01f");
-			ImGui::SliderFloat3("specular", &game->renderer.lights[selectedLight].specular[0], 0.0f, 1.0f, "%0.01f");
-
-
-			if (ImGui::Button("dim"))
-			{
-				if (!game->renderer.lights[selectedLight].attachedToEntity)
-				{
-					game->renderer.lights[selectedLight].pos.x = 0.0f;
-					game->renderer.lights[selectedLight].pos.y = 3.0f;
-					game->renderer.lights[selectedLight].pos.z = 0.0f;
-				}
-				game->renderer.lights[selectedLight].ambient = Mon::v3(0.2f);
-				game->renderer.lights[selectedLight].diffuse = Mon::v3(1.0f);
-				game->renderer.lights[selectedLight].specular = Mon::v3(0.3f);
-			}
-			ImGui::SameLine();
-			if (ImGui::Button("avg"))
-			{
-				game->renderer.lights[selectedLight].pos.x = 0.0f;
-				game->renderer.lights[selectedLight].pos.y = 20.0f;
-				game->renderer.lights[selectedLight].pos.z = 0.0f;
-				game->renderer.lights[selectedLight].ambient = Mon::v3(0.3f);
-				game->renderer.lights[selectedLight].diffuse = Mon::v3(0.8f);
-				game->renderer.lights[selectedLight].specular = Mon::v3(0.3f);
-			}
-			ImGui::SameLine();
-			if (ImGui::Button("evening"))
-			{
-				game->renderer.lights[selectedLight].pos.x = 24.0f;
-				game->renderer.lights[selectedLight].pos.y = 64.0f;
-				game->renderer.lights[selectedLight].pos.z = 26.0f;
-				game->renderer.lights[selectedLight].ambient = Mon::v3(0.3f, 0.1f, 0.0f);
-			}
-
-			ImGui::EndTabItem();
-		}
-
-		ImGui::EndTabBar();
-	}
-
-	ImGui::EndChild();
-	ImGui::EndGroup();
-
-	ImGui::End();
-}
 
 void AssetWindow(bool* p_open, Mon::GameState* game)
 {
@@ -647,6 +654,63 @@ void AssetWindow(bool* p_open, Mon::GameState* game)
 	ImGui::EndGroup();
 
 	ImGui::End();
+}
+
+void AssetTab(Mon::GameState* game)
+{
+	if (ImGui::BeginTabItem("Assets"))
+	{
+
+		static unsigned int selected = 1;
+		ImGui::BeginChild("left pane assets", ImVec2(150.0f, 0.0f), true);
+
+		for (unsigned int i = 1; i < Mon::g_Assets->meshCount; ++i)
+		{
+			char label[128];
+			sprintf_s(label, "%s %d", Mon::g_Assets->meshes[i].id, i);
+			if (ImGui::Selectable(label, selected == i))
+			{
+				selected = i;
+			}
+		}
+
+		ImGui::EndChild();
+		ImGui::SameLine();
+
+		ImGui::BeginGroup();
+		ImGui::BeginChild("mesh details", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
+
+		ImGui::Text("%s", Mon::g_Assets->meshes[selected].id);
+		ImGui::Separator();
+		if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
+		{
+			if (ImGui::BeginTabItem("details"))
+			{
+				static char buf[64];
+				sprintf_s(buf, "%s", std::to_string(Mon::g_Assets->meshes[selected].VAO).c_str());
+				ImGui::Text("VAO %s", buf, IM_ARRAYSIZE(buf));
+
+				sprintf_s(buf, "%s", std::to_string(Mon::g_Assets->meshes[selected].verticeCount).c_str());
+				ImGui::Text("Vertice Count %s", buf, IM_ARRAYSIZE(buf));
+
+				sprintf_s(buf, "%s", std::to_string(Mon::g_Assets->meshes[selected].indiceCount).c_str());
+				ImGui::Text("Indice Count %s", buf, IM_ARRAYSIZE(buf));
+
+				sprintf_s(buf, "%s", RenderTypeText(Mon::g_Assets->meshes[selected].type));
+				ImGui::Text("Type %s", buf, IM_ARRAYSIZE(buf));
+
+				ImGui::EndTabItem();
+			}
+
+			ImGui::EndTabBar();
+		}
+
+		ImGui::EndChild();
+		ImGui::EndGroup();
+
+
+		ImGui::EndTabItem();
+	}
 }
 
 void DebugWindow(bool* p_open, Mon::GameState* game)
@@ -739,31 +803,15 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::GameState* game)
 {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame(window);
-
 	ImGui::NewFrame();
-	static bool showDemoWindow = false;
 
-	static bool showTerrainWindow = true;
-	static bool showCameraWindow = true;
-	static bool showEntityWindow = true;
+	static bool showDemoWindow = false;
 	static bool showDebugWindow = true;
 	static bool showStatsWindow = false;
-	static bool showAssetWindow = false;
-	static bool showRenderWindow = true;
 	if (showDemoWindow)
 		ImGui::ShowDemoWindow(&showDemoWindow);
-	if (showTerrainWindow)
-		TerrainWindow(&showTerrainWindow, game);
-	if (showCameraWindow)
-		CameraWindow(&showCameraWindow, game);
 	if (showStatsWindow)
 		StatsWindow(&showStatsWindow, game);
-	if (showEntityWindow)
-		EntityWindow(&showEntityWindow, game);
-	if (showAssetWindow)
-		AssetWindow(&showAssetWindow, game);
-	if (showRenderWindow)
-		RenderWindow(&showRenderWindow, game);
 	if (showDebugWindow)
 		DebugWindow(&showDebugWindow, game);
 
@@ -810,7 +858,7 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::GameState* game)
 			Mon::SetViewPort(game, dm.w, dm.h);
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Exit"))
+		if (ImGui::Button("Windowed"))
 		{
 			SDL_SetWindowSize(window, settings->windowWidth, settings->windowHeight);
 			SDL_SetWindowFullscreen(window, 0);
@@ -861,28 +909,29 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::GameState* game)
 		ImGui::Checkbox("Demo", &showDemoWindow);
 		ImGui::SameLine();
 		ImGui::Checkbox("stats", &showStatsWindow);
-
-		ImGui::Checkbox("Terrain", &showTerrainWindow);
 		ImGui::SameLine();
-		ImGui::Checkbox("Camera", &showCameraWindow);
-		ImGui::SameLine();
-		ImGui::Checkbox("Things", &showEntityWindow); 
-		ImGui::SameLine();
-		ImGui::Checkbox("Renderer", &showRenderWindow);
-		ImGui::SameLine();
-		ImGui::Checkbox("Assets", &showAssetWindow);
-
 		ImGui::Checkbox("Debug Info", &showDebugWindow);
-
-
+		
 		ImGui::DragFloat("cam speed", &game->cameras[game->currCameraIndex].speed, 0.01f, 1.0f, 200.0f, "%.02f");
 		ImGui::DragFloat("material shininess[move]", &game->setup.materialShininess, 0.01f, 1.0f, 200.0f, "%.02f");
 		
-
 	ImGui::Separator();
 	
-	ImGui::End();
+	// Tabs
+	if (ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None))
+	{
+		// NOTE(ck): Maybe pull out the if into here? 
+		EntityTab(game);
+		RendererTab(game);
+		TerrainTab(game);
+		CameraTab(game);
+		AssetTab(game);
+		
 
+		ImGui::EndTabBar();
+	}
+
+	ImGui::End();
 }
 
 #else 
