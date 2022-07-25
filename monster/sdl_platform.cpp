@@ -109,16 +109,15 @@ namespace Mon
 		SDL_GL_SetSwapInterval(1);
 		settings->vsync = SDL_GL_GetSwapInterval();
 
-		//glDepthFunc(GL_LESS);
 #ifdef _3D_
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_MULTISAMPLE);
-		//glDepthFunc(GL_ALWAYS);
+		glDepthFunc(GL_LESS);
+
 #endif
-		//glEnable(GL_CULL_FACE);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
+		//glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
 
 		// controller
 		// ------------------

@@ -18,6 +18,7 @@ namespace Mon
 		Model,
 		Quad,
 		Cube,
+		CubeMap,
 		Debug,
 	};
 
@@ -87,7 +88,7 @@ namespace Mon
 	// global struct for accessing assets
 	struct Assets
 	{
-		Mesh meshes[16];
+		Mesh meshes[32];
 		Image images[32];
 
 		Mesh2D quad2D; // Remove

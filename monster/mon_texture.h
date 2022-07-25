@@ -11,7 +11,8 @@ namespace MonGL
 		Diffuse,
 		Normal,
 		Specular,
-		Height
+		Height,
+		CubeMap
 	};
 
 	struct Texture

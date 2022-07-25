@@ -10,6 +10,7 @@ namespace MonGL
 	void LoadUniforms(CommonProgram* program)
 	{
 		int programID = program->handle;
+
 		// NOTE(ck): should be renderer->getAttribLocation something like that
 		program->model = glGetUniformLocation(programID, "model");
 		program->view = glGetUniformLocation(programID, "view");
@@ -48,6 +49,13 @@ namespace MonGL
 
 		program->textureNormal1 = glGetUniformLocation(programID, "textureNormal1");
 		program->textureNormal2 = glGetUniformLocation(programID, "textureNormal2");
+	}
+
+	void LoadUniforms(CubemapProgram* program)
+	{
+		int programID = program->common.handle;
+		program->skybox = glGetUniformLocation(programID, "skybox");
+		program->skyboxTextureIndex = 23;
 	}
 
 
@@ -142,6 +150,14 @@ namespace MonGL
 	{
 		LoadShader(&program->common, vertexFile, fragmentFile, geometryFile);
 		LoadUniforms(program);
+	}
+
+	void LoadShader(CubemapProgram* program, const char* vertexFile, const char* fragmentFile, const char* geometryFile)
+	{
+		LoadShader(&program->common, vertexFile, fragmentFile, geometryFile);
+		LoadUniforms(program);
+
+		program->skyboxTextureIndex = 23;
 	}
 	
 	void CheckCompileErrors(unsigned int object, ERROR_TYPE type)

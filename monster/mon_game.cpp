@@ -361,6 +361,8 @@ namespace Mon
 		//DrawDebugInfo(); //MonGL:: calls inside 
 		MonGL::DrawLights(&state->renderer);
 
+		MonGL::DrawCubeMap(&state->renderer, state->setup);
+
 		MonGL::EndRender();
 	}
 

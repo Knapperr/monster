@@ -84,18 +84,6 @@ namespace MonGL
 			glEnableVertexAttribArray(4);
 			glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, bitangent));
 		}
-
-#if 0
-		if (tangents)
-		{
-			glEnableVertexAttribArray(3);
-			glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, tangent));
-
-			glEnableVertexAttribArray(4);
-			glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, bitangent));
-		}
-#endif
-
 		// unbind
 		glBindVertexArray(0);
 	}
@@ -129,31 +117,129 @@ namespace MonGL
 	}
 
 	///
+	/// [begin] CUBE MAP
+	///
+
+	float skyboxVertices[] = {
+		// positions          
+		-1.0f,  1.0f, -1.0f,
+		-1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+
+		 1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f, -1.0f,
+
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+
+		 1.0f,  1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+
+		1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,
+		1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		-1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+
+		 -1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		1.0f, -1.0f, -1.0f,
+		1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		1.0f, -1.0f,  1.0f
+	};
+
+	void LoadCubeMapTexture(Texture* texture)
+	{
+		texture->type = TextureType::CubeMap;
+
+		glGenTextures(1, &texture->id);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, texture->id);
+
+		for (unsigned int i = 0; i < 6; ++i)
+		{
+			Image* img = GetImage(g_Assets, 24 + i);
+
+			if (img->data)
+			{
+				texture->width = img->width;
+				texture->height = img->height;
+				texture->internalFormat = GL_RGB;
+				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+							 0, GL_RGB, img->width, img->height, 0, GL_RGB, GL_UNSIGNED_BYTE, img->data);
+			}
+			else
+			{
+				// TODO(ck): no strings
+				std::string msg = "failed to load cubemap textures";
+				Mon::Log::warn(msg.c_str());
+			}
+		}
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	}
+
+	void LoadCubemap(Cubemap* cubemap)
+	{
+		glGenVertexArrays(1, &cubemap->VAO);
+		glGenBuffers(1, &cubemap->VBO);
+		glBindVertexArray(cubemap->VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, cubemap->VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	}
+
+	///
+	/// [END] CUBE MAP
+	/// 
+
+	///
 	/// [BEGIN] Renderer
 	///	
 	/*
 		This needs to be able to init DirectX and other platforms
 		Eventually I will add a layer above opengl
 	*/
+
 	void InitRenderer(OpenGL* gl)
 	{
+
 		/*
 		TODO(ck): Load from a configuration file
 		should only load meshses in current chunk or level
 		*/
-
-		// Data that renderdata can hold
-		//Mesh meshes[10]; // TODO(ck): SQLite config for size
-		//Texture textures[30]; // TODO(ck): SQLite config for size
-
-		// TODO(ck): Wrangle up the data
-		// go around the code base and find out where these are all loaded and load them in here
-		// everything must have an index into these things
 		gl->program = {};
 		gl->waterProgram = {};
+		gl->cubemapProgram = {};
+
+		// TODO(ck): Remove 
 		MonGL::LoadShader(&gl->program, "res/shaders/vert_colors.glsl", "res/shaders/frag_colors.glsl", NULL);
 		MonGL::LoadShader(&gl->waterProgram, "res/shaders/vert_water.glsl", "res/shaders/frag_water.glsl", NULL);
-
+		MonGL::LoadShader(&gl->cubemapProgram, "res/shaders/vert_cubemap.glsl", "res/shaders/frag_cubemap.glsl", NULL);
+		
 		// TODO(ck): MOVE TEXTURE IDS TO data... program can have its own textues too?? 
 		// a program can be like a material that can be applied to a mesh so it needs to have its own textures
 		gl->waterProgram.textureIndexNormal1 = 6;
@@ -162,7 +248,6 @@ namespace MonGL
 		// TODO(ck): Need a texture atlas rather than loading all of these
 		// textures for the entities 
 		AddTexture(gl);
-		
 
 		// TODO(ck): Fix this
 		AddTexture(gl);
@@ -234,16 +319,22 @@ namespace MonGL
 		LoadTexture(t21, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 22));
 		LoadTexture(t22, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 23));
 
+		AddTexture(gl);
+		MonGL::Texture* t23 = GetTexture(gl, 23);
+		//Mon::Image* cubeMapImages = nullptr;
+		LoadCubeMapTexture(t23);
+		gl->cubemap = {};
+		LoadCubemap(&gl->cubemap);
 
 		// #0 for the 
 		AddLight(gl);
 
 		int index = AddLight(gl);
 		gl->lights[index].id = "001";
-		gl->lights[index].ambient = v3(0.3f);
+		gl->lights[index].pos = v3(24.0f, 64.0f, 26.0f);
+		gl->lights[index].ambient = v3(0.3f, 0.1f, 0.0f);
 		gl->lights[index].diffuse = v3(0.8f);
 		gl->lights[index].specular = v3(0.3f);
-		gl->lights[index].pos = v3(24.0f, 32.0f, 32.0f);
 		gl->lights[index].attachedToEntity = false;
 		index = AddLight(gl);
 		gl->lights[index].id = "002";
@@ -290,7 +381,6 @@ namespace MonGL
 
 	}
 
- 
 	///
 	/// [END] 
 	///	
@@ -409,7 +499,7 @@ namespace MonGL
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	};
 
-	void InitBoundingBox(RenderData* data)
+	void SetBoundingBox(RenderData* data)
 	{
 		data->lineWidth = 2;
 		data->color = v3(0.7f, 0.15f, 0.4f);
@@ -417,7 +507,7 @@ namespace MonGL
 		data->visible = true;
 	}
 
-	void InitCube(RenderData* data)
+	void SetCube(RenderData* data)
 	{
 		data->visible = true;
 		data->scale = v3(1.0f);
@@ -426,7 +516,7 @@ namespace MonGL
 
 	// TODO(ck): can remove this?
 	// NOTE(ck): Assume the vertices and indices have been loaded
-	void InitModel(RenderData* data)
+	void SetModel(RenderData* data)
 	{
 		data->scale = v3(1.0f);
 		data->visible = true;
@@ -435,7 +525,7 @@ namespace MonGL
 	void InitInstancedData(InstancedData* data, int amount)
 	{
 		data->amount = amount;
-		InitModel(&data->renderData);
+		SetModel(&data->renderData);
 		data->matrices = new mat4[data->amount];
 	}
 
@@ -450,7 +540,12 @@ namespace MonGL
 	void BeginRender(OpenGL* gl, Config* config, mat4 projection, mat4 view, int shaderID)
 	{
 		//glBindFramebuffer(GL_FRAMEBUFFER, gl->buffer.handle);
-		glEnable(GL_DEPTH_TEST);
+		
+
+		// glDisable(GL_CULL_FACE); --- might need to turn off for cube map
+
+		/////glEnable(GL_CULL_FACE);
+		/////glDepthFunc(GL_ALWAYS);
 
 		// TODO(ck): Platform->Renderer->clearColor 
 		glClearColor(0.126f, 0.113f, 0.165f, 1.0f);
@@ -715,8 +810,43 @@ namespace MonGL
 			{
 				glDrawArrays(GL_TRIANGLES, 0, 36);
 			}
+
+			glBindVertexArray(0);
 			globalDrawCalls++;
 		}
+	}
+
+	void DrawCubeMap(OpenGL* gl, RenderSetup setup)
+	{
+		//glStencilMask(0x00);
+		glDepthFunc(GL_LEQUAL);
+		// TODO(ck): Might need cull face for cube map
+		//glEnable(GL_CULL_FACE); 
+
+		glUseProgram(gl->cubemapProgram.common.handle);
+
+		// remove translation from the view matrix
+		mat4 view = mat4(mat3(setup.viewMatrix));
+		glUniformMatrix4fv(gl->cubemapProgram.common.view, 1, GL_FALSE, glm::value_ptr(view));
+		glUniformMatrix4fv(gl->cubemapProgram.common.projection, 1, GL_FALSE, glm::value_ptr(setup.projection));
+	
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		
+		glBindVertexArray(gl->cubemap.VAO);
+		
+		Texture* texture = GetTexture(gl, gl->cubemapProgram.skyboxTextureIndex);
+		glActiveTexture(GL_TEXTURE0);
+		glUniform1i(gl->cubemapProgram.skybox, 0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, texture->id);
+
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		
+		glBindVertexArray(0);
+		// back to default
+		glDepthFunc(GL_LESS);
+		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		globalDrawCalls++;
 	}
 
 	void DrawTerrain(OpenGL* gl, RenderData* data, Camera* camera)

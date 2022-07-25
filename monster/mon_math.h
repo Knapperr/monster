@@ -19,7 +19,7 @@ namespace Mon
 	typedef glm::vec3 v3;
 	typedef glm::vec4 v4;
 
-
+	typedef glm::mat3 mat3;
 	typedef glm::mat4 mat4;
 
 	struct Rect

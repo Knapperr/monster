@@ -5,13 +5,13 @@ namespace Mon {
 	void InitBoxCollider(Collider* c)
 	{
 		c->type = ColliderType::BoundingBox;
-		MonGL::InitBoundingBox(&c->data);
+		MonGL::SetBoundingBox(&c->data);
 	}
 
 	void InitBoxCollider(Collider* c, v3 entityPos)
 	{
 		c->type = ColliderType::BoundingBox;
-		MonGL::InitBoundingBox(&c->data);
+		MonGL::SetBoundingBox(&c->data);
 		
 		// TODO(ck): Offset(collider, entityPos)
 		// use this for calculating min and max 

@@ -187,7 +187,7 @@ bool IntersectionInRange(MonGL::Mesh* mesh, float start, float finish, Mon::v3 r
 bool IsUnderGround(MonGL::Mesh* mesh, Mon::v3 testPoint)
 {
 	// TODO(ck): completely pull out
-	float height = GetHeight(mesh, testPoint.x, testPoint.z);
+	float height = GetHeight(mesh, (int)testPoint.x, (int)testPoint.z);
 	if (testPoint.y < height)
 		return true;
 	else

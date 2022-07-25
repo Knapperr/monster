@@ -70,7 +70,6 @@ namespace Mon
 		Mesh* light = GetMesh(assets, 9);
 		InitModelMesh(light, "light_sphere.imp");
 
-
 		// empty #0 for image
 		AddImage(assets);
 
@@ -166,6 +165,32 @@ namespace Mon
 		AddImage(assets);
 		Image* ww10m = GetImage(assets, 23);
 		InitImage(ww10m, "res/textures/debug/TWW_Txk_c10m.png");
+
+		/*  */
+		AddImage(assets);
+		Image* skybox1 = GetImage(assets, 24);
+		InitImage(skybox1, "res/textures/skyboxsun5deg2/right.bmp", false);
+		
+		AddImage(assets);
+		Image* skybox2 = GetImage(assets, 25);
+		InitImage(skybox2, "res/textures/skyboxsun5deg2/left.bmp", false);
+
+		AddImage(assets);
+		Image* skybox3 = GetImage(assets, 26);
+		InitImage(skybox3, "res/textures/skyboxsun5deg2/top.bmp", false);
+
+		AddImage(assets);
+		Image* skybox4 = GetImage(assets, 27);
+		InitImage(skybox4, "res/textures/skyboxsun5deg2/bottom.bmp", false);
+
+		AddImage(assets);
+		Image* skybox5 = GetImage(assets, 28);
+		InitImage(skybox5, "res/textures/skyboxsun5deg2/front.bmp", false);
+
+		AddImage(assets);
+		Image* skybox6 = GetImage(assets, 29);
+		InitImage(skybox6, "res/textures/skyboxsun5deg2/back.bmp", false);
+
 
 		//AddImage(assets);
 		//Image* tileSheet = GetImage(assets, 18);
@@ -267,7 +292,7 @@ namespace Mon
 	void InitQuadMesh(Mesh* mesh, bool tangents)
 	{
 		// TODO(ck): Actual GUID
-		mesh->id = "001";
+		mesh->id = "QUAD";
 
 		v2 size = v2(1.0f); // 1x1 meter
 		int verticeCount = 4;
@@ -386,7 +411,7 @@ namespace Mon
 
 	void InitCubeMesh(Mesh* mesh)
 	{
-		mesh->id = "002";
+		mesh->id = "CUBE";
 		// Load from .vt file (need to do efficient as possible)
 		// maybe dont need to do this but?? tilemap does a quad and its a huge
 		// cubes can just be created with a macro PUSH_CUBE PUSH_QUAD x4?
@@ -523,7 +548,7 @@ namespace Mon
 		// IMPORTANT(ck):
 		// TODO(ck):  This can't be 003 there are always going to be more than one
 		//			  model mesh. the other meshes are fine but the model mesh is dynamic
-		mesh->id = "003";
+		mesh->id = "MODEL";
 		LoadImpFile(mesh, fileName);
 		mesh->type = RenderType::Model;
 		MonGL::UploadOpenGLMesh(mesh);
@@ -546,7 +571,7 @@ namespace Mon
 
 
 */
-		mesh->id = "004";
+		mesh->id = "GRID";
 		mesh->type = RenderType::Model;
 		int verticeCount = (xSize + 1) * (zSize + 1);
 		mesh->vertices = new MonGL::Vertex3D[verticeCount];
@@ -664,6 +689,18 @@ namespace Mon
 
 	}
 
+	void InitCubeMapMesh(Mesh* mesh)
+	{
+		mesh->id = "CUBEMAP";
+		mesh->type = RenderType::CubeMap;
+
+		// TODO(ck): Memory Allocation
+		mesh->verticeCount = 36;
+		mesh->vertices = new MonGL::Vertex3D[mesh->verticeCount];
+		
+		
+
+	}
 
 
 	void InitBoundingBoxMesh(Mesh* mesh)

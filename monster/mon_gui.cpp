@@ -132,7 +132,7 @@ void LoadSceneFile(Mon::GameState* game)
 
 	bool finished = false;
 	std::string tempName;
-	int index = 1;
+	unsigned int index = 1;
 	while (file >> line)
 	{
 		// starts at two
@@ -227,6 +227,21 @@ void InitGui(SDL_Window* window, SDL_GLContext* context)
 
 #ifdef _3D_GUI_
 
+void AddNewEntity(Mon::GameState* game, int meshIndex, int texIndex = 18, Mon::v3 scale = Mon::v3(1.0f))
+{
+	unsigned int entity = Mon::AddEntity(game->world);
+	Mon::Entity* e = Mon::GetEntity(game->world, game->world->entityCount - 1);
+	Mon::InitEntity(e, "new", Mon::v3(1.0f, 0.0f, 1.0f), scale, -45.0f, game->renderer.program.handle, texIndex, meshIndex);
+	game->selectedIndex = entity;
+}
+
+void AddWater(Mon::GameState* game)
+{
+	Mon::AddEntity(game->world);
+	Mon::Entity* water = Mon::GetEntity(game->world, game->world->entityCount - 1);
+	Mon::InitWater(water, game->renderer.waterProgram.common.handle);
+}
+
 void TerrainTab(Mon::GameState* game)
 {
 	if (ImGui::BeginTabItem("Terrain"))
@@ -280,6 +295,7 @@ void CameraTab(Mon::GameState* game)
 
 		ImGui::Separator();
 
+		ImGui::DragFloat("cam speed", &game->cameras[game->currCameraIndex].speed, 0.01f, 1.0f, 200.0f, "%.02f");
 		ImGui::DragFloat("cam zoom", &game->cameras[game->currCameraIndex].zoom, 0.1f, -1000.0f, 1000.0f, "%.02f");
 		ImGui::DragFloat("near plane", &game->cameras[game->currCameraIndex].nearPlane, 0.01f, 0.1f, 100.0f, "%.02f");
 		ImGui::DragFloat("far plane", &game->cameras[game->currCameraIndex].farPlane, 0.5f, 100.0f, 1000.0f, "%.02f");
@@ -302,21 +318,6 @@ void CameraTab(Mon::GameState* game)
 
 		ImGui::EndTabItem();
 	}
-}
-
-void AddNewEntity(Mon::GameState* game, int meshIndex, int texIndex = 18, Mon::v3 scale = Mon::v3(1.0f))
-{
-	unsigned int entity = Mon::AddEntity(game->world);
-	Mon::Entity* e = Mon::GetEntity(game->world, game->world->entityCount - 1);
-	Mon::InitEntity(e, "new", Mon::v3(1.0f, 0.0f, 1.0f), scale, -45.0f, game->renderer.program.handle, texIndex, meshIndex);
-	game->selectedIndex = entity;
-}
-
-void AddWater(Mon::GameState* game)
-{
-	Mon::AddEntity(game->world);
-	Mon::Entity* water = Mon::GetEntity(game->world, game->world->entityCount - 1);
-	Mon::InitWater(water, game->renderer.waterProgram.common.handle);
 }
 
 void EntityTab(Mon::GameState* game)
@@ -586,6 +587,8 @@ void RendererTab(Mon::GameState* game)
 					game->renderer.lights[selectedLight].pos.y = 64.0f;
 					game->renderer.lights[selectedLight].pos.z = 26.0f;
 					game->renderer.lights[selectedLight].ambient = Mon::v3(0.3f, 0.1f, 0.0f);
+					game->renderer.lights[selectedLight].diffuse = Mon::v3(0.8f);
+					game->renderer.lights[selectedLight].specular = Mon::v3(0.3f);
 				}
 
 				ImGui::EndTabItem();
@@ -599,61 +602,6 @@ void RendererTab(Mon::GameState* game)
 
 		ImGui::EndTabItem();
 	}
-}
-
-
-void AssetWindow(bool* p_open, Mon::GameState* game)
-{
-	ImGui::Begin("Assets", p_open);
-
-	static unsigned int selected = 1;
-	ImGui::BeginChild("left pane assets", ImVec2(150.0f, 0.0f), true);
-
-	for (unsigned int i = 1; i < Mon::g_Assets->meshCount; ++i)
-	{
-		char label[128];
-		sprintf_s(label, "%s %d", Mon::g_Assets->meshes[i].id, i);
-		if (ImGui::Selectable(label, selected == i))
-		{
-			selected = i;
-		}
-	}
-
-	ImGui::EndChild();
-	ImGui::SameLine();
-
-	ImGui::BeginGroup();
-	ImGui::BeginChild("mesh details", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
-
-	ImGui::Text("%s", Mon::g_Assets->meshes[selected].id);
-	ImGui::Separator();
-	if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
-	{
-		if (ImGui::BeginTabItem("details"))
-		{
-			static char buf[64];
-			sprintf_s(buf, "%s", std::to_string(Mon::g_Assets->meshes[selected].VAO).c_str());
-			ImGui::Text("VAO %s", buf, IM_ARRAYSIZE(buf));
-			
-			sprintf_s(buf, "%s", std::to_string(Mon::g_Assets->meshes[selected].verticeCount).c_str());
-			ImGui::Text("Vertice Count %s", buf, IM_ARRAYSIZE(buf));
-
-			sprintf_s(buf, "%s", std::to_string(Mon::g_Assets->meshes[selected].indiceCount).c_str());
-			ImGui::Text("Indice Count %s", buf, IM_ARRAYSIZE(buf));
-
-			sprintf_s(buf, "%s", RenderTypeText(Mon::g_Assets->meshes[selected].type));
-			ImGui::Text("Type %s", buf, IM_ARRAYSIZE(buf));
-
-			ImGui::EndTabItem();
-		}
-
-		ImGui::EndTabBar();
-	}
-
-	ImGui::EndChild();
-	ImGui::EndGroup();
-
-	ImGui::End();
 }
 
 void AssetTab(Mon::GameState* game)
@@ -725,7 +673,7 @@ void DebugWindow(bool* p_open, Mon::GameState* game)
 	ImGui::End();
 }
 
-void StatsWindow(bool* p_open, Mon::GameState* game)
+void StatsWindow3D(bool* p_open, Mon::GameState* game)
 {
 	ImGui::Begin("stats for me", p_open);
 
@@ -811,122 +759,115 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::GameState* game)
 	if (showDemoWindow)
 		ImGui::ShowDemoWindow(&showDemoWindow);
 	if (showStatsWindow)
-		StatsWindow(&showStatsWindow, game);
+		StatsWindow3D(&showStatsWindow, game);
 	if (showDebugWindow)
 		DebugWindow(&showDebugWindow, game);
 
 	ImGui::Begin("DEBUG MENU");
 
 	ImGui::Separator();
-		ImGui::PushID(0);
-			ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::ImColor(170, 40, 44));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::ImColor(105, 24, 27));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::ImColor(66, 15, 16));
-			if (ImGui::Button("debug")) { Mon::DebugMode(game); }
-			ImGui::PopStyleColor(3);
-		ImGui::PopID();
-		ImGui::SameLine();
+	ImGui::PushID(0);
+		ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::ImColor(170, 40, 44));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::ImColor(105, 24, 27));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::ImColor(66, 15, 16));
+		if (ImGui::Button("debug")) { Mon::DebugMode(game); }
+		ImGui::PopStyleColor(3);
+	ImGui::PopID();
+	ImGui::SameLine();
 
-		ImGui::PushID(0);
-			ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::ImColor(16, 169, 35));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::ImColor(31, 80, 18));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::ImColor(34, 64, 35));
-			if (ImGui::Button("play") && game->mode != Mon::Mode::Play) { Mon::PlayMode(game); }
-			ImGui::PopStyleColor(3);
-		ImGui::PopID();
-		if (ImGui::Button("save")) 
-		{
-			WriteEntities(game->world->entities, game->world->entityCount, game->mainShaderID); 
-			Mon::Log::print("Saved game to master file");
-			Mon::Log::warn("Only one master save file active!!!");
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("load")) 
-		{ 
-			LoadSceneFile(game); 
-			Mon::Log::print("Loaded saved scene");
-			Mon::Log::warn("Only one master save file active!!!");
-		}
-		ImGui::SameLine();
+	ImGui::PushID(0);
+		ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::ImColor(16, 169, 35));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::ImColor(31, 80, 18));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::ImColor(34, 64, 35));
+		if (ImGui::Button("play") && game->mode != Mon::Mode::Play) { Mon::PlayMode(game); }
+		ImGui::PopStyleColor(3);
+	ImGui::PopID();
+	if (ImGui::Button("save")) 
+	{
+		WriteEntities(game->world->entities, game->world->entityCount, game->mainShaderID); 
+		Mon::Log::print("Saved game to master file");
+		Mon::Log::warn("Only one master save file active!!!");
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("load")) 
+	{ 
+		LoadSceneFile(game); 
+		Mon::Log::print("Loaded saved scene");
+		Mon::Log::warn("Only one master save file active!!!");
+	}
+	ImGui::SameLine();
 
-		if (ImGui::Button("Fullscreen"))
-		{
-			SDL_DisplayMode dm;
-			SDL_GetCurrentDisplayMode(0, &dm);
-			SDL_SetWindowSize(window, dm.w, dm.h);
-			SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
-			Mon::SetViewPort(game, dm.w, dm.h);
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Windowed"))
-		{
-			SDL_SetWindowSize(window, settings->windowWidth, settings->windowHeight);
-			SDL_SetWindowFullscreen(window, 0);
-			Mon::SetViewPort(game, 960, 540);
-		}
+	if (ImGui::Button("Fullscreen"))
+	{
+		SDL_DisplayMode dm;
+		SDL_GetCurrentDisplayMode(0, &dm);
+		SDL_SetWindowSize(window, dm.w, dm.h);
+		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+		Mon::SetViewPort(game, dm.w, dm.h);
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Windowed"))
+	{
+		SDL_SetWindowSize(window, settings->windowWidth, settings->windowHeight);
+		SDL_SetWindowFullscreen(window, 0);
+		Mon::SetViewPort(game, 960, 540);
+	}
 
-		if (ImGui::Button("720"))
-		{
-			settings->windowWidth = 1280;
-			settings->windowHeight = 720;
-			SDL_SetWindowSize(window, settings->windowWidth, settings->windowHeight);
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("1440"))
-		{
-			settings->windowWidth = 1440;
-			settings->windowHeight = 900;
-			SDL_SetWindowSize(window, settings->windowWidth, settings->windowHeight);
-		}
+	if (ImGui::Button("720"))
+	{
+		settings->windowWidth = 1280;
+		settings->windowHeight = 720;
+		SDL_SetWindowSize(window, settings->windowWidth, settings->windowHeight);
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("1440"))
+	{
+		settings->windowWidth = 1440;
+		settings->windowHeight = 900;
+		SDL_SetWindowSize(window, settings->windowWidth, settings->windowHeight);
+	}
 	
-		ImGui::SliderFloat2("port", (float*)&game->config->viewPort, 0.0f, 477.0f);
+	ImGui::SliderFloat2("port", (float*)&game->config->viewPort, 0.0f, 477.0f);
 
-		// NOTE(ck): SDL Vsync https://wiki.libsdl.org/SDL_GL_SetSwapInterval
-		// 0 for immediate updates, 1 for updates synchronized with the vertical retrace, -1 for adaptive 
-		if (ImGui::RadioButton("off", settings->vsync == 0)) 
-		{
-			SDL_GL_SetSwapInterval(0);
-			settings->vsync = SDL_GL_GetSwapInterval();
-		}
-		ImGui::SameLine();
-		if (ImGui::RadioButton("vertical retrace", settings->vsync == 1))
-		{
-			SDL_GL_SetSwapInterval(1);
-			settings->vsync = SDL_GL_GetSwapInterval();
+	// NOTE(ck): SDL Vsync https://wiki.libsdl.org/SDL_GL_SetSwapInterval
+	// 0 for immediate updates, 1 for updates synchronized with the vertical retrace, -1 for adaptive 
+	if (ImGui::RadioButton("off", settings->vsync == 0)) 
+	{
+		SDL_GL_SetSwapInterval(0);
+		settings->vsync = SDL_GL_GetSwapInterval();
+	}
+	ImGui::SameLine();
+	if (ImGui::RadioButton("vertical retrace", settings->vsync == 1))
+	{
+		SDL_GL_SetSwapInterval(1);
+		settings->vsync = SDL_GL_GetSwapInterval();
 
-		}
-		ImGui::SameLine();
-		if (ImGui::RadioButton("adaptive", settings->vsync == -1))
-		{
-			SDL_GL_SetSwapInterval(-1);
-			settings->vsync = SDL_GL_GetSwapInterval();
-		}
+	}
+	ImGui::SameLine();
+	if (ImGui::RadioButton("adaptive", settings->vsync == -1))
+	{
+		SDL_GL_SetSwapInterval(-1);
+		settings->vsync = SDL_GL_GetSwapInterval();
+	}
 	ImGui::Separator();
 
-		ImGui::LabelText("dt", std::to_string(game->deltaTime).c_str());
-		ImGui::LabelText("draw calls", std::to_string(MonGL::globalDrawCalls).c_str());
-
-		ImGui::Checkbox("Demo", &showDemoWindow);
-		ImGui::SameLine();
-		ImGui::Checkbox("stats", &showStatsWindow);
-		ImGui::SameLine();
-		ImGui::Checkbox("Debug Info", &showDebugWindow);
-		
-		ImGui::DragFloat("cam speed", &game->cameras[game->currCameraIndex].speed, 0.01f, 1.0f, 200.0f, "%.02f");
-		ImGui::DragFloat("material shininess[move]", &game->setup.materialShininess, 0.01f, 1.0f, 200.0f, "%.02f");
+	ImGui::Checkbox("Demo", &showDemoWindow);
+	ImGui::SameLine();
+	ImGui::Checkbox("stats", &showStatsWindow);
+	ImGui::SameLine();
+	ImGui::Checkbox("Debug Info", &showDebugWindow);
+	
+	ImGui::LabelText("draw calls", std::to_string(MonGL::globalDrawCalls).c_str());
 		
 	ImGui::Separator();
-	
-	// Tabs
 	if (ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None))
 	{
-		// NOTE(ck): Maybe pull out the if into here? 
+		// NOTE(ck): Maybe pull out the if(ImGui::TabItem()) into here? 
 		EntityTab(game);
 		RendererTab(game);
 		TerrainTab(game);
 		CameraTab(game);
 		AssetTab(game);
-		
 
 		ImGui::EndTabBar();
 	}
@@ -1125,11 +1066,6 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game2D* game2D)
 
 #endif // _3D_GUI_
 #endif // USE_SDL
-
-
-/// 
-/// Generic gui functions 
-/// 
 
 void RenderGui()
 {

@@ -260,7 +260,7 @@ namespace Mon
 		}
 
 		map->wireFrame = false;
-		MonGL::InitTileMap(map->tiles.size());
+		MonGL::InitTileMap((int)map->tiles.size());
 	}
 
 	void UpdateTile(TileMap* map, TileSheet* sheet, int tileIndex, int newTileId)

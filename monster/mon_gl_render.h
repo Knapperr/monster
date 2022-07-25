@@ -177,6 +177,12 @@ namespace MonGL
 	{
 		unsigned int handle;
 	};
+	
+	struct Cubemap
+	{
+		unsigned int VAO;
+		unsigned int VBO;
+	};
 
 	struct OpenGL
 	{
@@ -185,8 +191,11 @@ namespace MonGL
 		int lightCount;
 		int textureCount;
 
+		Cubemap cubemap;
+
 		CommonProgram program;
 		WaterProgram waterProgram;
+		CubemapProgram cubemapProgram;
 
 		// Separate this out from the renderer?
 		FramebufferGL buffer;
@@ -199,7 +208,6 @@ namespace MonGL
 	//
 	struct Vertex
 	{
-		// TODO(ck): smaller types on vertex? position=vec3, color=uint32, texCoord=short2
 		v3 position;
 		v3 color;
 		v2 texCoords;
@@ -260,11 +268,12 @@ namespace MonGL
 
 	// Render data 
 	void InitInstancedData(InstancedData* data, int amount);
-	void InitModel(RenderData* data);
-	void InitBoundingBox(RenderData* data);
+	void SetModel(RenderData* data);
+	void SetBoundingBox(RenderData* data);
 
 	void Draw(OpenGL* gl, Config* config, RenderSetup setup, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera);
 	void DrawLights(OpenGL* gl);
+	void DrawCubeMap(OpenGL* gl, RenderSetup setup);
 
 	void DrawBoundingBox(OpenGL* gl, RenderData* data, Camera* camera);
 	void DrawTerrain(OpenGL* gl, RenderData* data, Camera* camera);

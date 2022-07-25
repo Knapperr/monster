@@ -5,21 +5,7 @@ namespace MonGL
 {
 	struct CommonProgram
 	{
-		int handle;
-		// TODO(ck): these are just the ids of the common shader program
-		
-		/*
-			viewPos
-			model
-			useTexture
-			pixelTexture
-			colliderColor
-			collider
-
-			// textures in the program
-			u32 SamplerCount;
-			GLuint Samplers[16];
-		*/
+		int handle;		
 
 		int model;
 		int view;
@@ -30,11 +16,15 @@ namespace MonGL
 		int lightDiffuse;
 		int lightSpecular;
 		int colliderColor;
-		int textureDiffuse1;
 		int useTexture;
 		int collider;
 		int pixelTexture;
-
+		
+		// TODO(ck): Samplers for textures
+		// textures in the program
+		//u32 SamplerCount;
+		//GLuint Samplers[16];
+		int textureDiffuse1;
 	};
 
 	// TODO(ck): Match struct in the shader also make a 
@@ -44,7 +34,7 @@ namespace MonGL
 		int textureIndexNormal1;
 		int textureIndexNormal2;
 
-		// TODO(ck): uniform ids for shader
+		// NOTE(ck): uniform ids for shader
 		unsigned int time;
 		unsigned int waveLength;
 		unsigned int uJump;
@@ -56,9 +46,17 @@ namespace MonGL
 		unsigned int heightScale;
 		unsigned int heightScaleModulated;
 
-		// textures
+		// texture uniforms
 		unsigned int textureNormal1;
 		unsigned int textureNormal2;
+	};
+
+	struct CubemapProgram
+	{
+		CommonProgram common;
+		int skyboxTextureIndex;
+
+		unsigned int skybox;
 	};
 	
 	enum class ERROR_TYPE
@@ -108,6 +106,7 @@ namespace MonGL
 
 	void LoadShader(CommonProgram* program, const char* vertexSource, const char* fragmentSource, const char* geometrySource = nullptr);
 	void LoadShader(WaterProgram* program, const char* vertexFile, const char* fragmentFile, const char* geometryFile = nullptr);
+	void LoadShader(CubemapProgram* program, const char* vertexFile, const char* fragmentFile, const char* geometryFile = nullptr);
 	void CheckCompileErrors(unsigned int object, ERROR_TYPE type);
 	void DeleteShader(CommonProgram* program);
 }
