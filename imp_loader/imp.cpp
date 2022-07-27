@@ -230,6 +230,8 @@ void ExportImpFile(Model* model, std::string name, std::string impPath)
 	std::ofstream file;
 	file.open(impPath);
 
+	file << std::fixed;
+
 	for (int i = 0; i < model->meshes.size(); ++i)
 	{
 		file << name << "\n";
@@ -258,7 +260,8 @@ int main(int argc, char** argv)
 {
 	printf("================\nimp loader\n================\nCole Knapp\n-----------------\n");
 	printf("2022\n");
-	printf("LAST USE - MAY 05 2022");
+	//printf("LAST USE - JULY 13 2022");
+	printf("LAST USE - JULY 23 2022");
 	// TODO(ck): LOG THIS keep a data file of all the asset changes and stuff?
 
 	/*
@@ -279,6 +282,14 @@ int main(int argc, char** argv)
 	model = {};
 	LoadModel(&model, "models/plane_64/plane_64.obj", false);
 	ExportImpFile(&model, "plane_64", "plane_64.imp");
+
+	model = {};
+	LoadModel(&model, "models/gem/gem_1x1.obj", false);
+	ExportImpFile(&model, "gem", "gem_1x1.imp");
+
+	model = {};
+	LoadModel(&model, "models/light_sphere/light_sphere.obj", false);
+	ExportImpFile(&model, "light_sphere", "light_sphere.imp");
 
 	// Verify Exported Imp Files before check for (nan) and exponents in the data
 
