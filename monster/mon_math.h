@@ -14,6 +14,9 @@ namespace Mon
 
 	// TODO(ck): Should be in platform layer
 	typedef int32_t int32;
+
+	typedef uint32_t uint32;
+
 	// TODO(ck): Slowly remove glm
 	typedef glm::vec2 v2;
 	typedef glm::vec3 v3;

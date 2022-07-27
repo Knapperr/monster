@@ -128,7 +128,7 @@ namespace Mon
 		state->currCameraIndex = debugCamIndex;
 	}
 
-	bool InitGame(GameState* state, int windowWidth, int windowHeight, float portWidth, float portHeight)
+	bool InitGame(GameState* state, GameMemory* memory, int windowWidth, int windowHeight, float portWidth, float portHeight)
 	{
 		//
 		// Initialize Assets for game here

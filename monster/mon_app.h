@@ -11,6 +11,7 @@ public:
 	Mon::Platform* platform; /* SDLPlatform */
 
 #ifdef _3D_
+	Mon::GameMemory memory;
 	Mon::GameState* gameState;
 #else 
 	Mon::Game2D* game2D;

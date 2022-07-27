@@ -25,7 +25,7 @@ namespace Mon
 	// and then come off for release
 	void RunDebugControls(Input* input, MousePicker* picker, World* world, int& selectedIndex);
 
-	struct game_memory
+	struct GameMemory
 	{
 		bool isInitialized;
 
@@ -81,7 +81,7 @@ namespace Mon
 
 	};
 
-	bool InitGame(GameState* state, int windowWidth, int windowHeight, float portWidth, float portHeight);
+	bool InitGame(GameState* state, GameMemory* memory, int windowWidth, int windowHeight, float portWidth, float portHeight);
 	void Update(GameState* state, double dt, Input* newInput);
 	void Render(GameState* state, float time, double dt);
 	void CleanUp(GameState* state);

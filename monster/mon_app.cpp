@@ -31,14 +31,38 @@ bool App::init()
 		return false;
 
 	InitGui(platform->window, &platform->context);
-	
+
 	//Platform->SetTitle(window, "Monster");
 
 	// TODO(ck): Memory Allocation
 #ifdef _3D_
+#if 1
+	LPVOID BaseAddress = (LPVOID)Terabytes(2);
+#else
+	LPVOID BaseAddress = 0;
+#endif
+
 	gameState = new Mon::GameState();
-	if (false == Mon::InitGame(gameState, settings.windowWidth, settings.windowHeight, settings.portWidth, settings.portHeight))
-		return false;
+	memory = {};
+	memory.permanentStorageSize = Megabytes(256);
+	memory.transientStorageSize = Gigabytes(1);
+	// memory.debugStorageSize = Gigabytes(1); 
+
+	platform->state.totalSize = (memory.permanentStorageSize + memory.transientStorageSize);
+	// debugsize
+	//platform->state.totalSize = (memory.permanentStorageSize + memory.transientStorageSize + memory.debugStorageSize);
+	platform->state.gameMemoryBlock = VirtualAlloc(BaseAddress, (size_t)platform->state.totalSize,
+												   MEM_RESERVE | MEM_COMMIT,
+												   PAGE_READWRITE);
+	memory.permanentStorage = platform->state.gameMemoryBlock;
+	memory.transientStorage = ((uint8_t*)memory.permanentStorage + memory.permanentStorageSize);
+	//memory.debugStorage = ((uint8_t *)memory.transientStorage + memory.transientStorageSize)
+
+	if (memory.permanentStorage && memory.transientStorage)
+	{
+		if (false == Mon::InitGame(gameState, &memory, settings.windowWidth, settings.windowHeight, settings.portWidth, settings.portHeight))
+			return false;
+	}
 #else
 
 	// memory allocation

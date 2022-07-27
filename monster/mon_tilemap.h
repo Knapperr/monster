@@ -1,6 +1,13 @@
 #ifndef MON_TILEMAP_H
 #define MON_TILEMAP_H
 
+/*
+@file:		mon_tilemap.h
+@author:	Cole Fidler-Knapp
+@date:		July 27 2022
+@desc:		Tile map system is based on Casey Muratori's Handmade Hero series
+*/
+
 #include "mon_math.h"
 #include "mon_gl_render.h"
 
@@ -9,7 +16,6 @@
 namespace Mon
 {
 #define TILE_SIZE 16
-
 	struct TileMapDifference
 	{
 		v2 dXY;
@@ -18,10 +24,25 @@ namespace Mon
 
 	struct TileMapPosition
 	{
-		uint32_t absTileX;
-		uint32_t absTileY;
+		uint32 absTileX;
+		uint32 absTileY;
 		// NOTE(casey): These are the offsets from the tile center
 		v2 offset;
+	};
+	
+	struct TileChunkPosition
+	{
+		uint32 tileChunkX;
+		uint32 tileChunkY;
+		uint32 tileChunkZ;
+
+		uint32 relTileX;
+		uint32 relTileY;
+	};
+
+	struct TileChunk
+	{
+		uint32* tiles;
 	};
 
 	struct Tile
@@ -101,6 +122,22 @@ namespace Mon
 		int tileSideInPixels;
 
 		bool wireFrame;
+	};
+
+	struct TileMap_
+	{
+		uint32 chunkShift;
+		uint32 chunkMask;
+		uint32 chunkDim;
+
+		float tileSideInMeters;
+
+		// size of our world in width and height
+		uint32 tileChunkCountX;
+		uint32 tileChunkCountY;
+		uint32 tileChunkCountZ;
+
+		TileChunk* chunks;
 	};
 
 	void InitTileMap(TileMap* map, TileSheet* sheet);
