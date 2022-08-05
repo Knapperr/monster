@@ -9,11 +9,10 @@ class App
 public:
 	Settings settings;
 	Mon::Platform* platform; /* SDLPlatform */
-
+ 
 #ifdef _3D_
 	Mon::GameMemory memory;
-	Mon::GameState* gameState;
-#else 
+#else
 	Mon::Game2D* game2D;
 #endif
 	Mon::Input input[2];

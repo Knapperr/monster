@@ -120,6 +120,9 @@
     <ClCompile Include="mon_gl_render.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="mon_memory.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mon_texture.h">
@@ -217,6 +220,9 @@
     </ClInclude>
     <ClInclude Include="mon_world.h">
       <Filter>Header Files\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="mon_memory.h">
+      <Filter>Header Files\Engine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

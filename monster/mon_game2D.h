@@ -4,7 +4,6 @@
 #include <glad/glad.h>
 #include <SDL/SDL.h>
 
-#include "mon_input.h"
 #include "mon_ortho_camera.h"
 #include "mon_world2D.h"
 
@@ -33,8 +32,9 @@ namespace Mon {
 
 	struct Game2D
 	{
-		Input input;
 		World2D* world;
+
+		Input input;
 		
 		OrthoCamera cameras[5];
 		int currentCameraIndex;
@@ -43,7 +43,7 @@ namespace Mon {
 		MonGL::Config* config;
 		MonGL::OpenGL renderer;
 
-		// Note(ck): Current game state - State::Debug is default
+		// NOTE(ck): Current game state - State::Debug is default
 		int state;
 	};
 

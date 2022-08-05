@@ -70,6 +70,11 @@ namespace Mon
 		Mesh* light = GetMesh(assets, 9);
 		InitModelMesh(light, "light_sphere.imp");
 
+		AddMesh(assets);
+		Mesh* house = GetMesh(assets, 10);
+		InitModelMesh(house, "village_house.imp");
+
+
 		// empty #0 for image
 		AddImage(assets);
 
@@ -166,7 +171,9 @@ namespace Mon
 		Image* ww10m = GetImage(assets, 23);
 		InitImage(ww10m, "res/textures/debug/TWW_Txk_c10m.png");
 
-		/*  */
+
+		// TODO(ck): !!! IMPORTANT(ck):
+		/*  DEAL WITH THIS */
 		AddImage(assets);
 		Image* skybox1 = GetImage(assets, 24);
 		InitImage(skybox1, "res/textures/skyboxsun5deg2/right.bmp", false);
@@ -190,11 +197,13 @@ namespace Mon
 		AddImage(assets);
 		Image* skybox6 = GetImage(assets, 29);
 		InitImage(skybox6, "res/textures/skyboxsun5deg2/back.bmp", false);
+		/*  DEAL WITH THIS */
+		// TODO(ck): !!! IMPORTANT(ck):
 
 
-		//AddImage(assets);
-		//Image* tileSheet = GetImage(assets, 18);
-		//InitImage(tileSheet, "res/textures/basic_16.png", false);
+		AddImage(assets);
+		Image* houseSheet = GetImage(assets, 30);
+		InitImage(houseSheet, "res/textures/Sprite.png", false);
 
 		//AddImage(assets);
 		//Image* tileSheet = GetImage(assets, 19);

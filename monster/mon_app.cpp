@@ -34,7 +34,6 @@ bool App::init()
 
 	//Platform->SetTitle(window, "Monster");
 
-	// TODO(ck): Memory Allocation
 #ifdef _3D_
 #if 1
 	LPVOID BaseAddress = (LPVOID)Terabytes(2);
@@ -42,7 +41,6 @@ bool App::init()
 	LPVOID BaseAddress = 0;
 #endif
 
-	gameState = new Mon::GameState();
 	memory = {};
 	memory.permanentStorageSize = Megabytes(256);
 	memory.transientStorageSize = Gigabytes(1);
@@ -60,7 +58,7 @@ bool App::init()
 
 	if (memory.permanentStorage && memory.transientStorage)
 	{
-		if (false == Mon::InitGame(gameState, &memory, settings.windowWidth, settings.windowHeight, settings.portWidth, settings.portHeight))
+		if (false == Mon::InitGame(&memory, settings.windowWidth, settings.windowHeight, settings.portWidth, settings.portHeight))
 			return false;
 	}
 #else
@@ -128,7 +126,7 @@ void App::run()
 			double deltaTime = std::min(frameTime, dt);
 
 #ifdef _3D_
-			Mon::Update(gameState, deltaTime, newInput);
+			Mon::Update(&memory, deltaTime, newInput);
 #else
 			Mon::Update(game2D, deltaTime, newInput);
 #endif
@@ -145,7 +143,7 @@ void App::run()
 
 #ifdef _3D_
 		float time = float(SDL_GetTicks() / 1000.0f);
-		Mon::Render(gameState, time, 1.0f);
+		Mon::Render(&memory, time, 1.0f);
 #else
 		Mon::Render(game2D);
 #endif
@@ -153,7 +151,7 @@ void App::run()
 		if (showGUI)
 		{ 
 #ifdef _3D_
-			UpdateGui(platform->window, &settings, gameState);
+			UpdateGui(platform->window, &settings, &memory);
 #else
 			UpdateGui(platform->window, &settings, game2D);
 #endif
@@ -169,7 +167,7 @@ void App::run()
 	Mon::Log::print("Shutting down...");
 	Mon::Log::shutdown();
 #ifdef _3D_
-	Mon::CleanUp(gameState);
+	//Mon::CleanUp(gameState);
 #else
 	Mon::CleanUp(game2D);
 #endif

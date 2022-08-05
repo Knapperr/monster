@@ -56,7 +56,7 @@ namespace Mon
 
 		*velocity *= p->speed;
 
-		*velocity += -4.0f * p->velocity;
+		*velocity += -5.0f * p->velocity;
 
 		//TileMapPosition oldPlayerP = p->mapPos;
 		//TileMapPosition newPlayerP = oldPlayerP;

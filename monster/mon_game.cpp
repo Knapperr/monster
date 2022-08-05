@@ -113,23 +113,27 @@ namespace Mon
 		AddCamera(state);
 
 		int followCamIndex = AddCamera(state);
-		InitCamera(&state->cameras[followCamIndex], CameraType::Follow, "Follow", state->config->viewPort);
+		InitCamera(&state->cameras[followCamIndex], CameraType::Follow, "Follow", state->config.viewPort);
 
 		int debugCamIndex = AddCamera(state);
-		InitCamera(&state->cameras[debugCamIndex], CameraType::Fly, "Debug 1", state->config->viewPort);
+		InitCamera(&state->cameras[debugCamIndex], CameraType::Fly, "Debug 1", state->config.viewPort);
 		int debugCamIndex2 = AddCamera(state);
-		InitCamera(&state->cameras[debugCamIndex2], CameraType::Fly, "Debug 2", state->config->viewPort);
+		InitCamera(&state->cameras[debugCamIndex2], CameraType::Fly, "Debug 2", state->config.viewPort);
 
 		int followCam2Index = AddCamera(state);
-		InitCamera(&state->cameras[followCam2Index], CameraType::Follow, "Follow 2 (better?)", state->config->viewPort);
+		InitCamera(&state->cameras[followCam2Index], CameraType::Follow, "Follow 2 (better?)", state->config.viewPort);
 		state->cameras[followCam2Index].zoom = 40.0f;
 		state->cameras[followCam2Index].pitch = 45.0f;
 
 		state->currCameraIndex = debugCamIndex;
 	}
 
-	bool InitGame(GameState* state, GameMemory* memory, int windowWidth, int windowHeight, float portWidth, float portHeight)
+	bool InitGame(GameMemory* memory, int windowWidth, int windowHeight, float portWidth, float portHeight)
 	{
+		GameState* state = (GameState *)memory->permanentStorage;
+		if (state->initialized)
+			return true;
+
 		//
 		// Initialize Assets for game here
 		//
@@ -154,18 +158,18 @@ namespace Mon
 		state->setup = {};
 		state->setup.materialShininess = 64.0f;
 
-		// TODO(ck): Memory Allocation
+		// TODO(ck): Memory Allocation Move this to World
 		// allocate grid
 		state->grid = new Grid();
 		InitGrid(state->grid);
 
 		state->simulate = false;
 
-		state->config = new MonGL::Config();
-		state->config->viewPort = { 5.0f, 5.0f, portWidth, portHeight };
-		MonGL::ViewPort(&state->config->viewPort);
+		state->config = {};
+		state->config.viewPort = { 5.0f, 5.0f, portWidth, portHeight };
+		MonGL::ViewPort(&state->config.viewPort);
 
-		state->config->spriteAngleDegrees = -45.0f;
+		state->config.spriteAngleDegrees = -45.0f;
 
 		InitCameras(state);
 
@@ -185,13 +189,17 @@ namespace Mon
 		// TODO(ck): MEMORY MANAGEMENT
 		// allocate world
 		state->world = new World();
-		InitWorld(state->world, state->renderer.program.handle, state->renderer.waterProgram.common.handle, state->config->spriteAngleDegrees);
+		InitWorld(state->world, state->renderer.program.handle, state->renderer.waterProgram.common.handle, state->config.spriteAngleDegrees);
 
-		return true;
+
+		state->initialized = true;
+		return state->initialized;
 	}
 
-	void Update(GameState* state, double dt, Input* newInput)
+	void Update(GameMemory* memory, double dt, Input* newInput)
 	{
+		GameState* state = (GameState *)memory->permanentStorage;
+
 		state->deltaTime = dt;
 		state->input = *newInput;
 		//
@@ -318,18 +326,19 @@ namespace Mon
 
 	}
 
-	void Render(GameState* state, float time, double dt)
+	void Render(GameMemory* memory, float time, double dt)
 	{
+		GameState* state = (GameState*)memory->permanentStorage;
+
 		Camera* cam = GetCamera(state, state->currCameraIndex);
 		mat4 projection = Projection(cam);
 		mat4 viewMatrix = ViewMatrix(cam);
-
 	 
 		// TODO(ck): UseProgram should be called only one time before switching shaders
 		//			 DO NOT CALL every time you draw an entity glUseProgram is expensive
 		MonGL::UseProgram(&state->renderer.program, state->setup);
 
-		MonGL::BeginRender(&state->renderer, state->config, projection, viewMatrix, state->renderer.program.handle);
+		MonGL::BeginRender(&state->renderer, &state->config, projection, viewMatrix, state->renderer.program.handle);
 		state->setup.projection = projection;
 		state->setup.viewMatrix = viewMatrix;
 		state->setup.time = time;
@@ -348,7 +357,7 @@ namespace Mon
 
 			if (state->drawCollisions)
 				MonGL::DrawBoundingBox(&state->renderer, &e.collider.data, cam);
-			MonGL::Draw(&state->renderer, state->config, state->setup, e.spriteAngleDegrees, &e.data, e.rb.pos, cam);
+			MonGL::Draw(&state->renderer, &state->config, state->setup, e.spriteAngleDegrees, &e.data, e.rb.pos, cam);
 
 			GetGridPosition(e.rb.pos);
 		}
@@ -378,7 +387,7 @@ namespace Mon
 
 	void SetViewPort(GameState* state, int width, int height)
 	{
-		state->config->viewPort = Rect{ 0.0f, 0.0f, (float)width, (float)height };
+		state->config.viewPort = Rect{ 0.0f, 0.0f, (float)width, (float)height };
 	}
 
 	bool Playing(GameState* state)

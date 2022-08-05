@@ -13,6 +13,7 @@
 
 #include <vector>
 
+
 namespace Mon
 {
 #define TILE_SIZE 16
@@ -139,6 +140,21 @@ namespace Mon
 
 		TileChunk* chunks;
 	};
+
+	TileChunk* GetTileChunk(TileMap_* tileMap, uint32 tileChunkX, uint32 tileChunkY, uint32 tileChunkZ);
+	uint32 GetTileValueUnchecked(TileMap_ *tileMap, TileChunk *tileChunk, uint32 tileX, uint32 tileY);
+	void SetTileValueUnchecked(TileMap_ *tileMap, TileChunk *tileChunk, uint32 tileX, uint32 tileY);
+	
+	void SetTileValue(TileMap_* tileMap, TileChunk* tileChunk, uint32 testTileX, uint32 testTileY, uint32 tileValue);
+	void GetChunkPositionFor(TileMap_ *tileMap, uint32 absTileX, uint32 absTileY, uint32 absTileZ);
+	uint32 GetTileValue(TileMap_ *tileMap, TileChunk *tileChunk, uint32 testTileX, uint32 testTileY);
+	uint32 GetTileValue(TileMap_ *tileMap, uint32 absTileX, uint32 absTileY, uint32 absTileZ);
+	uint32 GetTileValue(TileMap_* tileMap, TileMapPosition pos);
+	bool IsTileValueEmpty(uint32 tileValue);
+	bool IsTileMapPointEmpty(TileMap_* tileMap, TileMapPosition);
+	//void SetTileValue(MemoryArena *arena, TileMap *tileMap,
+	//				uint32 absTileX, uint32 absTileY, uint32 absTileZ,
+	//				uint32 tileValue);
 
 	void InitTileMap(TileMap* map, TileSheet* sheet);
 	void DrawTileMap(TileMap* map, MonGL::CommonProgram* shader, int textureID, v2 cameraPos);

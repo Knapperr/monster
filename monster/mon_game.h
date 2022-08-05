@@ -49,6 +49,9 @@ namespace Mon
 
 	struct GameState
 	{
+		bool initialized;
+
+		//MemoryArena worldArena;
 		World* world;
 		Grid* grid;
 		MousePicker picker;
@@ -62,7 +65,7 @@ namespace Mon
 		int currCameraIndex = 0;
 		int cameraCount = 0;
 
-		MonGL::Config* config;
+		MonGL::Config config;
 
 		bool simulate;
 		bool drawCollisions;
@@ -81,9 +84,11 @@ namespace Mon
 
 	};
 
-	bool InitGame(GameState* state, GameMemory* memory, int windowWidth, int windowHeight, float portWidth, float portHeight);
-	void Update(GameState* state, double dt, Input* newInput);
-	void Render(GameState* state, float time, double dt);
+	bool InitGame(GameMemory* memory, int windowWidth, int windowHeight, float portWidth, float portHeight);
+	void Update(GameMemory* memory, double dt, Input* newInput);
+	void Render(GameMemory* memory, float time, double dt);
+
+
 	void CleanUp(GameState* state);
 	void SetViewPort(GameState* state, int width, int height);
 	bool Playing(GameState* state);

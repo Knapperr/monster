@@ -130,6 +130,24 @@ namespace MonGL
 		mat4 worldMatrix;
 	};
 
+
+	/* IMPORTANT(ck): July 30 2022 1:15AM
+	  Can have a render command with a render type that sets the meshIndex
+	  when the render loop starts we loop through entities and build the 
+	  render commands. each render command gets sent to the gpu
+		
+		render commands allow us to just change the commands depending 
+		on the current renderer
+		we can also initialize memory for it
+
+		struct RenderCommand
+		{
+			int meshIndex;
+		
+		};
+
+	*/
+
 	struct Batch
 	{
 		unsigned int VAO;

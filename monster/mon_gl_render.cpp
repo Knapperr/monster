@@ -327,6 +327,12 @@ namespace MonGL
 		gl->cubemap = {};
 		LoadCubemap(&gl->cubemap);
 
+
+		AddTexture(gl);
+		MonGL::Texture* t24 = GetTexture(gl, 24);
+		LoadTexture(t24, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 30));
+
+
 		// #0 for the 
 		AddLight(gl);
 
@@ -732,6 +738,8 @@ namespace MonGL
 			ActivateUniforms(&gl->waterProgram, programData, setup, viewPos, *light, baseTextureID, normal1->id, normal2->id);
 			return gl->waterProgram.common.handle;
 		}
+
+		return -1;
 	}
 
 	//

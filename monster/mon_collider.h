@@ -44,6 +44,6 @@ namespace Mon {
 	int TestAABBAABB(Collider a, Collider b);
 
 
-} // ::Mon
+}
 
 #endif // MON_COLLIDER_H

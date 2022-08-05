@@ -2,7 +2,7 @@
 #define MON_PLATFORM_H
 
 // IMPORTANT(ck): Defines for 3D game
-//#define _3D_
+#define _3D_
 
 // TODO: IMPORTANT(ck): Fix this -- gui and sdl tied together
 #include "mon_gui.h"
@@ -43,7 +43,6 @@ namespace Mon
 
 		virtual void swapWindow() = 0;
 		virtual void setWindowSize(Settings* settings) = 0;
-		virtual void setTitle(Settings* settings, const char* title) = 0;
 		virtual void cleanUp() = 0;
 	};
 }

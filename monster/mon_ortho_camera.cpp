@@ -98,7 +98,9 @@ namespace Mon
 		//glViewport(screen_left, screen_top, width, height);
 		//glOrtho(negative_x, positive_x, negative_y, positive_y, positive_z, negative_z);
 		//mat4 projection = glm::ortho(-16.0f, 16.0f, 9.0f, -9.0f, -1.0f, 1.0f);
+		
 		mat4 projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
+		
 		mat4 zoomMatrix = glm::scale(v3(zoom));
 		projection = projection * zoomMatrix;
 

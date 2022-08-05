@@ -403,11 +403,6 @@ namespace Mon
 
 	}
 
-	void SDLPlatform::setTitle(Settings* settings, const char* title)
-	{
-		// TODO(ck): implement: change window title
-	}
-
 	void SDLPlatform::cleanUp()
 	{
 		SDL_JoystickClose(joyStick);

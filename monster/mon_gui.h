@@ -11,7 +11,7 @@
 #include <stdio.h>
 
 // IMPORTANT(ck): Defines for 3D game
-//#define _3D_GUI_
+#define _3D_GUI_
 
 #ifndef _3D_GUI_
 #include "mon_game2D.h"
@@ -50,7 +50,7 @@ extern float inputTimer;
 #ifdef USE_SDL
 void InitGui(SDL_Window* window, SDL_GLContext* context);
 #ifdef _3D_GUI_
-void UpdateGui(SDL_Window* window, Settings* settings, Mon::GameState* game);
+void UpdateGui(SDL_Window* window, Settings* settings, Mon::GameMemory* memory);
 #else
 void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game2D* game2D);
 #endif

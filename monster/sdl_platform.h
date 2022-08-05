@@ -11,7 +11,6 @@ namespace Mon
 		bool init(Settings* settings);
 		void swapWindow();
 		void setWindowSize(Settings* settings);
-		void setTitle(Settings* settings, const char* title);
 		void sleep(int milliseconds);
 		uint64_t performanceFrequency();
 		uint64_t performanceCounter();

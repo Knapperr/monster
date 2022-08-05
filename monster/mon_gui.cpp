@@ -747,8 +747,10 @@ void StatsWindow3D(bool* p_open, Mon::GameState* game)
 	ImGui::End();
 }
 
-void UpdateGui(SDL_Window* window, Settings* settings, Mon::GameState* game)
+void UpdateGui(SDL_Window* window, Settings* settings, Mon::GameMemory* memory)
 {
+	Mon::GameState* game = (Mon::GameState *)memory->permanentStorage;
+
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame(window);
 	ImGui::NewFrame();
@@ -827,7 +829,7 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::GameState* game)
 		SDL_SetWindowSize(window, settings->windowWidth, settings->windowHeight);
 	}
 	
-	ImGui::SliderFloat2("port", (float*)&game->config->viewPort, 0.0f, 477.0f);
+	ImGui::SliderFloat2("port", (float*)&game->config.viewPort, 0.0f, 477.0f);
 
 	// NOTE(ck): SDL Vsync https://wiki.libsdl.org/SDL_GL_SetSwapInterval
 	// 0 for immediate updates, 1 for updates synchronized with the vertical retrace, -1 for adaptive 
