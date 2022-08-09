@@ -308,9 +308,9 @@ namespace MonGL
 		LoadTexture(t9, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 9));
 		LoadTexture(t10, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 10));
 		LoadTexture(t11, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 11));
-		LoadTexture(t12, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 12));
+		LoadTexture(t12, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 12));
 		LoadTexture(t13, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 13));
-		LoadTexture(t14, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 14));
+		LoadTexture(t14, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 14));
 		LoadTexture(t15, MonGL::TextureType::Normal,  false, shaderID, GetImage(g_Assets, 15));
 		LoadTexture(t16, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 17));
 		LoadTexture(t17, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 18));
@@ -320,9 +320,11 @@ namespace MonGL
 		LoadTexture(t21, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 22));
 		LoadTexture(t22, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 23));
 
+
+		// TODO(ck): IMPORTANT(ck): FIX THIS 
+		// NOTE(ck): using image indexes [24 to 29] need a better way to handle this
 		AddTexture(gl);
 		MonGL::Texture* t23 = GetTexture(gl, 23);
-		//Mon::Image* cubeMapImages = nullptr;
 		LoadCubeMapTexture(t23);
 		gl->cubemap = {};
 		LoadCubemap(&gl->cubemap);
@@ -648,7 +650,7 @@ namespace MonGL
 	///
 
 	// TODO(ck): STOP PASSING TEXTUREID IMPORTANT(ck):
-	void ActivateUniforms(CommonProgram* program, RenderSetup setup, Light light, v3 viewPos, int textureID)
+	void ActivateUniforms(CommonProgram* program, ProgramData programData, RenderSetup setup, Light light, v3 viewPos, int textureID)
 	{
 		// TODO(ck): Performance - Only call this if the program actually changes or find a way to call at the beginning 
 		// sort entities so that water is always at the end so that gluseprogram gets called before the water is drawn
@@ -678,12 +680,14 @@ namespace MonGL
 		//glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
 		glUniform1i(program->collider, false);
 
+		glUniform1f(program->texCoordScale, programData.texCoordScale);
 
 		glUniform3fv(program->lightPos, 1, &light.pos[0]);
 		glUniform3fv(program->lightAmbient, 1, &light.ambient[0]);
 		glUniform3fv(program->lightDiffuse, 1, &light.diffuse[0]);
 		glUniform3fv(program->lightSpecular, 1, &light.specular[0]);
 		glUniform3fv(program->viewPos, 1, &viewPos[0]);
+
 
 		glUniform1f(glGetUniformLocation(program->handle, "material.shininess"), setup.materialShininess);
 
@@ -697,7 +701,7 @@ namespace MonGL
 		// STUDY(ck):  can you have shader includes in glsl??????
 		glUseProgram(program->common.handle);
 
-		ActivateUniforms(&program->common, setup, light, viewPos, textureID);
+		ActivateUniforms(&program->common, programData, setup, light, viewPos, textureID);
 
 		// BEGIN RENDER UNIFORMS
 		glUniformMatrix4fv(program->common.projection, 1, GL_FALSE, glm::value_ptr(setup.projection));
@@ -730,7 +734,7 @@ namespace MonGL
 		switch (type)
 		{
 		case ProgramType::Common:
-			ActivateUniforms(&gl->program, setup, *light, viewPos, baseTextureID);
+			ActivateUniforms(&gl->program, programData, setup, *light, viewPos, baseTextureID);
 			return gl->program.handle;
 		case ProgramType::Water:
 			Texture* normal1 = GetTexture(gl, gl->waterProgram.textureIndexNormal1);
@@ -865,6 +869,8 @@ namespace MonGL
 		unsigned int shaderID = gl->program.handle;
 		
 		Light* light = GetLight(gl, 1);
+
+		glUniform1f(glGetUniformLocation(shaderID, "texCoordScale"), data->programData.texCoordScale);
 
 		glUniform3fv(glGetUniformLocation(shaderID, "light.pos"), 1, &light->pos[0]);
 		glUniform3fv(glGetUniformLocation(shaderID, "light.ambient"), 1, &light->ambient[0]);

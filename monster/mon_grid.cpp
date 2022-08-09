@@ -22,7 +22,9 @@ void InitGrid(Grid* grid)
 	// data.meshIndex = GetMesh("grid");
 	grid->data = {};
 	grid->data.meshIndex = 4;
-	grid->data.textureIndex = 11;
+	grid->data.textureIndex = 12;
+
+	grid->data.programData.texCoordScale = 10.0f;
 }
 
 

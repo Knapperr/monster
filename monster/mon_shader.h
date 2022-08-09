@@ -19,6 +19,8 @@ namespace MonGL
 		int useTexture;
 		int collider;
 		int pixelTexture;
+
+		float texCoordScale;
 		
 		// TODO(ck): Samplers for textures
 		// textures in the program

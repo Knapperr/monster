@@ -82,6 +82,9 @@ namespace MonGL
 
 	struct ProgramData
 	{
+		// common uniform data
+		float texCoordScale;
+
 		// water uniform data
 		float uJump;
 		float vJump;

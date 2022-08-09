@@ -27,6 +27,8 @@ namespace MonGL
 		program->useTexture = glGetUniformLocation(programID, "useTexture");
 		program->collider = glGetUniformLocation(programID, "collider");
 		program->pixelTexture = glGetUniformLocation(programID, "pixelTexture");
+
+		program->texCoordScale = glGetUniformLocation(programID, "texCoordScale");
 		/*
 		uniform Material material;
 		uniform Light light;
@@ -97,8 +99,6 @@ namespace MonGL
 		{
 			glDeleteShader(sGeometry);
 		}
-
-		LoadUniforms(program);
 	}
 
 	void LoadShader(CommonProgram* program, const char* vertexFile, const char* fragmentFile, const char* geometryFile)
@@ -144,6 +144,7 @@ namespace MonGL
 		const char* gShaderCode = geometryCode.c_str();
 
 		Compile(program, vShaderCode, fShaderCode, geometryFile != nullptr ? gShaderCode : nullptr);
+		LoadUniforms(program);
 	}
 
 	void LoadShader(WaterProgram* program, const char* vertexFile, const char* fragmentFile, const char* geometryFile)

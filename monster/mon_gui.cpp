@@ -259,6 +259,9 @@ void TerrainTab(Mon::GameState* game)
 		if (ImGui::Button("1x1")) { game->grid->data.textureIndex = 16; }
 		ImGui::Separator();
 
+		ImGui::SliderFloat("Texcoord scale", &game->grid->data.programData.texCoordScale, 1, 100);
+
+		ImGui::Separator();
 		ImGui::Checkbox("Wireframe", &game->grid->data.wireFrame);
 
 		ImGui::EndTabItem();
@@ -454,19 +457,23 @@ void EntityTab(Mon::GameState* game)
 					ImGui::DragFloat("z", &game->world->entities[selected].rb.pos.z, 0.1f, -1000.0f, 1000.0f, "%.02f");
 
 					ImGui::SliderFloat3("scale", &game->world->entities[selected].data.scale[0], 1.0f, 100.0f, "%1.0f");
-					ImGui::SliderFloat3("collider min", &game->world->entities[selected].collider.min[0], 0.0f, 100.0f);
-					ImGui::SliderFloat3("collider max", &game->world->entities[selected].collider.max[0], 0.0f, 100.0f);
+					ImGui::SliderFloat3("Collider min", &game->world->entities[selected].collider.min[0], 0.0f, 100.0f);
+					ImGui::SliderFloat3("Collider max", &game->world->entities[selected].collider.max[0], 0.0f, 100.0f);
 
 					ImGui::DragFloat("speed", &game->world->entities[selected].rb.speed, 0.10f, 0.0f, 200.0f, "%.10f");
 					ImGui::DragFloat("angle", &game->world->entities[selected].spriteAngleDegrees, 0.10f, -180.0f, 360.0f, "%.10f");
 
-					ImGui::SliderInt("mesh index", &game->world->entities[selected].data.meshIndex, 1, Mon::g_Assets->meshCount - 1);
-					ImGui::SliderInt("texture index", &game->world->entities[selected].data.textureIndex, 1, game->renderer.textureCount - 1);
+					ImGui::SliderInt("Mesh index", &game->world->entities[selected].data.meshIndex, 1, Mon::g_Assets->meshCount - 1);
+					ImGui::SliderInt("Texture index", &game->world->entities[selected].data.textureIndex, 1, game->renderer.textureCount - 1);
 
 					ImGui::Checkbox("Wireframe", &game->world->entities[selected].data.wireFrame);
 					ImGui::Checkbox("Visible", &game->world->entities[selected].data.visible);
 					ImGui::SameLine();
-					ImGui::Checkbox("Show collider", &game->world->entities[selected].collider.data.visible);
+					ImGui::Checkbox("Show Collider", &game->world->entities[selected].collider.data.visible);
+					
+					ImGui::SliderFloat("Texcoord scale", &game->world->entities[selected].data.programData.texCoordScale, 1, 100);
+
+					
 					//ImGui::Checkbox("show normals", &g_Game->objects[selected]->viewNormals);
 					//ImGui::DragFloat("rot x", &g_Game->objects[selected]->orientation.x, 0.05f, -1000.0f, 1000.0f, "%.02f");
 					//ImGui::DragFloat("rot y", &g_Game->objects[selected]->orientation.y, 0.05f, -1000.0f, 1000.0f, "%.02f");

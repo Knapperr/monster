@@ -16,13 +16,10 @@ namespace Mon {
 		// TODO(ck): Not sure if I want things like trees but they can go into instanced data I guess?
 		// might still want to have trees in entities because they can be attacked or respond to player interaction?
 		// StaticEntities??? staticEntities[256];
-		
 
 		unsigned int instancedDataCount;
 		MonGL::InstancedData instancedData[2];
 	};
-
-	
 
 	static unsigned int AddEntity(World* world)
 	{
@@ -107,6 +104,8 @@ namespace Mon {
 		e->follow = false;
 		InitBoxCollider(&e->collider);
 		e->spriteAngleDegrees = angleDegrees;
+		
+		e->data.programData.texCoordScale = 1.0f;
 	}
 
 	static void InitPlayer(Entity* player, int shaderHandle)
@@ -118,6 +117,7 @@ namespace Mon {
 		player->data.textureIndex = 17;
 		player->data.wireFrame = false;
 		player->data.visible = true;
+		player->data.programData.texCoordScale = 1.0f;
 		player->facingDir = Direction::Forward;
 		player->data.programType = MonGL::ProgramType::Common;
 
