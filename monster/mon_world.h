@@ -129,7 +129,7 @@ namespace Mon {
 		player->rb.acceleration = v3(-40.0f, 0.0f, 0.0f);
 		player->rb.orientation = v3(1.0f, 1.0f, 1.0);
 		player->rb.damping = 0.9f;
-		player->rb.speed = 32.0f;
+		player->rb.speed = 26.0f;
 
 		//player->data.mat.ambient = v3(1.0f, 0.5f, 0.6f);
 		//player->data.mat.diffuse = v3(1.0f, 0.5f, 0.31f);
@@ -273,7 +273,7 @@ namespace Mon {
 			//speed *= 1.5f;
 
 		*velocity *= speed;
-		*velocity += -7.0f * player->rb.velocity;
+		*velocity += -6.0f * player->rb.velocity;
 
 		v3 oldPos = player->rb.pos;
 		v3 newPos = oldPos;

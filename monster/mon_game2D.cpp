@@ -165,71 +165,20 @@ namespace Mon {
 			p->sprite.pos = p->pos;
 
 
+			/*
 			// update minion
 			Entity2D* minion = GetEntity2D(game->world, 4);
 			minion->pos.x = lerp(minion->pos.x, p->pos.x, dt);
 			minion->pos.y = lerp(minion->pos.y, p->pos.y, dt);
 			minion->sprite.pos = minion->pos;
-			//v2 windowSize = v2{ 1440, 900 };
-			// screenCoord(worldCoord) .. not working
-			//p->sprite.pos = v2{ p->pos.x - camera.pos.x, camera.pos.y - p->pos.y } + windowSize / 2.0f;
-
-			//TODO(ck): This seems to be working??? I think the camera.update needs to process this though 
-			// it seems that its trying the sprite position to the camera position but the camera is still "looking" at the old player position?
-			// worldCoord(screenCoord) ???
-			//v2 q = p->pos - windowSize / 2.0f;
-			//p->sprite.pos = v2{ q.x + game->cameras[game->currentCameraIndex].pos.x, (q.y + game->cameras[game->currentCameraIndex].pos.y) };
-
-			// Get screen coords 
-			// world coord = screen coord - windowsize / 2
-			// worldcoord + cam.x, -(worldcoord.y - cam.y);
-			// mapping a world coordinate to 
+			*/
 
 		}
-		// ending update
-
 	}
 
 	void Render(Game2D* game)
 	{
 		MonGL::ViewPort(&game->config->viewPort);
-
-#if 0 
-		// NOTE(ck): Meters to pixel conversions - this is for drawing the tilemap 
-		// Im not sure if I need this.. the tilemap is drawn with the vertices built i dont think you need to convert anything? 
-		// unless this gets put into the Renderer when we build vertices?
-
-		// Getting the center and tileSide -- this is for drawing the tilemap in handmade
-		int tileSideInPixels = 16;
-		float tileSideInMeters = 1.6f;
-		float metersToPixels = (float)tileSideInPixels / tileSideInMeters;
-		
-		//real32 screenCenterX = 0.5f * (real32)buffer->width;
-		//real32 screenCenterY = 0.5f * (real32)buffer->height;
-		int screenCenterX = 0.5f * game->config->viewPort.w;
-		int screenCenterY = 0.5f * game->config->viewPort.h;
-		
-		v2 tileSide = { 0.5f * tileSideInPixels, 0.5f * tileSideInPixels };
-		// relColumn and relRow are i&j from a loop
-		// gameState->cameraP.offset_.x
-		// gameState->cameraP.offset_.y
-		float offsetX = 0.35f;
-		float offsetY = 0.45;
-		int relColumn = 1;
-		int relRow = 1;
-		v2 cen = { screenCenterX - metersToPixels * offsetX + ((float)relColumn) * tileSideInPixels,
-				   screenCenterY + metersToPixels * offsetY - ((float)relRow) * tileSideInPixels };
-
-
-		// NOTE(ck): Getting the positions and drawing for entities
-		float playerGroundPointX = screenCenterX + metersToPixels * e.pos.x;
-		float playerGroundPointY = screenCenterY - metersToPixels * e.pos.y;
-		v2 playerLeftTop = { playerGroundPointX - 0.5f * metersToPixels * e.sprite.size.x , playerGroundPointY - 0.5f * metersToPixels * e.sprite.size.y };
-		v2 playerWidthHeight = { e.sprite.size.x, e.sprite.size. };
-		DrawRectangle(buffer, playerLeftTop,
-					  playerLeftTop + metersToPixels * playerWidthHeight,
-					  playerR, playerG, playerB);
-#endif
 
 		int shaderID = game->renderer.program.handle;
 		glUseProgram(shaderID);
@@ -245,12 +194,8 @@ namespace Mon {
 		for (unsigned int i = 1; i < game->world->entityCount; ++i)
 		{
 			Entity2D e = game->world->entities[i];
-			//state->world->entities[i]->pos.x *= time;
-			//state->world->entities[i]->pos.y *= time;
 			MonGL::DrawObject(&game->renderer.program, &e.sprite, game->cameras[game->currentCameraIndex].pos);
 		}
-		//state->world->entities[i]->pos.x *= time;
-		//state->world->entities[i]->pos.y *= time;
 	}
 
 	void SetViewPort(MonGL::Config *config, int width, int height)

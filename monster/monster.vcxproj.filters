@@ -31,14 +31,11 @@
     <Filter Include="Header Files\Game">
       <UniqueIdentifier>{fb326da8-9661-43be-ae63-d2ebb0ce83ad}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game">
+      <UniqueIdentifier>{6524e5c8-4ee2-4e5d-aec2-ac6e8963a63a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="mon_texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="mon_game.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="include\imgui\imgui.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
@@ -59,9 +56,6 @@
     </ClCompile>
     <ClCompile Include="include\imgui\imgui_widgets.cpp">
       <Filter>imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="mon_camera.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="monster.cpp">
       <Filter>Source Files\Engine</Filter>
@@ -87,9 +81,6 @@
     <ClCompile Include="mon_world2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mon_grid.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="mon_tilemap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -99,17 +90,11 @@
     <ClCompile Include="mon_log.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="mon_entity.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="mon_game2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="win32_platform.cpp">
       <Filter>Source Files\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="mon_collider.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mon_assets.cpp">
       <Filter>Source Files</Filter>
@@ -122,6 +107,24 @@
     </ClCompile>
     <ClCompile Include="mon_memory.cpp">
       <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="mon_game.cpp">
+      <Filter>Source Files\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="mon_camera.cpp">
+      <Filter>Source Files\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="mon_entity.cpp">
+      <Filter>Source Files\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="mon_collider.cpp">
+      <Filter>Source Files\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="mon_grid.cpp">
+      <Filter>Source Files\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="mon_texture.cpp">
+      <Filter>Source Files\Renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

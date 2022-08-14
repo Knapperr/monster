@@ -7,7 +7,7 @@ namespace Mon
 		lerpSpeed = 7.0f;
 		smoothness = 0.24f;
 		pos = v2(0.0f);
-		offset = v2(0.5f);
+		offset = v2(0.0f);
 		//target = v2(0.0f);
 		vel = v2(0.0f);
 		zoom = 64.0f;
@@ -18,7 +18,7 @@ namespace Mon
 		lerpSpeed = 7.0f;
 		smoothness = 0.24f;
 		pos = position;
-		offset = v2(0.5f);
+		offset = v2(0.0f);
 		vel = v2(1.0f);
 		zoom = 64.0f;
 		
@@ -26,8 +26,8 @@ namespace Mon
 
 	void OrthoCamera::update(v2 *target, float dt)
 	{
-#if 0
-		pos.x = (target->x + offset.x) * 0.5f; // NOTE(ck): put coords in the middle of screen
+#if 1
+		pos.x = (target->x + offset.x) * 0.5f;
 		pos.y = (target->y + offset.y) * 0.5f;
 #else 
 		pos.x = smoothDamp(pos.x, (target->x + offset.x)*0.5f, vel.x, smoothness, dt);
@@ -63,9 +63,6 @@ namespace Mon
 		float half_height = height / 2.0f; // ortho size
 		float half_width = half_height * aspect;
 		float half = 4.0f;
-
-		float tileSize = 0.5f; // 16pixels = 1.0
-
 
 #if 1
 		// TODO(ck): compute in update?

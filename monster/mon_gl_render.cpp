@@ -1201,6 +1201,8 @@ namespace MonGL
 
 		float x = (tileXPos - (MAP_SIZE / 2));
 		float y = (tileYPos - (MAP_SIZE / 2));
+		x = tileXPos;
+		y = tileYPos;
 		//float x = tileXPos;
 		//float y = tileYPos;
 		// IMPORTANT(ck): Move into camera space
@@ -1326,6 +1328,13 @@ namespace MonGL
 		int mapWidthHeight = 40;
 		v3 pos = {};
 		v3 basePos = v3(1.0f, 1.0f, 0.0f);
+
+		//v2 tileSide = { 0.5f * tileSideInPixels, 0.5f * tileSideInPixels };
+		//v2 cen = { screenCenterX - metersToPixels * gameState->cameraP.offset_.x + ((real32)relColumn) * tileSideInPixels,
+		//		   screenCenterY + metersToPixels * gameState->cameraP.offset_.y - ((real32)relRow) * tileSideInPixels };
+		//v2 min = cen - 0.9f * tileSide;
+		//v2 max = cen + 0.9f * tileSide;
+		//DrawRectangle(buffer, min, max, 0.4f, gray, 0.3f);
 
 		pos.x = basePos.x - cameraPos.x;
 		pos.y = basePos.y - cameraPos.y;

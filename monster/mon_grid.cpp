@@ -32,6 +32,15 @@ void InitGrid(Grid* grid)
 // it must be because the position is already in grid position
 // the rb.pos is not the local space. the v3 pos passed in here should be 
 // in local space
+
+
+// 08/11/22
+// TODO(ck): Return a grid position and set it in the entitiy? 
+// that way we can keep track of tile positions
+// i think the reason this is important is because we can always have our own tile space
+// that we control. its a lot easier to get information for a minimap, loader or to port to 
+// another platform if we aren't using raw positions everywhere.. i think. because then you can
+// export out the tileposition to any size of tile like 16x16px or 32x32px ??? i think this makes sense
 void GetGridPosition(Mon::v3 pos)
 {
 	Mon::v3 gridPos;
