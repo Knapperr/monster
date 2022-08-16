@@ -20,8 +20,7 @@ namespace Mon
 
 		OrthoCamera();
 		OrthoCamera(v2 position, Rect* viewPort);
-		void update(v2* pos, float dt);
-		void createOrtho();
+		void update(v2* target, float dt);
 		mat4 projectionMatrix();
 		mat4 viewMatrix();
 	};

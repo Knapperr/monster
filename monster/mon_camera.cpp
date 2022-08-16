@@ -160,7 +160,7 @@ namespace Mon
 	{
 		camera->speed += yOffset * 2;
 		if (camera->speed <= 0)
-			camera->speed = 1;
+			camera->speed = 0.2;
 	}
 
 	void CalculateCameraVectors(Camera* camera)
@@ -231,7 +231,6 @@ namespace Mon
 		// calculateanglearoundplayer
 		// ---------------
 
-		// TODO(ck): Do not use lerp - figure out real camera following ease in ease out techniques
 
 		float offsety = 2.0f;
 

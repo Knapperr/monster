@@ -24,10 +24,12 @@ namespace MonGL
 			texture->wrapT = GL_CLAMP_TO_EDGE;
 			texture->filterMin = GL_NEAREST;
 			texture->filterMax = GL_NEAREST;
+
 			// Linear for 3D and Texture Atlas
 			if (linearFilter)
 			{
-				//texture->filterMin = GL_LINEAR_MIPMAP_LINEAR;
+				texture->wrapS = GL_REPEAT; // TODO(ck): Not sure if necessary
+				texture->wrapT = GL_REPEAT; // TODO(ck): Not sure if necessary
 				texture->filterMin = GL_LINEAR;
 				texture->filterMax = GL_LINEAR;
 			}
@@ -899,7 +901,6 @@ namespace MonGL
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
 		glBindVertexArray(mesh->VAO);
 
-
 		int polygonMode = data->wireFrame ? GL_LINE : GL_FILL;
 		glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
 
@@ -1197,38 +1198,31 @@ namespace MonGL
 		float bottomRightX	= ((tileOffsetX + 1) * tileSize) / sheetSize;
 		float bottomRightY	= (tileOffsetY * tileSize) / sheetSize;
 
-		const int MAP_SIZE = 40;
+		float x = tileXPos;
+		float y = tileYPos;
+		float tileSizeX = 1.0f;
+		float tileSizeY = 1.0f;
 
-		float x = (tileXPos - (MAP_SIZE / 2));
-		float y = (tileYPos - (MAP_SIZE / 2));
-		x = tileXPos;
-		y = tileYPos;
-		//float x = tileXPos;
-		//float y = tileYPos;
-		// IMPORTANT(ck): Move into camera space
-		//x = x - cameraPos.x;
-		//y = y - cameraPos.y;
-		tileSize = 1.0f;
 		Vertex vec0 = {
 			v3(x, y, 0.0f),
 			v3(1.0f, 0.0f, 0.0f),
-			v2(bottomLeftX, bottomLeftY)	
+			v2(bottomLeftX, bottomLeftY)
 		};
 
 		Vertex vec1 = {
-			v3(x + tileSize, y, 0.0f),
+			v3(x + tileSizeX, y, 0.0f),
 			v3(0.0f, 1.0f, 0.0f),
 			v2(bottomRightX, bottomRightY)
 		};
 
 		Vertex vec2 = {
-			v3(x + tileSize, y + tileSize, 0.0f),
+			v3(x + tileSizeX, y + tileSizeY, 0.0f),
 			v3(0.0f, 0.0f, 1.0f),
 			v2(topRightX, topRightY)
 		};
 
 		Vertex vec3 = {
-			v3(x, y + tileSize, 0.0f),
+			v3(x, y + tileSizeY, 0.0f),
 			v3(1.0f, 1.0f, 0.0f),
 			v2(topLeftX, topLeftY)
 		};
@@ -1288,8 +1282,8 @@ namespace MonGL
 		v3 tilePosition = {};
 		
 		// IMPORTANT(ck): Move position to camera space
-		tilePosition.x = data->pos.x - cameraPos.x;
-		tilePosition.y = data->pos.y - cameraPos.y;
+		tilePosition.x = (data->pos.x - cameraPos.x);
+		tilePosition.y = (data->pos.y - cameraPos.y);
 		model = glm::translate(model, tilePosition);
 
 		//model = glm::translate(model, v3(0.5f * data->size.x, 0.0f * data->size.y, 0.0f));
@@ -1325,9 +1319,8 @@ namespace MonGL
 		// be filling and binding the batch (if things have changed)
 		// Fill batch 
 		// bind vertices
-		int mapWidthHeight = 40;
 		v3 pos = {};
-		v3 basePos = v3(1.0f, 1.0f, 0.0f);
+		v3 basePos = v3(0.0f, 0.0f, 0.0f);
 
 		//v2 tileSide = { 0.5f * tileSideInPixels, 0.5f * tileSideInPixels };
 		//v2 cen = { screenCenterX - metersToPixels * gameState->cameraP.offset_.x + ((real32)relColumn) * tileSideInPixels,
