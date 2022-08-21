@@ -248,7 +248,7 @@ void TerrainTab(Mon::GameState* game)
 	{
 		ImGui::Text("Texture");
 		ImGui::Separator();
-		if (ImGui::Button("UV")) { game->grid->data.textureIndex = 11; }
+		if (ImGui::Button("UV")) { game->grid->data.textureIndex = 11; game->grid->data.programData.texCoordScale = 8.0f; }
 		ImGui::SameLine();
 		if (ImGui::Button("Grass")) { game->grid->data.textureIndex = 12; }
 		ImGui::SameLine();
@@ -676,6 +676,7 @@ void DebugWindow(bool* p_open, Mon::GameState* game)
 	ImGui::DragFloat("line two z", &game->lineTwo.pos.z, 0.01f, 1.0f, 2000.0f, "%.02f");
 
 	ImGui::Checkbox("draw collisions", &game->drawCollisions);
+	ImGui::Checkbox("Wireframe", &game->grid->data.wireFrame);
 
 	ImGui::End();
 }

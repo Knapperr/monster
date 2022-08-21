@@ -34,16 +34,16 @@ namespace Mon
 		pos.y = smoothDamp(pos.y, (target->y + offset.y)*0.5f, vel.y, smoothness, dt);
 #endif
 
-		float mapOffset = 40.0f / 2.0f;
-		if (pos.x < -((mapOffset / 2.0f)) + 2.0f)
-			pos.x = -(mapOffset / 2.0f) + 2.0f;
-		if (pos.x > (mapOffset / 2.0f) - 2.0f)
-			pos.x = (mapOffset / 2.0f) - 2.0f;
+		//float mapOffset = 40.0f / 2.0f;
+		//if (pos.x < -((mapOffset / 2.0f)) + 2.0f)
+		//	pos.x = -(mapOffset / 2.0f) + 2.0f;
+		//if (pos.x > (mapOffset / 2.0f) - 2.0f)
+		//	pos.x = (mapOffset / 2.0f) - 2.0f;
 
-		if (pos.y < -((mapOffset / 2.0f)) + 2.0f)
-			pos.y = -(mapOffset / 2.0f) + 2.0f;
-		if (pos.y > (mapOffset / 2.0f) - 2.0f)
-			pos.y = (mapOffset / 2.0f) - 2.0f;
+		//if (pos.y < -((mapOffset / 2.0f)) + 2.0f)
+		//	pos.y = -(mapOffset / 2.0f) + 2.0f;
+		//if (pos.y > (mapOffset / 2.0f) - 2.0f)
+		//	pos.y = (mapOffset / 2.0f) - 2.0f;
 	}
 
 	mat4 OrthoCamera::projectionMatrix()
@@ -68,13 +68,10 @@ namespace Mon
 
 	mat4 OrthoCamera::viewMatrix()
 	{
+		mat4 view = mat4(1.0f);		
 		v3 cameraFront = v3(0.0f, 0.0f, -1.0f);
 		v3 cameraUp = v3(0.0f, 1.0f, 0.0f);
-
-		mat4 view = mat4(1.0f);
-		
 		v3 targetPos = v3(pos, 0.0f);
-		v3 cameraEye = v3(pos.x, pos.y, 100.0f);
 
 		view = glm::lookAt(targetPos, cameraFront + targetPos, cameraUp);
 		return view;

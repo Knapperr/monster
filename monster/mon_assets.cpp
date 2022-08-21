@@ -308,19 +308,19 @@ namespace Mon
 
 		// TODO(ck): Memory Allocation
 		mesh->vertices = new MonGL::Vertex3D[verticeCount];
-		mesh->vertices[0].position = v3(size.x/2.0f, size.y/2.0f, 0.0f);
+		mesh->vertices[0].position = v3(size.x / 2.0f, size.y / 2.0f, 0.0f);
 		mesh->vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[0].texCoords = v2(1.0f, 1.0f);
 
-		mesh->vertices[1].position = v3(size.x/2.0f, -size.y/2.0f, 0.0f);
+		mesh->vertices[1].position = v3(size.x / 2.0f, -size.y / 2.0f, 0.0f);
 		mesh->vertices[1].normal = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[1].texCoords = v2(1.0f, 0.0f);
 
-		mesh->vertices[2].position = v3(-size.x/2.0f, -size.y/2.0f, 0.0f);
+		mesh->vertices[2].position = v3(-size.x / 2.0f, -size.y / 2.0f, 0.0f);
 		mesh->vertices[2].normal = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[2].texCoords = v2(0.0f, 0.0f);
 
-		mesh->vertices[3].position = v3(-size.x/2.0f, size.y/2.0f, 0.0f);
+		mesh->vertices[3].position = v3(-size.x / 2.0f, size.y / 2.0f, 0.0f);
 		mesh->vertices[3].normal = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[3].texCoords = v2(0.0f, 1.0f);
 
@@ -373,19 +373,24 @@ namespace Mon
 		int verticeCount = 4;
 		mesh->vertices = new MonGL::Vertex[verticeCount];
 
-		v2 size = v2(1.0f);
+		// 2 = 32pixels
+		v2 size = v2(2.0f);
+		//mesh->vertices[0].position = v3(0.0f, 0.0f, 0.0f);
 		mesh->vertices[0].position = v3(size.x / 2.0f, size.y / 2.0f, 0.0f);
 		mesh->vertices[0].color = v3(1.0f, 0.0f, 0.0f);
 		mesh->vertices[0].texCoords = v2(1.0f, 1.0f);
 
+		//mesh->vertices[1].position = v3((0.0f + 1.0f), (0.0f), 0.0f);
 		mesh->vertices[1].position = v3(size.x / 2.0f, -size.y / 2.0f, 0.0f);
 		mesh->vertices[1].color = v3(1.0f, 0.0, 0.0f);
 		mesh->vertices[1].texCoords = v2(1.0f, 0.0f);
 		
+		//mesh->vertices[2].position = v3((0.0f + 1.0f), (0.0f + 1.0f), 0.0f);
 		mesh->vertices[2].position = v3(-size.x / 2.0f, -size.y / 2.0f, 0.0f);
 		mesh->vertices[2].color = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[2].texCoords = v2(0.0f, 0.0f);
 
+		//mesh->vertices[3].position = v3((0.0f), (0.0f + 1.0f), 0.0f);
 		mesh->vertices[3].position = v3(-size.x / 2.0f, size.y / 2.0f, 0.0f);
 		mesh->vertices[3].color = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[3].texCoords = v2(0.0f, 1.0f);
@@ -553,32 +558,19 @@ namespace Mon
 
 	void InitGridMesh(Mesh* mesh, int xSize, int zSize)
 	{
-		// TODO(ck): 
-/*
-	Keep this as basic grid but make a new grid that is batched?
-	can create the Grid struct and then have a batcher that it uploads
-	itself too. that way we can start creating terrain?
-
-	each cell is about the same size as 16 pixel texture wide... is there a way to define
-	this in our vertices?
-
-	can try and use ArrayTextures for this as well so there is no texture bleeding???
-	we can get that DS game look using this
-
-
-*/
 		mesh->id = "GRID";
 		mesh->type = RenderType::Model;
 		int verticeCount = (xSize + 1) * (zSize + 1);
+		// TODO(ck): Memory allocation
 		mesh->vertices = new MonGL::Vertex3D[verticeCount];
 		for (int index = 0, z = 0; z <= zSize; z++)
 		{
 			for (int x = 0; x <= xSize; x++, index++)
 			{
 				mesh->vertices[index] = {};
-				mesh->vertices[index].position.x = (float)((x + 0.5f) - (xSize/2));
+				mesh->vertices[index].position.x = (float)((x + 0.5f) - (xSize / 2.0f));
 				mesh->vertices[index].position.y = -0.5f;
-				mesh->vertices[index].position.z = (float)((z + 0.5f) - (zSize/2));
+				mesh->vertices[index].position.z = (float)((z + 0.5f) - (zSize/2.0f));
 
 				mesh->vertices[index].normal.x = 0;
 				mesh->vertices[index].normal.y = 1;
@@ -588,55 +580,6 @@ namespace Mon
 				mesh->vertices[index].texCoords.y = (float)z / (float)zSize;
 			}
 		}
-
-		/*
-		*   NOTE(ck):
-			build our grid using this method?
-
-			for (int index = 0; i < sizeof(Grid); ++i)
-			{
-				data->vertices[index].position.x = grid[index].x;
-				data->vertices[index].position.y = -0.5;
-				data->vertices[index].position.z = grid[index].z;
-
-			}
-
-
-			NOTE(ck): This is from RPG Paper Maker they use a square size
-			void Grid::initializeVertices(int w, int h, int squareSize) {
-				m_vertices.clear();
-
-				float w_f = (float)w, h_f = (float)h, squareSize_f = (float)squareSize;
-
-				for (int i = 0; i <= w; i++){
-					m_vertices.push_back(QVector3D((i * squareSize_f), 0.0f, 0.0f));
-					m_vertices.push_back(QVector3D((i * squareSize_f), 0.0f,
-												   squareSize_f * h_f));
-				}
-				for (int i = 0; i <= h; i++){
-					m_vertices.push_back(QVector3D(0.0f, 0.0f,(i*squareSize_f)));
-					m_vertices.push_back(QVector3D(squareSize_f * w_f, 0.0f,
-												   (i * squareSize_f)));
-				}
-			}
-
-			NOTE(ck): looks like they are adding 0.5 to the world position just like i am in the verts
-			I wonder why they are doing the grid size like that? why does mine work?
-
-			void Grid::paintGL(QMatrix4x4& modelviewProjection, int y) {
-				m_program->bind();
-				m_program->setUniformValue(u_modelviewProjection, modelviewProjection);
-				m_program->setUniformValue(u_yPosition, y + 0.5f);
-				{
-				  m_vao.bind();
-				  glDrawArrays(GL_LINES, 0, m_vertices.size());
-				  m_vao.release();
-				}
-				m_program->release();
-			}
-
-
-		*/
 
 		int indiceCount = xSize * zSize * 6;
 		mesh->indices = new unsigned int[indiceCount];
@@ -654,35 +597,6 @@ namespace Mon
 		mesh->verticeCount = verticeCount;
 		mesh->indiceCount = indiceCount;
 		MonGL::UploadOpenGLMesh(mesh);
-
-		//data->mat = {};
-		//data->mat.ambient = v3(1.0f, 0.5f, 0.6f);
-		//data->mat.diffuse = v3(1.0f, 0.5f, 0.31f);
-		//data->mat.specular = v3(0.5f, 0.5f, 0.5f);
-		//data->mat.shininess = 32.0f;
-
-
-		// Set texture indexes
-		//std::string textPath = "res/textures/terrain/1024multi.png";
-		//Texture text = {};
-		//data->textures[0] = text;
-		//LoadTextureFile(&data->textures[0], textPath.c_str(), TextureType::Diffuse, false, false, true, false);
-
-		//textPath = "res/textures/terrain/grass.jpg";
-		//Texture text1 = {};
-		//data->textures[1] = text1;
-		//LoadTextureFile(&data->textures[1], textPath.c_str(), TextureType::Diffuse, false, false, true, false);
-
-		//textPath = "res/textures/terrain/pix_grass.png";
-		//Texture text2 = {};
-		//data->textures[2] = text2;
-		//LoadTextureFile(&data->textures[2], textPath.c_str(), TextureType::Diffuse, false, false, true, true);
-
-		//textPath = "res/textures/terrain/snow.jpg";
-		//Texture text3 = {};
-		//data->textures[3] = text3;
-		//LoadTextureFile(&data->textures[3], textPath.c_str(), TextureType::Diffuse, false, false, true, false);
-
 	}
 
 	void InitCubeMapMesh(Mesh* mesh)
@@ -697,7 +611,6 @@ namespace Mon
 		
 
 	}
-
 
 	void InitBoundingBoxMesh(Mesh* mesh)
 	{

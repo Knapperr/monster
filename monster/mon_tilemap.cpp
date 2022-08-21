@@ -251,7 +251,6 @@ namespace Mon
 					newTile->height = sheetTile.height;
 					newTile->textureOffsetX = sheetTile.textureOffsetX;
 					newTile->textureOffsetY = sheetTile.textureOffsetY;
-					// TODO(ck): keep x and y as 0,1,2,3 1x1m unit  --- draw position?
 					newTile->x = x;
 					newTile->y = y;
 					map->tiles.push_back(newTile);
@@ -279,7 +278,7 @@ namespace Mon
 		MonGL::DrawMap(shader, cameraPos, textureID, map->wireFrame);
 	}
 
-	void RecanonicalizeCoord(TileMap* tileMap, uint32_t* tile, float* tileRel)
+	void RecanonicalizeCoord(TileMap* tileMap, int32_t* tile, float* tileRel)
 	{
 		// TODO(casey): Need to do something that doesn't use the divide/multiply method
 		// for recanonicalizing because this can end up rounding back on to the tile 
@@ -307,7 +306,6 @@ namespace Mon
 			and way easier to work with.
 		*/
 		TileMapPosition result = pos;
-
 		RecanonicalizeCoord(tileMap, &result.absTileX, &result.offset.x);
 		RecanonicalizeCoord(tileMap, &result.absTileY, &result.offset.y);
 

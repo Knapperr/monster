@@ -10,21 +10,25 @@ void InitGrid(Grid* grid)
 	grid->x = (float)0 * SIZE;
 	grid->z = (float)0 * SIZE;
 
-
+	// TODO(ck): Memory allocation 
+	// Loading chunks and cells 
+	int tileChunkCountXYZ = 1;
+	int chunkDim = 8;
+	int tileCount = chunkDim * chunkDim;
+	grid->chunks = new Chunk[tileChunkCountXYZ];
+	grid->chunks[0].cells = new Mon::int32[tileCount];
+	for (int i = 0; i < tileCount; ++i)
+	{
+		grid->chunks->cells[i] = 1;
+	}
 
 
 	// NOTE(ck): Power of 2 needs to be used for SIZE so that
 	//			texture coords to be proper on the cells
-	/*I think the proper way to do this is have a map structure with the positions as int32 and then
-	have the mesh that just gets the vertices from the positions just like a tilemap this way the
-	grid is its own thing and then the
-	*/
-	// data.meshIndex = GetMesh("grid");
 	grid->data = {};
-	grid->data.meshIndex = 4;
+	grid->data.meshIndex = 4; // data.meshIndex = GetMesh("grid");
 	grid->data.textureIndex = 12;
-
-	grid->data.programData.texCoordScale = 10.0f;
+	grid->data.programData.texCoordScale = 8.0f;
 }
 
 

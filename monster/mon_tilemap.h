@@ -20,25 +20,23 @@ namespace Mon
 	struct TileMapDifference
 	{
 		v2 dXY;
-		float dZ;
 	};
 
 	struct TileMapPosition
 	{
-		uint32 absTileX;
-		uint32 absTileY;
+		int32 absTileX;
+		int32 absTileY;
 		// NOTE(casey): These are the offsets from the tile center
 		v2 offset;
 	};
 	
 	struct TileChunkPosition
 	{
-		uint32 tileChunkX;
-		uint32 tileChunkY;
-		uint32 tileChunkZ;
-
-		uint32 relTileX;
-		uint32 relTileY;
+		int32 tileChunkX;
+		int32 tileChunkY;
+		
+		int32 relTileX;
+		int32 relTileY;
 	};
 
 	struct TileChunk
@@ -141,17 +139,20 @@ namespace Mon
 		TileChunk* chunks;
 	};
 
-	TileChunk* GetTileChunk(TileMap_* tileMap, uint32 tileChunkX, uint32 tileChunkY, uint32 tileChunkZ);
-	uint32 GetTileValueUnchecked(TileMap_ *tileMap, TileChunk *tileChunk, uint32 tileX, uint32 tileY);
-	void SetTileValueUnchecked(TileMap_ *tileMap, TileChunk *tileChunk, uint32 tileX, uint32 tileY);
+	TileChunk* GetTileChunk(TileMap_* tileMap, int32 tileChunkX, int32 tileChunkY, int32 tileChunkZ);
+	uint32 GetTileValueUnchecked(TileMap_ *tileMap, TileChunk *tileChunk, int32 tileX, int32 tileY);
+	void SetTileValueUnchecked(TileMap_ *tileMap, TileChunk *tileChunk, int32 tileX, int32 tileY);
 	
-	void SetTileValue(TileMap_* tileMap, TileChunk* tileChunk, uint32 testTileX, uint32 testTileY, uint32 tileValue);
-	void GetChunkPositionFor(TileMap_ *tileMap, uint32 absTileX, uint32 absTileY, uint32 absTileZ);
-	uint32 GetTileValue(TileMap_ *tileMap, TileChunk *tileChunk, uint32 testTileX, uint32 testTileY);
-	uint32 GetTileValue(TileMap_ *tileMap, uint32 absTileX, uint32 absTileY, uint32 absTileZ);
+	void SetTileValue(TileMap_* tileMap, TileChunk* tileChunk, int32 testTileX, int32 testTileY, int32 tileValue);
+	void GetChunkPositionFor(TileMap_ *tileMap, int32 absTileX, int32 absTileY, int32 absTileZ);
+	uint32 GetTileValue(TileMap_ *tileMap, TileChunk *tileChunk, int32 testTileX, int32 testTileY);
+	uint32 GetTileValue(TileMap_ *tileMap, int32 absTileX, int32 absTileY, int32 absTileZ);
 	uint32 GetTileValue(TileMap_* tileMap, TileMapPosition pos);
-	bool IsTileValueEmpty(uint32 tileValue);
+	bool IsTileValueEmpty(int32 tileValue);
 	bool IsTileMapPointEmpty(TileMap_* tileMap, TileMapPosition);
+	void SetTileValue(TileMap *tileMap,
+				int32 absTileX, int32 absTileY, int32 absTileZ,
+				int32 tileValue);
 	//void SetTileValue(MemoryArena *arena, TileMap *tileMap,
 	//				uint32 absTileX, uint32 absTileY, uint32 absTileZ,
 	//				uint32 tileValue);

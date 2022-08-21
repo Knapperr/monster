@@ -24,7 +24,6 @@ struct CellPosition
 struct Chunk
 {
 	Mon::int32* cells;
-
 };
 
 struct Grid

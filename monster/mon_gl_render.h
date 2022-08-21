@@ -53,27 +53,17 @@ namespace MonGL
 		v3 bitangent;
 	};
 	
-	// TODO(ck): RenderData is the entities draw data I can
-	// probably get rid of it and have an openGL struct that has the VAO, VBO, IBO 
-	// inside of it. this is holding our textures and stuff i guess that would be part
-	// of the entity?
-	// I guess the opengl struct even keeps the textures and stuff in it too its controlling
-	// and doing everything.
-
+	// RenderSetup is for the common attributes that are shared among these are found in CommonProgram
 	struct RenderSetup
 	{
-		/*
-		*  RenderSetup is for the common attributes that are shared among shaders
-		*  these are found in CommonProgram cameraPosition
-		*/
-		// TODO(ck): Move to material
 		float materialShininess;
 		float time;
 		mat4 viewMatrix;
 		mat4 projection;
 	};
 
-	struct Material {
+	struct Material 
+	{
 		v3 ambient;
 		v3 diffuse;
 		v3 specular;
@@ -106,14 +96,9 @@ namespace MonGL
 	// TODO(ck): Better name for this
 	// the mesh is inside that is technically the data to render
 	// is this more of a render command or something?
-	// renderoptions 
-	// drawdata
-	// Model? its holding the mesh and data which is often just
-	// called a Model
-	// glModel ?
 	struct RenderData
 	{
-		// TODO(ck): Index for the OpenGL meshes 
+		// TODO(ck): Index for the mesh from g_Assets
 		int meshIndex;
 		int textureIndex;
 		ProgramType programType;
@@ -125,31 +110,8 @@ namespace MonGL
 
 		v3 color;
 		v3 scale = v3(1.0f);
-
-		// TODO(ck): We get this from object space. Need to create a world coordinate system 
-		// and each entity needs to create this world matrix based off of that space right now everything is 
-		// relative to 0,0,0
-		// world space
 		mat4 worldMatrix;
 	};
-
-
-	/* IMPORTANT(ck): July 30 2022 1:15AM
-	  Can have a render command with a render type that sets the meshIndex
-	  when the render loop starts we loop through entities and build the 
-	  render commands. each render command gets sent to the gpu
-		
-		render commands allow us to just change the commands depending 
-		on the current renderer
-		we can also initialize memory for it
-
-		struct RenderCommand
-		{
-			int meshIndex;
-		
-		};
-
-	*/
 
 	struct Batch
 	{
@@ -177,23 +139,6 @@ namespace MonGL
 		RenderData data;
 	};
 
-	
-	//
-	// opengl renderer data is held in here
-	//
-	/*
-		Enlighten moment about data oriented.
-		this is the beauty of more data oriented coding. we have all of our data in the 
-		main renderer. The data is all here and the renderdata that a game object acceses 
-		just gets everything the same way as a database. this makes it super easy to hook up
-		sql lite configs to this
-		
-		This is the main renderer that holds all of our data
-
-		resource manager for this?
-	*/
-	
-	// Not sure how to wrap this
 	struct FramebufferGL
 	{
 		unsigned int handle;

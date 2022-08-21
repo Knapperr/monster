@@ -8,6 +8,8 @@ namespace Mon {
 
 	struct World
 	{
+		v3 origin;
+
 		unsigned int entityCount;
 		Entity entities[256];
 
@@ -175,6 +177,8 @@ namespace Mon {
 
 	static void InitWorld(World* world, int shaderHandle, int waterShaderHandle, float angleDegrees)
 	{
+		world->origin = v3(0.0f, 0.0f, 0.0f);
+
 		// reserve slot 0 for null entity
 		AddEntity(world);
 

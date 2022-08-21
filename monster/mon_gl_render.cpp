@@ -349,10 +349,10 @@ namespace MonGL
 		gl->lights[index].attachedToEntity = false;
 		index = AddLight(gl);
 		gl->lights[index].id = "002";
+		gl->lights[index].pos = v3(24.0f, 64.0f, 20.0f);
 		gl->lights[index].ambient = v3(1.0f);
 		gl->lights[index].diffuse = v3(1.0f);
 		gl->lights[index].specular = v3(1.0f);
-		gl->lights[index].pos = v3(1.0f);
 		gl->lights[index].attachedToEntity = false;
 
 		// Frame buffer
@@ -438,16 +438,6 @@ namespace MonGL
 	{
 		UseProgram(&program->common, setup);
 
-		// TODO(ck):
-		// somehow get entity's water component data into here
-		// Once we solve this we will have a semi generic way of writing shaders
-		/*
-		need to call the glUniform1f(program->)
-
-		maybe we can have a render setup that gets changed by each entity
-		when it comes through
-		
-		*/
 	
 	}
 
@@ -1197,6 +1187,69 @@ namespace MonGL
 		float bottomLeftY   = (tileOffsetY * tileSize) / sheetSize;
 		float bottomRightX	= ((tileOffsetX + 1) * tileSize) / sheetSize;
 		float bottomRightY	= (tileOffsetY * tileSize) / sheetSize;
+		
+
+		// TODO(ck): Need to send information up with the buffer or quads so that 
+		// each quad can be converted from tile position to screen position
+		
+		// i think we also need camera and camera bounds information....
+		// we only create a buffer for which tiles are currently displayed on 
+		// the screen. I think this math is in handmade
+		
+		/*
+			Going from tile space ( our world space ) to screen space
+			screenCenterX = 0.5f * (float)buffer->width (960)
+			screenCenterY = 0.5f * (float)buffer->height (540)
+
+
+			Not sure where to do this we need the bounds I think...
+			should look a bit further in handmade because here we are treating
+			tiles as entities which might give me more freedom so i can attach things
+			to tiles. camera bounds puts the tiles we want and then in the draw
+			we build the vertices
+
+			// We don't even have to do this. This is for when you are not 
+			// treating the tiles as entities
+			for (int row = -10; row < 10)
+				for (int col = -20; col < 20)
+			// we calculate the current column and row from the camera absolute pos
+			int column = cameraPos.absTileX + col;
+			int row = cameraPos.absTileY + row;
+			// can even grab the tileId from here so we can do custom things
+			tileId = GetTileValue(tileMap, col, row absTileZ);
+			v2 tileSize = { 0.5f * tileSideInPixels, 0.5f*tileSizeInPixels} 
+			v2 center = {screenCenterX - metersToPixels * cameraPos.offset_.x + (float)col}
+
+
+			It gets a lot more simpler when we just treat tiles as entities
+			get the x and y ground points
+			
+			
+
+			NOTE(ck): Remember the pos is already in camera space when set camera is called
+			groundPoint.x = screenCenterX - metersToPixels*pos.x
+			groundPoint.y = screenCenterY - metersToPixels*pos.y
+
+			// Need to be careful the width and height dont want to have any info for pixels
+			// because its pixels are a rendering concept not gameplay
+			width, height = tileSideInMeters;
+			
+			leftTop = { groundPoint.x - 0.5f*metersToPixels * width,
+					    groundPoint.y - 0.5f*metersToPixels * height }
+			widthHeight = { width, height }
+			draw rect with min max
+			DrawRect(buffer,
+				leftTop,
+				leftTop + metersToPixels * widthHeight)
+			
+			The Draw Rect call also rounds our float min and max to int32
+			for an image we do x and y and then round them to ints 
+			and add the bitmap width and height in pixels.
+			that sort of makes me think we need to be adding the pixels width and
+			height to the vertices and just make sure that the x and y 
+			are in camera space....??? could try this
+
+		*/
 
 		float x = tileXPos;
 		float y = tileYPos;
@@ -1210,19 +1263,19 @@ namespace MonGL
 		};
 
 		Vertex vec1 = {
-			v3(x + tileSizeX, y, 0.0f),
+			v3((x + tileSizeX), y, 0.0f),
 			v3(0.0f, 1.0f, 0.0f),
 			v2(bottomRightX, bottomRightY)
 		};
 
 		Vertex vec2 = {
-			v3(x + tileSizeX, y + tileSizeY, 0.0f),
+			v3((x + tileSizeX), (y + tileSizeY), 0.0f),
 			v3(0.0f, 0.0f, 1.0f),
 			v2(topRightX, topRightY)
 		};
 
 		Vertex vec3 = {
-			v3(x, y + tileSizeY, 0.0f),
+			v3(x, (y + tileSizeY), 0.0f),
 			v3(1.0f, 1.0f, 0.0f),
 			v2(topLeftX, topLeftY)
 		};
@@ -1281,10 +1334,12 @@ namespace MonGL
 		mat4 model = mat4(1.0f);
 		v3 tilePosition = {};
 		
+
 		// IMPORTANT(ck): Move position to camera space
-		tilePosition.x = (data->pos.x - cameraPos.x);
-		tilePosition.y = (data->pos.y - cameraPos.y);
-		model = glm::translate(model, tilePosition);
+		tilePosition.x = (data->pos.x);
+		tilePosition.y = (data->pos.y);
+
+		//model = glm::translate(model, tilePosition);
 
 		//model = glm::translate(model, v3(0.5f * data->size.x, 0.0f * data->size.y, 0.0f));
 		//model = glm::rotate(model, obj->rotation, v3(0.0f, 0.0f, 1.0f));
@@ -1320,7 +1375,7 @@ namespace MonGL
 		// Fill batch 
 		// bind vertices
 		v3 pos = {};
-		v3 basePos = v3(0.0f, 0.0f, 0.0f);
+		v3 basePos = v3(1.0f, 1.0f, 0.0f);
 
 		//v2 tileSide = { 0.5f * tileSideInPixels, 0.5f * tileSideInPixels };
 		//v2 cen = { screenCenterX - metersToPixels * gameState->cameraP.offset_.x + ((real32)relColumn) * tileSideInPixels,
@@ -1328,9 +1383,10 @@ namespace MonGL
 		//v2 min = cen - 0.9f * tileSide;
 		//v2 max = cen + 0.9f * tileSide;
 		//DrawRectangle(buffer, min, max, 0.4f, gray, 0.3f);
+		pos.x = basePos.x;
+		pos.y = basePos.y;
 
-		pos.x = basePos.x - cameraPos.x;
-		pos.y = basePos.y - cameraPos.y;
+
 		mat4 model = mat4(1.0f);
 		model = glm::translate(model, pos);
 
