@@ -19,6 +19,7 @@ void InitGrid(Grid* grid)
 	grid->chunks[0].cells = new Mon::int32[tileCount];
 	for (int i = 0; i < tileCount; ++i)
 	{
+		// initialize all tiles in chunk but sparesly
 		grid->chunks->cells[i] = 1;
 	}
 

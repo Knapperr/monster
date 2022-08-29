@@ -240,6 +240,13 @@ namespace Mon
 			mesh->vertices = new MonGL::Vertex3D[mesh->verticeCount];
 			mesh->indices = new unsigned int[mesh->indiceCount];
 
+
+			float minX = 0.0f;
+			float maxX = 0.0f;
+			float minY = 0.0f;
+			float maxY = 0.0f;
+			float minZ = 0.0f;
+			float maxZ = 0.0f;
 			while (file >> line)
 			{
 				for (int i = 0; i < mesh->verticeCount; ++i)
@@ -264,6 +271,16 @@ namespace Mon
 					file >> mesh->vertices[i].bitangent.x;
 					file >> mesh->vertices[i].bitangent.y;
 					file >> mesh->vertices[i].bitangent.z;
+
+
+					if (mesh->vertices[i].position.x > maxX) maxX = mesh->vertices[i].position.x;
+					if (mesh->vertices[i].position.x < minX) minX = mesh->vertices[i].position.x;
+
+					if (mesh->vertices[i].position.y > maxY) maxY = mesh->vertices[i].position.y;
+					if (mesh->vertices[i].position.y < minY) minY = mesh->vertices[i].position.y;
+
+					if (mesh->vertices[i].position.z > maxZ) maxZ = mesh->vertices[i].position.z;
+					if (mesh->vertices[i].position.z < minZ) minZ = mesh->vertices[i].position.z;
 				}
 
 				for (int j = 0; j < mesh->indiceCount; ++j)
@@ -271,6 +288,19 @@ namespace Mon
 					index = j;
 					file >> mesh->indices[j];
 				}
+				mesh->min = v3(minX, minY, minZ);
+				mesh->max = v3(maxX, maxY, maxZ);
+			/*
+				glm::vec3 size = glm::vec3(max_x-min_x, max_y-min_y, max_z-min_z);
+				glm::vec3 center = glm::vec3((min_x+max_x)/2, (min_y+max_y)/2, (min_z+max_z)/2);
+				glm::mat4 transform = glm::translate(glm::mat4(1), center) * glm::scale(glm::mat4(1), size);
+
+				Apply object's transformation matrix 
+				glm::mat4 m = mesh->object2world * transform;
+				glUniformMatrix4fv(uniform_m, 1, GL_FALSE, glm::value_ptr(m));
+
+			*/
+
 
 				// finished
 				break;
@@ -563,14 +593,16 @@ namespace Mon
 		int verticeCount = (xSize + 1) * (zSize + 1);
 		// TODO(ck): Memory allocation
 		mesh->vertices = new MonGL::Vertex3D[verticeCount];
-		for (int index = 0, z = 0; z <= zSize; z++)
+		for (int index = 0, z = -zSize/2; z <= zSize/2; z++)
 		{
-			for (int x = 0; x <= xSize; x++, index++)
+			for (int x = -xSize/2; x <= xSize/2; x++, index++)
 			{
 				mesh->vertices[index] = {};
-				mesh->vertices[index].position.x = (float)((x + 0.5f) - (xSize / 2.0f));
+				//mesh->vertices[index].position.x = (float)((x + 0.5f) - (xSize / 2.0f));
+				mesh->vertices[index].position.x = (float)((x));
 				mesh->vertices[index].position.y = -0.5f;
-				mesh->vertices[index].position.z = (float)((z + 0.5f) - (zSize/2.0f));
+				//mesh->vertices[index].position.z = (float)((z + 0.5f) - (zSize / 2.0f));
+				mesh->vertices[index].position.z = (float)((z));
 
 				mesh->vertices[index].normal.x = 0;
 				mesh->vertices[index].normal.y = 1;

@@ -51,6 +51,8 @@ namespace Mon
 		unsigned int IBO;
 		int verticeCount;
 		int indiceCount;
+		v3 max;
+		v3 min;
 		RenderType type;
 
 		MonGL::Vertex3D* vertices;

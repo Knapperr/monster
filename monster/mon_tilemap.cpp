@@ -56,7 +56,7 @@ namespace Mon
 		// possibly have a lighter weight tilemap for when the game is actually running 
 		// that just reads off of a text file and instantly loads
 
-		// TODO(ck):
+		// TODO(ck): MEMORY MANAGEMENT
 		// SPLICE the tilesheet and figure out the offsets manually
 		// Just have tileCount and Tile not Tile* just have it array like entities?
 		sheet->tileCount = 20;

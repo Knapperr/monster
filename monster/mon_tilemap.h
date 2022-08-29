@@ -20,12 +20,14 @@ namespace Mon
 	struct TileMapDifference
 	{
 		v2 dXY;
+		float dZ;
 	};
 
 	struct TileMapPosition
 	{
 		int32 absTileX;
 		int32 absTileY;
+		int32 absTileZ;
 		// NOTE(casey): These are the offsets from the tile center
 		v2 offset;
 	};
@@ -34,6 +36,7 @@ namespace Mon
 	{
 		int32 tileChunkX;
 		int32 tileChunkY;
+		int32 tileChunkZ;
 		
 		int32 relTileX;
 		int32 relTileY;

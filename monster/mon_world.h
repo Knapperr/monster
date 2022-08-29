@@ -102,7 +102,7 @@ namespace Mon {
 		e->data.scale = scale;
 		e->data.wireFrame = false;
 		e->data.visible = true;
-		e->rb.pos = pos;
+		e->rb.worldPos = pos;
 		e->follow = false;
 		InitBoxCollider(&e->collider);
 		e->spriteAngleDegrees = angleDegrees;
@@ -124,7 +124,7 @@ namespace Mon {
 		player->data.programType = MonGL::ProgramType::Common;
 
 		InitBoxCollider(&player->collider);
-		player->rb.pos = v3(3.0f, -0.15f, 2.0);
+		player->rb.worldPos = v3(3.0f, -0.15f, 2.0);
 		player->rb.inverseMass = 10.0f;
 		player->rb.velocity = v3(0.0f, 0.0f, 0.0f); // 35m/s
 		player->rb.gravity = 10.0f;
@@ -152,7 +152,7 @@ namespace Mon {
 		e->data.visible = true;
 
 		InitBoxCollider(&e->collider);
-		e->rb.pos = v3(15.00f, -0.40f, -19.95);
+		e->rb.worldPos = v3(15.00f, -0.40f, -19.95);
 		e->rb.speed = 40.0f;
 		e->data.scale = v3(18.0f, 1.0f, 18.0f);
 
@@ -279,7 +279,7 @@ namespace Mon {
 		*velocity *= speed;
 		*velocity += -6.0f * player->rb.velocity;
 
-		v3 oldPos = player->rb.pos;
+		v3 oldPos = player->rb.worldPos;
 		v3 newPos = oldPos;
 		float deltaX = (0.5f * velocity->x * square(dt) + player->rb.velocity.x * dt);
 		float deltaY = player->rb.velocity.y;
@@ -293,7 +293,7 @@ namespace Mon {
 		player->rb.velocity.x = velocity->x * dt + player->rb.velocity.x;
 		player->rb.velocity.z = velocity->z * dt + player->rb.velocity.z;
 
-		player->rb.pos = newPos;
+		player->rb.worldPos = newPos;
 
 		SetFacingDirection(player);
 	}

@@ -46,7 +46,7 @@ void WriteEntities(Mon::Entity* entities, unsigned int entityCount, int shaderID
 		file << entities[i].name << "\n"
 			<< (int)entities[i].data.meshIndex << "\n"
 			<< (int)entities[i].data.textureIndex << "\n"
-			<< entities[i].rb.pos.x << "\n" << entities[i].rb.pos.y << "\n" << entities[i].rb.pos.z << "\n"
+			<< entities[i].rb.worldPos.x << "\n" << entities[i].rb.worldPos.y << "\n" << entities[i].rb.worldPos.z << "\n"
 			<< entities[i].data.scale.x << "\n" << entities[i].data.scale.y << "\n" << entities[i].data.scale.z << "\n"
 			<< shaderID << "\n";
 	}
@@ -156,9 +156,9 @@ void LoadSceneFile(Mon::GameState* game)
 
 			file >> e->data.meshIndex;
 			file >> e->data.textureIndex;
-			file >> e->rb.pos.x;
-			file >> e->rb.pos.y;
-			file >> e->rb.pos.z;
+			file >> e->rb.worldPos.x;
+			file >> e->rb.worldPos.y;
+			file >> e->rb.worldPos.z;
 
 			file >> e->data.scale.x;
 			file >> e->data.scale.y;
@@ -452,13 +452,13 @@ void EntityTab(Mon::GameState* game)
 					//ImGui::SliderFloat("scale", &game->entities[selected].data.size.max, 0.0f, 200.0f);
 					//ImGui::DragFloat("fine scale", &game->entities[selected].data.size, 0.0001f, 0.0f, 200.0f, "%.02f");
 
-					ImGui::DragFloat("x", &game->world->entities[selected].rb.pos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");
-					ImGui::DragFloat("y", &game->world->entities[selected].rb.pos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
-					ImGui::DragFloat("z", &game->world->entities[selected].rb.pos.z, 0.1f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::DragFloat("x", &game->world->entities[selected].rb.worldPos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::DragFloat("y", &game->world->entities[selected].rb.worldPos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::DragFloat("z", &game->world->entities[selected].rb.worldPos.z, 0.1f, -1000.0f, 1000.0f, "%.02f");
 
 					ImGui::SliderFloat3("scale", &game->world->entities[selected].data.scale[0], 1.0f, 100.0f, "%1.0f");
-					ImGui::SliderFloat3("Collider min", &game->world->entities[selected].collider.min[0], 0.0f, 100.0f);
-					ImGui::SliderFloat3("Collider max", &game->world->entities[selected].collider.max[0], 0.0f, 100.0f);
+					ImGui::SliderFloat3("Collider min", &game->world->entities[selected].collider.min[0], 0.0f, 100.0f, "%1.0f");
+					ImGui::SliderFloat3("Collider max", &game->world->entities[selected].collider.max[0], 0.0f, 100.0f, "%1.0f");
 
 					ImGui::DragFloat("speed", &game->world->entities[selected].rb.speed, 0.10f, 0.0f, 200.0f, "%.10f");
 					ImGui::DragFloat("angle", &game->world->entities[selected].spriteAngleDegrees, 0.10f, -180.0f, 360.0f, "%.10f");
@@ -650,6 +650,16 @@ void AssetTab(Mon::GameState* game)
 
 				sprintf_s(buf, "%s", std::to_string(Mon::g_Assets->meshes[selected].indiceCount).c_str());
 				ImGui::Text("Indice Count %s", buf, IM_ARRAYSIZE(buf));
+
+				//sprintf_s(buf, "%s", std::to_string(Mon::g_Assets->meshes[selected].width).c_str());
+				//ImGui::Text("Width %s", buf, IM_ARRAYSIZE(buf));
+				ImGui::SliderFloat3("min", &Mon::g_Assets->meshes[selected].min[0], 0.0f, 100.0f, "%1.0f");
+				ImGui::SliderFloat3("max", &Mon::g_Assets->meshes[selected].max[0], 0.0f, 100.0f, "%1.0f");
+
+
+
+				//sprintf_s(buf, "%s", std::to_string(Mon::g_Assets->meshes[selected].height).c_str());
+				//ImGui::Text("Height %s", buf, IM_ARRAYSIZE(buf));
 
 				sprintf_s(buf, "%s", RenderTypeText(Mon::g_Assets->meshes[selected].type));
 				ImGui::Text("Type %s", buf, IM_ARRAYSIZE(buf));

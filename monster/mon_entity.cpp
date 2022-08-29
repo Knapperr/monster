@@ -14,7 +14,7 @@ namespace Mon {
 			y += vector.y * scale;
 			z += vector.z * scale;
 		*/
-		pos += velocity * duration;
+		worldPos += velocity * duration;
 
 		// update linear pos
 		v3 resultingAcc = acceleration;

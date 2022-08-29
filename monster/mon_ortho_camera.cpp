@@ -30,8 +30,8 @@ namespace Mon
 		pos.x = (target->x + offset.x) * 0.5f;
 		pos.y = (target->y + offset.y) * 0.5f;
 #else 
-		pos.x = smoothDamp(pos.x, (target->x + offset.x)*0.5f, vel.x, smoothness, dt);
-		pos.y = smoothDamp(pos.y, (target->y + offset.y)*0.5f, vel.y, smoothness, dt);
+		pos.x = smoothDamp(pos.x, (target->x)*0.5f, vel.x, smoothness, dt);
+		pos.y = smoothDamp(pos.y, (target->y)*0.5f, vel.y, smoothness, dt);
 #endif
 
 		//float mapOffset = 40.0f / 2.0f;

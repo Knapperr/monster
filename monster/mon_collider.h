@@ -16,14 +16,6 @@ namespace Mon {
 
 	struct Collider
 	{
-		// TODO(ck): Min and Max should just hold the postions...
-		// do not need a Size 
-		struct Size
-		{
-			v3 min = v3(0.0f, 0.0f, 0.0f);
-			v3 max = v3(1.0f, 1.0f, 1.0f);
-		};
-
 		ColliderType type;
 		MonGL::RenderData data;
 		v3 worldPos;
@@ -32,8 +24,6 @@ namespace Mon {
 	};
 
 	void InitBoxCollider(Collider* c);
-	v3 GetBoxSize(Collider* c);
-	v3 GetBoxCenter(Collider* c);
 
 	// TODO(ck): Remove world position from collider... only need the min, max size in relation to entity
 	mat4 GetBoxTransform(Collider* c, v3 entityPos, v3 entityScale);

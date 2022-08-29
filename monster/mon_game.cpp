@@ -18,13 +18,13 @@ namespace Mon
 
 		if ((!input->lMouseBtn.endedDown && input->rMouseBtn.endedDown) && ent != nullptr)
 		{
-			ent->rb.pos.x = picker->currentTerrainPoint.x;
-			ent->rb.pos.z = picker->currentTerrainPoint.z;
+			ent->rb.worldPos.x = picker->currentTerrainPoint.x;
+			ent->rb.worldPos.z = picker->currentTerrainPoint.z;
 
 			float offset = 0.35f;
 			if (input->shift.endedDown)
 				offset = 0.10f;
-			ent->rb.pos.y += input->wheel.y * offset;
+			ent->rb.worldPos.y += input->wheel.y * offset;
 		}
 	}
 
@@ -76,11 +76,11 @@ namespace Mon
 		Entity* e = GetEntity(world, 16);
 		float speed = 4.0f;
 
-		if (e->rb.pos.x >= 20.0f && e->facingDir == Direction::Right)
+		if (e->rb.worldPos.x >= 20.0f && e->facingDir == Direction::Right)
 		{	
 			e->facingDir = Direction::Left;
 		}
-		if(e->rb.pos.x <= -20.0f && e->facingDir == Direction::Left)
+		if(e->rb.worldPos.x <= -20.0f && e->facingDir == Direction::Left)
 		{
 			e->facingDir = Direction::Right;
 		}
@@ -88,7 +88,7 @@ namespace Mon
 		if (e->facingDir == Direction::Left)
 			speed = -speed;
 
-		e->rb.pos.x += speed * dt;
+		e->rb.worldPos.x += speed * dt;
 
 		// TODO(ck): Update entity and then update entity collider right after
 		// instead of having two separate loops for entities and their colliders.
@@ -98,9 +98,9 @@ namespace Mon
 
 			// TODO(ck): Precise Collision check
 			
-			v3 colliderPos = { world->entities[i].rb.pos.x - (0.5f),
-								world->entities[i].rb.pos.y - (0.5f),
-								world->entities[i].rb.pos.z - (0.5f) };
+			v3 colliderPos = { world->entities[i].rb.worldPos.x - (0.5f),
+								world->entities[i].rb.worldPos.y - (0.5f),
+								world->entities[i].rb.worldPos.z - (0.5f) };
 
 			UpdateCollider(&world->entities[i].collider, colliderPos, world->entities[i].data.scale);
 		}
@@ -289,9 +289,9 @@ namespace Mon
 
 		Entity* player = GetPlayer(state->world);
 		// player collider
-		v3 colliderPos = { player->rb.pos.x - (0.5f),
-					player->rb.pos.y - (0.5),
-					player->rb.pos.z - (0.5f) };
+		v3 colliderPos = { player->rb.worldPos.x - (0.5f),
+					player->rb.worldPos.y - (0.5),
+					player->rb.worldPos.z - (0.5f) };
 
 		//UpdateCollider(&player->collider, colliderPos, player->data.scale);
 
@@ -299,13 +299,13 @@ namespace Mon
 		//	ENTITIES UPDATE
 		//
 		UpdateEntities(state->world, dt);
-
+		
 
 		// 
 		// CAMERA UPDATE
 		//
 		Camera* cam = GetCamera(state, state->currCameraIndex);
-		Update(cam, dt, newInput, player->rb.pos, player->rb.orientation, true);
+		Update(cam, dt, newInput, player->rb.worldPos, player->rb.orientation, true);
 		// sort the entities from the camera
 		//std::sort(world->entities, world->entities + world->entityCount, sortEntities);
 
@@ -357,9 +357,9 @@ namespace Mon
 
 			if (state->drawCollisions)
 				MonGL::DrawBoundingBox(&state->renderer, &e.collider.data, cam);
-			MonGL::Draw(&state->renderer, &state->config, state->setup, e.spriteAngleDegrees, &e.data, e.rb.pos, cam);
+			MonGL::Draw(&state->renderer, &state->config, state->setup, e.spriteAngleDegrees, &e.data, e.rb.worldPos, cam);
 
-			GetGridPosition(e.rb.pos);
+			GetGridPosition(e.rb.worldPos);
 		}
 
 		//
