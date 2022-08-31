@@ -26,7 +26,7 @@ namespace Mon
 
 	void OrthoCamera::update(v2 *target, float dt)
 	{
-#if 0
+#if 1
 		pos.x = (target->x + offset.x) * 0.5f;
 		pos.y = (target->y + offset.y) * 0.5f;
 #else 
@@ -72,6 +72,7 @@ namespace Mon
 		v3 cameraFront = v3(0.0f, 0.0f, -1.0f);
 		v3 cameraUp = v3(0.0f, 1.0f, 0.0f);
 		v3 targetPos = v3(pos, 0.0f);
+		targetPos = v3(0.0f);
 
 		view = glm::lookAt(targetPos, cameraFront + targetPos, cameraUp);
 		return view;

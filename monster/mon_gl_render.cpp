@@ -1096,7 +1096,7 @@ namespace MonGL
 		// mat4 was = batch->matrix;
 		batch->matrix = batch->matrixStack.top();
 		batch->matrixStack.pop();
-		// return  was 
+		// return was (the old matrix) 
 	}
 
 	void InitRenderData2D(RenderData2D* sprite, int size)
@@ -1231,7 +1231,13 @@ namespace MonGL
 		
 
 		float x = tileXPos;
+		if (x == 0.0)
+			x = -16.0f;
+
 		float y = tileYPos;
+		if (y == 0.0)
+			y = -16.0f;
+
 		float tileSizeX = 1.0f;
 		float tileSizeY = 1.0f;
 
@@ -1315,7 +1321,7 @@ namespace MonGL
 		// Fill batch 
 		// bind vertices
 		v3 pos = {};
-		v3 basePos = v3(1.0f, 1.0f, 0.0f);
+		v3 basePos = v3(0.0f, 0.0f, 0.0f);
 
 		//v2 tileSide = { 0.5f * tileSideInPixels, 0.5f * tileSideInPixels };
 		//v2 cen = { screenCenterX - metersToPixels * gameState->cameraP.offset_.x + ((real32)relColumn) * tileSideInPixels,
@@ -1323,8 +1329,8 @@ namespace MonGL
 		//v2 min = cen - 0.9f * tileSide;
 		//v2 max = cen + 0.9f * tileSide;
 		//DrawRectangle(buffer, min, max, 0.4f, gray, 0.3f);
-		pos.x = basePos.x - cameraPos.x;
-		pos.y = basePos.y - cameraPos.y;
+		pos.x = basePos.x;
+		pos.y = basePos.y;
 
 
 		mat4 model = mat4(1.0f);
@@ -1362,12 +1368,15 @@ namespace MonGL
 	void DrawObject(CommonProgram* shader, RenderData2D* data, v2 cameraPos)
 	{
 		mat4 model = mat4(1.0f);
+		// tile position is in opengl object position -0.5 to 0.5 vertices
 		v3 tilePosition = {};
 		
 
 		// IMPORTANT(ck): Move position to camera space
-		tilePosition.x = (data->pos.x - cameraPos.x);
-		tilePosition.y = (data->pos.y - cameraPos.y);
+		//tilePosition.x = (data->pos.x - cameraPos.x);
+		//tilePosition.y = (data->pos.y - cameraPos.y);
+		tilePosition.x = (data->pos.x);
+		tilePosition.y = (data->pos.y);
 
 		model = glm::translate(model, tilePosition);
 

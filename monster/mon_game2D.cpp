@@ -65,7 +65,7 @@ namespace Mon {
 		game->currentCameraIndex = AddCamera(game);
 		// InitCamera
 		game->cameras[game->currentCameraIndex].lerpSpeed = 7.0f;
-		game->cameras[game->currentCameraIndex].smoothness = 0.24f;
+		game->cameras[game->currentCameraIndex].smoothness = 0.10f;
 		game->cameras[game->currentCameraIndex].pos = v2(0.0f);
 		game->cameras[game->currentCameraIndex].vel = v2(0.0f);
 		game->cameras[game->currentCameraIndex].zoom = 64.0f;
@@ -148,6 +148,10 @@ namespace Mon {
 					else if (game->world->map->tiles[tileIndex]->id == 9)
 						UpdateTile(game->world->map, &game->world->sheet, 500, 3);
 				}
+				p->speed = 23.0f;
+				if (input->shift.endedDown)
+					p->speed *= 2;
+				
 			}
 #ifdef USE_VELOCITY
 			Mon::movePlayer(game->world->map, p, &velocity, dt);

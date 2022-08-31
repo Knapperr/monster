@@ -41,7 +41,7 @@ namespace Mon
 	void UpdateCollider(Collider* collider, v3 colliderPos, v3 scale)
 	{
 		SetBoxTransform(collider, colliderPos, scale);
-		UpdateWorldPosToWorldMatrix(collider);
+		
 	}
 
 	//bool sortEntities(Entity leftEnt, Entity rightEnt)

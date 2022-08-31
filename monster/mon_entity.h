@@ -14,27 +14,6 @@ namespace Mon {
 		Forward
 	};
 
-	// Get to this starts pg49 Ian Millington
-	// TODO(ck): PARTICLE CHANGE TO RIGIDBODY AND FIX PARAMS
-	struct RigidBody
-	{
-		v3 worldPos;
-		v3 velocity;
-		v3 acceleration;
-		v3 orientation;
-		float gravity;
-
-		Direction dir = Direction::Forward;
-
-		float damping;
-		float inverseMass;
-
-		void integrate(float duration);
-		void clearAccumulator();
-
-		float speed;
-	};
-
 	struct Component
 	{
 		int id;
@@ -58,17 +37,42 @@ namespace Mon {
 		int lightIndex;
 	};
 
+
+	// Get to this starts pg49 Ian Millington
+	// TODO(ck): PARTICLE CHANGE TO RIGIDBODY AND FIX PARAMS
+	struct RigidBody
+	{
+		v3 worldPos; // should this be CellPosition?
+		v3 velocity;
+		v3 acceleration;
+		v3 orientation;
+		float gravity;
+
+		Direction dir = Direction::Forward;
+
+		float damping;
+		float inverseMass;
+
+		void integrate(float duration);
+		void clearAccumulator();
+
+		float speed;
+	};
+
 	struct Entity
 	{
 		const char* name;
 		std::string impPath;
 		
-		// [06/06/2022]
-		// NOTE(ck): I think this is right. similar to handmade hero the tile position is separate from the position used in the physics
-		// you have to change the rigidbody and then map that back into cell space just like handmade?
-		// Even in handmade casey uses the rigid body physics position for drawing and the tile position is more for world structure and keeping
-		// the resolution in tact.
-		// this is an interesting realization for me. I feel like this is what casey was trying to convey the whole time.
+		// CellPosition is specific to the grid and editor?
+		// Should we use this to save and load the map data?
+		// position gets updated each frame?
+		// maybe we dont even need this it should be something that 
+		// isn't part of the entity we just check RigidBody position against
+		// grid and save/load that way?
+		// i think we need cell positions for path finding and making other things easier
+		// that way we can iterate over the grid easier? it at least gives us a way to 
+		// iterate over the world. without some kind of space how do we query it?
 		CellPosition cellPos;
 		RigidBody rb;
 		// TODO(ck): The entities need to be driven by a grid and have grid positions

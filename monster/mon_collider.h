@@ -21,14 +21,13 @@ namespace Mon {
 		v3 worldPos;
 		v3 min;
 		v3 max;
+		v3 scale;
+		v3 meshSize;
 	};
 
 	void InitBoxCollider(Collider* c);
-
-	// TODO(ck): Remove world position from collider... only need the min, max size in relation to entity
-	mat4 GetBoxTransform(Collider* c, v3 entityPos, v3 entityScale);
+	void InitBoxCollider(Collider* c, v3 entityPos, v3 entityScale, float meshLength, float meshHeight, float meshWidth);
 	void SetBoxTransform(Collider* c, v3 entityPos, v3 entityScale);
-	void UpdateWorldPosToWorldMatrix(Collider* c);
 
 	// intersection tests
 	int TestAABBAABB(Collider a, Collider b);
