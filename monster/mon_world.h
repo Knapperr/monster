@@ -104,7 +104,11 @@ namespace Mon {
 		e->data.visible = true;
 		e->rb.worldPos = pos;
 		e->follow = false;
-		InitBoxCollider(&e->collider);
+		Mesh* mesh = Mon::GetMesh(g_Assets, meshIndex);
+		v3 meshSize = mesh->max - mesh->min;
+		//if (meshSize.x == 0.0f && meshSize.y == 0.0f && meshSize.z == 0.0f)
+			//meshSize = v3(1.0f);
+		InitBoxCollider(&e->collider, e->rb.worldPos, scale, meshSize);
 		e->spriteAngleDegrees = angleDegrees;
 		
 		e->data.programData.texCoordScale = 1.0f;
@@ -123,7 +127,6 @@ namespace Mon {
 		player->facingDir = Direction::Forward;
 		player->data.programType = MonGL::ProgramType::Common;
 
-		InitBoxCollider(&player->collider);
 		player->rb.worldPos = v3(3.0f, -0.15f, 2.0);
 		player->rb.inverseMass = 10.0f;
 		player->rb.velocity = v3(0.0f, 0.0f, 0.0f); // 35m/s
@@ -132,6 +135,7 @@ namespace Mon {
 		player->rb.orientation = v3(1.0f, 1.0f, 1.0);
 		player->rb.damping = 0.9f;
 		player->rb.speed = 26.0f;
+		InitBoxCollider(&player->collider, player->rb.worldPos, v3(1.0f), v3(1.0f));
 
 		//player->data.mat.ambient = v3(1.0f, 0.5f, 0.6f);
 		//player->data.mat.diffuse = v3(1.0f, 0.5f, 0.31f);
@@ -238,13 +242,19 @@ namespace Mon {
 
 		AddEntity(world);
 		Entity* plane64 = GetEntity(world, world->entityCount - 1);
-		InitEntity(plane64, "plane64", v3(6.0f, 0.0f, 6.0f), v3(1.0f), 0.0f, shaderHandle, 8, 1);
+		InitEntity(plane64, "plane64", v3(6.0f, 0.0f, 6.0f), v3(1.0f), 0.0f, shaderHandle, 8, 7);
 		plane64->data.meshIndex = 7;
 
 		AddEntity(world);
 		Entity* gem = GetEntity(world, world->entityCount - 1);
-		InitEntity(gem, "gem", v3(6.0f, 0.0f, 6.0f), v3(1.0f), 0.0f, shaderHandle, 8, 1);
+		InitEntity(gem, "gem", v3(6.0f, 0.0f, 6.0f), v3(1.0f), 0.0f, shaderHandle, 8, 8);
 		gem->data.meshIndex = 8;
+
+		AddEntity(world);
+		Entity* house = GetEntity(world, world->entityCount - 1);
+		InitEntity(house, "house", v3(16.0f, 0.0f, 16.0f), v3(1.0f), 0.0f, shaderHandle, 8, 10);
+		house->data.meshIndex = 10;
+
 	}
 	
 	static void CreateInstancedGrass(World* world, int shaderHandle)

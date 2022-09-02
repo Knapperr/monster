@@ -390,6 +390,9 @@ namespace Mon
 		mesh->indices[4] = 2;
 		mesh->indices[5] = 3;
 
+		mesh->min = v3(-0.5f, -0.5f, -0.5f);
+		mesh->max = v3(0.5f, 0.5f, 0.5f);
+
 		mesh->verticeCount = verticeCount;
 		mesh->indiceCount = indiceCount;
 		mesh->type = RenderType::Quad;
@@ -571,6 +574,8 @@ namespace Mon
 		mesh->type = RenderType::Cube;
 		mesh->verticeCount = verticeCount;
 		mesh->indiceCount = 0;
+		mesh->min = v3(-0.5f, -0.5f, -0.5f);
+		mesh->max = v3(0.5f, 0.5f, 0.5f);
 		MonGL::UploadOpenGLMesh(mesh);
 	}
 

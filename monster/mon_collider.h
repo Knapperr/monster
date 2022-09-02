@@ -18,19 +18,20 @@ namespace Mon {
 	{
 		ColliderType type;
 		MonGL::RenderData data;
-		v3 worldPos;
 		v3 min;
 		v3 max;
-		v3 scale;
 		v3 meshSize;
+		v3 extents;
 	};
 
 	void InitBoxCollider(Collider* c);
-	void InitBoxCollider(Collider* c, v3 entityPos, v3 entityScale, float meshLength, float meshHeight, float meshWidth);
+	void InitBoxCollider(Collider* c, v3 entityPos, v3 entityScale, v3 meshSize);
 	void SetBoxTransform(Collider* c, v3 entityPos, v3 entityScale);
 
 	// intersection tests
 	int TestAABBAABB(Collider a, Collider b);
+	// Modify collider inside test
+	int TestAABBAABB(Collider *a, Collider *b);
 
 
 }

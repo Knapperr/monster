@@ -97,13 +97,11 @@ namespace Mon
 			// TODO(ck): Broad Phase Collision Check
 
 			// TODO(ck): Precise Collision check
-			
-			v3 colliderPos = { world->entities[i].rb.worldPos.x - (0.5f),
-								world->entities[i].rb.worldPos.y - (0.5f),
-								world->entities[i].rb.worldPos.z - (0.5f) };
 
-			UpdateCollider(&world->entities[i].collider, colliderPos, world->entities[i].data.scale);
+			UpdateCollider(&world->entities[i].collider, world->entities[i].rb.worldPos, world->entities[i].data.scale);
 		}
+
+		TestAABBAABB(&world->entities[1].collider, &world->entities[10].collider);
 	}
 
 	void InitCameras(GameState* state)
