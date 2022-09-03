@@ -100,8 +100,6 @@ namespace Mon
 
 			UpdateCollider(&world->entities[i].collider, world->entities[i].rb.worldPos, world->entities[i].data.scale);
 		}
-
-		TestAABBAABB(&world->entities[1].collider, &world->entities[10].collider);
 	}
 
 	void InitCameras(GameState* state)
@@ -263,35 +261,16 @@ namespace Mon
 					jumped = true;
 
 			}
+
+
+
 			// PIPE velocity to function
 			MovePlayer(state->world, &velocity, jumped, dt);
 
 
-
 		}
-		//player.particle.velocity *= player.particle.speed;
-		//player.particle.pos.x += player.particle.velocity.x * dt;
-		//player.particle.pos.z += player.particle.velocity.z * dt;
-
-		//input.mouseOffset.x -= config->viewPort.x;
-		//input.mouseOffset.y -= config->viewPort.y;
-		//int xOffset = (1440 - 960) / 2;
-		//int yOffset = (900 - 540) / 2;
-
-		//float x = (2.0f * (mouseX)) / (float)displayWidth - 1.0f;
-		//float y = (2.0f * (mouseY - yOffset)) / (float)displayHeight - 1.0f;
-		//input.mouseOffset.x -= config->viewPort.x;
-		//input.mouseOffset.y -= config->viewPort.y;
-		//cam->update(deltaTime, &input, world->player->particle.pos, world->player->particle.orientation, true);
-
 
 		Entity* player = GetPlayer(state->world);
-		// player collider
-		v3 colliderPos = { player->rb.worldPos.x - (0.5f),
-					player->rb.worldPos.y - (0.5),
-					player->rb.worldPos.z - (0.5f) };
-
-		//UpdateCollider(&player->collider, colliderPos, player->data.scale);
 
 		//
 		//	ENTITIES UPDATE
@@ -318,10 +297,6 @@ namespace Mon
 		// DebugModule update?
 		// DebugManager update?
 		RunDebugControls(newInput, &state->picker, state->world, state->selectedIndex);
-		//world->player->particle.pos = picker.currentTerrainPoint;
-
-
-
 	}
 
 	void Render(GameMemory* memory, float time, double dt)
