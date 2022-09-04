@@ -80,7 +80,7 @@ namespace Mon
 		return result;
 	}
 
-	// smooth damping from Game Engine Gems 4. Critically Damped Ease-In/Ease Out Smoothing - [Thomas Lowe, Krome Studios]
+	// smooth damping from Game Engine Gems 4. Critically Damped Ease-In/Ease Out Smoothing - [Thomas Lowe, Krome Studios][chapter 1.10 pg.99]
 	// critically damped
 	inline float smoothDamp(float from, float to, float &vel, float smoothTime, float time)
 	{

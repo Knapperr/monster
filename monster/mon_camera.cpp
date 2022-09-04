@@ -230,21 +230,17 @@ namespace Mon
 		// calcpitch
 		// calculateanglearoundplayer
 		// ---------------
-
-
-		float offsety = 2.0f;
-
 		float horizontalDistance = (float)(camera->distanceFromTarget * cosf(glm::radians(camera->pitch)));
 		float verticalDistance = (float)(camera->distanceFromTarget * sinf(glm::radians(camera->pitch)));
 		float theta = glm::radians(orientation.y) + camera->angleAroundTarget;
 		float offsetx = horizontalDistance * sinf(glm::radians(theta));
 		float offsetz = horizontalDistance * cosf(glm::radians(theta));
+		float offsety = 2.0f;
 
 		// NOTE(ck): Smooth spring dampening
 		camera->pos.x = smoothDamp(camera->pos.x, pos.x - offsetx, camera->velocity.x, camera->smoothness, dt);
 		camera->pos.z = smoothDamp(camera->pos.z, pos.z - offsetz, camera->velocity.z, camera->smoothness, dt);
 		camera->pos.y = smoothDamp(camera->pos.y, (pos.y + verticalDistance) + offsety, camera->velocity.y, camera->smoothness, dt);
-
 
 		//pos.x = tPos.x - offsetx;
 		//pos.z = tPos.z - offsetz;

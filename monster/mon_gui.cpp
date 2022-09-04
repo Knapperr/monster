@@ -456,7 +456,7 @@ void EntityTab(Mon::GameState* game)
 					ImGui::DragFloat("y", &game->world->entities[selected].rb.worldPos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
 					ImGui::DragFloat("z", &game->world->entities[selected].rb.worldPos.z, 0.1f, -1000.0f, 1000.0f, "%.02f");
 
-					ImGui::SliderFloat3("scale", &game->world->entities[selected].data.scale[0], 1.0f, 100.0f, "%1.0f");
+					ImGui::SliderFloat3("scale", &game->world->entities[selected].data.scale[0], 1.0f, 20.0f, "%1.0f");
 					ImGui::SliderFloat3("Collider min", &game->world->entities[selected].collider.min[0], 0.0f, 100.0f, "%1.0f");
 					ImGui::SliderFloat3("Collider max", &game->world->entities[selected].collider.max[0], 0.0f, 100.0f, "%1.0f");
 

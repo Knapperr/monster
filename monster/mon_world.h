@@ -303,6 +303,28 @@ namespace Mon {
 		player->rb.velocity.x = velocity->x * dt + player->rb.velocity.x;
 		player->rb.velocity.z = velocity->z * dt + player->rb.velocity.z;
 
+
+		// TODO(ck): Update entity and then update entity collider right after
+		// instead of having two separate loops for entities and their colliders.
+		for (unsigned int i = 1; i < world->entityCount; ++i)
+		{
+			// TODO(ck): Broad Phase Collision Check
+
+			// TODO(ck): Precise Collision check
+
+			if (i != 1) // 1 is player index
+			{
+				Entity testEntity = *GetEntity(world, i);
+
+				if (TestAABBAABB(&player->collider, &testEntity.collider))
+				{
+					
+
+					break;
+				}
+			}
+		}
+
 		player->rb.worldPos = newPos;
 
 		SetFacingDirection(player);

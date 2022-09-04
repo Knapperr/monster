@@ -584,7 +584,7 @@ namespace Mon
 		// IMPORTANT(ck):
 		// TODO(ck):  This can't be 003 there are always going to be more than one
 		//			  model mesh. the other meshes are fine but the model mesh is dynamic
-		mesh->id = "MODEL";
+		mesh->id = fileName;
 		LoadImpFile(mesh, fileName);
 		mesh->type = RenderType::Model;
 		MonGL::UploadOpenGLMesh(mesh);

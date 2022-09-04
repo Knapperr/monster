@@ -60,6 +60,9 @@ namespace Mon {
 
 	int TestAABBAABB(Collider* a, Collider* b)
 	{
+		a->data.color = v3(0.0f, 0.0f, 1.0f);
+		b->data.color = v3(1.0f, 0.0f, 0.0f);
+
 		// Exit with no intersection if separated along an axis
 		if (a->max.x < b->min.x || a->min.x > b->max.x) {
 			a->data.color = v3(0.7f, 0.15f, 0.4f);
@@ -78,8 +81,6 @@ namespace Mon {
 			return 0;
 		}
 		// Overlapping on all axes means AABBs are intersecting
-		a->data.color = v3(0.0f, 0.0f, 1.0f);
-		b->data.color = v3(1.0f, 0.0f, 0.0f);
 		return 1;
 	}
 

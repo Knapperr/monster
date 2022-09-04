@@ -38,12 +38,6 @@ namespace Mon
 		state->mode = Mode::Debug;
 	}
 
-	void UpdateCollider(Collider* collider, v3 colliderPos, v3 scale)
-	{
-		SetBoxTransform(collider, colliderPos, scale);
-		
-	}
-
 	//bool sortEntities(Entity leftEnt, Entity rightEnt)
 	//{
 	//	//Camera* cam = getCamera(this, currCameraIndex);
@@ -98,7 +92,7 @@ namespace Mon
 
 			// TODO(ck): Precise Collision check
 
-			UpdateCollider(&world->entities[i].collider, world->entities[i].rb.worldPos, world->entities[i].data.scale);
+			SetBoxTransform(&world->entities[i].collider, world->entities[i].rb.worldPos, world->entities[i].data.scale);
 		}
 	}
 
@@ -261,31 +255,23 @@ namespace Mon
 					jumped = true;
 
 			}
-
-
-
 			// PIPE velocity to function
 			MovePlayer(state->world, &velocity, jumped, dt);
-
-
 		}
-
-		Entity* player = GetPlayer(state->world);
 
 		//
 		//	ENTITIES UPDATE
 		//
 		UpdateEntities(state->world, dt);
 		
-
 		// 
 		// CAMERA UPDATE
 		//
+		Entity* player = GetPlayer(state->world);
 		Camera* cam = GetCamera(state, state->currCameraIndex);
 		Update(cam, dt, newInput, player->rb.worldPos, player->rb.orientation, true);
 		// sort the entities from the camera
 		//std::sort(world->entities, world->entities + world->entityCount, sortEntities);
-
 
 		//
 		// MOUSE PICKER
@@ -293,9 +279,9 @@ namespace Mon
 		// TODO(ck): Only update the picker if we are in "picking" mode
 		MonGL::Mesh* grid = MonGL::GetMesh(g_Assets, state->grid->data.meshIndex);
 		UpdatePicker(&state->picker, grid, newInput->mouseScreen, ViewMatrix(cam), Projection(cam), cam->pos);
-
-		// DebugModule update?
-		// DebugManager update?
+		//
+		// DEBUG 
+		//
 		RunDebugControls(newInput, &state->picker, state->world, state->selectedIndex);
 	}
 
