@@ -7,8 +7,8 @@
 
 void InitGrid(Grid* grid)
 {
-	grid->x = (float)0 * SIZE;
-	grid->z = (float)0 * SIZE;
+	grid->x = 0;
+	grid->z = 0;
 
 	// TODO(ck): Memory allocation 
 	// Loading chunks and cells 
@@ -47,13 +47,16 @@ float GetHeight(MonGL::Mesh* mesh, int x, int z)
 	int gridX = (int)std::floor(x / gridSquareSize);
 	int gridZ = (int)std::floor(z / gridSquareSize);
 
-	if (gridX >= VERTEX_COUNT || gridZ >= VERTEX_COUNT || gridX < 0 || gridZ < 0)
-		return 0;
+	if (gridX >= (SIZE) || gridZ >= (SIZE) ||
+		gridX < 0 || gridZ < 0)
+	{
+		return 0.0f;
+	}
 
 	float xCoord = ((int)x % (int)gridSquareSize) / gridSquareSize;
 	float zCoord = ((int)z % (int)gridSquareSize) / gridSquareSize;
-	float result;
 
+	float result;
 	if (xCoord <= (1 - zCoord))
 	{
 		result = BarryCentric(Mon::v3(0, LookUpHeight(mesh, gridX, gridZ), 0),

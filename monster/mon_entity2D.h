@@ -24,7 +24,6 @@ namespace Mon
 		
 		v2 velocity;
 		float speed;
-		float maxSpeed;
 		float weight;
 		float rotation;
 		bool destroyed;

@@ -130,27 +130,6 @@ namespace Mon {
 					p->pos.x += 1.0f * p->speed * dt;
 #endif
 				}
-				if (input->space.endedDown)
-				{
-
-					// GetTileChunk tile_map *tileMap, uint32 tileChunkX, uint32 tileChunkY, uint32 tileChunkZ
-	//					tile_chunk* tileChunk = GetTileChunk(tileMap, chunkPos.tileChunkX, chunkPos.tileChunkY, chunkPos.tileChunkZ);
-
-						/*tileChunk = &tileMap->tileChunks[
-							tileChunkZ * tileMap->tileChunkCountY * tileMap->tileChunkCountX +
-								tileChunkY * tileMap->tileChunkCountX +
-								tileChunkX];*/
-					int chunkCountY = 0;
-					int tileIndex = 500;
-
-					if (game->world->map->tiles[tileIndex]->id == 3)
-						UpdateTile(game->world->map, &game->world->sheet, 500, 9);
-					else if (game->world->map->tiles[tileIndex]->id == 9)
-						UpdateTile(game->world->map, &game->world->sheet, 500, 3);
-				}
-				p->speed = 23.0f;
-				if (input->shift.endedDown)
-					p->speed *= 2;
 				
 			}
 #ifdef USE_VELOCITY
@@ -167,15 +146,6 @@ namespace Mon {
 			game->cameras[game->currentCameraIndex].update(&p->pos, dt);
 
 			p->sprite.pos = p->pos;
-
-
-			/*
-			// update minion
-			Entity2D* minion = GetEntity2D(game->world, 4);
-			minion->pos.x = lerp(minion->pos.x, p->pos.x, dt);
-			minion->pos.y = lerp(minion->pos.y, p->pos.y, dt);
-			minion->sprite.pos = minion->pos;
-			*/
 
 		}
 	}

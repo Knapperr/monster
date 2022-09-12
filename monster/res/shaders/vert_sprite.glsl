@@ -11,6 +11,19 @@ uniform mat4 model;
 uniform mat4 projection;
 uniform mat4 view;
 
+float vertScale = 4.0;
+
+// Converts pixel coord to NDC 
+vec2 pixel2GL(vec2 pos)
+{
+	// NOTE(ck): This is fine if there is no projection matrix
+	// 960/540 --- 480/270
+	vec2 res = pos / vec2(480.0, 270.0);
+	res = res * 2 - 1;
+	//res.y *= -1;
+	return res;
+}
+
 void main()
 {
 	ourColor = aColor;
@@ -19,5 +32,7 @@ void main()
 	
 	// using model matrix -- dont need?
 	vec3 pos = vec3(model * vec4(aPos, 1.0));
-	gl_Position = projection * view * vec4(pos, 1.0);
+	vec2 tilePos = pixel2GL(vec2(aPos.x, aPos.y));
+	vec3 finalPos = vec3(tilePos, aPos.z);
+	gl_Position = view * vec4(finalPos, 1.0);
 }

@@ -258,13 +258,6 @@ namespace Mon
 		//}
 	}
 
-	void FollowOn(Camera* camera)
-	{
-		camera->yaw = 0.0f;
-		camera->pitch = 50.0f;
-		camera->front = v3(0.0f, 0.0f, -1.0f);
-	}
-
 	//
 	// Orthographic Camera
 	//

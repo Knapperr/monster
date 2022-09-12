@@ -63,8 +63,6 @@ namespace Mon
 	mat4 OrthoProjectionMatrix(Camera* camera);
 	mat4 OrthoViewMatrix(Camera* camera);
 	void UpdateOrthoCamera(Camera* camera, float dt, v3 pos);
-
-	void FollowOn(Camera* camera);
 }
 
 #endif // MON_CAMERA_H

@@ -3,15 +3,6 @@
 
 #include "mon_collider.h"
 
-//struct WorldPosition
-//{
-//	int32_t absTileX;
-//	int32_t absTileY;
-//	int32_t absTileZ;
-//	// NOTE(casey): These are the offsets from the tile center
-//	Mon::v2 offset;
-//};
-
 struct CellPosition
 {
 	Mon::int32 absX;

@@ -1073,6 +1073,8 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game2D* game2D)
 	//ImGui::SliderInt("Tile 0 ID: ", &game->world2D->map->tiles[0].tileId, 0, 3, NULL);
 	ImGui::DragFloat("x", &game2D->world->entities[1].pos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");
 	ImGui::DragFloat("y", &game2D->world->entities[1].pos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
+	ImGui::DragFloat("speed", &game2D->world->entities[1].speed, 0.1f, 0.1f, 500.0f, "%.01f");
+
 	ImGui::Checkbox("Wireframe", &game2D->world->map->wireFrame);
 
 	{

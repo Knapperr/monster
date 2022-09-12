@@ -1116,24 +1116,25 @@ namespace MonGL
 
 		// 2 = 32pixels
 		
-		float size = 2.0f;
+		float size = 1.0f;
+		float tileSize = 32.0f;
 		//mesh->vertices[0].position = v3(0.0f, 0.0f, 0.0f);
-		mesh->vertices[0].position = v3(pos.x, pos.y, 0.0f);
+		mesh->vertices[0].position = v3(pos.x * tileSize, pos.y * tileSize, 0.0f);
 		mesh->vertices[0].color = v3(1.0f, 0.0f, 0.0f);
 		mesh->vertices[0].texCoords = v2(1.0f, 1.0f);
 
 		//mesh->vertices[1].position = v3((0.0f + 1.0f), (0.0f), 0.0f);
-		mesh->vertices[1].position = v3(pos.x + size, pos.y, 0.0f);
+		mesh->vertices[1].position = v3((pos.x + size) * tileSize, pos.y * tileSize, 0.0f);
 		mesh->vertices[1].color = v3(1.0f, 0.0, 0.0f);
 		mesh->vertices[1].texCoords = v2(1.0f, 0.0f);
 
 		//mesh->vertices[2].position = v3((0.0f + 1.0f), (0.0f + 1.0f), 0.0f);
-		mesh->vertices[2].position = v3(pos.x + size, pos.y + size, 0.0f);
+		mesh->vertices[2].position = v3((pos.x + size) * tileSize, (pos.y + size) * tileSize, 0.0f);
 		mesh->vertices[2].color = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[2].texCoords = v2(0.0f, 0.0f);
 
 		//mesh->vertices[3].position = v3((0.0f), (0.0f + 1.0f), 0.0f);
-		mesh->vertices[3].position = v3(size, pos.y + size, 0.0f);
+		mesh->vertices[3].position = v3(pos.x * tileSize, (pos.y + size) * tileSize, 0.0f);
 		mesh->vertices[3].color = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[3].texCoords = v2(0.0f, 1.0f);
 
@@ -1192,7 +1193,7 @@ namespace MonGL
 		batch = new BatchData();
 		// These will be figured out after looping our tilemap and pushing quads
 		// TODO(ck): Need to be able to choose amount of vertices and indices
-		batch->quadCount = 2000;
+		batch->quadCount = 4096;
 		batch->maxVertices = batch->quadCount * 4;
 		batch->indicesLength = batch->quadCount * 6;
 
@@ -1228,18 +1229,37 @@ namespace MonGL
 		float bottomLeftY   = (tileOffsetY * tileSize) / sheetSize;
 		float bottomRightX	= ((tileOffsetX + 1) * tileSize) / sheetSize;
 		float bottomRightY	= (tileOffsetY * tileSize) / sheetSize;
-		
 
 		float x = tileXPos;
-		if (x == 0.0)
-			x = -16.0f;
-
 		float y = tileYPos;
-		if (y == 0.0)
-			y = -16.0f;
+		//tileSize = 1.0f;
+		float vertSize = 1.0f;
 
-		float tileSizeX = 1.0f;
-		float tileSizeY = 1.0f;
+#if 0
+		Vertex vec0 = {
+			v3(x * tileSize, y * tileSize, 0.0f),
+			v3(1.0f, 0.0f, 0.0f),
+			v2(bottomLeftX, bottomLeftY)
+		};
+
+		Vertex vec1 = {
+			v3((x + vertSize) * tileSize, y * tileSize, 0.0f),
+			v3(0.0f, 1.0f, 0.0f),
+			v2(bottomRightX, bottomRightY)
+		};
+
+		Vertex vec2 = {
+			v3((x + vertSize) * tileSize, (y + vertSize) * tileSize, 0.0f),
+			v3(0.0f, 0.0f, 1.0f),
+			v2(topRightX, topRightY)
+		};
+
+		Vertex vec3 = {
+			v3(x * tileSize, (y + vertSize) * tileSize, 0.0f),
+			v3(1.0f, 1.0f, 0.0f),
+			v2(topLeftX, topLeftY)
+		};
+#else
 
 		Vertex vec0 = {
 			v3(x, y, 0.0f),
@@ -1248,22 +1268,23 @@ namespace MonGL
 		};
 
 		Vertex vec1 = {
-			v3((x + tileSizeX), y, 0.0f),
+			v3((x + vertSize), y, 0.0f),
 			v3(0.0f, 1.0f, 0.0f),
 			v2(bottomRightX, bottomRightY)
 		};
 
 		Vertex vec2 = {
-			v3((x + tileSizeX), (y + tileSizeY), 0.0f),
+			v3((x + vertSize), (y + vertSize), 0.0f),
 			v3(0.0f, 0.0f, 1.0f),
 			v2(topRightX, topRightY)
 		};
 
 		Vertex vec3 = {
-			v3(x, (y + tileSizeY), 0.0f),
+			v3(x, (y + vertSize), 0.0f),
 			v3(1.0f, 1.0f, 0.0f),
 			v2(topLeftX, topLeftY)
 		};
+#endif
 
 		usedIndices += 6;
 		tileVertices.push_back(vec0);
@@ -1369,7 +1390,7 @@ namespace MonGL
 	{
 		mat4 model = mat4(1.0f);
 		// tile position is in opengl object position -0.5 to 0.5 vertices
-		v3 tilePosition = {};
+		v3 tilePosition = v3(0.0f, 0.0f, 0.0f);
 		
 
 		// IMPORTANT(ck): Move position to camera space

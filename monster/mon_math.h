@@ -80,10 +80,10 @@ namespace Mon
 		return result;
 	}
 
-	// smooth damping from Game Engine Gems 4. Critically Damped Ease-In/Ease Out Smoothing - [Thomas Lowe, Krome Studios][chapter 1.10 pg.99]
-	// critically damped
+	// smooth damping from Game Engine Gems 4. Critically Damped Ease-In/Ease Out Smoothing - [Thomas Lowe][chapter 1.10 pg.99]
 	inline float smoothDamp(float from, float to, float &vel, float smoothTime, float time)
 	{
+		// critically damped
 		float omega = 2.0f / smoothTime;
 		float x = omega * time;
 		float exp = 1.0f / (1.0f + x + 0.48f*x*x + 0.235f*x*x*x);
@@ -95,7 +95,6 @@ namespace Mon
 		float temp = (vel + omega * change)*time;
 		vel = (vel - omega * temp)*exp; // equation 5
 		return to + (change + temp)*exp; // equation 4
-
 	}
 
 	inline float sCurve(float a, float time, float b)

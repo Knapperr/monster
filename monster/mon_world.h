@@ -316,10 +316,9 @@ namespace Mon {
 			{
 				Entity testEntity = *GetEntity(world, i);
 
-				if (TestAABBAABB(&player->collider, &testEntity.collider))
+				if (TestAABBAABB(player->collider, testEntity.collider))
 				{
 					
-
 					break;
 				}
 			}

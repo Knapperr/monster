@@ -19,9 +19,8 @@ namespace Mon
 		e->sprite.pos.y = position.y;
 
 
-		// TODO(ck): Deal with speed
-		e->speed = 26.0f;
-		e->maxSpeed = 250.0f;
+		
+		e->speed = 10.0f;
 		e->velocity = v2(0.0f);
 		
 		e->rotation = 0.0f;
@@ -36,7 +35,7 @@ namespace Mon
 	{
 		InitEntity(e, position, size);
 
-		e->speed = 20.0f;
+		e->speed = 10.0f;
 		e->velocity = v2(0.0f);
 		e->weight = 44.0f;
 		e->sprite.textureIndex = 9;
