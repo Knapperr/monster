@@ -64,6 +64,8 @@ namespace Mon
 				ButtonState num4;
 				ButtonState r;
 				ButtonState f;
+				ButtonState rBumber;
+				ButtonState lBumper;
 			};
 		};
 	};

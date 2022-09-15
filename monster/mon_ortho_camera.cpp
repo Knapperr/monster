@@ -47,7 +47,7 @@ namespace Mon
 		float right = half_width;
 		float top = half_height;
 		float bottom = -half_height;
-		
+
 		mat4 projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
 		return projection;
 	}

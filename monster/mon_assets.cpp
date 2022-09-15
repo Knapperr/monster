@@ -409,29 +409,32 @@ namespace Mon
 		// 2 = 32pixels
 		//v2 size = v2(2.0f)
 		v2 pos = v2(1.0f, 1.0f);
-		float size = 1.0f; // vertice
+		float size = 2.0f; // vertice
 		float tileSize = 16.0f;
 		//mesh->vertices[0].position = v3(0.0f, 0.0f, 0.0f);
 		//mesh->vertices[0].position = v3((size.x / 2.0f) * pixelSize, (size.y / 2.0f) * pixelSize, 0.0f);
-		mesh->vertices[0].position = v3(pos.x * tileSize, pos.y * tileSize, 0.0f);
+		
+		// this one works but scaling is bad
+		//mesh->vertices[0].position = v3(pos.x * tileSize, pos.y * tileSize, 0.0f);
+		mesh->vertices[0].position = v3(pos.x, pos.y, 0.0f);
 		mesh->vertices[0].color = v3(1.0f, 0.0f, 0.0f);
 		mesh->vertices[0].texCoords = v2(0.0f, 0.0f);
 
 		//mesh->vertices[1].position = v3((0.0f + 1.0f), (0.0f), 0.0f);
 		//mesh->vertices[1].position = v3((size.x / 2.0f) * pixelSize, (-size.y / 2.0f) * pixelSize, 0.0f);
-		mesh->vertices[1].position = v3((pos.x + size) * tileSize, pos.y * tileSize, 0.0f);
+		mesh->vertices[1].position = v3((pos.x + size), pos.y, 0.0f);
 		mesh->vertices[1].color = v3(1.0f, 0.0, 0.0f);
 		mesh->vertices[1].texCoords = v2(1.0f, 0.0f);
 		
 		//mesh->vertices[2].position = v3((0.0f + 1.0f), (0.0f + 1.0f), 0.0f);
 		//mesh->vertices[2].position = v3((-size.x / 2.0f) * pixelSize, (-size.y / 2.0f) * pixelSize, 0.0f);
-		mesh->vertices[2].position = v3((pos.x + size) * tileSize, (pos.y + size) * tileSize, 0.0f);
+		mesh->vertices[2].position = v3((pos.x + size), (pos.y + size), 0.0f);
 		mesh->vertices[2].color = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[2].texCoords = v2(1.0f, 1.0f);
 
 		//mesh->vertices[3].position = v3((0.0f), (0.0f + 1.0f), 0.0f);
 		//mesh->vertices[3].position = v3((-size.x / 2.0f) * pixelSize, (size.y / 2.0f) * pixelSize, 0.0f);
-		mesh->vertices[3].position = v3(pos.x * tileSize, (pos.y + size) * tileSize, 0.0f);
+		mesh->vertices[3].position = v3(pos.x, (pos.y + size), 0.0f);
 		mesh->vertices[3].color = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[3].texCoords = v2(0.0f, 1.0f);
 
