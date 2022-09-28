@@ -43,6 +43,7 @@ having an import/export logic in Monster
 #include <stdio.h>
 #include <fstream>
 #include <vector>
+#include <iostream>
 
 struct Texture
 {
@@ -224,6 +225,10 @@ bool LoadModel(Model* model, std::string path, bool gammaCorrection)
 	return true;
 }
 
+void WriteModel(Model* model, std::string name, std::string impPath)
+{
+
+}
 
 void ExportImpFile(Model* model, std::string name, std::string impPath)
 {
@@ -261,7 +266,8 @@ int main(int argc, char** argv)
 	printf("================\nimp loader\n================\nCole Knapp\n-----------------\n");
 	printf("2022\n");
 	//printf("LAST USE - JULY 13 2022");
-	printf("LAST USE - JULY 23 2022");
+	//printf("LAST USE - JULY 23 2022");
+	printf("LAST USE - JULY 31 2022");
 	// TODO(ck): LOG THIS keep a data file of all the asset changes and stuff?
 
 	/*
@@ -291,8 +297,21 @@ int main(int argc, char** argv)
 	LoadModel(&model, "models/light_sphere/light_sphere.obj", false);
 	ExportImpFile(&model, "light_sphere", "light_sphere.imp");
 
+	model = {};
+	LoadModel(&model, "models/village_house/village_house_combined.obj", false);
+	ExportImpFile(&model, "village_house_combined", "village_house.imp");
+
 	// Verify Exported Imp Files before check for (nan) and exponents in the data
 
+	// Export out to asset folder location as well and the debug folder for RenderDoc
+
+	// TODO WEEKEND PROJECT 
+	// WRITE A LITTLE CONSOLE COMMAND WINDOW THAT CAN BE USED TO 
+	// OR EVEN BETTER WRITE AN API THAT ALLOWS YOU TO CALL FUNCTIONS FROM OUR GUI TO USE IT!
+	// LAUNCH THE EXE AND SEND COMMANDS TO IT
+
+	std::string e;
+	std::cin >> e;
 
 	return 0;
 }

@@ -200,10 +200,12 @@ namespace Mon
 		{
 			if (state->mode == Mode::Debug)
 			{
+				state->currCameraIndex = 4;
 				PlayMode(state);
 			}
 			else if (state->mode == Mode::Play)
 			{
+				state->currCameraIndex = 2;
 				DebugMode(state);
 			}
 		}

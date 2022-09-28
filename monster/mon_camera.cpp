@@ -139,8 +139,10 @@ namespace Mon
 			if (input->left.endedDown)	camera->pos -= camera->right * velocity;
 			if (input->right.endedDown)	camera->pos += camera->right * velocity;
 
-			if (input->raise.endedDown)	camera->pos.y += 1.0f * velocity;
-			if (input->lower.endedDown)	camera->pos.y -= 1.0f * velocity;
+			if (input->raise.endedDown || input->rBumper.endedDown)	
+				camera->pos.y += 1.0f * velocity;
+			if (input->lower.endedDown || input->lBumper.endedDown)
+				camera->pos.y -= 1.0f * velocity;
 
 			if (input->shift.endedDown)
 				camera->speed /= 2.0f;

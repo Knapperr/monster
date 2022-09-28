@@ -15,7 +15,6 @@ namespace Mon
 #define Gigabytes(Value) (Megabytes(Value)*1024LL)
 #define Terabytes(Value) (Gigabytes(Value)*1024LL)
 
-
 	struct PlatformState
 	{
 		uint64_t totalSize;

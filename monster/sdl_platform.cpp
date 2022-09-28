@@ -340,6 +340,16 @@ namespace Mon
 				// TODO(ck): Handle buttons... 
 				if (e.jbutton.button == 6) // SELECT 
 					processKeyboard(&newInput->debug, isDown);
+
+				if (e.jbutton.button == 4)
+				{
+					processKeyboard(&newInput->lBumper, isDown);
+				}
+				if (e.jbutton.button == 5)
+				{
+					processKeyboard(&newInput->rBumper, isDown);
+				}
+
 			}
 			else if (e.type == SDL_MOUSEWHEEL)
 			{
@@ -353,15 +363,6 @@ namespace Mon
 				if (e.jaxis.which == 0)
 				{
 					// Joystick
-				}
-			}
-			else if (e.type == SDL_JOYBUTTONDOWN || e.type == SDL_JOYBUTTONUP)
-			{
-				bool isDown = e.type == SDL_JOYBUTTONDOWN ? true : false;
-				if (e.jbutton.button == 0)
-				{
-					int x = 0;
-					//SDL_JoystickGetButton();
 				}
 			}
 		}
