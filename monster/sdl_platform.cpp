@@ -84,11 +84,11 @@ namespace Mon
 		// The icon is attached to the window pointer
 		SDL_SetWindowIcon(window, surface);
 		SDL_FreeSurface(surface);
-
+		stbi_image_free(pixels);
 
 		// TODO(ck): Platform creates the context and grabs it from this 
 		context = SDL_GL_CreateContext(window);
-		if (context == nullptr)
+		if (nullptr == context)
 			return false;
 
 		Mon::Log::print("Platform: SDL2");
@@ -111,8 +111,8 @@ namespace Mon
 
 #ifdef _3D_
 		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_MULTISAMPLE);
 		glDepthFunc(GL_LESS);
+		glEnable(GL_MULTISAMPLE);
 
 #endif
 		glEnable(GL_BLEND);
@@ -123,18 +123,16 @@ namespace Mon
 		// ------------------
 		if (SDL_NumJoysticks() < 1)
 		{
-			Mon::Log::print("PLATFORM", "No joystick connected");
+			Mon::Log::warn("No joystick connected");
 		}
-		else
+
+		joyStick = SDL_JoystickOpen(0);
+		if (nullptr == joyStick)
 		{
-			joyStick = SDL_JoystickOpen(0);
-			if (joyStick == NULL)
-			{
-				Mon::Log::print("Unabled to open game controller SDL Error:", SDL_GetError());
-			}
+			Mon::Log::print("Unabled to open game controller SDL Error:", SDL_GetError());
 		}
 
-
+		Mon::Log::print("PLATFORM", "joystick connected");
 		return true;
 	}
 

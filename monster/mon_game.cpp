@@ -307,7 +307,9 @@ namespace Mon
 		//
 		// TERRAIN
 		//
+
 		MonGL::DrawTerrain(&state->renderer, &state->grid->data, cam);
+		MonGL::DrawCubeMap(&state->renderer, state->setup);
 
 		//
 		// ENTITIES
@@ -330,8 +332,6 @@ namespace Mon
 		//MonGL::DrawLine(&state->renderer, &state->lineTwo);
 		//DrawDebugInfo(); //MonGL:: calls inside 
 		MonGL::DrawLights(&state->renderer);
-
-		MonGL::DrawCubeMap(&state->renderer, state->setup);
 
 		MonGL::EndRender();
 	}

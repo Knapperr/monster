@@ -84,7 +84,7 @@ namespace Mon
 	void InitLineMesh(Mesh* mesh);
 
 	void InitImage(Image* image, const char* file, bool flip = true);
-	void FreeStbiImage(Image* image);
+	void FreeImage(Image* image);
 
 
 	// global struct for accessing assets
@@ -93,7 +93,7 @@ namespace Mon
 		Mesh meshes[32];
 		Image images[32];
 
-		Mesh2D quad2D; // Remove
+		Mesh2D quad2D; // TODO(ck): Remove
 		int meshCount;
 		int textureCount;
 	};

@@ -230,13 +230,14 @@ void InitGui(SDL_Window* window, SDL_GLContext* context)
 void AddNewEntity(Mon::GameState* game, int meshIndex, int texIndex = 18, Mon::v3 scale = Mon::v3(1.0f))
 {
 	// reset collider color 
-	game->world->entities[game->selectedIndex].collider.data.color = Mon::v3(0.0f, 0.0f, 1.0f);
+	game->world->entities[game->selectedIndex].collider.data.color = Mon::v3(0.7f, 0.15f, 0.4f);
 
 	unsigned int entity = Mon::AddEntity(game->world);
 	Mon::Entity* e = Mon::GetEntity(game->world, game->world->entityCount - 1);
 	Mon::InitEntity(e, "new", Mon::v3(1.0f, 0.0f, 1.0f), scale, -45.0f, game->renderer.program.handle, texIndex, meshIndex);
+
+	game->world->entities[entity].collider.data.color = Mon::v3(0.0f, 0.0f, 1.0f);
 	game->selectedIndex = entity;
-	game->world->entities[entity].collider.data.color = Mon::v3(0.7f, 0.15f, 0.4f);
 }
 
 void AddWater(Mon::GameState* game)

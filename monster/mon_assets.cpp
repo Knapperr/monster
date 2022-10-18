@@ -323,7 +323,7 @@ namespace Mon
 	}
 
 	// If a texture is not using an image should it be freed?
-	void FreeStbiImage(Image* image)
+	void FreeImage(Image* image)
 	{
 		stbi_image_free(image->data);
 	}
