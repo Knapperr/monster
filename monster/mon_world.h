@@ -292,7 +292,7 @@ namespace Mon {
 		v3 oldPos = player->rb.worldPos;
 		v3 newPos = oldPos;
 		float deltaX = (0.5f * velocity->x * square(dt) + player->rb.velocity.x * dt);
-		float deltaY = player->rb.velocity.y;
+		float deltaY = player->rb.velocity.y * 0.5f;
 		//float deltaY = velocity->y * square(deltaTime) + player.particle.velocity.y * deltaTime);
 		float deltaZ = (0.5f * velocity->z * square(dt) + player->rb.velocity.z * dt);
 		v3 delta = { deltaX, deltaY, deltaZ };

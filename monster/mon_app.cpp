@@ -64,7 +64,6 @@ bool App::init()
 #else
 
 	// memory allocation
-
 	game2D = new Mon::Game2D();
 	if (!Mon::Init(game2D))
 		return false;

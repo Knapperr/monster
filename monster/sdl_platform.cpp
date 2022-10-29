@@ -119,20 +119,25 @@ namespace Mon
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		//glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
 
-		// controller
+		// initialize joystick controller
 		// ------------------
 		if (SDL_NumJoysticks() < 1)
 		{
-			Mon::Log::warn("No joystick connected");
+			Mon::Log::warn("No joysticks are plugged in");
 		}
-
-		joyStick = SDL_JoystickOpen(0);
-		if (nullptr == joyStick)
+		else
 		{
-			Mon::Log::print("Unabled to open game controller SDL Error:", SDL_GetError());
+			joyStick = SDL_JoystickOpen(0);
+			if (nullptr == joyStick)
+			{
+				Mon::Log::print("Unable to open game controller SDL Error:", SDL_GetError());
+			}
+			else
+			{
+				Mon::Log::print("PLATFORM", "joystick connected");
+			}
 		}
 
-		Mon::Log::print("PLATFORM", "joystick connected");
 		return true;
 	}
 

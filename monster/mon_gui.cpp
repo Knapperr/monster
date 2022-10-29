@@ -469,8 +469,72 @@ void EntityTab(Mon::GameState* game)
 					//ImGui::DragFloat("fine scale", &game->entities[selected].data.size, 0.0001f, 0.0f, 200.0f, "%.02f");
 
 					ImGui::DragFloat("x", &game->world->entities[selected].rb.worldPos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::SameLine();
+					ImGui::PushID(0);
+					ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::ImColor(250, 78, 78));
+					if (ImGui::Button("-"))
+					{
+						game->world->entities[selected].rb.worldPos.x -= 1.0f;
+					}
+					ImGui::PopStyleColor();
+					ImGui::PopID();
+					
+					ImGui::SameLine();
+					ImGui::PushID(1);
+					ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::ImColor(13, 221, 81));
+					if (ImGui::Button("+"))
+					{
+						game->world->entities[selected].rb.worldPos.x += 1.0f;
+					}
+					ImGui::PopStyleColor();
+					ImGui::PopID();
+					
 					ImGui::DragFloat("y", &game->world->entities[selected].rb.worldPos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::SameLine();
+					ImGui::PushID(2);
+					ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::ImColor(250, 78, 78));
+					if (ImGui::Button("-"))
+					{
+						game->world->entities[selected].rb.worldPos.y -= 1.0f;
+
+					}
+					ImGui::PopStyleColor();
+					ImGui::PopID();
+					ImGui::SameLine();
+
+					ImGui::PushID(3);
+					ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::ImColor(13, 221, 81));
+					if (ImGui::Button("+"))
+					{
+						game->world->entities[selected].rb.worldPos.y += 1.0f;
+
+					}
+					ImGui::PopStyleColor();
+					ImGui::PopID();
+					
 					ImGui::DragFloat("z", &game->world->entities[selected].rb.worldPos.z, 0.1f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::SameLine();
+
+					ImGui::PushID(4);
+					ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::ImColor(250, 78, 78));
+					if (ImGui::Button("-"))
+					{
+						game->world->entities[selected].rb.worldPos.z -= 1.0f;
+
+					}
+					ImGui::PopStyleColor();
+					ImGui::PopID();
+					ImGui::SameLine();
+					
+					ImGui::PushID(5);
+					ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::ImColor(13, 221, 81));
+					if (ImGui::Button("+"))
+					{
+						game->world->entities[selected].rb.worldPos.z += 1.0f;
+
+					}
+					ImGui::PopStyleColor();
+					ImGui::PopID();
 
 					ImGui::SliderFloat3("scale", &game->world->entities[selected].data.scale[0], 1.0f, 20.0f, "%1.0f");
 					ImGui::SliderFloat3("Collider min", &game->world->entities[selected].collider.min[0], 0.0f, 100.0f, "%1.0f");
@@ -811,7 +875,7 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::GameMemory* memory)
 	ImGui::PopID();
 	ImGui::SameLine();
 
-	ImGui::PushID(0);
+	ImGui::PushID(1);
 		ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::ImColor(16, 169, 35));
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::ImColor(31, 80, 18));
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::ImColor(34, 64, 35));

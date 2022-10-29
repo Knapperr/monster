@@ -74,6 +74,9 @@ namespace Mon
 		Mesh* house = GetMesh(assets, 10);
 		InitModelMesh(house, "village_house.imp");
 
+		AddMesh(assets);
+		Mesh* pumpkin = GetMesh(assets, 11);
+		InitModelMesh(pumpkin, "pumpkin.imp");
 
 		// empty #0 for image
 		AddImage(assets);
@@ -661,7 +664,7 @@ namespace Mon
 
 	void InitBoundingBoxMesh(Mesh* mesh)
 	{
-		mesh->id = "005";
+		mesh->id = "BOUNDING_BOX";
 		mesh->type = RenderType::Debug;
 		int verticeCount = 8;
 		// TODO(ck): Memory Allocation
