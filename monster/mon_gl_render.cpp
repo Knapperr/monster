@@ -909,9 +909,206 @@ namespace MonGL
 	///  [END] Draw RenderData  
 	///
 
+
+	///
+	///	[BEGIN] Batch Rendering
+	///
+
+	
+	void InitBatch(OpenGL* gl)
+	{
+		// batch 
+		int quadCount = 4096;
+		int maxVertices = quadCount * 4;
+		int indicesLength = quadCount * 6;
+
+
+		// init batch mesh
+
+
+	}
+
+
+	void FillBatch()
+	{
+		float textureSheetSize;
+		float tileOffsetX;
+		float tileOffsetY;
+		float tileSize = 32.0f;
+
+		float tilePosX;
+		float tilePosY;
+		float vertSize = 1.0f; // <--- i think this is local pos
+
+		// Texture coords
+		float topRightX = ((tileOffsetX + 1) * tileSize) / textureSheetSize;
+		float topRightY = ((tileOffsetY + 1) * tileSize) / textureSheetSize;
+		float topLeftX = (tileOffsetX * tileSize) / textureSheetSize;
+		float topLeftY = ((tileOffsetY + 1) * tileSize) / textureSheetSize;
+		float bottomLeftX = (tileOffsetX * tileSize) / textureSheetSize;
+		float bottomLeftY = (tileOffsetY * tileSize) / textureSheetSize;
+		float bottomRightX = ((tileOffsetX + 1) * tileSize) / textureSheetSize;
+		float bottomRightY = (tileOffsetY * tileSize) / textureSheetSize;
+
+#if 0
+		Vertex vec0 = {
+			v3(x * tileSize, y * tileSize, 0.0f),
+			v3(1.0f, 0.0f, 0.0f),
+			v2(bottomLeftX, bottomLeftY)
+		};
+
+		Vertex vec1 = {
+			v3((x + vertSize) * tileSize, y * tileSize, 0.0f),
+			v3(0.0f, 1.0f, 0.0f),
+			v2(bottomRightX, bottomRightY)
+		};
+
+		Vertex vec2 = {
+			v3((x + vertSize) * tileSize, (y + vertSize) * tileSize, 0.0f),
+			v3(0.0f, 0.0f, 1.0f),
+			v2(topRightX, topRightY)
+		};
+
+		Vertex vec3 = {
+			v3(x * tileSize, (y + vertSize) * tileSize, 0.0f),
+			v3(1.0f, 1.0f, 0.0f),
+			v2(topLeftX, topLeftY)
+		};
+#else
+
+		Vertex3D vec0 = {
+			v3(tilePosX, tilePosY, 0.0f),
+			v3(1.0f, 0.0f, 0.0f),
+			v2(bottomLeftX, bottomLeftY)
+		};
+
+		Vertex3D vec1 = {
+			v3((tilePosX + vertSize), tilePosY, 0.0f),
+			v3(1.0f, 1.0f, 1.0f),
+			v2(bottomRightX, bottomRightY)
+		};
+
+		Vertex3D vec2 = {
+			v3((tilePosX + vertSize), (tilePosY + vertSize), 0.0f),
+			v3(1.0f, 1.0f, 1.0f),
+			v2(topRightX, topRightY)
+		};
+
+		Vertex vec3 = {
+			v3(tilePosX, (tilePosY + vertSize), 0.0f),
+			v3(1.0f, 1.0f, 1.0f),
+			v2(topLeftX, topLeftY)
+		};
+#endif
+
+		//usedIndices += 6;
+		//tileVertices.push_back(vec0);
+		//tileVertices.push_back(vec1);
+		//tileVertices.push_back(vec2);
+		//tileVertices.push_back(vec3);
+
+	}
+
+	void BindBatchVertices()
+	{
+		// 2 extra vertices are needed for degenerate triangles between each strip 
+//unsigned uNumExtraVertices = ( GL_TRIANGLE_STRIP == _config.uRenderType && _uNumUsedVertices > 0 ? 2 : 0 ); 
+
+		glBindVertexArray(batch->VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, batch->VBO);
+		//if (uNumExtraVertices > 0)
+		//{
+		//	//need to add 2 vertex copies to create degenerate triangles between this strip 
+		//	//and the last strip that was stored in the batch 
+		//	glBufferSubData(GL_ARRAY_BUFFER, _uNumUsedVertices * sizeof(GuiVertex), sizeof(GuiVertex), &_lastVertex);
+		//	glBufferSubData(GL_ARRAY_BUFFER, (_uNumUsedVertices + 1) * sizeof(GuiVertex), sizeof(GuiVertex), &vVertices[0]);
+		//}
+
+		// Use glMapBuffer instead, if moving large chunks of data > 1MB 
+		//int _uNumUsedVertices = 400;
+		//int uNumExtraVertices = 2;
+		//glBufferSubData(GL_ARRAY_BUFFER, (_uNumUsedVertices + uNumExtraVertices) * sizeof(Vertex), newTileVertices.size() * sizeof(Vertex), &newTileVertices[0]);
+
+		// IMPORTANT(ck):
+		// STUDY(ck): The second param (offset) in this was set to verticesLength * sizeof(Vertex). This was causing the vertices the show up as stretched 
+		// and elongated triangles
+
+		//glBufferSubData(GL_ARRAY_BUFFER, 0, tileVertices.size() * sizeof(Vertex), &tileVertices[0]);
+		// TODO(ck): Should be GL_ELEMENT_ARRAY_BUFFER?
+		glBufferData(GL_ARRAY_BUFFER, tileVertices.size() * sizeof(Vertex), &tileVertices[0], GL_DYNAMIC_DRAW);
+		/*
+			// Upload Buffer
+			gl.BindBuffer(GL_ARRAY_BUFFER, m_vertex_buffer);
+			gl.BufferData(GL_ARRAY_BUFFER, m_vertex_size * count, vertices, GL_DYNAMIC_DRAW);
+
+		*/
+
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		//_uNumUsedVertices += vVertices.size() + uNumExtraVertices;
+		//_lastVertex = vVertices[vVertices.size() - 1];
+	}
+	
+	void DrawBatch()
+	{
+		// TODO(ck): If we want the ability to change the map at runtime we need to constantly
+// be filling and binding the batch (if things have changed)
+// Fill batch 
+// bind vertices
+		v3 pos = {};
+		v3 basePos = v3(0.0f, 0.0f, 0.0f);
+		pos.x = basePos.x;
+		pos.y = basePos.y;
+
+
+		mat4 model = mat4(1.0f);
+		model = glm::translate(model, pos);
+
+		//v2 worldScale = v2(64.0f);
+		//model = glm::scale(model, v3(worldScale, 1.0f));
+
+		int batchShaderHandle = 1;
+		glUniformMatrix4fv(glGetUniformLocation(batchShaderHandle, "model"), 1, GL_FALSE, glm::value_ptr(model));
+
+		//glActiveTexture(GL_TEXTURE0);
+		// IMPORTANT(ck):
+		// NOTE(ck): the reason why you set it to 0 is because thats the base texture slot
+		// its not expecting the textureID thats only for binding
+		int textureSheetID = 1;
+		glUniform1i(glGetUniformLocation(batchShaderHandle, "image"), 0);
+		glBindTexture(GL_TEXTURE_2D, textureSheetID);
+
+		int batchVAO = 1;
+		glBindVertexArray(batchVAO);
+		// (void*)(index_size * pass.index_start)
+
+
+		int usedBatchIndices = 10;
+		bool wireFrame = false;
+		int polygonMode = wireFrame ? GL_LINE : GL_FILL;
+		glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
+		glDrawElements(GL_TRIANGLES, usedBatchIndices, GL_UNSIGNED_INT, (void*)(0));
+		glBindVertexArray(0);
+
+		//reset buffer
+		//_uNumUsedVertices = 0;
+		//_config.iPriority = 0;
+		usedBatchIndices = 0;
+		tileVertices.clear();
+	}
+
+	///
+	///  [END] Batch Rending 
+	///
+
+
 	///
 	///	[BEGIN] End Rendering
 	///
+
+
+
 
 	void EndRender()
 	{
@@ -923,9 +1120,6 @@ namespace MonGL
 
 		//glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		//glClear(GL_COLOR_BUFFER_BIT);
-
-
-
 
 	}
 

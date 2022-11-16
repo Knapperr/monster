@@ -244,6 +244,8 @@ namespace MonGL
 	void DrawBoundingBox(OpenGL* gl, RenderData* data, Camera* camera);
 	void DrawTerrain(OpenGL* gl, RenderData* data, Camera* camera);
 	
+	void InitBatch(OpenGL* gl);
+
 	void EndRender();
 
 

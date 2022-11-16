@@ -5,6 +5,13 @@
 #define SIZE 64
 #define VERTEX_COUNT 64
 
+/*
+https://www.reddit.com/r/opengl/comments/ujcaeh/best_way_to_handle_2d_grid_lines_in_opengl/
+Grid lines
+separate shader so you can do effects with the grid
+
+*/
+
 void InitGrid(Grid* grid)
 {
 	grid->x = 0;

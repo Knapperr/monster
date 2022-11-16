@@ -308,8 +308,19 @@ namespace Mon
 		// TERRAIN
 		//
 
+		// TODO(ck): shader fixes
+		// 1. grid/terrain needs its own shader anyways
+		// 2. using cubemap program inside here 
+		// 3. start using main obj shader here go back to main shader
+		
+		// 1. grid/terrain needs its own shader anyways
 		MonGL::DrawTerrain(&state->renderer, &state->grid->data, cam);
+
+		// 2. using cubemap program inside here
 		MonGL::DrawCubeMap(&state->renderer, state->setup);
+		// 3. start using main obj shader here go back to main shader
+		MonGL::UseProgram(&state->renderer.program, state->setup);
+
 
 		//
 		// ENTITIES
