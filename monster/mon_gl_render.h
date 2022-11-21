@@ -160,6 +160,7 @@ namespace MonGL
 		Cubemap cubemap;
 
 		CommonProgram program;
+		QuadBatchProgram quadProgram;
 		WaterProgram waterProgram;
 		CubemapProgram cubemapProgram;
 

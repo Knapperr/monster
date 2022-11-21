@@ -4,13 +4,15 @@ namespace Mon
 {
 	bool InitWorld(World2D* world)
 	{
+		world->selectedEntityIndex = 1;
+
 		// Reserve slot 0 for null entity
 		AddEntity2D(world);
 
 		// Reserve slot 1 for player entity
 		AddEntity2D(world);
 		Entity2D* player = GetPlayer(world);
-		InitEntity(player, v2(1, 1), 32);
+		InitEntity(player, "player", v2(1, 1), 32);
 		// InitPlayer(player, shaderHandle);
 		//Entity2D* collider = new Entity2D();
 		//initEntity(collider, "res/textures/p1.png", true, v2(50, 50), 32);
@@ -18,15 +20,15 @@ namespace Mon
 		
 		AddEntity2D(world);
 		Entity2D* ball = GetEntity2D(world, world->entityCount - 1);
-		InitEntity(ball, v2(10, 9), 96);
+		InitEntity(ball, "ball", v2(10, 9), 96);
 
 		AddEntity2D(world);
 		Entity2D* e = GetEntity2D(world, world->entityCount - 1);
-		InitEntity(e, v2(4, 5), 32);
+		InitEntity(e, "ent", v2(4, 5), 32);
 		
 		AddEntity2D(world);
 		Entity2D* minion = GetEntity2D(world, world->entityCount - 1);
-		InitMinion(minion, v2(0, 2), 32);
+		InitMinion(minion, "minion", v2(0, 2), 32);
 
 		//for (int i = 0; i < 5; ++i)
 		//{
@@ -48,8 +50,6 @@ namespace Mon
 		InitTileMap(world->map, &world->sheet);
 
 		// ------------------------------------------------------------------
-
-
 
 		return true;
 	}

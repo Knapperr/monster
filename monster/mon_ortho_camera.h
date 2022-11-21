@@ -5,24 +5,21 @@
 
 namespace Mon
 {
-	class OrthoCamera
+	struct Camera2D
 	{
-	public:
-		
 		v2 vel;
 		v2 pos;
 		v2 offset;
-		//v2 target;
+		v3 posOffset; // TODO(Ck): Do I need this?
+
 		float zoom;
 		float smoothness;
 		float lerpSpeed;
-		v3 positionOffset; // TODO(ck): IMPORTANT(ck): IS this what this is?
-
-		OrthoCamera();
-		OrthoCamera(v2 position, Rect* viewPort);
-		void update(v2* target, float dt);
-		mat4 projectionMatrix();
-		mat4 viewMatrix();
 	};
+
+	void InitCamera(Camera2D* camera);
+	void Update(Camera2D* camera, v2* target, float dt);
+	mat4 Projection(Camera2D* camera, Rect viewPort);
+	mat4 ViewMatrix(Camera2D* camera);
 }
 #endif

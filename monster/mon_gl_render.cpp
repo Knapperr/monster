@@ -240,6 +240,7 @@ namespace MonGL
 
 		// TODO(ck): Remove 
 		MonGL::LoadShader(&gl->program, "res/shaders/vert_colors.glsl", "res/shaders/frag_colors.glsl", NULL);
+		MonGL::LoadShader(&gl->quadProgram, "res/shaders/vert_quad_batch.glsl", "res/shaders/frag_quad_batch.glsl", NULL);
 		MonGL::LoadShader(&gl->waterProgram, "res/shaders/vert_water.glsl", "res/shaders/frag_water.glsl", NULL);
 		MonGL::LoadShader(&gl->cubemapProgram, "res/shaders/vert_cubemap.glsl", "res/shaders/frag_cubemap.glsl", NULL);
 		
@@ -931,13 +932,13 @@ namespace MonGL
 
 	void FillBatch()
 	{
-		float textureSheetSize;
-		float tileOffsetX;
-		float tileOffsetY;
+		float textureSheetSize = 1;
+		float tileOffsetX = 1;
+		float tileOffsetY = 1;
 		float tileSize = 32.0f;
 
-		float tilePosX;
-		float tilePosY;
+		float tilePosX = 1;
+		float tilePosY = 1;
 		float vertSize = 1.0f; // <--- i think this is local pos
 
 		// Texture coords
@@ -1014,8 +1015,8 @@ namespace MonGL
 		// 2 extra vertices are needed for degenerate triangles between each strip 
 //unsigned uNumExtraVertices = ( GL_TRIANGLE_STRIP == _config.uRenderType && _uNumUsedVertices > 0 ? 2 : 0 ); 
 
-		glBindVertexArray(batch->VAO);
-		glBindBuffer(GL_ARRAY_BUFFER, batch->VBO);
+		//glBindVertexArray(batch->VAO);
+		//glBindBuffer(GL_ARRAY_BUFFER, batch->VBO);
 		//if (uNumExtraVertices > 0)
 		//{
 		//	//need to add 2 vertex copies to create degenerate triangles between this strip 
@@ -1035,7 +1036,7 @@ namespace MonGL
 
 		//glBufferSubData(GL_ARRAY_BUFFER, 0, tileVertices.size() * sizeof(Vertex), &tileVertices[0]);
 		// TODO(ck): Should be GL_ELEMENT_ARRAY_BUFFER?
-		glBufferData(GL_ARRAY_BUFFER, tileVertices.size() * sizeof(Vertex), &tileVertices[0], GL_DYNAMIC_DRAW);
+		//glBufferData(GL_ARRAY_BUFFER, tileVertices.size() * sizeof(Vertex), &tileVertices[0], GL_DYNAMIC_DRAW);
 		/*
 			// Upload Buffer
 			gl.BindBuffer(GL_ARRAY_BUFFER, m_vertex_buffer);
@@ -1094,8 +1095,9 @@ namespace MonGL
 		//reset buffer
 		//_uNumUsedVertices = 0;
 		//_config.iPriority = 0;
+
 		usedBatchIndices = 0;
-		tileVertices.clear();
+		//tileVertices.clear();
 	}
 
 	///
@@ -1429,7 +1431,26 @@ namespace MonGL
 		//tileSize = 1.0f;
 		float vertSize = 1.0f;
 
-#if 0
+#if 1
+
+		/*
+		REMEMBER THIS IS A RENDERING CONCEPT I THINK
+		we dont go by these positions we go by x and y of the tilemap
+		we dont want to be displaying draw coordinates in the gui as 
+		entity positions. i think if we display x and y of entity not after
+		we do these multiplications 
+		its making the vertices 0= 0,0 then the next one is going 16 to 32 
+		i think we want this 16pixels=1m so 1 vertice should be 16pixels tile size?
+		
+		it seems to be rendering nicest this way i think?
+		the other way is just making each vertice  +1.0f and -1.0f which
+		is maybe what we dont want here we want to manipulate this vert to 
+		make it the correct tile size?
+		maybe though we can just do x + size we might not need to multiplcation
+		look at blah.cpp
+		i think we do need to just do 
+			IMPORTANT(ck): x + tileSize 
+		*/
 		Vertex vec0 = {
 			v3(x * tileSize, y * tileSize, 0.0f),
 			v3(1.0f, 0.0f, 0.0f),
@@ -1599,8 +1620,8 @@ namespace MonGL
 		//model = glm::rotate(model, obj->rotation, v3(0.0f, 0.0f, 1.0f));
 		//model = glm::translate(model, v3(-0.5f * data->size.x, -0.5f * data->size.y, 0.0f));
 
-		//v2 scale = v2(64.0f);
-		//model = glm::scale(model, v3(scale, 1.0f));
+		v2 scale = v2(64.0f);
+		model = glm::scale(model, v3(scale, 1.0f));
 		glUniformMatrix4fv(glGetUniformLocation(shader->handle, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		
 		//glUniform3f(glGetUniformLocation(shader->handle, "spriteColor"), data->color.r, data->color.g, data->color.b);

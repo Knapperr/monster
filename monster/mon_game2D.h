@@ -36,7 +36,7 @@ namespace Mon {
 
 		Input input;
 		
-		OrthoCamera cameras[5];
+		Camera2D cameras[5];
 		int currentCameraIndex;
 		int cameraCount;
 
@@ -64,16 +64,16 @@ namespace Mon {
 	{
 		unsigned int cameraIndex = state->cameraCount++;
 
-		OrthoCamera* c = &state->cameras[cameraIndex];
+		Camera2D* c = &state->cameras[cameraIndex];
 		c = {};
 
 		return cameraIndex;
 	}
 
 	// TODO(ck): Camera manager
-	static OrthoCamera* GetCamera(Game2D* state, unsigned int index)
+	static Camera2D* GetCamera(Game2D* state, unsigned int index)
 	{
-		OrthoCamera* c = 0;
+		Camera2D* c = 0;
 		if ((index > 0) && (index < ArrayCount(state->cameras)))
 		{
 			c = &state->cameras[index];

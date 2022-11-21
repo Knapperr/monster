@@ -1020,6 +1020,190 @@ void StatsWindow(bool* p_open, Mon::Game2D* game)
 	ImGui::End();
 }
 
+void EntityTab(Mon::Game2D* game)
+{
+	if (ImGui::BeginTabItem("Objects"))
+	{
+		//if (ImGui::Button("Add Entity")) { AddNewEntity(game, 1); }
+
+		ImGui::Separator();
+
+		// NOTE(ck): Write the .imp model to a file 
+		/*if (ImGui::Button("Write imp file"))
+		{
+			writeImpFile(game);
+		}*/
+
+		ImGui::BeginChild("left pane", ImVec2(150.0f, 0.0f), true);
+
+		// increment or decrement the selectedIndex with r and f for quick editing 
+		// this might not be a standard but it will make it quick for me and thats
+		// all that matters =)
+		// Need to set a timer on this so it cant fire
+	/*
+		TODO(ck): Make the input have a built in delay for menus specifically
+		maybe have separate up and downs that
+
+		because we need to use this same delay in the other menus as well
+		we will leave it here for now because we dont need quick select on
+		asset menus. the entity menu is used for building a scene or chunk
+	*/
+#if 1
+		//if (inputTimer > 0.0f)
+			//inputTimer -= (float)game->deltaTime;
+
+		//if (game->input.r.endedDown && inputTimer <= 0.0f)
+		//{
+		//	inputTimer = (float)game->deltaTime * 10.0f;
+		//	if (game->selectedIndex > 1)
+		//	{
+		//		game->world->entities[game->selectedIndex].collider.data.color = Mon::v3(0.7f, 0.15f, 0.4f);
+		//		game->selectedIndex--;
+		//		game->world->entities[game->selectedIndex].collider.data.color = Mon::v3(0.0f, 0.0f, 1.0f);
+		//	}
+		//}
+		//if (game->input.f.endedDown && inputTimer <= 0.0f)
+		//{
+		//	inputTimer = (float)game->deltaTime * 15.0f;
+		//	if (game->selectedIndex < (game->world->entityCount - 1))
+		//	{
+		//		// reset collider color
+		//		game->world->entities[game->selectedIndex].collider.data.color = Mon::v3(0.7f, 0.15f, 0.4f);
+		//		game->selectedIndex++;
+		//		game->world->entities[game->selectedIndex].collider.data.color = Mon::v3(0.0f, 0.0f, 1.0f);
+		//	}
+		//}
+#endif
+
+		for (unsigned int i = 1; i < game->world->entityCount; ++i)
+		{
+			char label[128];
+			sprintf_s(label, "%s %d", game->world->entities[i].name, i);
+			if (ImGui::Selectable(label, game->world->selectedEntityIndex == i))
+			{
+				game->world->selectedEntityIndex = i;
+
+				// reset collider color
+				//game->world->entities[game->world->selectedEntityIndex].collider.data.color = Mon::v3(0.7f, 0.15f, 0.4f);
+
+				// set color of collider to blue
+				//game->world->entities[i].collider.data.color = Mon::v3(0.0f, 0.0f, 1.0f);
+
+			}
+		}
+
+		ImGui::EndChild();
+		ImGui::SameLine();
+
+		if (game->world->entityCount > 1)
+		{
+			ImGui::BeginGroup();
+			ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
+
+			//ImGui::Text("%s", game->world->entities[game->selectedIndex].name);
+
+			int selected = game->world->selectedEntityIndex;
+			if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
+			{
+				if (ImGui::BeginTabItem("Controls"))
+				{
+					//ImGui::TextWrapped("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ");
+					//ImGui::SliderFloat("scale", &game->entities[selected].data.size.max, 0.0f, 200.0f);
+					//ImGui::DragFloat("fine scale", &game->entities[selected].data.size, 0.0001f, 0.0f, 200.0f, "%.02f");
+
+					ImGui::DragFloat("x", &game->world->entities[selected].pos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::SameLine();
+					ImGui::PushID(0);
+					ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::ImColor(250, 78, 78));
+					if (ImGui::Button("-"))
+					{
+						game->world->entities[selected].pos.x -= 1.0f;
+					}
+					ImGui::PopStyleColor();
+					ImGui::PopID();
+
+					ImGui::SameLine();
+					ImGui::PushID(1);
+					ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::ImColor(13, 221, 81));
+					if (ImGui::Button("+"))
+					{
+						game->world->entities[selected].pos.x += 1.0f;
+					}
+					ImGui::PopStyleColor();
+					ImGui::PopID();
+
+					ImGui::DragFloat("y", &game->world->entities[selected].pos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::SameLine();
+					ImGui::PushID(2);
+					ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::ImColor(250, 78, 78));
+					if (ImGui::Button("-"))
+					{
+						game->world->entities[selected].pos.y -= 1.0f;
+
+					}
+					ImGui::PopStyleColor();
+					ImGui::PopID();
+					ImGui::SameLine();
+
+					ImGui::PushID(3);
+					ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::ImColor(13, 221, 81));
+					if (ImGui::Button("+"))
+					{
+						game->world->entities[selected].pos.y += 1.0f;
+
+					}
+					ImGui::PopStyleColor();
+					ImGui::PopID();
+
+				//	ImGui::DragFloat("z", &game->world->entities[selected].pos.z, 0.1f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::SameLine();
+
+
+					/*ImGui::SliderFloat3("scale", &game->world->entities[selected].data.scale[0], 1.0f, 20.0f, "%1.0f");
+					ImGui::SliderFloat3("Collider min", &game->world->entities[selected].collider.min[0], 0.0f, 100.0f, "%1.0f");
+					ImGui::SliderFloat3("Collider max", &game->world->entities[selected].collider.max[0], 0.0f, 100.0f, "%1.0f");*/
+
+					ImGui::DragFloat("speed", &game->world->entities[selected].speed, 0.10f, 0.0f, 200.0f, "%.10f");
+					//ImGui::DragFloat("angle", &game->world->entities[selected].spriteAngleDegrees, 0.10f, -180.0f, 360.0f, "%.10f");
+
+					//ImGui::SliderInt("Mesh index", &game->world->entities[selected].data.meshIndex, 1, Mon::g_Assets->meshCount - 1);
+					//ImGui::SliderInt("Texture index", &game->world->entities[selected].data.textureIndex, 1, game->renderer.textureCount - 1);
+
+					//ImGui::Checkbox("Wireframe", &game->world->entities[selected].data.wireFrame);
+					//ImGui::Checkbox("Visible", &game->world->entities[selected].data.visible);
+					ImGui::SameLine();
+					//ImGui::Checkbox("Show Collider", &game->world->entities[selected].collider.data.visible);
+
+
+
+					//ImGui::Checkbox("show normals", &g_Game->objects[selected]->viewNormals);
+					//ImGui::DragFloat("rot x", &g_Game->objects[selected]->orientation.x, 0.05f, -1000.0f, 1000.0f, "%.02f");
+					//ImGui::DragFloat("rot y", &g_Game->objects[selected]->orientation.y, 0.05f, -1000.0f, 1000.0f, "%.02f");
+					//ImGui::DragFloat("rot z", &g_Game->objects[selected]->orientation.z, 0.05f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::EndTabItem();
+				}
+
+				ImGui::EndTabBar();
+			}
+
+			// TODO(ck): Delete entities
+			//if (ImGui::SmallButton("DELETE"))
+			//{
+			//	UnloadObject(selected);
+			//	// Selected is greater than size of vector
+			//	// don't move down if empty
+			//	if (selected >= g_Game->objects.size() && !g_Game->objects.empty())
+			//		selected -= 1;
+			//}
+
+			ImGui::EndChild();
+			ImGui::EndGroup();
+		}
+
+		ImGui::EndTabItem();
+	}
+}
+
 void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game2D* game2D)
 {
 	ImGui_ImplOpenGL3_NewFrame();
@@ -1157,6 +1341,18 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game2D* game2D)
 
 	ImGui::Checkbox("Wireframe", &game2D->world->map->wireFrame);
 
+	ImGui::Separator();
+	if (ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None))
+	{
+		// NOTE(ck): Maybe pull out the if(ImGui::TabItem()) into here? 
+		EntityTab(game2D);
+		//RendererTab(game);
+		//TerrainTab(game);
+		//CameraTab(game);
+		//AssetTab(game);
+
+		ImGui::EndTabBar();
+	}
 	{
 		//char entitysizebuf[64];
 		//snprintf(entitysizebuf, sizeof(entitysizebuf), "%f", (float)game2D->world->entities.size());

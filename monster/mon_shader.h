@@ -29,6 +29,11 @@ namespace MonGL
 		int textureDiffuse1;
 	};
 
+	struct QuadBatchProgram
+	{
+		CommonProgram common;
+	};
+
 	// TODO(ck): Match struct in the shader also make a 
 	struct WaterProgram
 	{
@@ -107,6 +112,7 @@ namespace MonGL
 
 
 	void LoadShader(CommonProgram* program, const char* vertexSource, const char* fragmentSource, const char* geometrySource = nullptr);
+	void LoadShader(QuadBatchProgram* program, const char* vertexFile, const char* fragmentFile, const char* geometryFile = nullptr);
 	void LoadShader(WaterProgram* program, const char* vertexFile, const char* fragmentFile, const char* geometryFile = nullptr);
 	void LoadShader(CubemapProgram* program, const char* vertexFile, const char* fragmentFile, const char* geometryFile = nullptr);
 	void CheckCompileErrors(unsigned int object, ERROR_TYPE type);

@@ -12,6 +12,7 @@ namespace Mon
 		TileMap* map;
 		TileSheet sheet;
 
+		int selectedEntityIndex;
 		int entityCount;
 	};
 

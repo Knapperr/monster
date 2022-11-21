@@ -28,26 +28,26 @@ namespace Mon {
 
 
 		// Set up the shader locations for our objects
-		int shaderID = game->renderer.program.handle;
-		glUseProgram(shaderID);
+		//int shaderID = game->renderer.program.handle;
+		//glUseProgram(shaderID);
 
 		// TODO(CK): CAMERA
 		// So let's say you want your pixel art scale 2:1
 		// Then your target 1080p. Just take the resolution and divide by 2. Examples
 		// This is for 1920x1080 I am using 1280x720 right now
 		// 2:1 960x540 -- 3:1 640x360 --- 4:! 480x240
-		float left = 0.0f;
-		float right = 960.0f;
-		float bottom = 540.0f;
-		float top = 0.0f;
+		//float left = 0.0f;
+		//float right = 960.0f;
+		//float bottom = 540.0f;
+		//float top = 0.0f;
 
-		mat4 projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
+		//mat4 projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
 
-		int imgLoc = glGetUniformLocation(shaderID, "image");
-		glUniform1i(imgLoc, 0);
+		//int imgLoc = glGetUniformLocation(shaderID, "image");
+		//glUniform1i(imgLoc, 0);
 
-		int projLoc = glGetUniformLocation(shaderID, "projection");
-		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+		//int projLoc = glGetUniformLocation(shaderID, "projection");
+		//glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 
 		int screenWidth = 1440;
@@ -64,11 +64,8 @@ namespace Mon {
 		AddCamera(game);
 		game->currentCameraIndex = AddCamera(game);
 		// InitCamera
-		game->cameras[game->currentCameraIndex].lerpSpeed = 7.0f;
-		game->cameras[game->currentCameraIndex].smoothness = 0.10f;
-		game->cameras[game->currentCameraIndex].pos = v2(0.0f);
-		game->cameras[game->currentCameraIndex].vel = v2(0.0f);
-		game->cameras[game->currentCameraIndex].zoom = 64.0f;
+		InitCamera(&game->cameras[game->currentCameraIndex]);
+
 
 		Entity2D* player = GetPlayer(game->world);
 		//game->camera = OrthoCamera(player->pos, &game->config->viewPort);
@@ -143,7 +140,8 @@ namespace Mon {
 			//https://gamedev.stackexchange.com/questions/2642/scrolling-2d-sprites-on-a-map-with-a-camera
 
 			// positions should be relative to the map the camera shouldn't come into play with real positions..
-			game->cameras[game->currentCameraIndex].update(&p->pos, dt);
+			//game->cameras[game->currentCameraIndex].update(&p->pos, dt);
+			Update(&game->cameras[game->currentCameraIndex], &p->pos, dt);
 
 			p->sprite.pos = p->pos;
 
@@ -157,10 +155,12 @@ namespace Mon {
 		int shaderID = game->renderer.program.handle;
 		glUseProgram(shaderID);
 
-		mat4 projection = game->cameras[game->currentCameraIndex].projectionMatrix();
+		//mat4 projection = game->cameras[game->currentCameraIndex].projectionMatrix();
+		mat4 projection = Projection(&game->cameras[game->currentCameraIndex], game->config->viewPort);
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
-		mat4 view = game->cameras[game->currentCameraIndex].viewMatrix();
+		//mat4 view = game->cameras[game->currentCameraIndex].viewMatrix();
+		mat4 view = ViewMatrix(&game->cameras[game->currentCameraIndex]);
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
 		DrawTileMap(game->world->map, &game->renderer.program, game->world->sheet.texture.id, game->cameras[game->currentCameraIndex].pos);

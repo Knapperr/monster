@@ -2,8 +2,9 @@
 
 namespace Mon
 {
-	void InitEntity(Entity2D* e, v2 position, int size)
+	void InitEntity(Entity2D* e, const char* name, v2 position, int size)
 	{
+		e->name = name;
 		e->sprite = {};
 		// TODO(ck): Don't automatically make opengl data... figure out what renderer we are using
 		// TODO(ck): Texture load in renderer we need the sprite size from the texture
@@ -31,9 +32,9 @@ namespace Mon
 		e->sprite.wireFrame = false;
 	}
 
-	void InitMinion(Entity2D* e, v2 position, int size)
+	void InitMinion(Entity2D* e, const char* name, v2 position, int size)
 	{
-		InitEntity(e, position, size);
+		InitEntity(e, name, position, size);
 
 		e->speed = 10.0f;
 		e->velocity = v2(0.0f);

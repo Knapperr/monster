@@ -16,6 +16,7 @@ namespace Mon
 
 	struct Entity2D
 	{
+		const char* name; 
 		MonGL::RenderData2D sprite;
 
 		// TODO(ck): Fix this. We need this position to be in 
@@ -30,8 +31,8 @@ namespace Mon
 
 	};
 
-	void InitEntity(Entity2D* e, v2 position, int size);
-	void InitMinion(Entity2D* e, v2 position, int size);
+	void InitEntity(Entity2D* e, const char* name, v2 position, int size);
+	void InitMinion(Entity2D* e, const char* name, v2 position, int size);
 	// TODO(ck): Should this param be pointer?
 	// should velocity be acceleration?
 	void movePlayer(TileMap* map, Entity2D* p, v2* velocity, float deltaTime);
