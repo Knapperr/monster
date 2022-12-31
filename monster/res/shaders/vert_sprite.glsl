@@ -32,7 +32,7 @@ void main()
 	
 	// using model matrix -- dont need?
 	vec3 pos = vec3(model * vec4(aPos, 1.0));
-	vec2 tilePos = pixel2GL(vec2(aPos.x, aPos.y));
+	vec2 tilePos = pixel2GL(vec2(pos.x, pos.y));
 	vec3 finalPos = vec3(tilePos, aPos.z);
 	gl_Position = view * vec4(finalPos, 1.0);
 }

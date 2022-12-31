@@ -226,6 +226,7 @@ namespace MonGL
 		This needs to be able to init DirectX and other platforms
 		Eventually I will add a layer above opengl
 	*/
+	
 
 	void InitRenderer(OpenGL* gl)
 	{
@@ -249,11 +250,43 @@ namespace MonGL
 		gl->waterProgram.textureIndexNormal1 = 6;
 		gl->waterProgram.textureIndexNormal2 = 15;
 		
-		// TODO(ck): Need a texture atlas rather than loading all of these
-		// textures for the entities 
+		// NOTE(ck): first index loaded
 		AddTexture(gl);
 
+
+		// @TAG
+		// IMPORTANT(ck): mon_gl_render.cpp LINE:256 DEC/30/2022
+		// I think this is more of a Material than it is a Texture or 
+		// at least it should be. im duplicating work I already have Images which are 
+		// the actual data and filepath of the image
+		// 
+		// The texture I should be treating it more like a Material that uses various Images
+		// for the data source so they can be combined for a model.
+		// 
+		// 
+		// NO we do need Textures they are just part of the Material. A material can have multiple textures
+		// !!!
+		//
+
+		
+		// 1. Load the file from the platform layer
+		const int TEXTURE_COUNT = 23;
+		for (unsigned int i = 1; i < TEXTURE_COUNT; ++i)
+		{
+#if 0
+			AddTexture(gl);
+			MonGL::Texture* t = GetTexture(gl, i);
+
+			// Get texture type from asset file
+			// Get if pixel type
+			// image index 
+
+			// keep a list of char* until we get file figured out to get rid of this cruft?
+#endif
+		}
+
 		// TODO(ck): Fix this
+		// 1. FIRST CLEAN UP hold all of this in a const char array 
 		AddTexture(gl);
 		MonGL::Texture* t1 = GetTexture(gl, 1);
 		AddTexture(gl);
@@ -401,6 +434,10 @@ namespace MonGL
 	/// [BEGIN] Shader Programs
 	/// 
 
+	void UseProgram(CommonProgram* program)
+	{
+		glUseProgram(program->handle);
+	}
 
 	void UseProgram(CommonProgram* program, RenderSetup setup)
 	{
@@ -948,7 +985,7 @@ namespace MonGL
 		float topLeftY = ((tileOffsetY + 1) * tileSize) / textureSheetSize;
 		float bottomLeftX = (tileOffsetX * tileSize) / textureSheetSize;
 		float bottomLeftY = (tileOffsetY * tileSize) / textureSheetSize;
-		float bottomRightX = ((tileOffsetX + 1) * tileSize) / textureSheetSize;
+		float bottomRightX = ((tileOffsetX + 1) * tileSize) / textureSheetSize; 
 		float bottomRightY = (tileOffsetY * tileSize) / textureSheetSize;
 
 #if 0
@@ -1412,6 +1449,36 @@ namespace MonGL
 		InitOpenGLBatchMesh(batch);
 	};
 
+	void InitBatch(int tileAmount)
+	{
+		// TODO(ck): MEMORY - TEST 
+		batch = new BatchData();
+		// These will be figured out after looping our tilemap and pushing quads
+		// TODO(ck): Need to be able to choose amount of vertices and indices
+		batch->quadCount = 4096;
+		batch->maxVertices = batch->quadCount * 4;
+		batch->indicesLength = batch->quadCount * 6;
+
+		// TODO(ck): Memory management
+		batch->indices = new uint32_t[batch->indicesLength];
+		int offset = 0;
+		for (int i = 0; i < batch->indicesLength; i += 6)
+		{
+			batch->indices[i + 0] = 0 + offset;
+			batch->indices[i + 1] = 1 + offset;
+			batch->indices[i + 2] = 2 + offset;
+
+			batch->indices[i + 3] = 2 + offset;
+			batch->indices[i + 4] = 3 + offset;
+			batch->indices[i + 5] = 0 + offset;
+
+			offset += 4;
+		}
+
+		InitOpenGLBatchMesh(batch);
+
+	}
+
 	void FillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize, v2 cameraPos)
 	{		
 		float sheetSize = 256.0f;
@@ -1431,7 +1498,7 @@ namespace MonGL
 		//tileSize = 1.0f;
 		float vertSize = 1.0f;
 
-#if 1
+#if 0
 
 		/*
 		REMEMBER THIS IS A RENDERING CONCEPT I THINK
@@ -1552,6 +1619,9 @@ namespace MonGL
 
 	void DrawMap(CommonProgram* shader, v2 cameraPos, unsigned int textureID, bool wireFrame)
 	{
+
+		BindVertices();
+
 		// TODO(ck): If we want the ability to change the map at runtime we need to constantly
 		// be filling and binding the batch (if things have changed)
 		// Fill batch 
@@ -1615,13 +1685,13 @@ namespace MonGL
 		tilePosition.y = (data->pos.y);
 
 		model = glm::translate(model, tilePosition);
-
+		model = glm::scale(model, v3(64.0f));
 		//model = glm::translate(model, v3(0.5f * data->size.x, 0.0f * data->size.y, 0.0f));
 		//model = glm::rotate(model, obj->rotation, v3(0.0f, 0.0f, 1.0f));
 		//model = glm::translate(model, v3(-0.5f * data->size.x, -0.5f * data->size.y, 0.0f));
 
-		v2 scale = v2(64.0f);
-		model = glm::scale(model, v3(scale, 1.0f));
+		//v2 scale = v2(64.0f);
+		//model = glm::scale(model, v3(scale, 1.0f));
 		glUniformMatrix4fv(glGetUniformLocation(shader->handle, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		
 		//glUniform3f(glGetUniformLocation(shader->handle, "spriteColor"), data->color.r, data->color.g, data->color.b);
@@ -1633,8 +1703,6 @@ namespace MonGL
 		glUniform1i(glGetUniformLocation(shader->handle, "image"), 0);
 		//glUniform1i(program->textureDiffuse1, 0);
 		glBindTexture(GL_TEXTURE_2D, data->textureIndex);
-		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_2D, texture->id);
 
 		glBindVertexArray(mesh->VAO);
 

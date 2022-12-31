@@ -910,6 +910,7 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::GameMemory* memory)
 	{
 		SDL_SetWindowSize(window, settings->windowWidth, settings->windowHeight);
 		SDL_SetWindowFullscreen(window, 0);
+		
 		Mon::SetViewPort(game, 960, 540);
 	}
 

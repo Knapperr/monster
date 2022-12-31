@@ -1,0 +1,55 @@
+# IMAGES
+res/textures/ch_witch.png
+res/textures/p1.png
+res/textures/p1SIDE.png
+res/textures/p1BACK.png
+res/textures/water/water.png
+res/textures/water/flow-speed-noise.png
+res/textures/tree.png
+res/textures/container2.png
+res/textures/ch_minion.png
+res/textures/ch_witch2.png
+res/textures/terrain/1024multi.png
+res/textures/terrain/grass.jpg
+res/textures/terrain/pix_grass.png
+res/textures/terrain/snow.jpg
+res/textures/water/water-derivative-height.png
+res/textures/basic_16.png
+res/textures/grass1x1.png
+res/textures/ch_devil.png				
+res/textures/debug/TWW_Txi_c1m.png		
+res/textures/debug/TLoZTWW_H_bg01.png	
+res/textures/debug/TWW_Txi_c2m.png		
+res/textures/debug/TWW_Txi_c4m.png		
+res/textures/debug/TWW_Txk_c10m.png		
+res/textures/skyboxsun5deg2/right.bmp	
+res/textures/skyboxsun5deg2/left.bmp	
+res/textures/skyboxsun5deg2/top.bmp	
+res/textures/skyboxsun5deg2/bottom.bmp	
+res/textures/skyboxsun5deg2/front.bmp	
+res/textures/skyboxsun5deg2/back.bmp
+res/textures/Sprite.png  	
+
+# TEXTURES
+Diffuse,true, 1
+Diffuse,true, 2
+Diffuse,true, 3
+Diffuse,true, 4
+Diffuse,false,5
+Normal,false,6
+Diffuse,true, 7
+Diffuse,true, 8
+Diffuse,true, 9
+Diffuse,true, 10
+Diffuse,true, 11
+Diffuse,false,12
+Diffuse,true, 13
+Diffuse,false,14
+Normal,false,15
+Diffuse,true, 17
+Diffuse,true, 18
+Diffuse,false,19
+Diffuse,false,20
+Diffuse,false,21
+Diffuse,false,22
+Diffuse,false,23

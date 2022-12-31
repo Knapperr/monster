@@ -67,7 +67,7 @@ namespace Mon {
 		InitCamera(&game->cameras[game->currentCameraIndex]);
 
 
-		Entity2D* player = GetPlayer(game->world);
+		//Entity2D* player = GetPlayer(game->world);
 		//game->camera = OrthoCamera(player->pos, &game->config->viewPort);
 		
 		game->state = State::Play;
@@ -130,7 +130,8 @@ namespace Mon {
 				
 			}
 #ifdef USE_VELOCITY
-			Mon::movePlayer(game->world->map, p, &velocity, dt);
+			Mon::MovePlayer(game->world->map, p, &velocity, dt);
+			p->sprite.pos = p->pos;
 #endif
 			// TODO(ck): link sprite position to camera...  
 			// https://www.reddit.com/r/gamedev/comments/7cnqpg/lerping_camera_position_causes_jitters_as_it/
@@ -143,7 +144,13 @@ namespace Mon {
 			//game->cameras[game->currentCameraIndex].update(&p->pos, dt);
 			Update(&game->cameras[game->currentCameraIndex], &p->pos, dt);
 
-			p->sprite.pos = p->pos;
+			// TODO(ck):
+			// Fill batch with entities texture coords and positions 
+			for (unsigned int i = 2; i < game->world->entityCount; ++i)
+			{
+				Entity2D* e = &game->world->entities[i];
+				e->sprite.pos = e->pos;
+			}
 
 		}
 	}
@@ -168,7 +175,7 @@ namespace Mon {
 		for (unsigned int i = 1; i < game->world->entityCount; ++i)
 		{
 			Entity2D e = game->world->entities[i];
-			MonGL::DrawObject(&game->renderer.program, &e.sprite, game->cameras[game->currentCameraIndex].pos);
+ 			MonGL::DrawObject(&game->renderer.program, &e.sprite, game->cameras[game->currentCameraIndex].pos);
 		}
 	}
 

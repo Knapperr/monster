@@ -269,12 +269,12 @@ namespace Mon
 
 	void DrawTileMap(TileMap* map, MonGL::CommonProgram* shader, int textureID, v2 cameraPos)
 	{
+		// Maybe we do want it out like this because we might want to fill a batch with different data
 		for (int i = 0; i < map->tiles.size(); ++i)
 		{
 			MonGL::FillBatch(map->tiles[i]->textureOffsetX, map->tiles[i]->textureOffsetY, map->tiles[i]->x, map->tiles[i]->y, 16, cameraPos);
 		}
 
-		MonGL::BindVertices();
 		MonGL::DrawMap(shader, cameraPos, textureID, map->wireFrame);
 	}
 

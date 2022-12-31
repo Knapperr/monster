@@ -35,7 +35,7 @@ namespace Mon
 	void InitMinion(Entity2D* e, const char* name, v2 position, int size);
 	// TODO(ck): Should this param be pointer?
 	// should velocity be acceleration?
-	void movePlayer(TileMap* map, Entity2D* p, v2* velocity, float deltaTime);
+	void MovePlayer(TileMap* map, Entity2D* p, v2* velocity, float deltaTime);
 
 	// "factory" methods for creating entities
 	Entity2D* InitPlayer();

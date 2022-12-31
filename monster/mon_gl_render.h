@@ -225,6 +225,7 @@ namespace MonGL
 	void LoadImpFile(RenderData* data);
 	void LoadTextureFile(Texture* texture, Image* image, TextureType type, bool linearFilter = false, bool pixelArtTexture = false);
 
+	void UseProgram(CommonProgram* program);
 	void UseProgram(CommonProgram* program, RenderSetup setup);
 	void UseProgram(WaterProgram* program, RenderSetup setup);
 
@@ -292,7 +293,7 @@ namespace MonGL
 
 
 	//
-	// 2d
+	// 2D
 	//
 	void InitRenderer2D(OpenGL* gl);
 	void InitOpenGLBatchMesh(Mesh* mesh);
@@ -305,7 +306,8 @@ namespace MonGL
 
 	void InitRenderData2D(RenderData2D* sprite, int size);
 	
-	void InitTileMap(int tileAmount);
+	void InitTileMap(int tileAmount); // This just inits the batch the same way InitBatch does
+	void InitBatch(int tileAmount);
 	void FillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize, v2 cameraPos);
 	void BindVertices();
 	

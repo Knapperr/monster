@@ -45,7 +45,7 @@ namespace Mon
 
 	// TODO(ck): Should this param be pointer?
 	// should velocity be acceleration?
-	void movePlayer(TileMap* map, Entity2D* p, v2* velocity, float deltaTime)
+	void MovePlayer(TileMap* map, Entity2D* p, v2* velocity, float deltaTime)
 	{
 		// ddPLength
 		float velocityLength = lengthSq(*velocity);

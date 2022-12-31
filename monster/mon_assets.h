@@ -8,6 +8,7 @@ namespace MonGL
 {
 	struct Vertex3D;
 	struct Vertex;
+	enum class TextureType;
 };
 
 namespace Mon
@@ -40,6 +41,14 @@ namespace Mon
 		// check to see if loaded and return back texture to it?
 		// set this texture index and if its not 0 that means we have loaded it
 		int textureIndex;
+	};
+
+	struct TextureAsset
+	{
+		MonGL::TextureType type;
+		int imageIndex; // TODO(ck): Image Handle
+		bool linearFilter;
+		bool isPixelArt;
 	};
 
 	struct Mesh
@@ -92,12 +101,15 @@ namespace Mon
 	{
 		Mesh meshes[32];
 		Image images[32];
+		TextureAsset textureAssets[32];
 
 		Mesh2D quad2D; // TODO(ck): Remove
 		int meshCount;
-		int textureCount;
+		int imageCount;
+		int textureAssetCount;
 	};
 
+	// TODO(ck): Clean up these... Need generic container
 	static unsigned int AddMesh(Assets* assets)
 	{
 		unsigned int index = assets->meshCount++; 
@@ -120,7 +132,7 @@ namespace Mon
 
 	static unsigned int AddImage(Assets* assets)
 	{
-		unsigned int index = assets->textureCount++;
+		unsigned int index = assets->imageCount++;
 
 		Image* img = &assets->images[index];
 		img = {};
@@ -138,6 +150,25 @@ namespace Mon
 		return img;
 	}
 
+	static unsigned int AddTextureAsset(Assets* assets)
+	{
+		unsigned int index = assets->textureAssetCount++;
+
+		TextureAsset* t = &assets->textureAssets[index];
+		t = {};
+
+		return index;
+	}
+
+	static TextureAsset* GetTextureAsset(Assets* assets, unsigned int index)
+	{
+		TextureAsset* t = 0;
+		if ((index > 0) && (index < ArrayCount(assets->textureAssets)))
+		{
+			t = &assets->textureAssets[index];
+		}
+		return t;
+	}
 
 	void InitAssets(Assets* assets);
 
