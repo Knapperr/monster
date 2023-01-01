@@ -544,7 +544,8 @@ void EntityTab(Mon::GameState* game)
 					ImGui::DragFloat("angle", &game->world->entities[selected].spriteAngleDegrees, 0.10f, -180.0f, 360.0f, "%.10f");
 
 					ImGui::SliderInt("Mesh index", &game->world->entities[selected].data.meshIndex, 1, Mon::g_Assets->meshCount - 1);
-					ImGui::SliderInt("Texture index", &game->world->entities[selected].data.textureIndex, 1, game->renderer.textureCount - 1);
+					// NOTE(ck): game->renderer.textureCount-2 removes the cubemap texture from the selection
+					ImGui::SliderInt("Texture index", &game->world->entities[selected].data.textureIndex, 1, game->renderer.textureCount - 2);
 
 					ImGui::Checkbox("Wireframe", &game->world->entities[selected].data.wireFrame);
 					ImGui::Checkbox("Visible", &game->world->entities[selected].data.visible);

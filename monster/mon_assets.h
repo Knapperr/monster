@@ -94,13 +94,13 @@ namespace Mon
 
 	void InitImage(Image* image, const char* file, bool flip = true);
 	void FreeImage(Image* image);
-
+	void InitTextureAsset(TextureAsset* asset, MonGL::TextureType type, bool pixelArt, int imageIndex);
 
 	// global struct for accessing assets
 	struct Assets
 	{
 		Mesh meshes[32];
-		Image images[32];
+		Image images[64];
 		TextureAsset textureAssets[32];
 
 		Mesh2D quad2D; // TODO(ck): Remove

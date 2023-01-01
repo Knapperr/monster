@@ -10,6 +10,9 @@ namespace Mon
 	// does this get set to null for allocation we want this to happen after the game memory has been created
 	Assets* g_Assets = new Assets();
 
+// TODO(ck): Move to platform layer
+#include <fstream>
+#include <string>
 	void InitAssets(Assets* assets)
 	{
 		/*
@@ -80,147 +83,81 @@ namespace Mon
 
 		// empty #0 for image
 		AddImage(assets);
-
-		AddImage(assets);
-		Image* witchImg = GetImage(assets, 1);
-		InitImage(witchImg, "res/textures/ch_witch.png");
-
-		AddImage(assets);
-		Image* p1 = GetImage(assets, 2);
-		InitImage(p1, "res/textures/p1.png");
-
-		AddImage(assets);
-		Image* p1Side = GetImage(assets, 3);
-		InitImage(p1Side, "res/textures/p1SIDE.png");
-
-		AddImage(assets);
-		Image* p1Back = GetImage(assets, 4);
-		InitImage(p1Back, "res/textures/p1BACK.png");
-
-		AddImage(assets);
-		Image* waterDeriv = GetImage(assets, 5); // diffuse
-		InitImage(waterDeriv, "res/textures/water/water.png");
-
-		AddImage(assets);
-		Image* waterFlow = GetImage(assets, 6); // normal1
-		InitImage(waterFlow, "res/textures/water/flow-speed-noise.png");
-
-		AddImage(assets);
-		Image* tree = GetImage(assets, 7);
-		InitImage(tree, "res/textures/tree.png");
-
-		AddImage(assets);
-		Image* container = GetImage(assets, 8);
-		InitImage(container, "res/textures/container2.png");
-
-		AddImage(assets);
-		Image* minion = GetImage(assets, 9);
-		InitImage(minion, "res/textures/ch_minion.png");
-
-		AddImage(assets);
-		Image* witch2 = GetImage(assets, 10);
-		InitImage(witch2, "res/textures/ch_witch2.png");
-
-		AddImage(assets);
-		Image* terr1 = GetImage(assets, 11);
-		InitImage(terr1, "res/textures/terrain/1024multi.png", false);
-
-		AddImage(assets);
-		Image* terr2 = GetImage(assets, 12);
-		InitImage(terr2, "res/textures/terrain/grass.jpg", false);
-
-		AddImage(assets);
-		Image* terr3 = GetImage(assets, 13);
-		InitImage(terr3, "res/textures/terrain/pix_grass.png", false);
-
-		AddImage(assets);
-		Image* terr4 = GetImage(assets, 14);
-		InitImage(terr4, "res/textures/terrain/snow.jpg", false);
-
-		AddImage(assets);
-		Image* waterNorm2 = GetImage(assets, 15);
-		InitImage(waterNorm2, "res/textures/water/water-derivative-height.png");
-
-		// 2D TILE SHEET
-		AddImage(assets);
-		Image* tileSheet = GetImage(assets, 16);
-		InitImage(tileSheet, "res/textures/basic_16.png");
-
-		AddImage(assets);
-		Image* OnexOneSheet = GetImage(assets, 17);
-		InitImage(OnexOneSheet, "res/textures/grass1x1.png", false);
-
-		AddImage(assets);
-		Image* pDevil = GetImage(assets, 18);
-		InitImage(pDevil, "res/textures/ch_devil.png");
-
-		AddImage(assets);
-		Image* cube1m = GetImage(assets, 19);
-		InitImage(cube1m, "res/textures/debug/TWW_Txi_c1m.png");
-
-		AddImage(assets);
-		Image* wwBrick = GetImage(assets, 20);
-		InitImage(wwBrick, "res/textures/debug/TLoZTWW_H_bg01.png");
-
-		AddImage(assets);
-		Image* ww2m = GetImage(assets, 21);
-		InitImage(ww2m, "res/textures/debug/TWW_Txi_c2m.png");
-
-		AddImage(assets);
-		Image* ww4m = GetImage(assets, 22);
-		InitImage(ww4m, "res/textures/debug/TWW_Txi_c4m.png");
-
-		AddImage(assets);
-		Image* ww10m = GetImage(assets, 23);
-		InitImage(ww10m, "res/textures/debug/TWW_Txk_c10m.png");
-
-
-		// TODO(ck): !!! IMPORTANT(ck):
-		/*  DEAL WITH THIS */
-		AddImage(assets);
-		Image* skybox1 = GetImage(assets, 24);
-		InitImage(skybox1, "res/textures/skyboxsun5deg2/right.bmp", false);
-		
-		AddImage(assets);
-		Image* skybox2 = GetImage(assets, 25);
-		InitImage(skybox2, "res/textures/skyboxsun5deg2/left.bmp", false);
-
-		AddImage(assets);
-		Image* skybox3 = GetImage(assets, 26);
-		InitImage(skybox3, "res/textures/skyboxsun5deg2/top.bmp", false);
-
-		AddImage(assets);
-		Image* skybox4 = GetImage(assets, 27);
-		InitImage(skybox4, "res/textures/skyboxsun5deg2/bottom.bmp", false);
-
-		AddImage(assets);
-		Image* skybox5 = GetImage(assets, 28);
-		InitImage(skybox5, "res/textures/skyboxsun5deg2/front.bmp", false);
-
-		AddImage(assets);
-		Image* skybox6 = GetImage(assets, 29);
-		InitImage(skybox6, "res/textures/skyboxsun5deg2/back.bmp", false);
-		/*  DEAL WITH THIS */
-		// TODO(ck): !!! IMPORTANT(ck):
-
-
-		AddImage(assets);
-		Image* houseSheet = GetImage(assets, 30);
-		InitImage(houseSheet, "res/textures/Sprite.png", false);
-
-		// AFTER IMAGE_INIT.. INIT TEXTURE ASSETS
-		// init index 0
+		// empty #0 for textureAssets
 		AddTextureAsset(assets);
 
+		std::ifstream file("config_assets.mon");
+		file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+		try
+		{
+			if (!file.is_open())
+				Mon::Log::print("Failure to open asset file");
 
+			// Parse Images 
+			std::string line;
+			int imageCount = 0;
+			while (file >> line)
+			{
+				std::string categoryLine = line;
+				file >> imageCount;
+				break;
+			}
+			
+			bool flipImage = true;
+			while (file >> line)
+			{
+				for (int i = 1; i <= imageCount; ++i)
+				{
+					file >> flipImage;
+
+					AddImage(assets);
+					Image* img = GetImage(assets, i);
+					InitImage(img, line.c_str(), flipImage);
+
+					file >> line;
+				}
+				break;
+			}
+
+			
+			// Parse Textures
+			// NOTE(ck): Already parsed the category line above because i do file >> line after InitImage
+			int textureAssetCount = 0;
+			file >> textureAssetCount;
+
+			int type = 0;
+			bool isPixelArt = true;
+			int imageIndex = 0;
+			while (file >> line)
+			{
+				for (int i = 1; i <= textureAssetCount; ++i)
+				{
+					if (i == 1)
+						type = std::stoi(line);
+					else
+						file >> type;
+
+					file >> isPixelArt;
+					file >> imageIndex;
+
+					AddTextureAsset(assets);
+					TextureAsset* asset = GetTextureAsset(assets, i);
+					InitTextureAsset(asset, (MonGL::TextureType)type, isPixelArt, imageIndex);
+				}
+			}
+		}
+		catch (std::ifstream::failure& ex)
+		{
+			Mon::Log::print("File read failed");
+			Mon::Log::print(ex.what());
+		}
+		file.close();
 
 		// 2d qaud mesh
 		Init2DQuadMesh(&assets->quad2D);
 	}
 
 
-#include <fstream>
-#include <string>
 	void LoadImpFile(Mesh* mesh, const char* fileName)
 	{
 		std::ifstream file(fileName);
@@ -320,7 +257,6 @@ namespace Mon
 		file.close();
 	}
 
-
 	void InitImage(Image* image, const char* file, bool flip)
 	{
 		stbi_set_flip_vertically_on_load(flip);
@@ -331,6 +267,13 @@ namespace Mon
 	void FreeImage(Image* image)
 	{
 		stbi_image_free(image->data);
+	}
+
+	void InitTextureAsset(TextureAsset* asset, MonGL::TextureType type, bool pixelArt, int imageIndex)
+	{
+		asset->type = type;
+		asset->isPixelArt = pixelArt;
+		asset->imageIndex = imageIndex;
 	}
 
 	void InitQuadMesh(Mesh* mesh, bool tangents)

@@ -8,7 +8,7 @@ namespace MonGL
 	// can have a getter method that retrieves the globalDrawCalls from here
 	int globalDrawCalls = 0;
 
-	void LoadTexture(Texture* texture, TextureType type, bool pixelArtTexture, int shaderID, Image* image)
+	void LoadTexture(Texture* texture, TextureType type, bool pixelArtTexture, Image* image)
 	{
 		LoadTextureFile(texture, image, type, true, pixelArtTexture);
 	}
@@ -179,6 +179,9 @@ namespace MonGL
 
 		for (unsigned int i = 0; i < 6; ++i)
 		{
+			// TODO(ck): NEED TO LOOKUP CUBEMAP IMAGES
+			// HAVE A CUBEMAP ASSET THAT IS SET IN THE FILE??? THAT WAY THE GUI CAN SET THE 
+			// INDEX TO THE TEXTURE AND SAVE IT SO ITS NOT A BIG DEAL... JUST TAG IMAGES 
 			Image* img = GetImage(g_Assets, 24 + i);
 
 			if (img->data)
@@ -222,15 +225,9 @@ namespace MonGL
 	///
 	/// [BEGIN] Renderer
 	///	
-	/*
-		This needs to be able to init DirectX and other platforms
-		Eventually I will add a layer above opengl
-	*/
-	
 
 	void InitRenderer(OpenGL* gl)
 	{
-
 		/*
 		TODO(ck): Load from a configuration file
 		should only load meshses in current chunk or level
@@ -251,129 +248,26 @@ namespace MonGL
 		gl->waterProgram.textureIndexNormal2 = 15;
 		
 		// NOTE(ck): first index loaded
-		AddTexture(gl);
-
-
-		// @TAG
-		// IMPORTANT(ck): mon_gl_render.cpp LINE:256 DEC/30/2022
-		// I think this is more of a Material than it is a Texture or 
-		// at least it should be. im duplicating work I already have Images which are 
-		// the actual data and filepath of the image
-		// 
-		// The texture I should be treating it more like a Material that uses various Images
-		// for the data source so they can be combined for a model.
-		// 
-		// 
-		// NO we do need Textures they are just part of the Material. A material can have multiple textures
-		// !!!
-		//
-
-		
-		// 1. Load the file from the platform layer
-		const int TEXTURE_COUNT = 23;
-		for (unsigned int i = 1; i < TEXTURE_COUNT; ++i)
+		AddTexture(gl);	
+		unsigned int assetCount = g_Assets->textureAssetCount;
+		for (unsigned int i = 1; i < assetCount; ++i)
 		{
-#if 0
+			TextureAsset* asset = Mon::GetTextureAsset(g_Assets, i);
 			AddTexture(gl);
 			MonGL::Texture* t = GetTexture(gl, i);
-
-			// Get texture type from asset file
-			// Get if pixel type
-			// image index 
-
-			// keep a list of char* until we get file figured out to get rid of this cruft?
-#endif
+			LoadTexture(t, asset->type, asset->isPixelArt, GetImage(g_Assets, asset->imageIndex));
 		}
-
-		// TODO(ck): Fix this
-		// 1. FIRST CLEAN UP hold all of this in a const char array 
-		AddTexture(gl);
-		MonGL::Texture* t1 = GetTexture(gl, 1);
-		AddTexture(gl);
-		MonGL::Texture* t2 = GetTexture(gl, 2);
-		AddTexture(gl);
-		MonGL::Texture* t3 = GetTexture(gl, 3);
-		AddTexture(gl);
-		MonGL::Texture* t4 = GetTexture(gl, 4);
-		AddTexture(gl);
-		MonGL::Texture* t5 = GetTexture(gl, 5);
-		AddTexture(gl);
-		MonGL::Texture* t6 = GetTexture(gl, 6);
-		AddTexture(gl);
-		MonGL::Texture* t7 = GetTexture(gl, 7);
-		AddTexture(gl);
-		MonGL::Texture* t8 = GetTexture(gl, 8);
-		AddTexture(gl);
-		MonGL::Texture* t9 = GetTexture(gl, 9);
-		AddTexture(gl);
-		MonGL::Texture* t10 = GetTexture(gl, 10);
-		AddTexture(gl);
-		MonGL::Texture* t11 = GetTexture(gl, 11);
-		AddTexture(gl);
-		MonGL::Texture* t12 = GetTexture(gl, 12);
-		AddTexture(gl);
-		MonGL::Texture* t13 = GetTexture(gl, 13);
-		AddTexture(gl);
-		MonGL::Texture* t14 = GetTexture(gl, 14);
-		AddTexture(gl);
-		MonGL::Texture* t15 = GetTexture(gl, 15);
-		AddTexture(gl);
-		MonGL::Texture* t16 = GetTexture(gl, 16);
-		AddTexture(gl);
-		MonGL::Texture* t17 = GetTexture(gl, 17);
-		AddTexture(gl);
-		MonGL::Texture* t18 = GetTexture(gl, 18);
-		AddTexture(gl);
-		MonGL::Texture* t19 = GetTexture(gl, 19);
-		AddTexture(gl);
-		MonGL::Texture* t20 = GetTexture(gl, 20);
-		AddTexture(gl);
-		MonGL::Texture* t21 = GetTexture(gl, 21);
-		AddTexture(gl);
-		MonGL::Texture* t22 = GetTexture(gl, 22);
-
-		int shaderID = gl->program.handle;
-		LoadTexture(t1, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 1));
-		LoadTexture(t2, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 2));
-		LoadTexture(t3, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 3));
-		LoadTexture(t4, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 4));
-		LoadTexture(t5, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 5));
-		LoadTexture(t6, MonGL::TextureType::Normal,  false, shaderID, GetImage(g_Assets, 6));
-		LoadTexture(t7, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 7));
-		LoadTexture(t8, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 8));
-		LoadTexture(t9, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 9));
-		LoadTexture(t10, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 10));
-		LoadTexture(t11, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 11));
-		LoadTexture(t12, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 12));
-		LoadTexture(t13, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 13));
-		LoadTexture(t14, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 14));
-		LoadTexture(t15, MonGL::TextureType::Normal,  false, shaderID, GetImage(g_Assets, 15));
-		LoadTexture(t16, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 17));
-		LoadTexture(t17, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 18));
-		LoadTexture(t18, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 19));
-		LoadTexture(t19, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 20));
-		LoadTexture(t20, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 21));
-		LoadTexture(t21, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 22));
-		LoadTexture(t22, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 23));
-
 
 		// TODO(ck): IMPORTANT(ck): FIX THIS 
 		// NOTE(ck): using image indexes [24 to 29] need a better way to handle this
 		AddTexture(gl);
-		MonGL::Texture* t23 = GetTexture(gl, 23);
+		MonGL::Texture* t23 = GetTexture(gl, assetCount+1);
 		LoadCubeMapTexture(t23);
 		gl->cubemap = {};
 		LoadCubemap(&gl->cubemap);
 
-
-		AddTexture(gl);
-		MonGL::Texture* t24 = GetTexture(gl, 24);
-		LoadTexture(t24, MonGL::TextureType::Diffuse, false, shaderID, GetImage(g_Assets, 30));
-
-
 		// #0 for the 
 		AddLight(gl);
-
 		int index = AddLight(gl);
 		gl->lights[index].id = "001";
 		gl->lights[index].pos = v3(24.0f, 64.0f, 26.0f);
@@ -392,7 +286,6 @@ namespace MonGL
 		// Frame buffer
 		int screenWidth = 1440;
 		int screenHeight = 900;
-
 		glGenFramebuffers(1, &gl->buffer.handle);
 		glBindFramebuffer(GL_FRAMEBUFFER, gl->buffer.handle);
 
@@ -422,8 +315,6 @@ namespace MonGL
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 			Log::warn("Framebuffer is not complete!");
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-
 	}
 
 	///
@@ -1265,22 +1156,22 @@ namespace MonGL
 		MonGL::Texture* t16 = GetTexture(gl, 16);
 
 		int shaderID = gl->program.handle;
-		LoadTexture(t1, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 1));
-		LoadTexture(t2, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 2));
-		LoadTexture(t3, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 3));
-		LoadTexture(t4, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 4));
-		LoadTexture(t5, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 5));
-		LoadTexture(t6, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 6));
-		LoadTexture(t7, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 7));
-		LoadTexture(t8, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 8));
-		LoadTexture(t9, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 9));
-		LoadTexture(t10, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 10));
-		LoadTexture(t11, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 11));
-		LoadTexture(t12, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 12));
-		LoadTexture(t13, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 13));
-		LoadTexture(t14, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 14));
-		LoadTexture(t15, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 15));
-		LoadTexture(t16, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 18));
+		LoadTexture(t1, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 1));
+		LoadTexture(t2, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 2));
+		LoadTexture(t3, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 3));
+		LoadTexture(t4, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 4));
+		LoadTexture(t5, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 5));
+		LoadTexture(t6, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 6));
+		LoadTexture(t7, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 7));
+		LoadTexture(t8, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 8));
+		LoadTexture(t9, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 9));
+		LoadTexture(t10, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 10));
+		LoadTexture(t11, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 11));
+		LoadTexture(t12, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 12));
+		LoadTexture(t13, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 13));
+		LoadTexture(t14, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 14));
+		LoadTexture(t15, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 15));
+		LoadTexture(t16, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 18));
 
 	}
 

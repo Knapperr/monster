@@ -1,55 +1,57 @@
-# IMAGES
-res/textures/ch_witch.png
-res/textures/p1.png
-res/textures/p1SIDE.png
-res/textures/p1BACK.png
-res/textures/water/water.png
-res/textures/water/flow-speed-noise.png
-res/textures/tree.png
-res/textures/container2.png
-res/textures/ch_minion.png
-res/textures/ch_witch2.png
-res/textures/terrain/1024multi.png
-res/textures/terrain/grass.jpg
-res/textures/terrain/pix_grass.png
-res/textures/terrain/snow.jpg
-res/textures/water/water-derivative-height.png
-res/textures/basic_16.png
-res/textures/grass1x1.png
-res/textures/ch_devil.png				
-res/textures/debug/TWW_Txi_c1m.png		
-res/textures/debug/TLoZTWW_H_bg01.png	
-res/textures/debug/TWW_Txi_c2m.png		
-res/textures/debug/TWW_Txi_c4m.png		
-res/textures/debug/TWW_Txk_c10m.png		
-res/textures/skyboxsun5deg2/right.bmp	
-res/textures/skyboxsun5deg2/left.bmp	
-res/textures/skyboxsun5deg2/top.bmp	
-res/textures/skyboxsun5deg2/bottom.bmp	
-res/textures/skyboxsun5deg2/front.bmp	
-res/textures/skyboxsun5deg2/back.bmp
-res/textures/Sprite.png  	
-
-# TEXTURES
-Diffuse,true, 1
-Diffuse,true, 2
-Diffuse,true, 3
-Diffuse,true, 4
-Diffuse,false,5
-Normal,false,6
-Diffuse,true, 7
-Diffuse,true, 8
-Diffuse,true, 9
-Diffuse,true, 10
-Diffuse,true, 11
-Diffuse,false,12
-Diffuse,true, 13
-Diffuse,false,14
-Normal,false,15
-Diffuse,true, 17
-Diffuse,true, 18
-Diffuse,false,19
-Diffuse,false,20
-Diffuse,false,21
-Diffuse,false,22
-Diffuse,false,23
+#IMAGES
+30
+res/textures/ch_witch.png 1
+res/textures/p1.png 1
+res/textures/p1SIDE.png 1
+res/textures/p1BACK.png 1
+res/textures/water/water.png 1
+res/textures/water/flow-speed-noise.png 1
+res/textures/tree.png 1
+res/textures/container2.png 1
+res/textures/ch_minion.png 1
+res/textures/ch_witch2.png 1
+res/textures/terrain/1024multi.png 0
+res/textures/terrain/grass.jpg 0
+res/textures/terrain/pix_grass.png 0
+res/textures/terrain/snow.jpg 0
+res/textures/water/water-derivative-height.png 1
+res/textures/basic_16.png 1
+res/textures/grass1x1.png 1
+res/textures/ch_devil.png 1
+res/textures/debug/TWW_Txi_c1m.png 1
+res/textures/debug/TLoZTWW_H_bg01.png 1
+res/textures/debug/TWW_Txi_c2m.png 1
+res/textures/debug/TWW_Txi_c4m.png 1
+res/textures/debug/TWW_Txk_c10m.png 1
+res/textures/skyboxsun5deg2/right.bmp 0
+res/textures/skyboxsun5deg2/left.bmp 0
+res/textures/skyboxsun5deg2/top.bmp	0
+res/textures/skyboxsun5deg2/bottom.bmp 0
+res/textures/skyboxsun5deg2/front.bmp 0
+res/textures/skyboxsun5deg2/back.bmp 0
+res/textures/Sprite.png 0
+#TEXTURESdiffuse=0;normal=1;specular=2;height=3;cubemap=4
+24
+0 1 1
+0 1 2
+0 1 3
+0 1 4
+0 0 5
+1 0 6
+0 1 7
+0 1 8
+0 1 9
+0 1 10
+0 1 11
+0 0 12
+0 1 13
+0 0 14
+1 0 15
+0 1 17
+0 1 18
+0 0 19
+0 0 20
+0 0 21
+0 0 22
+0 0 23
+0 0 30
