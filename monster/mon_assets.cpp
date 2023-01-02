@@ -128,22 +128,16 @@ namespace Mon
 			int type = 0;
 			bool isPixelArt = true;
 			int imageIndex = 0;
-			while (file >> line)
+
+			for (int i = 1; i < textureAssetCount; ++i)
 			{
-				for (int i = 1; i <= textureAssetCount; ++i)
-				{
-					if (i == 1)
-						type = std::stoi(line);
-					else
-						file >> type;
+				file >> type;
+				file >> isPixelArt;
+				file >> imageIndex;
 
-					file >> isPixelArt;
-					file >> imageIndex;
-
-					AddTextureAsset(assets);
-					TextureAsset* asset = GetTextureAsset(assets, i);
-					InitTextureAsset(asset, (MonGL::TextureType)type, isPixelArt, imageIndex);
-				}
+				AddTextureAsset(assets);
+				TextureAsset* asset = GetTextureAsset(assets, i);
+				InitTextureAsset(asset, (MonGL::TextureType)type, isPixelArt, imageIndex);
 			}
 		}
 		catch (std::ifstream::failure& ex)

@@ -554,11 +554,10 @@ void EntityTab(Mon::GameState* game)
 					
 					ImGui::SliderFloat("Texcoord scale", &game->world->entities[selected].data.programData.texCoordScale, 1, 100);
 
-					
-					//ImGui::Checkbox("show normals", &g_Game->objects[selected]->viewNormals);
-					//ImGui::DragFloat("rot x", &g_Game->objects[selected]->orientation.x, 0.05f, -1000.0f, 1000.0f, "%.02f");
-					//ImGui::DragFloat("rot y", &g_Game->objects[selected]->orientation.y, 0.05f, -1000.0f, 1000.0f, "%.02f");
-					//ImGui::DragFloat("rot z", &g_Game->objects[selected]->orientation.z, 0.05f, -1000.0f, 1000.0f, "%.02f");
+					//ImGui::Checkbox("show normals", &game->objects[selected]->viewNormals);
+					//ImGui::DragFloat("rot x", &game->objects[selected]->orientation.x, 0.05f, -1000.0f, 1000.0f, "%.02f");
+					//ImGui::DragFloat("rot y", &game->objects[selected]->orientation.y, 0.05f, -1000.0f, 1000.0f, "%.02f");
+					//ImGui::DragFloat("rot z", &game->objects[selected]->orientation.z, 0.05f, -1000.0f, 1000.0f, "%.02f");
 					ImGui::EndTabItem();
 				}
 

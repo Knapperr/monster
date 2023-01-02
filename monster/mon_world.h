@@ -252,7 +252,7 @@ namespace Mon {
 
 		AddEntity(world);
 		Entity* house = GetEntity(world, world->entityCount - 1);
-		InitEntity(house, "house", v3(16.0f, 0.0f, 16.0f), v3(1.0f), 0.0f, shaderHandle, 8, 10);
+		InitEntity(house, "house", v3(16.0f, 0.0f, 16.0f), v3(1.0f), 0.0f, shaderHandle, 23, 10);
 		house->data.meshIndex = 10;
 
 	}
