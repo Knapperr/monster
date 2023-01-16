@@ -5,7 +5,7 @@ namespace Mon
 
 	void InitCamera(Camera2D* camera)
 	{
-		camera->pos = v2(0.0f);
+		camera->pos = v2(1.0f);
 		camera->vel = v2(0.0f);
 		camera->offset = v2(0.0f);
 
@@ -16,12 +16,13 @@ namespace Mon
 
 	void Update(Camera2D* camera, v2* target, float dt)
 	{
-#if 1
-		camera->pos.x = (target->x + camera->offset.x);
-		camera->pos.y = (target->y + camera->offset.y);
+#if 0
+		camera->pos.x = (camera->pos.x - target->x);
+		camera->pos.y = (camera->pos.y - target->y);
 #else 
-		pos.x = smoothDamp(pos.x, (target->x) * 0.5f, vel.x, smoothness, dt);
-		pos.y = smoothDamp(pos.y, (target->y) * 0.5f, vel.y, smoothness, dt);
+		v2 targetPos = *target;
+		camera->pos.x = smoothDamp(camera->pos.x, (targetPos.x), camera->vel.x, camera->smoothness, dt);
+		camera->pos.y = smoothDamp(camera->pos.y, (targetPos.y), camera->vel.y, camera->smoothness, dt);
 #endif
 	}
 

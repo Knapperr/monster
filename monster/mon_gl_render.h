@@ -214,7 +214,7 @@ namespace MonGL
 	//
 	// Renderer 
 	//
-	void LoadTexture(RenderData* data, int index, TextureType type, bool pixelArtTexture, int shaderID, std::string path, bool pixelTexture = true);
+	void LoadTexture(Texture* texture, TextureType type, bool pixelArtTexture, Image* image);
 	void InitRenderer(OpenGL* gl);
 	void UploadOpenGLMesh(Mesh* mesh);
 	void UploadOpenGLMesh2D(Mesh2D* mesh);

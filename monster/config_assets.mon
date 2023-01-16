@@ -1,4 +1,4 @@
-#IMAGES
+#IMAGES=1=
 30
 res/textures/ch_witch.png 1
 res/textures/p1.png 1
@@ -31,7 +31,7 @@ res/textures/skyboxsun5deg2/front.bmp 0
 res/textures/skyboxsun5deg2/back.bmp 0
 res/textures/Sprite.png 0
 #TEXTURESdiffuse=0;normal=1;specular=2;height=3;cubemap=4
-24
+23
 0 1 1
 0 1 2
 0 1 3
@@ -55,3 +55,7 @@ res/textures/Sprite.png 0
 0 0 22
 0 0 23
 0 0 30
+#ATLAS
+1
+16 256 16
+

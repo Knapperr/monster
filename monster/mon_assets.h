@@ -51,6 +51,18 @@ namespace Mon
 		bool isPixelArt;
 	};
 
+	struct TextureAtlas
+	{
+		int assetIndex;
+		int tileSize;
+		int size;
+		int rows;
+		int cols;
+		// NOTE(ck): Can add offsets for this?
+		// support only using part of the texture atlas?
+
+	};
+
 	struct Mesh
 	{
 		const char* id;
@@ -95,6 +107,7 @@ namespace Mon
 	void InitImage(Image* image, const char* file, bool flip = true);
 	void FreeImage(Image* image);
 	void InitTextureAsset(TextureAsset* asset, MonGL::TextureType type, bool pixelArt, int imageIndex);
+	void InitTextureAtlas(TextureAtlas* atlas, int assetIndex, int atlasSize, int tileSize);
 
 	// global struct for accessing assets
 	struct Assets
@@ -102,11 +115,13 @@ namespace Mon
 		Mesh meshes[32];
 		Image images[64];
 		TextureAsset textureAssets[32];
+		TextureAtlas atlases[8];
 
 		Mesh2D quad2D; // TODO(ck): Remove
 		int meshCount;
 		int imageCount;
 		int textureAssetCount;
+		int atlasCount;
 	};
 
 	// TODO(ck): Clean up these... Need generic container
@@ -168,6 +183,26 @@ namespace Mon
 			t = &assets->textureAssets[index];
 		}
 		return t;
+	}
+
+	static unsigned int AddTextureAtlas(Assets* assets)
+	{
+		unsigned int index = assets->atlasCount++;
+
+		TextureAtlas* a = &assets->atlases[index];
+		a = {};
+
+		return index;
+	}
+
+	static TextureAtlas* GetTextureAtlas(Assets* assets, unsigned int index)
+	{
+		TextureAtlas* a = 0;
+		if ((index > 0) && (index < ArrayCount(assets->atlases)))
+		{
+			a = &assets->atlases[index];
+		}
+		return a;
 	}
 
 	void InitAssets(Assets* assets);

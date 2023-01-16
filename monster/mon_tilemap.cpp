@@ -42,8 +42,16 @@ namespace Mon
 
 	void InitTileSheet(TileSheet* sheet, const char* fileName)
 	{
+		// TODO(ck): DO NOT DO THIS HERE
 		Image* img = GetImage(g_Assets, 16);
-		MonGL::LoadTextureFile(&sheet->texture, img, MonGL::TextureType::Diffuse, true, true);
+		// NOTE(ck): For some reason GL_LINEAR is causing my pixel shader to fail in 2D but is fine for 3D pixel art?
+		/*if (linearFilter)
+				texture->wrapS = GL_REPEAT; // TODO(ck): Not sure if necessary
+				texture->wrapT = GL_REPEAT; // TODO(ck): Not sure if necessary
+				texture->filterMin = GL_LINEAR;
+				texture->filterMax = GL_LINEAR*/
+		MonGL::LoadTextureFile(&sheet->texture, img, MonGL::TextureType::Diffuse, false, true);
+		//MonGL::LoadTexture(&sheet->texture, MonGL::TextureType::Diffuse, true, img);
 		//MonGL::Load2DTextureArrayFile(&sheet->texture, fileName);
 
 		// TODO(ck): 
@@ -57,7 +65,7 @@ namespace Mon
 		// that just reads off of a text file and instantly loads
 
 		// TODO(ck): MEMORY MANAGEMENT
-		// SPLICE the tilesheet and figure out the offsets manually
+		// TODO(ck): SPLICE the tilesheet and figure out the offsets through code
 		// Just have tileCount and Tile not Tile* just have it array like entities?
 		sheet->tileCount = 20;
 		sheet->tiles = new Tile[sheet->tileCount];

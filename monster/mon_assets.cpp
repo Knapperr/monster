@@ -85,7 +85,10 @@ namespace Mon
 		AddImage(assets);
 		// empty #0 for textureAssets
 		AddTextureAsset(assets);
+		// empty #0 for textureAtlas
+		AddTextureAtlas(assets);
 
+		// TODO(ck): Move file reading to platform layer do not want this in the game
 		std::ifstream file("config_assets.mon");
 		file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 		try
@@ -121,6 +124,7 @@ namespace Mon
 
 			
 			// Parse Textures
+			// IMPORTANT(ck):
 			// NOTE(ck): Already parsed the category line above because i do file >> line after InitImage
 			int textureAssetCount = 0;
 			file >> textureAssetCount;
@@ -129,7 +133,7 @@ namespace Mon
 			bool isPixelArt = true;
 			int imageIndex = 0;
 
-			for (int i = 1; i < textureAssetCount; ++i)
+			for (int i = 1; i <= textureAssetCount; ++i)
 			{
 				file >> type;
 				file >> isPixelArt;
@@ -138,6 +142,24 @@ namespace Mon
 				AddTextureAsset(assets);
 				TextureAsset* asset = GetTextureAsset(assets, i);
 				InitTextureAsset(asset, (MonGL::TextureType)type, isPixelArt, imageIndex);
+			}
+
+			int atlasCount = 0;
+			int atlasSize = 0;
+			int tileSize = 0;
+			int textureAssetIndex = 0;
+
+			file >> line; // category
+			file >> atlasCount;
+			for (int i = 1; i <= atlasCount; ++i)
+			{
+				textureAssetIndex >> textureAssetIndex;
+				file >> atlasSize;
+				file >> tileSize;
+
+				AddTextureAtlas(assets);
+				TextureAtlas* atlas = GetTextureAtlas(assets, i);
+				InitTextureAtlas(atlas, textureAssetIndex, atlasSize, tileSize);
 			}
 		}
 		catch (std::ifstream::failure& ex)
@@ -673,5 +695,29 @@ namespace Mon
 		MonGL::UploadOpenGLMesh(mesh);
 	}
 
+
+	void InitTextureAtlas(TextureAtlas* atlas, int assetIndex, int atlasSize, int tileSize)
+	{
+		atlas->assetIndex = assetIndex;
+
+		atlas->size = atlasSize;
+		atlas->tileSize = tileSize;
+		atlas->rows = atlasSize / tileSize; // width / tileSize
+		atlas->cols = atlasSize / tileSize; // height / tileSize
+
+
+		for (int y = 0; y < atlas->rows; ++y)
+		{
+			for (int x = 0; x < atlas->cols; ++x)
+			{
+				// x = 0 - 0
+				// x = 1 - 16
+				// x = 2 - 32
+
+				// tileSet.Add(new Tile(x * tileSize, y * tileSize, tileSize, tileSize));
+
+			}
+		}
+	}
 
 };

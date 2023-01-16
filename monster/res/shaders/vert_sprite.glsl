@@ -34,5 +34,9 @@ void main()
 	vec3 pos = vec3(model * vec4(aPos, 1.0));
 	vec2 tilePos = pixel2GL(vec2(pos.x, pos.y));
 	vec3 finalPos = vec3(tilePos, aPos.z);
+	
+	//gl_Position = view * vec4(aPos, 1.0); // NOTE(ck): without pixel2GL transform
+	//gl_Position = view * vec4(pos, 1.0);
 	gl_Position = view * vec4(finalPos, 1.0);
+
 }

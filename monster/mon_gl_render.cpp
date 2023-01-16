@@ -651,6 +651,10 @@ namespace MonGL
 
 	int ActivateUniforms(OpenGL* gl, ProgramData programData, ProgramType type, RenderSetup setup, int baseTextureID, v3 viewPos)
 	{
+		// TODO(ck): Just check the type here if a new program type comes in then we have to activate uniforms and stuff otherwise just continue 
+		// like normally that way we don't need a switch everytime a new shader type comes in we just simply call glUseProgram and whatever other
+		// setup we need to do but if not we don't call it we just activate uniforms as normal
+
 		Light* light = GetLight(gl, 1);
 		switch (type)
 		{
@@ -870,63 +874,67 @@ namespace MonGL
 		float vertSize = 1.0f; // <--- i think this is local pos
 
 		// Texture coords
-		float topRightX = ((tileOffsetX + 1) * tileSize) / textureSheetSize;
-		float topRightY = ((tileOffsetY + 1) * tileSize) / textureSheetSize;
-		float topLeftX = (tileOffsetX * tileSize) / textureSheetSize;
-		float topLeftY = ((tileOffsetY + 1) * tileSize) / textureSheetSize;
-		float bottomLeftX = (tileOffsetX * tileSize) / textureSheetSize;
-		float bottomLeftY = (tileOffsetY * tileSize) / textureSheetSize;
-		float bottomRightX = ((tileOffsetX + 1) * tileSize) / textureSheetSize; 
-		float bottomRightY = (tileOffsetY * tileSize) / textureSheetSize;
+		v2 topRight = v2(((tileOffsetX + 1) * tileSize) / textureSheetSize,
+						 ((tileOffsetY + 1) * tileSize) / textureSheetSize);
+
+		v2 topLeft = v2((tileOffsetX * tileSize) / textureSheetSize,
+						((tileOffsetY + 1) * tileSize) / textureSheetSize);
+			
+		v2 bottomRight = v2(((tileOffsetX + 1) * tileSize) / textureSheetSize,
+							(tileOffsetY * tileSize) / textureSheetSize);
+
+		v2 bottomLeft = v2((tileOffsetX * tileSize) / textureSheetSize,
+						   (tileOffsetY * tileSize) / textureSheetSize);
+
 
 #if 0
 		Vertex vec0 = {
 			v3(x * tileSize, y * tileSize, 0.0f),
 			v3(1.0f, 0.0f, 0.0f),
-			v2(bottomLeftX, bottomLeftY)
+			bottomLeft
 		};
 
 		Vertex vec1 = {
 			v3((x + vertSize) * tileSize, y * tileSize, 0.0f),
 			v3(0.0f, 1.0f, 0.0f),
-			v2(bottomRightX, bottomRightY)
+			bottomRight
 		};
 
 		Vertex vec2 = {
 			v3((x + vertSize) * tileSize, (y + vertSize) * tileSize, 0.0f),
 			v3(0.0f, 0.0f, 1.0f),
-			v2(topRightX, topRightY)
+			topRight
 		};
 
 		Vertex vec3 = {
 			v3(x * tileSize, (y + vertSize) * tileSize, 0.0f),
 			v3(1.0f, 1.0f, 0.0f),
-			v2(topLeftX, topLeftY)
+			topLeft
 		};
 #else
 
 		Vertex3D vec0 = {
 			v3(tilePosX, tilePosY, 0.0f),
 			v3(1.0f, 0.0f, 0.0f),
-			v2(bottomLeftX, bottomLeftY)
+			bottomLeft
 		};
 
 		Vertex3D vec1 = {
 			v3((tilePosX + vertSize), tilePosY, 0.0f),
 			v3(1.0f, 1.0f, 1.0f),
-			v2(bottomRightX, bottomRightY)
+			bottomRight
 		};
 
 		Vertex3D vec2 = {
 			v3((tilePosX + vertSize), (tilePosY + vertSize), 0.0f),
 			v3(1.0f, 1.0f, 1.0f),
-			v2(topRightX, topRightY)
+			topRight
 		};
 
 		Vertex vec3 = {
 			v3(tilePosX, (tilePosY + vertSize), 0.0f),
 			v3(1.0f, 1.0f, 1.0f),
-			v2(topLeftX, topLeftY)
+			topLeft
 		};
 #endif
 
@@ -1375,21 +1383,18 @@ namespace MonGL
 		float sheetSize = 256.0f;
 
 		// Texture coords
-		float topRightX		= ((tileOffsetX + 1) * tileSize) / sheetSize;
-		float topRightY		= ((tileOffsetY + 1) * tileSize) / sheetSize;
-		float topLeftX		= (tileOffsetX * tileSize) / sheetSize;
-		float topLeftY		= ((tileOffsetY + 1) * tileSize) / sheetSize;
-		float bottomLeftX	= (tileOffsetX * tileSize) / sheetSize;
-		float bottomLeftY   = (tileOffsetY * tileSize) / sheetSize;
-		float bottomRightX	= ((tileOffsetX + 1) * tileSize) / sheetSize;
-		float bottomRightY	= (tileOffsetY * tileSize) / sheetSize;
+		v2 topRight = v2(((tileOffsetX + 1) * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize);
+		v2 topLeft = v2((tileOffsetX * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize);		
+		v2 bottomRight = v2(((tileOffsetX + 1) * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize);
+		v2 bottomLeft = v2((tileOffsetX * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize);
 
 		float x = tileXPos;
 		float y = tileYPos;
 		//tileSize = 1.0f;
 		float vertSize = 1.0f;
 
-#if 0
+#if 1
+
 
 		/*
 		REMEMBER THIS IS A RENDERING CONCEPT I THINK
@@ -1410,54 +1415,84 @@ namespace MonGL
 			IMPORTANT(ck): x + tileSize 
 		*/
 		Vertex vec0 = {
-			v3(x * tileSize, y * tileSize, 0.0f),
+			v3(x * tileSize, 
+			   y * tileSize, 
+			   0.0f),
 			v3(1.0f, 0.0f, 0.0f),
-			v2(bottomLeftX, bottomLeftY)
+			bottomLeft
 		};
 
 		Vertex vec1 = {
-			v3((x + vertSize) * tileSize, y * tileSize, 0.0f),
+			v3((x + vertSize) * tileSize, 
+				y * tileSize,
+				0.0f),
 			v3(0.0f, 1.0f, 0.0f),
-			v2(bottomRightX, bottomRightY)
+			bottomRight
 		};
 
 		Vertex vec2 = {
-			v3((x + vertSize) * tileSize, (y + vertSize) * tileSize, 0.0f),
+			v3((x + vertSize) * tileSize,
+				(y + vertSize) * tileSize,
+				0.0f),
 			v3(0.0f, 0.0f, 1.0f),
-			v2(topRightX, topRightY)
+			topRight
 		};
 
 		Vertex vec3 = {
-			v3(x * tileSize, (y + vertSize) * tileSize, 0.0f),
+			v3(x * tileSize,
+				(y + vertSize) * tileSize, 
+				0.0f),
 			v3(1.0f, 1.0f, 0.0f),
-			v2(topLeftX, topLeftY)
+			topLeft
 		};
 #else
-
 		Vertex vec0 = {
 			v3(x, y, 0.0f),
 			v3(1.0f, 0.0f, 0.0f),
-			v2(bottomLeftX, bottomLeftY)
+			bottomLeft
 		};
 
 		Vertex vec1 = {
 			v3((x + vertSize), y, 0.0f),
 			v3(0.0f, 1.0f, 0.0f),
-			v2(bottomRightX, bottomRightY)
+			bottomRight
 		};
 
 		Vertex vec2 = {
 			v3((x + vertSize), (y + vertSize), 0.0f),
 			v3(0.0f, 0.0f, 1.0f),
-			v2(topRightX, topRightY)
+			topRight
 		};
 
 		Vertex vec3 = {
 			v3(x, (y + vertSize), 0.0f),
 			v3(1.0f, 1.0f, 0.0f),
-			v2(topLeftX, topLeftY)
+			topLeft
 		};
 #endif
+		
+		// STUDY(ck): Transform to view space? pixel to ndc?
+		// this works!
+		//vec0.position.x = vec0.position.x / 480;
+		//vec0.position.x = vec0.position.x * 2 - 1;
+		//vec0.position.y = vec0.position.y / 270;
+		//vec0.position.y = vec0.position.y * 2 - 1;
+
+		//vec1.position.x = vec1.position.x / 480;
+		//vec1.position.x = vec1.position.x * 2 - 1;
+		//vec1.position.y = vec1.position.y / 270;
+		//vec1.position.y = vec1.position.y * 2 - 1;
+
+		//vec2.position.x = vec2.position.x / 480;
+		//vec2.position.x = vec2.position.x * 2 - 1;
+		//vec2.position.y = vec2.position.y / 270;
+		//vec2.position.y = vec2.position.y * 2 - 1;
+
+		//vec3.position.x = vec3.position.x / 480;
+		//vec3.position.x = vec3.position.x * 2 - 1;
+		//vec3.position.y = vec3.position.y / 270;
+		//vec3.position.y = vec3.position.y * 2 - 1;
+
 
 		usedIndices += 6;
 		tileVertices.push_back(vec0);
@@ -1576,13 +1611,11 @@ namespace MonGL
 		tilePosition.y = (data->pos.y);
 
 		model = glm::translate(model, tilePosition);
-		model = glm::scale(model, v3(64.0f));
+		model = glm::scale(model, v3(1.0f));
 		//model = glm::translate(model, v3(0.5f * data->size.x, 0.0f * data->size.y, 0.0f));
 		//model = glm::rotate(model, obj->rotation, v3(0.0f, 0.0f, 1.0f));
 		//model = glm::translate(model, v3(-0.5f * data->size.x, -0.5f * data->size.y, 0.0f));
 
-		//v2 scale = v2(64.0f);
-		//model = glm::scale(model, v3(scale, 1.0f));
 		glUniformMatrix4fv(glGetUniformLocation(shader->handle, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		
 		//glUniform3f(glGetUniformLocation(shader->handle, "spriteColor"), data->color.r, data->color.g, data->color.b);
