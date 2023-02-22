@@ -20,6 +20,7 @@ namespace Mon
 		camera->pos.x = (camera->pos.x - target->x);
 		camera->pos.y = (camera->pos.y - target->y);
 #else 
+		// need offset targetPos - offset
 		v2 targetPos = *target;
 		camera->pos.x = smoothDamp(camera->pos.x, (targetPos.x), camera->vel.x, camera->smoothness, dt);
 		camera->pos.y = smoothDamp(camera->pos.y, (targetPos.y), camera->vel.y, camera->smoothness, dt);

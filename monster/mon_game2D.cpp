@@ -172,10 +172,16 @@ namespace Mon {
 
 		DrawTileMap(game->world->map, &game->renderer.program, game->world->sheet.texture.id, game->cameras[game->currentCameraIndex].pos);
 
+		Entity2D* p = GetPlayer(game->world);
+		MonGL::FillBatch(256.0f, 32, p->pos.x, p->pos.y);
+		MonGL::Texture* texture = MonGL::GetTexture(&game->renderer, 17);
+		DrawBatch(&game->renderer.program, texture->id, false);
+
+		// TODO(ck): Entities will be added to a batch with their current data and configs
 		for (unsigned int i = 1; i < game->world->entityCount; ++i)
 		{
 			Entity2D e = game->world->entities[i];
- 			MonGL::DrawObject(&game->renderer.program, &e.sprite, game->cameras[game->currentCameraIndex].pos);
+ 			//MonGL::DrawObject(&game->renderer.program, &e.sprite, game->cameras[game->currentCameraIndex].pos);
 		}
 	}
 

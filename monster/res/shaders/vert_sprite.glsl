@@ -37,6 +37,6 @@ void main()
 	
 	//gl_Position = view * vec4(aPos, 1.0); // NOTE(ck): without pixel2GL transform
 	//gl_Position = view * vec4(pos, 1.0);
-	gl_Position = view * vec4(finalPos, 1.0);
+	gl_Position = projection * vec4(pos, 1.0);
 
 }

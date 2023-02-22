@@ -17,7 +17,9 @@ namespace MonGL
 
 	struct Texture
 	{
-		// id of texture object
+		// TODO(ck): Remove std::string
+		std::string name;
+		// id of OpenGL texture object
 		unsigned int id;
 		// dimensions in pixels
 		int width;
@@ -41,5 +43,10 @@ namespace MonGL
 	void Load2DTextureArrayFile(Texture* texture, const char* file);
 
 
+	struct SubTexture
+	{
+		int textureId;
+
+	};
 }
 #endif

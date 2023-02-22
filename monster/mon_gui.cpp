@@ -303,6 +303,10 @@ void CameraTab(Mon::GameState* game)
 
 		ImGui::Separator();
 
+		ImGui::DragFloat("x", &game->cameras[game->currCameraIndex].pos.x, 0.01f, 1.0f, 200.0f, "%.02f");
+		ImGui::DragFloat("y", &game->cameras[game->currCameraIndex].pos.y, 0.01f, 1.0f, 200.0f, "%.02f");
+		ImGui::DragFloat("z", &game->cameras[game->currCameraIndex].pos.z, 0.01f, 1.0f, 200.0f, "%.02f");
+
 		ImGui::DragFloat("cam speed", &game->cameras[game->currCameraIndex].speed, 0.01f, 1.0f, 200.0f, "%.02f");
 		ImGui::DragFloat("cam zoom", &game->cameras[game->currCameraIndex].zoom, 0.1f, -1000.0f, 1000.0f, "%.02f");
 		ImGui::DragFloat("near plane", &game->cameras[game->currCameraIndex].nearPlane, 0.01f, 0.1f, 100.0f, "%.02f");
@@ -607,88 +611,114 @@ void RendererTab(Mon::GameState* game)
 {
 	if (ImGui::BeginTabItem("Renderer"))
 	{
-
-		static unsigned int selectedLight = 1;
-		ImGui::BeginChild("left pane renderer", ImVec2(150.0f, 0.0f), true);
-
-		for (unsigned int i = 1; i < game->renderer.lightCount; ++i)
+		if (ImGui::TreeNode("Lights"))
 		{
-			char label[128];
-			sprintf_s(label, "%s %d", game->renderer.lights[i].id, i);
-			if (ImGui::Selectable(label, selectedLight == i))
+			static unsigned int selectedLight = 1;
+			ImGui::BeginChild("left pane lights", ImVec2(150.0f, 0.0f), true);
+
+			for (unsigned int i = 1; i < game->renderer.lightCount; ++i)
 			{
-				selectedLight = i;
-			}
-		}
-
-		ImGui::EndChild();
-		ImGui::SameLine();
-
-		ImGui::BeginGroup();
-		ImGui::BeginChild("light details", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
-
-		ImGui::Text("%s", game->renderer.lights[selectedLight].id);
-		ImGui::Separator();
-		if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
-		{
-			if (ImGui::BeginTabItem("details"))
-			{
-				//static char buf[32];
-				//sprintf_s(buf, "%s", std::to_string(Mon::g_Assets->meshes[selected].VAO).c_str());
-				//ImGui::Text("VAO %s", buf, IM_ARRAYSIZE(buf));
-
-				ImGui::DragFloat("x", &game->renderer.lights[selectedLight].pos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");
-				ImGui::DragFloat("y", &game->renderer.lights[selectedLight].pos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
-				ImGui::DragFloat("z", &game->renderer.lights[selectedLight].pos.z, 0.1f, -1000.0f, 1000.0f, "%.02f");
-				ImGui::SliderFloat3("ambient", &game->renderer.lights[selectedLight].ambient[0], 0.0f, 1.0f, "%0.01f");
-				ImGui::SliderFloat3("diffuse", &game->renderer.lights[selectedLight].diffuse[0], 0.0f, 1.0f, "%0.01f");
-				ImGui::SliderFloat3("specular", &game->renderer.lights[selectedLight].specular[0], 0.0f, 1.0f, "%0.01f");
-
-
-				if (ImGui::Button("dim"))
+				char label[128];
+				sprintf_s(label, "%s %d", game->renderer.lights[i].id, i);
+				if (ImGui::Selectable(label, selectedLight == i))
 				{
-					if (!game->renderer.lights[selectedLight].attachedToEntity)
+					selectedLight = i;
+				}
+			}
+
+			ImGui::EndChild();
+			ImGui::SameLine();
+
+			ImGui::BeginGroup();
+			ImGui::BeginChild("light details", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
+
+			ImGui::Text("%s", game->renderer.lights[selectedLight].id);
+			ImGui::Separator();
+			if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
+			{
+				if (ImGui::BeginTabItem("details"))
+				{
+					//static char buf[32];
+					//sprintf_s(buf, "%s", std::to_string(Mon::g_Assets->meshes[selected].VAO).c_str());
+					//ImGui::Text("VAO %s", buf, IM_ARRAYSIZE(buf));
+
+					ImGui::DragFloat("x", &game->renderer.lights[selectedLight].pos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::DragFloat("y", &game->renderer.lights[selectedLight].pos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::DragFloat("z", &game->renderer.lights[selectedLight].pos.z, 0.1f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::SliderFloat3("ambient", &game->renderer.lights[selectedLight].ambient[0], 0.0f, 1.0f, "%0.01f");
+					ImGui::SliderFloat3("diffuse", &game->renderer.lights[selectedLight].diffuse[0], 0.0f, 1.0f, "%0.01f");
+					ImGui::SliderFloat3("specular", &game->renderer.lights[selectedLight].specular[0], 0.0f, 1.0f, "%0.01f");
+
+
+					if (ImGui::Button("dim"))
+					{
+						if (!game->renderer.lights[selectedLight].attachedToEntity)
+						{
+							game->renderer.lights[selectedLight].pos.x = 0.0f;
+							game->renderer.lights[selectedLight].pos.y = 3.0f;
+							game->renderer.lights[selectedLight].pos.z = 0.0f;
+						}
+						game->renderer.lights[selectedLight].ambient = Mon::v3(0.2f);
+						game->renderer.lights[selectedLight].diffuse = Mon::v3(1.0f);
+						game->renderer.lights[selectedLight].specular = Mon::v3(0.3f);
+					}
+					ImGui::SameLine();
+					if (ImGui::Button("avg"))
 					{
 						game->renderer.lights[selectedLight].pos.x = 0.0f;
-						game->renderer.lights[selectedLight].pos.y = 3.0f;
+						game->renderer.lights[selectedLight].pos.y = 20.0f;
 						game->renderer.lights[selectedLight].pos.z = 0.0f;
+						game->renderer.lights[selectedLight].ambient = Mon::v3(0.3f);
+						game->renderer.lights[selectedLight].diffuse = Mon::v3(0.8f);
+						game->renderer.lights[selectedLight].specular = Mon::v3(0.3f);
 					}
-					game->renderer.lights[selectedLight].ambient = Mon::v3(0.2f);
-					game->renderer.lights[selectedLight].diffuse = Mon::v3(1.0f);
-					game->renderer.lights[selectedLight].specular = Mon::v3(0.3f);
-				}
-				ImGui::SameLine();
-				if (ImGui::Button("avg"))
-				{
-					game->renderer.lights[selectedLight].pos.x = 0.0f;
-					game->renderer.lights[selectedLight].pos.y = 20.0f;
-					game->renderer.lights[selectedLight].pos.z = 0.0f;
-					game->renderer.lights[selectedLight].ambient = Mon::v3(0.3f);
-					game->renderer.lights[selectedLight].diffuse = Mon::v3(0.8f);
-					game->renderer.lights[selectedLight].specular = Mon::v3(0.3f);
-				}
-				ImGui::SameLine();
-				if (ImGui::Button("evening"))
-				{
-					game->renderer.lights[selectedLight].pos.x = 24.0f;
-					game->renderer.lights[selectedLight].pos.y = 64.0f;
-					game->renderer.lights[selectedLight].pos.z = 26.0f;
-					game->renderer.lights[selectedLight].ambient = Mon::v3(0.3f, 0.1f, 0.0f);
-					game->renderer.lights[selectedLight].diffuse = Mon::v3(0.8f);
-					game->renderer.lights[selectedLight].specular = Mon::v3(0.3f);
+					ImGui::SameLine();
+					if (ImGui::Button("evening"))
+					{
+						game->renderer.lights[selectedLight].pos.x = 24.0f;
+						game->renderer.lights[selectedLight].pos.y = 64.0f;
+						game->renderer.lights[selectedLight].pos.z = 26.0f;
+						game->renderer.lights[selectedLight].ambient = Mon::v3(0.3f, 0.1f, 0.0f);
+						game->renderer.lights[selectedLight].diffuse = Mon::v3(0.8f);
+						game->renderer.lights[selectedLight].specular = Mon::v3(0.3f);
+					}
+
+
+
+
+					ImGui::EndTabItem();
 				}
 
-				ImGui::EndTabItem();
+				ImGui::EndTabBar();
 			}
 
-			ImGui::EndTabBar();
-		}
+			ImGui::EndChild();
+			ImGui::EndGroup();
 
-		ImGui::EndChild();
-		ImGui::EndGroup();
+			ImGui::TreePop();
+		} // END LIGHTS
+
+		if (ImGui::TreeNode("Textures"))
+		{
+			static unsigned int selectedTexture = 1;
+			ImGui::BeginChild("left pane textures", ImVec2(150.0f, 0.0f), true);
+			for (unsigned int i = 1; i < game->renderer.textureCount; ++i)
+			{
+				char label[128];
+				sprintf_s(label, "%s %d", game->renderer.textures[i].name.c_str(), i);
+				if (ImGui::Selectable(label, selectedTexture == i))
+				{
+					selectedTexture = i;
+				}
+			}
+			ImGui::EndChild();
+
+			ImGui::TreePop();
+		} // END TEXTURES
+
 
 		ImGui::EndTabItem();
-	}
+	} // Renderer Tab
 }
 
 void AssetTab(Mon::GameState* game)

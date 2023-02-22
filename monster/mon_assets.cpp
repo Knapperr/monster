@@ -129,19 +129,23 @@ namespace Mon
 			int textureAssetCount = 0;
 			file >> textureAssetCount;
 
+			std::string textureName;
 			int type = 0;
 			bool isPixelArt = true;
 			int imageIndex = 0;
 
 			for (int i = 1; i <= textureAssetCount; ++i)
 			{
+				file >> textureName;
 				file >> type;
 				file >> isPixelArt;
 				file >> imageIndex;
 
 				AddTextureAsset(assets);
 				TextureAsset* asset = GetTextureAsset(assets, i);
-				InitTextureAsset(asset, (MonGL::TextureType)type, isPixelArt, imageIndex);
+			
+
+				InitTextureAsset(asset, textureName, (MonGL::TextureType)type, isPixelArt, imageIndex);
 			}
 
 			int atlasCount = 0;
@@ -153,7 +157,7 @@ namespace Mon
 			file >> atlasCount;
 			for (int i = 1; i <= atlasCount; ++i)
 			{
-				textureAssetIndex >> textureAssetIndex;
+				file >> textureAssetIndex;
 				file >> atlasSize;
 				file >> tileSize;
 
@@ -285,8 +289,10 @@ namespace Mon
 		stbi_image_free(image->data);
 	}
 
-	void InitTextureAsset(TextureAsset* asset, MonGL::TextureType type, bool pixelArt, int imageIndex)
+	void InitTextureAsset(TextureAsset* asset, std::string name, MonGL::TextureType type, bool pixelArt, int imageIndex)
 	{
+
+		asset->name = name;
 		asset->type = type;
 		asset->isPixelArt = pixelArt;
 		asset->imageIndex = imageIndex;
@@ -695,27 +701,114 @@ namespace Mon
 		MonGL::UploadOpenGLMesh(mesh);
 	}
 
-
+	
 	void InitTextureAtlas(TextureAtlas* atlas, int assetIndex, int atlasSize, int tileSize)
 	{
 		atlas->assetIndex = assetIndex;
 
 		atlas->size = atlasSize;
 		atlas->tileSize = tileSize;
-		atlas->rows = atlasSize / tileSize; // width / tileSize
-		atlas->cols = atlasSize / tileSize; // height / tileSize
+		atlas->rows = atlasSize / tileSize;
+		atlas->cols = atlasSize / tileSize;
 
+	
 
-		for (int y = 0; y < atlas->rows; ++y)
+		// TODO(ck): Temp for now
+		int index = 0;
+		for (int row = 0; row < atlas->rows; ++row)
 		{
-			for (int x = 0; x < atlas->cols; ++x)
+			for (int col = 0; col < atlas->cols; ++col)
 			{
-				// x = 0 - 0
-				// x = 1 - 16
-				// x = 2 - 32
+				AssetTile tile = {};
+				tile.x = col;
+				tile.y = row;
+				tile.id = index;
+				atlas->tiles[index] = tile;
+				
+				if (tile.x == 4 && tile.y == 2) {
+					// top 4,2
+					int i = index; // 36
+				}
+				if (tile.x == 0 && tile.y == 4) {
+					// left 0,4
+					int i = index; // 64
+				}
+				if (tile.x == 5 && tile.y == 5) {
+					// right 5,5
+					int i = index; // 85
+				}
+				if (tile.x == 1 && tile.y == 11) {
+					// field 1,11
+					int i = index; // 177
+				}
+				if (tile.x == 0 && tile.y == 7) {
+					// bottom left 0,7
+					int i = index; // 112
+				}
+				if (tile.x == 5 && tile.y == 7) {
+					// bottom right 5,7
+					int i = index; // 117
+				}
+				if (tile.x == 5 && tile.y == 2) {
+					// top right 5,2
+					int i = index; // 37
+				}
+				if (tile.x == 0 && tile.y == 2) {
+					// top left 0,2
+					int i = index; // 32
+				}
+				if (tile.x == 3 && tile.y == 6) {
+					// bottom 3,6
+					int i = index; // 99
+				}
+				if (tile.x == 3 && tile.y == 11) {
+					// bush 3,11
+					int i = index; // 179
+				}
+				if (tile.x == 1 && tile.y == 14) {
+					// rock 1,14
+					int i = index; // 225
+				}
+				if (tile.x == 6 && tile.y == 13) {
+					// road top 6,13
+					int i = index; // 214
+				}
+				if (tile.x == 6 && tile.y == 12) {
+					// road mid 6,12
+					int i = index; // 198
+				}
+				if (tile.x == 6 && tile.y == 11) {
+					// road bottom 6,11
+					int i = index; // 182
+				}
+				if (tile.x == 7 && tile.y == 13) {
+					// topleft tree 7,13
+					int i = index; // 215
+				}
+				if (tile.x == 8 && tile.y == 13) {
+					// topright tree 8,13
+					int i = index; // 216
+				}
+				if (tile.x == 7 && tile.y == 12) {
+					// midleft tree 7,12
+					int i = index; // 199
+				}
+				if (tile.x == 8 && tile.y == 12) {
+					// midright tree 8,12
+					int i = index; // 200
+				}
+				if (tile.x == 7 && tile.y == 11) {
+					// bottomleft tree 7,11
+					int i = index; // 183
+				}
+				if (tile.x == 8 && tile.y == 11) {
+					// bottom right tree 8,11
+					int i = index; // 184
+				}
 
-				// tileSet.Add(new Tile(x * tileSize, y * tileSize, tileSize, tileSize));
+				++index;
 
+				
 			}
 		}
 	}

@@ -3,6 +3,8 @@
 
 #include "mon_camera.h"
 
+#include <string>
+
 // IMPORTANT(ck): TODO(ck): Forward decl
 namespace MonGL
 {
@@ -49,6 +51,15 @@ namespace Mon
 		int imageIndex; // TODO(ck): Image Handle
 		bool linearFilter;
 		bool isPixelArt;
+		std::string name;
+	};
+
+	// TODO(ck): Temp
+	struct AssetTile
+	{
+		int x;
+		int y;
+		int id;
 	};
 
 	struct TextureAtlas
@@ -60,7 +71,7 @@ namespace Mon
 		int cols;
 		// NOTE(ck): Can add offsets for this?
 		// support only using part of the texture atlas?
-
+		AssetTile tiles[256];
 	};
 
 	struct Mesh
@@ -106,7 +117,7 @@ namespace Mon
 
 	void InitImage(Image* image, const char* file, bool flip = true);
 	void FreeImage(Image* image);
-	void InitTextureAsset(TextureAsset* asset, MonGL::TextureType type, bool pixelArt, int imageIndex);
+	void InitTextureAsset(TextureAsset* asset, std::string name, MonGL::TextureType type, bool pixelArt, int imageIndex);
 	void InitTextureAtlas(TextureAtlas* atlas, int assetIndex, int atlasSize, int tileSize);
 
 	// global struct for accessing assets
@@ -203,6 +214,16 @@ namespace Mon
 			a = &assets->atlases[index];
 		}
 		return a;
+	}
+
+	static AssetTile* GetTileAsset(Assets* assets, unsigned int atlasIndex, unsigned int tileIndex)
+	{
+		AssetTile* tile = 0;
+		if ((atlasIndex > 0) && (atlasIndex <ArrayCount(assets->atlases)))
+		{
+			tile = &assets->atlases[atlasIndex].tiles[tileIndex];
+		}
+		return tile;
 	}
 
 	void InitAssets(Assets* assets);

@@ -8,13 +8,16 @@ namespace MonGL
 	// can have a getter method that retrieves the globalDrawCalls from here
 	int globalDrawCalls = 0;
 
-	void LoadTexture(Texture* texture, TextureType type, bool pixelArtTexture, Image* image)
+	// TODO(ck): Remove std::string
+	void LoadTexture(std::string name, Texture* texture, TextureType type, bool pixelArtTexture, Image* image)
 	{
-		LoadTextureFile(texture, image, type, true, pixelArtTexture);
+		LoadTextureFile(name, texture, image, type, true, pixelArtTexture);
 	}
 
-	void LoadTextureFile(Texture* texture, Image* image, TextureType type, bool linearFilter, bool pixelArtTexture)
+	// TODO(ck): Remove std::string
+	void LoadTextureFile(std::string name, Texture* texture, Image* image, TextureType type, bool linearFilter, bool pixelArtTexture)
 	{
+		texture->name = name;
 		texture->type = type;
 		// TODO(CK): Clean up
 		// set wrap and filter here for now same with internal formats
@@ -255,7 +258,10 @@ namespace MonGL
 			TextureAsset* asset = Mon::GetTextureAsset(g_Assets, i);
 			AddTexture(gl);
 			MonGL::Texture* t = GetTexture(gl, i);
-			LoadTexture(t, asset->type, asset->isPixelArt, GetImage(g_Assets, asset->imageIndex));
+			//std::string name = std::string(asset->name);
+			
+			// TODO(ck): remove std::string
+			LoadTexture(asset->name, t, asset->type, asset->isPixelArt, GetImage(g_Assets, asset->imageIndex));
 		}
 
 		// TODO(ck): IMPORTANT(ck): FIX THIS 
@@ -282,6 +288,11 @@ namespace MonGL
 		gl->lights[index].diffuse = v3(1.0f);
 		gl->lights[index].specular = v3(1.0f);
 		gl->lights[index].attachedToEntity = false;
+
+
+		// Init batch TODO(ck): Temp
+		InitBatch(gl);
+
 
 		// Frame buffer
 		int screenWidth = 1440;
@@ -382,6 +393,8 @@ namespace MonGL
 		const int quadCount = 2000;
 		const int maxVertices = quadCount * 4;
 		const int indicesLength = quadCount * 6;
+
+
 
 		// TODO(ck): MEMORY 
 		//batch = new BatchData();
@@ -857,12 +870,47 @@ namespace MonGL
 
 
 		// init batch mesh
+		gl->batch = {};
 
+		gl->batch.indices = new uint32_t[indicesLength];
+		int offset = 0;
+		for (int i = 0; i < indicesLength; i += 6)
+		{
+			gl->batch.indices[i + 0] = 0 + offset;
+			gl->batch.indices[i + 1] = 1 + offset;
+			gl->batch.indices[i + 2] = 2 + offset;
+			
+			gl->batch.indices[i + 3] = 2 + offset;
+			gl->batch.indices[i + 4] = 3 + offset;
+			gl->batch.indices[i + 5] = 0 + offset;
 
+			offset += 4;
+		}
+
+		glGenVertexArrays(1, &gl->batch.VAO);
+		glBindVertexArray(gl->batch.VAO);
+
+		glGenBuffers(1, &gl->batch.VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, gl->batch.VBO);
+		glBufferData(GL_ARRAY_BUFFER, maxVertices * sizeof(Vertex3D), nullptr, GL_DYNAMIC_DRAW);
+		
+		glGenBuffers(1, &gl->batch.IBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl->batch.IBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesLength * sizeof(gl->batch.IBO), gl->batch.indices, GL_DYNAMIC_DRAW);
+
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, position));
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, normal));
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, texCoords));
+
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
 
-	void FillBatch()
+	void FillBatch(OpenGL* gl)
 	{
 		float textureSheetSize = 1;
 		float tileOffsetX = 1;
@@ -871,7 +919,7 @@ namespace MonGL
 
 		float tilePosX = 1;
 		float tilePosY = 1;
-		float vertSize = 1.0f; // <--- i think this is local pos
+		float vertSize = 1.0f; 
 
 		// Texture coords
 		v2 topRight = v2(((tileOffsetX + 1) * tileSize) / textureSheetSize,
@@ -887,31 +935,6 @@ namespace MonGL
 						   (tileOffsetY * tileSize) / textureSheetSize);
 
 
-#if 0
-		Vertex vec0 = {
-			v3(x * tileSize, y * tileSize, 0.0f),
-			v3(1.0f, 0.0f, 0.0f),
-			bottomLeft
-		};
-
-		Vertex vec1 = {
-			v3((x + vertSize) * tileSize, y * tileSize, 0.0f),
-			v3(0.0f, 1.0f, 0.0f),
-			bottomRight
-		};
-
-		Vertex vec2 = {
-			v3((x + vertSize) * tileSize, (y + vertSize) * tileSize, 0.0f),
-			v3(0.0f, 0.0f, 1.0f),
-			topRight
-		};
-
-		Vertex vec3 = {
-			v3(x * tileSize, (y + vertSize) * tileSize, 0.0f),
-			v3(1.0f, 1.0f, 0.0f),
-			topLeft
-		};
-#else
 
 		Vertex3D vec0 = {
 			v3(tilePosX, tilePosY, 0.0f),
@@ -936,7 +959,6 @@ namespace MonGL
 			v3(1.0f, 1.0f, 1.0f),
 			topLeft
 		};
-#endif
 
 		//usedIndices += 6;
 		//tileVertices.push_back(vec0);
@@ -1101,9 +1123,12 @@ namespace MonGL
 	/// 2D
 	///
 
-	BatchData* batch;
+	BatchData* tilemapBatch;
+	BatchData* spriteBatch;
 	std::vector<Vertex> tileVertices;
-	int usedIndices = 0;
+	std::vector<Vertex> spriteVertices;
+	int usedTileIndices = 0;
+	int usedSpriteIndices = 0;
 
 
 	void InitRenderer2D(OpenGL* gl)
@@ -1162,30 +1187,50 @@ namespace MonGL
 		MonGL::Texture* t15 = GetTexture(gl, 15);
 		AddTexture(gl);
 		MonGL::Texture* t16 = GetTexture(gl, 16);
+		AddTexture(gl);
+		MonGL::Texture* t17 = GetTexture(gl, 17);
 
 		int shaderID = gl->program.handle;
-		LoadTexture(t1, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 1));
-		LoadTexture(t2, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 2));
-		LoadTexture(t3, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 3));
-		LoadTexture(t4, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 4));
-		LoadTexture(t5, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 5));
-		LoadTexture(t6, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 6));
-		LoadTexture(t7, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 7));
-		LoadTexture(t8, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 8));
-		LoadTexture(t9, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 9));
-		LoadTexture(t10, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 10));
-		LoadTexture(t11, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 11));
-		LoadTexture(t12, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 12));
-		LoadTexture(t13, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 13));
-		LoadTexture(t14, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 14));
-		LoadTexture(t15, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 15));
-		LoadTexture(t16, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 18));
+		LoadTexture((char*)"temp1", t1, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 1));
+		LoadTexture((char*)"temp2", t2, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 2));
+		LoadTexture((char*)"temp3", t3, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 3));
+		LoadTexture((char*)"temp4", t4, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 4));
+		LoadTexture((char*)"temp5", t5, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 5));
+		LoadTexture((char*)"temp6", t6, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 6));
+		LoadTexture((char*)"temp7", t7, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 7));
+		LoadTexture((char*)"temp8", t8, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 8));
+		LoadTexture((char*)"temp9", t9, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 9));
+		LoadTexture((char*)"temp10", t10, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 10));
+		LoadTexture((char*)"temp11", t11, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 11));
+		LoadTexture((char*)"temp12", t12, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 12));
+		LoadTexture((char*)"temp13", t13, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 13));
+		LoadTexture((char*)"temp14", t14, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 14));
+		LoadTexture((char*)"temp15", t15, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 15));
+		LoadTexture((char*)"temp16", t16, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 18));
+		
+		// Texture Atlas for sprites
+		//LoadTexture(t17, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 31));
+		LoadTextureFile((char*)"sprite_atlas", t17, GetImage(g_Assets, 31), TextureType::Diffuse, false, true);
 
+		spriteBatch = new BatchData();
+		InitBatch(spriteBatch, 10);
+		
+		// Get textures loading from file like 3D
+		// NOTE(ck): first index loaded
+		//AddTexture(gl);
+		//unsigned int assetCount = g_Assets->textureAssetCount;
+		//for (unsigned int i = 1; i < assetCount; ++i)
+		//{
+		//	TextureAsset* asset = Mon::GetTextureAsset(g_Assets, i);
+		//	AddTexture(gl);
+		//	MonGL::Texture* t = GetTexture(gl, i);
+		//	LoadTexture(t, asset->type, asset->isPixelArt, GetImage(g_Assets, asset->imageIndex));
+		//}
 	}
 
 	void InitOpenGLBatchMesh(BatchData* data)
 	{
-		int usedVertices = 1;
+		int usedVertices = 0;
 		const int quadCount = 2000;
 		const int maxVertices = quadCount * 4;
 		const int indicesLength = quadCount * 6;
@@ -1322,36 +1367,42 @@ namespace MonGL
 	void InitTileMap(int tileAmount)
 	{		 
 		// TODO(ck): MEMORY - TEST 
-		batch = new BatchData();
+		tilemapBatch = new BatchData();
 		// These will be figured out after looping our tilemap and pushing quads
 		// TODO(ck): Need to be able to choose amount of vertices and indices
-		batch->quadCount = 4096;
-		batch->maxVertices = batch->quadCount * 4;
-		batch->indicesLength = batch->quadCount * 6;
+		tilemapBatch->quadCount = 4096;
+		tilemapBatch->maxVertices = tilemapBatch->quadCount * 4;
+		tilemapBatch->indicesLength = tilemapBatch->quadCount * 6;
 
 		// TODO(ck): Memory management
-		batch->indices = new uint32_t[batch->indicesLength];
+		// Also we have the vertices so we can init an array vertices here
+		// dont need to use it and clear it??? or can i have a method to reset
+		// a container?
+		
+		tilemapBatch->indices = new uint32_t[tilemapBatch->indicesLength];
 		int offset = 0;
-		for (int i = 0; i < batch->indicesLength; i += 6)
+		for (int i = 0; i < tilemapBatch->indicesLength; i += 6)
 		{
-			batch->indices[i + 0] = 0 + offset;
-			batch->indices[i + 1] = 1 + offset;
-			batch->indices[i + 2] = 2 + offset;
+			tilemapBatch->indices[i + 0] = 0 + offset;
+			tilemapBatch->indices[i + 1] = 1 + offset;
+			tilemapBatch->indices[i + 2] = 2 + offset;
 
-			batch->indices[i + 3] = 2 + offset;
-			batch->indices[i + 4] = 3 + offset;
-			batch->indices[i + 5] = 0 + offset;
+			tilemapBatch->indices[i + 3] = 2 + offset;
+			tilemapBatch->indices[i + 4] = 3 + offset;
+			tilemapBatch->indices[i + 5] = 0 + offset;
 
 			offset += 4;
 		}
 		
-		InitOpenGLBatchMesh(batch);
+		InitOpenGLBatchMesh(tilemapBatch);
 	};
 
-	void InitBatch(int tileAmount)
+	void InitBatch(BatchData* batch, int tileAmount)
 	{
 		// TODO(ck): MEMORY - TEST 
-		batch = new BatchData();
+		// Initialize outside of method?
+		//batch = new BatchData();
+		
 		// These will be figured out after looping our tilemap and pushing quads
 		// TODO(ck): Need to be able to choose amount of vertices and indices
 		batch->quadCount = 4096;
@@ -1383,6 +1434,11 @@ namespace MonGL
 		float sheetSize = 256.0f;
 
 		// Texture coords
+		// These are the same every time just put them in the atlas??? 
+		// or is there a way to calculate this easier?
+		// 
+		// TODO(ck): Only recompute for animated sheets (subtextures)
+		// subtexture dynamic uvs
 		v2 topRight = v2(((tileOffsetX + 1) * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize);
 		v2 topLeft = v2((tileOffsetX * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize);		
 		v2 bottomRight = v2(((tileOffsetX + 1) * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize);
@@ -1473,9 +1529,9 @@ namespace MonGL
 		
 		// STUDY(ck): Transform to view space? pixel to ndc?
 		// this works!
-		//vec0.position.x = vec0.position.x / 480;
+		//vec0.position.x = vec0.position.x / 480; // screen width
 		//vec0.position.x = vec0.position.x * 2 - 1;
-		//vec0.position.y = vec0.position.y / 270;
+		//vec0.position.y = vec0.position.y / 270; // screen height
 		//vec0.position.y = vec0.position.y * 2 - 1;
 
 		//vec1.position.x = vec1.position.x / 480;
@@ -1494,51 +1550,88 @@ namespace MonGL
 		//vec3.position.y = vec3.position.y * 2 - 1;
 
 
-		usedIndices += 6;
+		usedTileIndices += 6;
 		tileVertices.push_back(vec0);
 		tileVertices.push_back(vec1);
 		tileVertices.push_back(vec2);
 		tileVertices.push_back(vec3);
 	}
 
+	void FillBatch(float sheetSize, int tileSize, float worldX, float worldY)
+	{
+		int tileOffsetX = 1;
+		int tileOffsetY = 7;
+
+		// avoid truncation
+		v2 topRight = v2(((tileOffsetX + 1) * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize);
+		v2 topLeft = v2((tileOffsetX * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize);
+		v2 bottomRight = v2(((tileOffsetX + 1) * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize);
+		v2 bottomLeft = v2((tileOffsetX * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize);
+
+		int vertSize = 1.0f;
+
+		// tile position
+
+		Vertex v0 = {
+			v3(worldX * tileSize,
+			   worldY * tileSize,
+			   0.0f),
+			v3(1.0f, 0.0f, 0.0f),
+			bottomLeft
+		};
+		Vertex v1 = {
+			v3((worldX + vertSize) * tileSize,
+				worldY * tileSize,
+				0.0f),
+			v3(0.0f, 1.0f, 0.0f),
+			bottomRight
+		};
+		Vertex v2 = {
+			v3((worldX + vertSize) * tileSize,
+				(worldY + vertSize) * tileSize,
+				0.0f),
+			v3(0.0f, 0.0f, 1.0f),
+			topRight
+		};
+		Vertex vec3 = {
+			v3(worldX * tileSize,
+				(worldY + vertSize) * tileSize,
+				0.0f),
+			v3(1.0f, 1.0f, 0.0f),
+			topLeft
+		};
+
+
+		usedSpriteIndices += 6;
+		spriteVertices.push_back(v0);
+		spriteVertices.push_back(v1);
+		spriteVertices.push_back(v2);
+		spriteVertices.push_back(vec3);
+	}
+
 	void BindVertices()
 	{
-		// 2 extra vertices are needed for degenerate triangles between each strip 
-		//unsigned uNumExtraVertices = ( GL_TRIANGLE_STRIP == _config.uRenderType && _uNumUsedVertices > 0 ? 2 : 0 ); 
-
-		glBindVertexArray(batch->VAO);
-		glBindBuffer(GL_ARRAY_BUFFER, batch->VBO);
-		//if (uNumExtraVertices > 0)
-		//{
-		//	//need to add 2 vertex copies to create degenerate triangles between this strip 
-		//	//and the last strip that was stored in the batch 
-		//	glBufferSubData(GL_ARRAY_BUFFER, _uNumUsedVertices * sizeof(GuiVertex), sizeof(GuiVertex), &_lastVertex);
-		//	glBufferSubData(GL_ARRAY_BUFFER, (_uNumUsedVertices + 1) * sizeof(GuiVertex), sizeof(GuiVertex), &vVertices[0]);
-		//}
-
+		glBindVertexArray(tilemapBatch->VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, tilemapBatch->VBO);
 		// Use glMapBuffer instead, if moving large chunks of data > 1MB 
-		//int _uNumUsedVertices = 400;
-		//int uNumExtraVertices = 2;
-		//glBufferSubData(GL_ARRAY_BUFFER, (_uNumUsedVertices + uNumExtraVertices) * sizeof(Vertex), newTileVertices.size() * sizeof(Vertex), &newTileVertices[0]);
-		
-		// IMPORTANT(ck):
-		// STUDY(ck): The second param (offset) in this was set to verticesLength * sizeof(Vertex). This was causing the vertices the show up as stretched 
-		// and elongated triangles
-		
-		//glBufferSubData(GL_ARRAY_BUFFER, 0, tileVertices.size() * sizeof(Vertex), &tileVertices[0]);
-		// TODO(ck): Should be GL_ELEMENT_ARRAY_BUFFER?
-		glBufferData(GL_ARRAY_BUFFER, tileVertices.size() * sizeof(Vertex), &tileVertices[0], GL_DYNAMIC_DRAW);
-		/*
-			// Upload Buffer
-			gl.BindBuffer(GL_ARRAY_BUFFER, m_vertex_buffer);
-			gl.BufferData(GL_ARRAY_BUFFER, m_vertex_size * count, vertices, GL_DYNAMIC_DRAW);
-		
-		*/
-
+		glBufferSubData(GL_ARRAY_BUFFER, 0, tileVertices.size() * sizeof(Vertex), &tileVertices[0]);
 
 		glBindVertexArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
+		//_uNumUsedVertices += vVertices.size() + uNumExtraVertices;
+		//_lastVertex = vVertices[vVertices.size() - 1];
+	}
+
+	void BindVertices(BatchData* batch)
+	{
+		glBindVertexArray(batch->VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, batch->VBO);
+		// Use glMapBuffer instead, if moving large chunks of data > 1MB 
+		glBufferSubData(GL_ARRAY_BUFFER, 0, spriteVertices.size() * sizeof(Vertex), &spriteVertices[0]);
+
+		glBindVertexArray(0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		//_uNumUsedVertices += vVertices.size() + uNumExtraVertices;
 		//_lastVertex = vVertices[vVertices.size() - 1];
 	}
@@ -1581,21 +1674,43 @@ namespace MonGL
 		glUniform1i(glGetUniformLocation(shader->handle, "image"), 0);
 		glBindTexture(GL_TEXTURE_2D, textureID);
 
-		glBindVertexArray(batch->VAO);
+		glBindVertexArray(tilemapBatch->VAO);
 		// (void*)(index_size * pass.index_start)
 
 		int polygonMode = wireFrame ? GL_LINE : GL_FILL;
 		glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
-		glDrawElements(GL_TRIANGLES, usedIndices, GL_UNSIGNED_INT, (void*)(0));
+		glDrawElements(GL_TRIANGLES, usedTileIndices, GL_UNSIGNED_INT, (void*)(0));
 		glBindVertexArray(0);
 
 		//reset buffer
 		//_uNumUsedVertices = 0;
 		//_config.iPriority = 0;
-		usedIndices = 0;
+		usedTileIndices = 0;
 		tileVertices.clear();
 	}
 
+	void DrawBatch(CommonProgram* shader, unsigned int textureID, bool wireFrame)
+	{
+		BindVertices(spriteBatch);
+
+		v3 pos = {};
+		mat4 model = mat4(1.0f);
+		model = glm::translate(model, pos);
+
+		glUniformMatrix4fv(glGetUniformLocation(shader->handle, "model"), 1, GL_FALSE, glm::value_ptr(model));
+
+		glActiveTexture(GL_TEXTURE0);
+		glUniform1i(glGetUniformLocation(shader->handle, "image"), 0);
+		glBindTexture(GL_TEXTURE_2D, textureID);
+		glBindVertexArray(spriteBatch->VAO);
+
+		glDrawElements(GL_TRIANGLES, usedSpriteIndices, GL_UNSIGNED_INT, (void*)(0));
+		glBindVertexArray(0);
+
+		// reset buffer
+		usedSpriteIndices = 0;
+		spriteVertices.clear();
+	}
 
 	void DrawObject(CommonProgram* shader, RenderData2D* data, v2 cameraPos)
 	{

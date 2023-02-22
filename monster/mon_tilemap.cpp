@@ -50,7 +50,7 @@ namespace Mon
 				texture->wrapT = GL_REPEAT; // TODO(ck): Not sure if necessary
 				texture->filterMin = GL_LINEAR;
 				texture->filterMax = GL_LINEAR*/
-		MonGL::LoadTextureFile(&sheet->texture, img, MonGL::TextureType::Diffuse, false, true);
+		MonGL::LoadTextureFile((char*)"atlas", &sheet->texture, img, MonGL::TextureType::Diffuse, false, true);
 		//MonGL::LoadTexture(&sheet->texture, MonGL::TextureType::Diffuse, true, img);
 		//MonGL::Load2DTextureArrayFile(&sheet->texture, fileName);
 
@@ -70,9 +70,10 @@ namespace Mon
 		sheet->tileCount = 20;
 		sheet->tiles = new Tile[sheet->tileCount];
 
+		AssetTile* tile = GetTileAsset(g_Assets, 1, 36);
 		sheet->tiles[0].id = 0; // top
-		sheet->tiles[0].textureOffsetX = 4;
-		sheet->tiles[0].textureOffsetY = 2;
+		sheet->tiles[0].textureOffsetX = tile->x;
+		sheet->tiles[0].textureOffsetY = tile->y;
 
 		sheet->tiles[1].id = 1; // left
 		sheet->tiles[1].textureOffsetX = 0;
@@ -127,9 +128,10 @@ namespace Mon
 		sheet->tiles[13].textureOffsetX = 6;
 		sheet->tiles[13].textureOffsetY = 11;
 
+		AssetTile* tltree = GetTileAsset(g_Assets, 1, 215);
 		sheet->tiles[14].id = 14; // topleft tree
-		sheet->tiles[14].textureOffsetX = 7;
-		sheet->tiles[14].textureOffsetY = 13;
+		sheet->tiles[14].textureOffsetX = tltree->x;
+		sheet->tiles[14].textureOffsetY = tltree->y;
 
 		sheet->tiles[15].id = 15; // topright tree
 		sheet->tiles[15].textureOffsetX = 8;
@@ -241,9 +243,9 @@ namespace Mon
 			{4, 8, 8, 8, 8,  8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,  8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5},
 		};
 		
-		for (int y = 0; y < MAP_SIZE; ++y)
+		for (int y = 0; y < MAP_SIZE - 1; ++y)
 		{
-			for (int x = 0; x < MAP_SIZE; ++x)
+			for (int x = 0; x < MAP_SIZE - 1; ++x)
 			{
 				if (testmap[y][x] != 99)
 				{

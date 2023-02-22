@@ -322,7 +322,7 @@ namespace Mon
 
 
 		//
-		// ENTITIES
+		// 3D ENTITIES
 		//
 		for (unsigned int i = 1; i < state->world->entityCount; ++i)
 		{
@@ -334,6 +334,12 @@ namespace Mon
 
 			GetGridPosition(e.rb.worldPos);
 		}
+
+		// 
+		// SPRITE BATCH
+		//
+
+
 
 		//
 		// DEBUG TOOLS

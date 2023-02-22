@@ -120,6 +120,7 @@ namespace MonGL
 		unsigned int IBO;
 
 		Vertex3D* vertices;
+		std::vector<Vertex3D> verticies_;
 		unsigned int* indices;
 
 		int verticeCount;
@@ -152,6 +153,7 @@ namespace MonGL
 
 	struct OpenGL
 	{
+		Batch batch;
 		Light lights[32];
 		Texture textures[32]; // These use images from the asset pipeline
 		int lightCount;
@@ -214,7 +216,9 @@ namespace MonGL
 	//
 	// Renderer 
 	//
-	void LoadTexture(Texture* texture, TextureType type, bool pixelArtTexture, Image* image);
+	
+	// TODO(ck): Remove std::string
+	void LoadTexture(std::string name, Texture* texture, TextureType type, bool pixelArtTexture, Image* image);
 	void InitRenderer(OpenGL* gl);
 	void UploadOpenGLMesh(Mesh* mesh);
 	void UploadOpenGLMesh2D(Mesh2D* mesh);
@@ -223,7 +227,8 @@ namespace MonGL
 	void ViewPort(Rect* port);
 
 	void LoadImpFile(RenderData* data);
-	void LoadTextureFile(Texture* texture, Image* image, TextureType type, bool linearFilter = false, bool pixelArtTexture = false);
+	// TODO(ck): Remove std::string
+	void LoadTextureFile(std::string name, Texture* texture, Image* image, TextureType type, bool linearFilter = false, bool pixelArtTexture = false);
 
 	void UseProgram(CommonProgram* program);
 	void UseProgram(CommonProgram* program, RenderSetup setup);
@@ -235,6 +240,8 @@ namespace MonGL
 	void DrawLine(OpenGL* gl, Line* data);
 
 	// Render data 
+	void InitBatch(OpenGL* gl);
+	void FillBatch(OpenGL* gl);
 	void InitInstancedData(InstancedData* data, int amount);
 	void SetModel(RenderData* data);
 	void SetBoundingBox(RenderData* data);
@@ -247,6 +254,7 @@ namespace MonGL
 	void DrawTerrain(OpenGL* gl, RenderData* data, Camera* camera);
 	
 	void InitBatch(OpenGL* gl);
+	void FillBatch(OpenGL* gl);
 
 	void EndRender();
 
@@ -308,13 +316,16 @@ namespace MonGL
 	
 	void InitTileMap(int tileAmount); // This just inits the batch the same way InitBatch does
 	void InitBatch(int tileAmount);
+	void InitBatch(BatchData* batch, int tileAmount);
 	void FillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize, v2 cameraPos);
+	void FillBatch(float sheetSize, int tileSize, float worldX, float worldY);
 	void BindVertices();
+	void BindVertices(BatchData* batch);
 	
 	void DrawObject(CommonProgram* shader, RenderData2D* data, v2 cameraPos);
 	void DrawMap(CommonProgram* shader, v2 cameraPos, unsigned int textureID, bool wireFrame);
 	void DrawMap(CommonProgram* shader, unsigned int textureID, int batchThing);
-
+	void DrawBatch(CommonProgram* shader, unsigned int textureID, bool wireFrame);
 
 }
 #endif // MON_GL_RENDER_H
