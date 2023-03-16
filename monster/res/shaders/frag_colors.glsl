@@ -63,6 +63,8 @@ void main()
         if (pixelTexture)
         {
             // Smooth the texture
+            // https://handmade.network/forums/t/7883-pixel_art_fragment_shader
+            // Make sure texture has bilinear sampling set, and does not have mipmaps
             vec2 textureSize = textureSize(texture_diffuse1, 0);
             vec2 pixel = fs_in.TexCoords * textureSize;
             vec2 duDv = fwidth(pixel);

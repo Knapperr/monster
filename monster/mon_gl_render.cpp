@@ -28,7 +28,7 @@ namespace MonGL
 			texture->filterMin = GL_NEAREST;
 			texture->filterMax = GL_NEAREST;
 
-			// Linear for 3D and Texture Atlas
+			// Linear for 3D
 			if (linearFilter)
 			{
 				texture->wrapS = GL_REPEAT; // TODO(ck): Not sure if necessary
@@ -610,6 +610,7 @@ namespace MonGL
 		glActiveTexture(GL_TEXTURE0);
 		glUniform1i(program->textureDiffuse1, 0);
 		glBindTexture(GL_TEXTURE_2D, textureID);
+		// bind texturenormal1 and texturenormal2
 
 		//glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
 		glUniform1i(program->collider, false);
@@ -1451,25 +1452,6 @@ namespace MonGL
 
 #if 1
 
-
-		/*
-		REMEMBER THIS IS A RENDERING CONCEPT I THINK
-		we dont go by these positions we go by x and y of the tilemap
-		we dont want to be displaying draw coordinates in the gui as 
-		entity positions. i think if we display x and y of entity not after
-		we do these multiplications 
-		its making the vertices 0= 0,0 then the next one is going 16 to 32 
-		i think we want this 16pixels=1m so 1 vertice should be 16pixels tile size?
-		
-		it seems to be rendering nicest this way i think?
-		the other way is just making each vertice  +1.0f and -1.0f which
-		is maybe what we dont want here we want to manipulate this vert to 
-		make it the correct tile size?
-		maybe though we can just do x + size we might not need to multiplcation
-		look at blah.cpp
-		i think we do need to just do 
-			IMPORTANT(ck): x + tileSize 
-		*/
 		Vertex vec0 = {
 			v3(x * tileSize, 
 			   y * tileSize, 
@@ -1527,29 +1509,6 @@ namespace MonGL
 		};
 #endif
 		
-		// STUDY(ck): Transform to view space? pixel to ndc?
-		// this works!
-		//vec0.position.x = vec0.position.x / 480; // screen width
-		//vec0.position.x = vec0.position.x * 2 - 1;
-		//vec0.position.y = vec0.position.y / 270; // screen height
-		//vec0.position.y = vec0.position.y * 2 - 1;
-
-		//vec1.position.x = vec1.position.x / 480;
-		//vec1.position.x = vec1.position.x * 2 - 1;
-		//vec1.position.y = vec1.position.y / 270;
-		//vec1.position.y = vec1.position.y * 2 - 1;
-
-		//vec2.position.x = vec2.position.x / 480;
-		//vec2.position.x = vec2.position.x * 2 - 1;
-		//vec2.position.y = vec2.position.y / 270;
-		//vec2.position.y = vec2.position.y * 2 - 1;
-
-		//vec3.position.x = vec3.position.x / 480;
-		//vec3.position.x = vec3.position.x * 2 - 1;
-		//vec3.position.y = vec3.position.y / 270;
-		//vec3.position.y = vec3.position.y * 2 - 1;
-
-
 		usedTileIndices += 6;
 		tileVertices.push_back(vec0);
 		tileVertices.push_back(vec1);

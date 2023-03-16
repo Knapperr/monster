@@ -52,8 +52,8 @@ namespace Mon {
 
 		int screenWidth = 1440;
 		int screenHeight = 900;
-		int portWidth = 960;
-		int portHeight = 540;
+		int portWidth = 960; // 960
+		int portHeight = 540; // 540
 		game->config = new MonGL::Config();
 
 		// TODO(ck): View Port in Middle of screen
@@ -71,7 +71,6 @@ namespace Mon {
 		//game->camera = OrthoCamera(player->pos, &game->config->viewPort);
 		
 		game->state = State::Play;
-
 		return true;
 	}
 
@@ -93,46 +92,27 @@ namespace Mon {
 			}
 			else
 			{
-
 				if (input->up.endedDown)
 				{
-#define USE_VELOCITY
-#ifdef USE_VELOCITY
 					velocity.y = 1.0f;
-#else
-					p->pos.y += 1.0f * p->speed * dt;
-#endif
 				}
 				if (input->down.endedDown)
 				{
-#ifdef USE_VELOCITY
 					velocity.y = -1.0f;
-#else
-					p->pos.y -= 1.0f * p->speed * dt;
-#endif
 				}
 				if (input->left.endedDown)
 				{
-#ifdef USE_VELOCITY
 					velocity.x = -1.0f;
-#else
-					p->pos.x -= 1.0f * p->speed * dt;
-#endif
 				}
 				if (input->right.endedDown)
 				{
-#ifdef USE_VELOCITY
 					velocity.x = 1.0f;
-#else
-					p->pos.x += 1.0f * p->speed * dt;
-#endif
 				}
 				
 			}
-#ifdef USE_VELOCITY
 			Mon::MovePlayer(game->world->map, p, &velocity, dt);
 			p->sprite.pos = p->pos;
-#endif
+
 			// TODO(ck): link sprite position to camera...  
 			// https://www.reddit.com/r/gamedev/comments/7cnqpg/lerping_camera_position_causes_jitters_as_it/
 			// update sprite position 
