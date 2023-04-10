@@ -30,6 +30,20 @@ namespace Mon {
 		Play
 	};
 
+	struct DebugIcon 
+	{
+		v3 pos;
+		v3 color;
+		v3 textureOffset;
+	};
+
+	struct DebugIcons
+	{
+		const char* layerName;
+		int batchIndex;
+		DebugIcon icons[128];
+	};
+
 	struct Game2D
 	{
 		World2D* world;

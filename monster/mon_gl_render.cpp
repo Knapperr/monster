@@ -1155,6 +1155,8 @@ namespace MonGL
 
 		// TODO(ck): Need a texture atlas rather than loading all of these
 		// textures for the entities
+		// index 0 
+		AddTexture(gl);
 
 		AddTexture(gl);
 		MonGL::Texture* t1 = GetTexture(gl, 1);
@@ -1188,8 +1190,6 @@ namespace MonGL
 		MonGL::Texture* t15 = GetTexture(gl, 15);
 		AddTexture(gl);
 		MonGL::Texture* t16 = GetTexture(gl, 16);
-		AddTexture(gl);
-		MonGL::Texture* t17 = GetTexture(gl, 17);
 
 		int shaderID = gl->program.handle;
 		LoadTexture((char*)"temp1", t1, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 1));
@@ -1211,22 +1211,38 @@ namespace MonGL
 		
 		// Texture Atlas for sprites
 		//LoadTexture(t17, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 31));
-		LoadTextureFile((char*)"sprite_atlas", t17, GetImage(g_Assets, 31), TextureType::Diffuse, false, true);
+		AddTexture(gl);
+		MonGL::Texture* t17 = GetTexture(gl, 17);
+		AddTexture(gl);
+		MonGL::Texture* t18 = GetTexture(gl, 18);
+		LoadTextureFile((char*)"sprite_atlas", t17, GetImage(g_Assets, 31), TextureType::Diffuse, true, true);
+		LoadTextureFile((char*)"debug_icons", t18, GetImage(g_Assets, 32), TextureType::Diffuse, true, true);
 
+		// Get textures loading from file like 3D
+// NOTE(ck): first index loaded
+//AddTexture(gl);
+//unsigned int assetCount = g_Assets->textureAssetCount;
+//for (unsigned int i = 1; i < assetCount; ++i)
+//{
+//	TextureAsset* asset = Mon::GetTextureAsset(g_Assets, i);
+//	AddTexture(gl);
+//	MonGL::Texture* t = GetTexture(gl, i);
+//	LoadTexture(t, asset->type, asset->isPixelArt, GetImage(g_Assets, asset->imageIndex));
+//}
+
+		
+
+		// TODO(ck): Removes spriteBatch
 		spriteBatch = new BatchData();
 		InitBatch(spriteBatch, 10);
 		
-		// Get textures loading from file like 3D
-		// NOTE(ck): first index loaded
-		//AddTexture(gl);
-		//unsigned int assetCount = g_Assets->textureAssetCount;
-		//for (unsigned int i = 1; i < assetCount; ++i)
-		//{
-		//	TextureAsset* asset = Mon::GetTextureAsset(g_Assets, i);
-		//	AddTexture(gl);
-		//	MonGL::Texture* t = GetTexture(gl, i);
-		//	LoadTexture(t, asset->type, asset->isPixelArt, GetImage(g_Assets, asset->imageIndex));
-		//}
+		// null at 0 index
+		AddBatch(gl);
+		
+		int batchIndex = AddBatch(gl);
+		InitBatch(gl, batchIndex, 1000);
+		batchIndex = AddBatch(gl);
+		InitBatch(gl, batchIndex, 1000);
 	}
 
 	void InitOpenGLBatchMesh(BatchData* data)
@@ -1430,6 +1446,36 @@ namespace MonGL
 
 	}
 
+	void InitBatch(OpenGL* gl, int batchIndex, int tileAmount)
+	{
+		BatchData* batch = GetBatch(gl, batchIndex);
+
+
+		// These will be figured out after looping our tilemap and pushing quads
+		// TODO(ck): Need to be able to choose amount of vertices and indices
+		batch->quadCount = 4096;
+		batch->maxVertices = batch->quadCount * 4;
+		batch->indicesLength = batch->quadCount * 6;
+
+		// TODO(ck): Memory management
+		batch->indices = new uint32_t[batch->indicesLength];
+		int offset = 0;
+		for (int i = 0; i < batch->indicesLength; i += 6)
+		{
+			batch->indices[i + 0] = 0 + offset;
+			batch->indices[i + 1] = 1 + offset;
+			batch->indices[i + 2] = 2 + offset;
+
+			batch->indices[i + 3] = 2 + offset;
+			batch->indices[i + 4] = 3 + offset;
+			batch->indices[i + 5] = 0 + offset;
+
+			offset += 4;
+		}
+
+		InitOpenGLBatchMesh(batch);
+	}
+
 	void FillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize, v2 cameraPos)
 	{		
 		float sheetSize = 256.0f;
@@ -1440,75 +1486,42 @@ namespace MonGL
 		// 
 		// TODO(ck): Only recompute for animated sheets (subtextures)
 		// subtexture dynamic uvs
-		v2 topRight = v2(((tileOffsetX + 1) * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize);
-		v2 topLeft = v2((tileOffsetX * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize);		
-		v2 bottomRight = v2(((tileOffsetX + 1) * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize);
-		v2 bottomLeft = v2((tileOffsetX * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize);
+		v2 tr = v2(((tileOffsetX + 1) * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize);
+		v2 tl = v2((tileOffsetX * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize);		
+		v2 br = v2(((tileOffsetX + 1) * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize);
+		v2 bl = v2((tileOffsetX * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize);
+		
+		// Tile to world position
+		float worldX = (tileXPos) * 16.0f;
+		float worldY = (tileYPos) * 16.0f;
+		float x = worldX;
+		float y = worldY;
 
-		float x = tileXPos;
-		float y = tileYPos;
-		//tileSize = 1.0f;
-		float vertSize = 1.0f;
-
-#if 1
-
-		Vertex vec0 = {
-			v3(x * tileSize, 
-			   y * tileSize, 
-			   0.0f),
-			v3(1.0f, 0.0f, 0.0f),
-			bottomLeft
-		};
-
-		Vertex vec1 = {
-			v3((x + vertSize) * tileSize, 
-				y * tileSize,
-				0.0f),
-			v3(0.0f, 1.0f, 0.0f),
-			bottomRight
-		};
-
-		Vertex vec2 = {
-			v3((x + vertSize) * tileSize,
-				(y + vertSize) * tileSize,
-				0.0f),
-			v3(0.0f, 0.0f, 1.0f),
-			topRight
-		};
-
-		Vertex vec3 = {
-			v3(x * tileSize,
-				(y + vertSize) * tileSize, 
-				0.0f),
-			v3(1.0f, 1.0f, 0.0f),
-			topLeft
-		};
-#else
+		float size = 16.0f;
 		Vertex vec0 = {
 			v3(x, y, 0.0f),
 			v3(1.0f, 0.0f, 0.0f),
-			bottomLeft
+			bl
 		};
 
 		Vertex vec1 = {
-			v3((x + vertSize), y, 0.0f),
+			v3((x + size), y, 0.0f),
 			v3(0.0f, 1.0f, 0.0f),
-			bottomRight
+			br
 		};
 
 		Vertex vec2 = {
-			v3((x + vertSize), (y + vertSize), 0.0f),
+			v3((x + size), (y + size), 0.0f),
 			v3(0.0f, 0.0f, 1.0f),
-			topRight
+			tr
 		};
 
 		Vertex vec3 = {
-			v3(x, (y + vertSize), 0.0f),
+			v3(x, (y + size), 0.0f),
 			v3(1.0f, 1.0f, 0.0f),
-			topLeft
+			tl
 		};
-#endif
-		
+
 		usedTileIndices += 6;
 		tileVertices.push_back(vec0);
 		tileVertices.push_back(vec1);
@@ -1516,55 +1529,86 @@ namespace MonGL
 		tileVertices.push_back(vec3);
 	}
 
-	void FillBatch(float sheetSize, int tileSize, float worldX, float worldY)
+	void FillBatch(float sheetSize, int tileSize, float worldX, float worldY, v2 textureOffset, v2 cameraPos)
 	{
-		int tileOffsetX = 1;
-		int tileOffsetY = 7;
+		// TODO(ck): Pass Point or integer Rect no floating points
+		int tileOffsetX = (int)textureOffset.x;
+		int tileOffsetY = (int)textureOffset.y;
 
-		// avoid truncation
 		v2 topRight = v2(((tileOffsetX + 1) * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize);
 		v2 topLeft = v2((tileOffsetX * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize);
 		v2 bottomRight = v2(((tileOffsetX + 1) * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize);
 		v2 bottomLeft = v2((tileOffsetX * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize);
 
-		int vertSize = 1.0f;
+#if 0
+		// top left
+		float u = tileOffsetX / sheetSize;
+		float v = tileOffsetY / sheetSize;
+		// bottom right
+		float u2 = (tileOffsetX + tileSize) / sheetSize;
+		float v2_ = (tileOffsetY + tileSize) / sheetSize;
 
-		// tile position
+		v4 uvRect = v4(u, v, u2 - u, v2_ - v);
+		float left = uvRect.x;
+		float right = uvRect.x + uvRect.z;
+		float top = uvRect.y;
+		float bottom = uvRect.y + uvRect.w;
 
-		Vertex v0 = {
-			v3(worldX * tileSize,
-			   worldY * tileSize,
+		v2 tr = v2(right, top);
+		v2 tl = v2(left, top);
+		v2 br = v2(right, bottom);
+		v2 bl = v2(left, bottom);
+#endif
+	
+	float size = 32.0f;
+
+	// tile coords to world coords
+	worldX *= 16.0f;
+	worldY *= 16.0f;
+	float x = worldX;
+	float y = worldY;
+	
+	// world to screen position
+	//v2 cameraCoords = v2(worldX, worldY) - cameraPos;
+	//float screenW = 480.0f;
+	//float screenH = 270.0f;
+	//float x = cameraCoords.x + screenW / 2.0f;
+	//float y = cameraCoords.y + screenH / 2.0f;
+
+	
+	Vertex vec0 = {
+			v3(x,
+			   y,
 			   0.0f),
 			v3(1.0f, 0.0f, 0.0f),
 			bottomLeft
 		};
-		Vertex v1 = {
-			v3((worldX + vertSize) * tileSize,
-				worldY * tileSize,
+		Vertex vec1 = {
+			v3((x+ size),
+				y,
 				0.0f),
 			v3(0.0f, 1.0f, 0.0f),
 			bottomRight
 		};
-		Vertex v2 = {
-			v3((worldX + vertSize) * tileSize,
-				(worldY + vertSize) * tileSize,
+		Vertex vec2 = {
+			v3((x + size),
+				(y + size),
 				0.0f),
 			v3(0.0f, 0.0f, 1.0f),
 			topRight
 		};
 		Vertex vec3 = {
-			v3(worldX * tileSize,
-				(worldY + vertSize) * tileSize,
+			v3((x),
+				(y + size),
 				0.0f),
 			v3(1.0f, 1.0f, 0.0f),
 			topLeft
 		};
 
-
 		usedSpriteIndices += 6;
-		spriteVertices.push_back(v0);
-		spriteVertices.push_back(v1);
-		spriteVertices.push_back(v2);
+		spriteVertices.push_back(vec0);
+		spriteVertices.push_back(vec1);
+		spriteVertices.push_back(vec2);
 		spriteVertices.push_back(vec3);
 	}
 

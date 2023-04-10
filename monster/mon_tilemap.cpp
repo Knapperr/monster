@@ -50,7 +50,7 @@ namespace Mon
 				texture->wrapT = GL_REPEAT; // TODO(ck): Not sure if necessary
 				texture->filterMin = GL_LINEAR;
 				texture->filterMax = GL_LINEAR*/
-		MonGL::LoadTextureFile((char*)"atlas", &sheet->texture, img, MonGL::TextureType::Diffuse, false, true);
+		MonGL::LoadTextureFile((char*)"atlas", &sheet->texture, img, MonGL::TextureType::Diffuse, true, true);
 		//MonGL::LoadTexture(&sheet->texture, MonGL::TextureType::Diffuse, true, img);
 		//MonGL::Load2DTextureArrayFile(&sheet->texture, fileName);
 

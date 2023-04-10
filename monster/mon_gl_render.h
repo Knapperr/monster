@@ -52,7 +52,7 @@ namespace MonGL
 		v3 tangent;
 		v3 bitangent;
 	};
-	
+
 	// RenderSetup is for the common attributes that are shared among these are found in CommonProgram
 	struct RenderSetup
 	{
@@ -62,7 +62,7 @@ namespace MonGL
 		mat4 projection;
 	};
 
-	struct Material 
+	struct Material
 	{
 		v3 ambient;
 		v3 diffuse;
@@ -144,31 +144,11 @@ namespace MonGL
 	{
 		unsigned int handle;
 	};
-	
+
 	struct Cubemap
 	{
 		unsigned int VAO;
 		unsigned int VBO;
-	};
-
-	struct OpenGL
-	{
-		Batch batch;
-		Light lights[32];
-		Texture textures[32]; // These use images from the asset pipeline
-		int lightCount;
-		int textureCount;
-
-		Cubemap cubemap;
-
-		CommonProgram program;
-		QuadBatchProgram quadProgram;
-		WaterProgram waterProgram;
-		CubemapProgram cubemapProgram;
-
-		// Separate this out from the renderer?
-		FramebufferGL buffer;
-		FramebufferGL textureColorbuffer;
 	};
 
 
@@ -208,6 +188,36 @@ namespace MonGL
 
 		std::vector<Vertex> vertices;
 	};
+
+	//
+	// Main Renderer 
+	//
+	struct OpenGL
+	{
+		// TODO(ck): keep the batches separated for now until
+		// we know that they work properly then we will combine for the grid
+		// and the 
+		Batch batch;
+		Batch gridBatch;
+		Light lights[32];
+		Texture textures[32]; // These use images from the asset pipeline
+		BatchData batches[4];
+		int lightCount;
+		int textureCount;
+		int batchCount;
+
+		Cubemap cubemap;
+
+		CommonProgram program;
+		QuadBatchProgram quadProgram;
+		WaterProgram waterProgram;
+		CubemapProgram cubemapProgram;
+
+		// Separate this out from the renderer?
+		FramebufferGL buffer;
+		FramebufferGL textureColorbuffer;
+	};
+
 
 	// TODO(ck): TODO(ck): Somehow put into game so we can call from gui
 	// can have a getter method that retrieves the globalDrawCalls from here
@@ -299,6 +309,27 @@ namespace MonGL
 		return l;
 	}
 
+	static BatchData* GetBatch(OpenGL* gl, unsigned int index)
+	{
+		MonGL::BatchData* b = 0;
+		if ((index > 0) && (index < ArrayCount(gl->batches)))
+		{
+			b = &gl->batches[index];
+		}
+		return b;
+	}
+
+	static unsigned int AddBatch(OpenGL* gl)
+	{
+		unsigned int index = gl->batchCount++;
+
+		BatchData* batch = &gl->batches[index];
+		batch = {};
+
+		return index;
+	}
+
+
 
 	//
 	// 2D
@@ -317,8 +348,9 @@ namespace MonGL
 	void InitTileMap(int tileAmount); // This just inits the batch the same way InitBatch does
 	void InitBatch(int tileAmount);
 	void InitBatch(BatchData* batch, int tileAmount);
+	void InitBatch(OpenGL* gl, int batchIndex, int tileAmount);
 	void FillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize, v2 cameraPos);
-	void FillBatch(float sheetSize, int tileSize, float worldX, float worldY);
+	void FillBatch(float sheetSize, int tileSize, float worldX, float worldY, v2 textureOffset, v2 cameraPos);
 	void BindVertices();
 	void BindVertices(BatchData* batch);
 	

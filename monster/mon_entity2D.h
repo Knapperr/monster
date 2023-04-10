@@ -17,7 +17,9 @@ namespace Mon
 	struct Entity2D
 	{
 		const char* name; 
-		MonGL::RenderData2D sprite;
+		// TODO(ck): Subtexture
+		// MonGL::SubTexture subTexture;
+
 
 		// TODO(ck): Fix this. We need this position to be in 
 		v2 pos; // currently screen space is used for world position and is sent to render data

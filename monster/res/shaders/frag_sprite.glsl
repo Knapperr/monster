@@ -28,15 +28,36 @@ uv = floor(uv) + vec2(0.5) + clamp((fract(uv) - vec2(0.5) + duv)/duv, 0, 1);
 uv /= size;
 */
 
+
+	// TODO(ck): https://www.shadertoy.com/view/ltBGWc
+	// vec2 textureSize = textureSize(image, 0);
+
+	// vec2 pixel = TexCoord * textureSize;
+	// vec2 fatPixel = floor(pixel)+0.5;
+	// float texelsPerPixel = 16.0;
+	// // subpixel aa algorithm (COMMENT OUT TO COMPARE WITH POINT SAMPLING)
+	// fatPixel += 1 - clamp((1.0 - fract(pixel)) * texelsPerPixel, 0, 1);
+
+	// vec2 coord = fatPixel / textureSize;
+
+	// vec4 tex = texture(image, coord);
+	// FragColor = tex;
+
 	// TODO(ck): new pixel shader
+	// Smooth the texture
+    // https://handmade.network/forums/t/7883-pixel_art_fragment_shader
+    // Make sure texture has bilinear sampling set, and does not have mipmaps
+	
 	vec2 texSize = textureSize(image, 0);
 	vec2 pixel = TexCoord * texSize;
 	vec2 seam = floor(pixel + 0.5);
 	vec2 duDv = fwidth(pixel);
-	pixel = seam + clamp((pixel - seam)/duDv, -0.5, 0.5);
+	pixel = seam + clamp((pixel - seam)/duDv, 0.5, -0.5);
 	vec2 modifiedTextCoordinate = pixel / texSize;
 	vec4 tex = texture(image, modifiedTextCoordinate);
+	
 	FragColor = tex;
+	
 	
 
 	// NOTE(ck): OLD method

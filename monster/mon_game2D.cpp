@@ -18,37 +18,12 @@ namespace Mon {
 
 		*/
 
-
 		InitAssets(g_Assets);
 		MonGL::InitRenderer2D(&game->renderer);
 		
 		// TODO(ck): Memory management - allocate world
 		game->world = new World2D();
 		InitWorld(game->world);
-
-
-		// Set up the shader locations for our objects
-		//int shaderID = game->renderer.program.handle;
-		//glUseProgram(shaderID);
-
-		// TODO(CK): CAMERA
-		// So let's say you want your pixel art scale 2:1
-		// Then your target 1080p. Just take the resolution and divide by 2. Examples
-		// This is for 1920x1080 I am using 1280x720 right now
-		// 2:1 960x540 -- 3:1 640x360 --- 4:! 480x240
-		//float left = 0.0f;
-		//float right = 960.0f;
-		//float bottom = 540.0f;
-		//float top = 0.0f;
-
-		//mat4 projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
-
-		//int imgLoc = glGetUniformLocation(shaderID, "image");
-		//glUniform1i(imgLoc, 0);
-
-		//int projLoc = glGetUniformLocation(shaderID, "projection");
-		//glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
 
 		int screenWidth = 1440;
 		int screenHeight = 900;
@@ -92,26 +67,14 @@ namespace Mon {
 			}
 			else
 			{
-				if (input->up.endedDown)
-				{
-					velocity.y = 1.0f;
-				}
-				if (input->down.endedDown)
-				{
-					velocity.y = -1.0f;
-				}
-				if (input->left.endedDown)
-				{
-					velocity.x = -1.0f;
-				}
-				if (input->right.endedDown)
-				{
-					velocity.x = 1.0f;
-				}
-				
+				if (input->up.endedDown) { velocity.y = 1.0f; }
+				if (input->down.endedDown) { velocity.y = -1.0f; }
+				if (input->left.endedDown) { velocity.x = -1.0f; }
+				if (input->right.endedDown) { velocity.x = 1.0f; }
 			}
+
 			Mon::MovePlayer(game->world->map, p, &velocity, dt);
-			p->sprite.pos = p->pos;
+
 
 			// TODO(ck): link sprite position to camera...  
 			// https://www.reddit.com/r/gamedev/comments/7cnqpg/lerping_camera_position_causes_jitters_as_it/
@@ -124,13 +87,14 @@ namespace Mon {
 			//game->cameras[game->currentCameraIndex].update(&p->pos, dt);
 			Update(&game->cameras[game->currentCameraIndex], &p->pos, dt);
 
-			// TODO(ck):
-			// Fill batch with entities texture coords and positions 
-			for (unsigned int i = 2; i < game->world->entityCount; ++i)
-			{
-				Entity2D* e = &game->world->entities[i];
-				e->sprite.pos = e->pos;
-			}
+			// Update after camera update
+			// Updating sprite information (moved to fill batch... sending tile positions to batcher)
+			//p->sprite.pos = p->pos;
+			//for (unsigned int i = 2; i < game->world->entityCount; ++i)
+			//{
+			//	Entity2D* e = &game->world->entities[i];
+			//	e->sprite.pos = e->pos;
+			//}
 
 		}
 	}
@@ -150,19 +114,19 @@ namespace Mon {
 		mat4 view = ViewMatrix(&game->cameras[game->currentCameraIndex]);
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
-		DrawTileMap(game->world->map, &game->renderer.program, game->world->sheet.texture.id, game->cameras[game->currentCameraIndex].pos);
+		DrawTileMap(game->world->map, &game->renderer.program, game->world->sheet.texture.id, 
+					game->cameras[game->currentCameraIndex].pos);
 
-		Entity2D* p = GetPlayer(game->world);
-		MonGL::FillBatch(256.0f, 32, p->pos.x, p->pos.y);
-		MonGL::Texture* texture = MonGL::GetTexture(&game->renderer, 17);
-		DrawBatch(&game->renderer.program, texture->id, false);
-
-		// TODO(ck): Entities will be added to a batch with their current data and configs
+		v2 textureOffset = v2(1.0f, 7.0f);
 		for (unsigned int i = 1; i < game->world->entityCount; ++i)
 		{
 			Entity2D e = game->world->entities[i];
- 			//MonGL::DrawObject(&game->renderer.program, &e.sprite, game->cameras[game->currentCameraIndex].pos);
+			MonGL::FillBatch(256.0f, 32.0f, e.pos.x, e.pos.y, 
+							 textureOffset,
+							 game->cameras[game->currentCameraIndex].pos);
 		}
+		MonGL::Texture* texture = MonGL::GetTexture(&game->renderer, 17);
+		DrawBatch(&game->renderer.program, texture->id, false);
 	}
 
 	void SetViewPort(MonGL::Config *config, int width, int height)

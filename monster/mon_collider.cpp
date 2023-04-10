@@ -41,8 +41,8 @@ namespace Mon {
 
 	void SetBoxTransform(Collider *c, v3 entityPos, v3 entityScale)
 	{
-		c->min = entityPos - c->extents * entityScale;
-		c->max = entityPos + c->extents * entityScale;
+		c->min = (entityPos) - c->extents * entityScale;
+		c->max = (entityPos) + c->extents * entityScale;
 		c->data.worldMatrix = GetBoxTransform(c);
 	}
 
