@@ -73,18 +73,7 @@ namespace Mon {
 				if (input->right.endedDown) { velocity.x = 1.0f; }
 			}
 
-			Mon::MovePlayer(game->world->map, p, &velocity, dt);
-
-
-			// TODO(ck): link sprite position to camera...  
-			// https://www.reddit.com/r/gamedev/comments/7cnqpg/lerping_camera_position_causes_jitters_as_it/
-			// update sprite position 
-			 
-			// this one is better explanation for why you shouldn't tie camera to player position and only to an offset
-			//https://gamedev.stackexchange.com/questions/2642/scrolling-2d-sprites-on-a-map-with-a-camera
-
-			// positions should be relative to the map the camera shouldn't come into play with real positions..
-			//game->cameras[game->currentCameraIndex].update(&p->pos, dt);
+			Mon::MovePlayer(game->world->map, p, &velocity, dt);			 
 			Update(&game->cameras[game->currentCameraIndex], &p->pos, dt);
 
 			// Update after camera update
@@ -117,7 +106,7 @@ namespace Mon {
 		DrawTileMap(game->world->map, &game->renderer.program, game->world->sheet.texture.id, 
 					game->cameras[game->currentCameraIndex].pos);
 
-		v2 textureOffset = v2(1.0f, 7.0f);
+		v2 textureOffset = v2(2.0f, 7.0f);
 		for (unsigned int i = 1; i < game->world->entityCount; ++i)
 		{
 			Entity2D e = game->world->entities[i];

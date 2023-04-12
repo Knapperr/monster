@@ -5,16 +5,13 @@ namespace Mon
 	void InitEntity(Entity2D* e, const char* name, v2 position, int size)
 	{
 		e->name = name;
+
 		e->pos = position;
-		
 		e->speed = 50.0f;
 		e->velocity = v2(0.0f);
-		
 		e->rotation = 0.0f;
 		e->destroyed = false;
-
 		e->weight = 44.0f;
-
 	}
 
 	void InitMinion(Entity2D* e, const char* name, v2 position, int size)

@@ -317,7 +317,14 @@ namespace Mon
 		MonGL::DrawTerrain(&state->renderer, &state->grid->data, cam);
 		// 2. using cubemap program inside here
 		MonGL::DrawCubeMap(&state->renderer, state->setup);
-		// 3. start using main obj shader here go back to main shader
+
+		// 3. Draw batch (temp)
+		MonGL::UseProgram(&state->renderer.quadProgram, state->setup);
+		MonGL::FillBatch(&state->renderer);
+		MonGL::BindBatchVertices(&state->renderer);
+		MonGL::DrawBatch(&state->renderer);
+
+		// 4. start using main obj shader here go back to main shader
 		MonGL::UseProgram(&state->renderer.program, state->setup);
 
 

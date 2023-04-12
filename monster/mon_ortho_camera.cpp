@@ -35,6 +35,7 @@ namespace Mon
 	mat4 Projection(Camera2D* camera, Rect viewPort)
 	{
 		// TODO(ck): Width, Height variables
+		// NOTE(ck): half of the view port width and height 
 		mat4 projection = glm::ortho(0.0f, 480.0f, 0.0f, 270.0f, -1.0f, 1.0f);
 		return projection;
 	}

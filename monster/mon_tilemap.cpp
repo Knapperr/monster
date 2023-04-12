@@ -191,7 +191,7 @@ namespace Mon
 		// NOTE(ck): Sheet must be created first
 #define MAP_SIZE 40
 
-	// TODO(ck): Load from file
+		// TODO(ck): Load from file
 		int testmap[MAP_SIZE][MAP_SIZE] =
 		{
 			{7, 0, 0, 0, 99,  0, 99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6},
@@ -249,10 +249,7 @@ namespace Mon
 			{
 				if (testmap[y][x] != 99)
 				{
-					// TODO(ck): NOTE(ck): a Tile and a TileSheet can not be the same thing... all of the pointers are pointing to the same x and y coordinates
-					// this is because there is only ONE of that kind in the tile sheet so when you update the x and y its updating it to that which is fine for
-					// the sheet because we are just using the x and y of the new tile we grabbed it just always sets that old tile to the last one...
-					// this could have caused huge bugs later IMPORTANT(ck):
+
 					Tile sheetTile = *sheet->createTile(testmap[y][x]);
 					// TODO(ck): Copy constructor - MEMORY MANAGEMENT
 					Tile* newTile = new Tile();

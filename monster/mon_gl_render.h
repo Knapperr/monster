@@ -120,8 +120,9 @@ namespace MonGL
 		unsigned int IBO;
 
 		Vertex3D* vertices;
-		std::vector<Vertex3D> verticies_;
+		std::vector<Vertex3D> vertices_;
 		unsigned int* indices;
+		int usedIndices;
 
 		int verticeCount;
 		int indiceCount;
@@ -242,6 +243,7 @@ namespace MonGL
 
 	void UseProgram(CommonProgram* program);
 	void UseProgram(CommonProgram* program, RenderSetup setup);
+	void UseProgram(QuadBatchProgram* program, RenderSetup setup);
 	void UseProgram(WaterProgram* program, RenderSetup setup);
 
 	// Debug lines
@@ -251,7 +253,10 @@ namespace MonGL
 
 	// Render data 
 	void InitBatch(OpenGL* gl);
+	void BindBatchVertices(OpenGL* gl);
 	void FillBatch(OpenGL* gl);
+	void DrawBatch(OpenGL* gl);
+
 	void InitInstancedData(InstancedData* data, int amount);
 	void SetModel(RenderData* data);
 	void SetBoundingBox(RenderData* data);
