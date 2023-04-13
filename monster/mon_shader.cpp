@@ -23,7 +23,7 @@ namespace MonGL
 		program->lightSpecular = glGetUniformLocation(programID, "light.specular"); 
 
 		program->colliderColor = glGetUniformLocation(programID, "colliderColor");
-		program->textureDiffuse1 = glGetUniformLocation(programID, "textureDiffuse1");
+		program->textureDiffuse1 = glGetUniformLocation(programID, "texture_diffuse1");
 		program->useTexture = glGetUniformLocation(programID, "useTexture");
 		program->collider = glGetUniformLocation(programID, "collider");
 		program->pixelTexture = glGetUniformLocation(programID, "pixelTexture");

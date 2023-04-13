@@ -47,12 +47,13 @@ void main()
         pixel = seam + clamp((pixel - seam)/duDv, -0.5, 0.5);
         vec2 modifiedTextCoordinate = pixel / textureSize;
         // NOTE(ck): this is to just use the texture no lighting
-        //vec4 tex = texture(texture_diffuse1, modifiedTextCoordinate);
-        //FragColor = tex;
+        vec4 tex = texture(texture_diffuse1, modifiedTextCoordinate);
+        FragColor = tex;
 
         // ambient
         // material.diffuse = texture_diffuse1 
         // NOTE(ck): diffuse map is part of the material on learnopengl.
+/*
         vec3 ambient = light.ambient * texture(texture_diffuse1, modifiedTextCoordinate).rgb;
         
         // diffuse 
@@ -72,7 +73,7 @@ void main()
             
         vec3 result = ambient + diffuse + specular;
         FragColor = vec4(result, texture(texture_diffuse1, modifiedTextCoordinate).a);
-
+*/
         // vec2 vres = textureSize(texture_diffuse1, 0);
         // FragColor = texture(texture_diffuse1, vec2(
         //     sharpen(TexCoords.x * vres.x) / vres.x,

@@ -126,6 +126,9 @@ namespace MonGL
 
 		int verticeCount;
 		int indiceCount;
+
+		// TEMP TODO(ck): REMOVE
+		int sheetTextureIndex;
 	};
 
 	struct InstancedData

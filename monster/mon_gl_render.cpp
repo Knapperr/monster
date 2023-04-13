@@ -272,6 +272,7 @@ namespace MonGL
 		gl->cubemap = {};
 		LoadCubemap(&gl->cubemap);
 
+
 		// #0 for the 
 		AddLight(gl);
 		int index = AddLight(gl);
@@ -881,6 +882,8 @@ namespace MonGL
 
 		// init batch mesh
 		gl->batch = {};
+		// TODO(ck): TEMP remove
+		gl->batch.sheetTextureIndex = 8;
 
 		gl->batch.indices = new uint32_t[indicesLength];
 		int offset = 0;
@@ -923,7 +926,7 @@ namespace MonGL
 	void FillBatch(OpenGL* gl)
 	{
 		float textureSheetSize = 256.0f;
-		int tileOffsetX = 2;
+		int tileOffsetX = 1;
 		int tileOffsetY = 7;
 		int tileSize = 32;
 
@@ -1017,10 +1020,15 @@ namespace MonGL
 		// IMPORTANT(ck):
 		// NOTE(ck): the reason why you set it to 0 is because thats the base texture slot
 		// its not expecting the textureID thats only for binding
-		int textureSheetID = gl->quadProgram.common.textureDiffuse1;
+		// bind textures on corresponding texture units
+		int textureSheetLocation = gl->quadProgram.common.textureDiffuse1;
+		Texture *textureSheet = GetTexture(gl, gl->batch.sheetTextureIndex);
+		glActiveTexture(GL_TEXTURE0);
+		glUniform1i(textureSheetLocation, 0);
+		glBindTexture(GL_TEXTURE_2D, textureSheet->id); // texture index
 
-		glUniform1i(glGetUniformLocation(batchShaderHandle, "image"), 0);
-		glBindTexture(GL_TEXTURE_2D, textureSheetID);
+
+		//glUniform1i(glGetUniformLocation(batchShaderHandle, "texture_diffuse1"), 0);
 
 		int batchVAO = gl->batch.VAO;
 		glBindVertexArray(batchVAO);
