@@ -926,7 +926,7 @@ namespace MonGL
 	void FillBatch(OpenGL* gl)
 	{
 		float textureSheetSize = 256.0f;
-		int tileOffsetX = 1;
+		int tileOffsetX = 3;
 		int tileOffsetY = 7;
 		int tileSize = 32;
 
@@ -935,42 +935,34 @@ namespace MonGL
 		float vertSize = 1.0f; 
 
 		// Texture coords
-		v2 topRight = v2(((tileOffsetX + 1) * tileSize) / textureSheetSize,
-						 ((tileOffsetY + 1) * tileSize) / textureSheetSize);
-
-		v2 topLeft = v2((tileOffsetX * tileSize) / textureSheetSize,
-						((tileOffsetY + 1) * tileSize) / textureSheetSize);
+		v2 tr = v2(((tileOffsetX + 1) * tileSize) / textureSheetSize, ((tileOffsetY + 1) * tileSize) / textureSheetSize);
+		v2 tl = v2((tileOffsetX * tileSize) / textureSheetSize, ((tileOffsetY + 1) * tileSize) / textureSheetSize);
 			
-		v2 bottomRight = v2(((tileOffsetX + 1) * tileSize) / textureSheetSize,
-							(tileOffsetY * tileSize) / textureSheetSize);
-
-		v2 bottomLeft = v2((tileOffsetX * tileSize) / textureSheetSize,
-						   (tileOffsetY * tileSize) / textureSheetSize);
-
-
+		v2 br = v2(((tileOffsetX + 1) * tileSize) / textureSheetSize, (tileOffsetY * tileSize) / textureSheetSize);
+		v2 bl = v2((tileOffsetX * tileSize) / textureSheetSize, (tileOffsetY * tileSize) / textureSheetSize);
 
 		Vertex3D vec0 = {
 			v3(tilePosX, tilePosY, 0.0f),
 			v3(1.0f, 0.0f, 0.0f),
-			bottomLeft
+			bl
 		};
 
 		Vertex3D vec1 = {
 			v3((tilePosX + vertSize), tilePosY, 0.0f),
 			v3(1.0f, 1.0f, 1.0f),
-			bottomRight
+			br
 		};
 
 		Vertex3D vec2 = {
 			v3((tilePosX + vertSize), (tilePosY + vertSize), 0.0f),
 			v3(1.0f, 1.0f, 1.0f),
-			topRight
+			tr
 		};
 
 		Vertex3D vec3 = {
 			v3(tilePosX, (tilePosY + vertSize), 0.0f),
 			v3(1.0f, 1.0f, 1.0f),
-			topLeft
+			tl
 		};
 
 		gl->batch.usedIndices += 6;
