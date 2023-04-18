@@ -6,24 +6,13 @@
 namespace Mon
 {
 	// IMPORTANT(ck): Asset manager defined here
-	// TODO(ck): Memory management
-	// does this get set to null for allocation we want this to happen after the game memory has been created
-	Assets* g_Assets = new Assets();
+	Assets* g_Assets = nullptr;
 
 // TODO(ck): Move to platform layer
 #include <fstream>
 #include <string>
 	void InitAssets(Assets* assets)
 	{
-		/*
-		// might need dynamic mesh for animations
-		// if a vao needs to change it has to be updated
-		// and these are going to stay the same
-
-		// quad mesh - only need one because everything is using it
-		we can batch later
-		*/
-
 		//empty mesh #0
 		AddMesh(assets);
 

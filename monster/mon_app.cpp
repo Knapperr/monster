@@ -35,14 +35,14 @@ bool App::init()
 	//Platform->SetTitle(window, "Monster");
 
 #ifdef _3D_
-#if 1
+#if 0 // HANDMADE_INTERNAL
 	LPVOID BaseAddress = (LPVOID)Terabytes(2);
 #else
 	LPVOID BaseAddress = 0;
 #endif
 
 	memory = {};
-	memory.permanentStorageSize = Megabytes(256);
+	memory.permanentStorageSize = Megabytes(64);
 	memory.transientStorageSize = Gigabytes(1);
 	// memory.debugStorageSize = Gigabytes(1); 
 
@@ -58,7 +58,7 @@ bool App::init()
 
 	if (memory.permanentStorage && memory.transientStorage)
 	{
-		if (false == Mon::InitGame(&memory, settings.windowWidth, settings.windowHeight, settings.portWidth, settings.portHeight))
+		if (!Mon::InitGame(&memory, settings.windowWidth, settings.windowHeight, settings.portWidth, settings.portHeight))
 			return false;
 	}
 #else

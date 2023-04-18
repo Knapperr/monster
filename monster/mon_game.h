@@ -10,6 +10,8 @@
 #include "mon_gl_render.h"
 #include "mon_world.h"
 
+#include "mon_memory.h"
+
 namespace Mon
 {
 
@@ -82,6 +84,8 @@ namespace Mon
 		MonGL::OpenGL renderer;
 		MonGL::RenderSetup setup;
 
+		// TODO(ck): Should this be in here???
+		MemoryArena assetArena;
 	};
 
 	bool InitGame(GameMemory* memory, int windowWidth, int windowHeight, float portWidth, float portHeight);

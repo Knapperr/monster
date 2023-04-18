@@ -80,7 +80,7 @@ namespace Mon
 		camera->speed = 30.0f;
 		camera->yaw = -89.0f;
 		camera->pitch = -41.0f;
-		camera->zoom = 40.0f;
+		camera->FOV = 40.0f; 
 		camera->nearPlane = 0.1f;
 		camera->farPlane = 1000.0f;
 		camera->aspectRatio = viewPort.w / viewPort.h;
@@ -98,7 +98,7 @@ namespace Mon
 
 	mat4 Projection(Camera* camera)
 	{
-		return glm::perspective(glm::radians(camera->zoom), camera->aspectRatio, camera->nearPlane, camera->farPlane);
+		return glm::perspective(glm::radians(camera->FOV), camera->aspectRatio, camera->nearPlane, camera->farPlane);
 	}
 
 	void UpdateFlyCamera(Camera* camera, double dt, Input* input, bool constrainPitch)
@@ -210,7 +210,7 @@ namespace Mon
 		camera->angleAroundTarget = 180.0f;
 		camera->smoothness = 0.15f;
 		camera->lerpSpeed = 7.0f;
-		camera->zoom = 30.0f;
+		camera->FOV = 17.0f;
 	}
 
 	mat4 FollowViewMatrix(Camera* camera)
@@ -269,7 +269,7 @@ namespace Mon
 		camera->smoothness = 0.24f;
 		camera->pos = v3(100.0f);
 		camera->velocity = v3(1.0f);
-		camera->zoom = 1.0f;
+		camera->FOV = 1.0f;
 	}
 
 	mat4 OrthoProjectionMatrix(Camera* camera)
@@ -291,7 +291,7 @@ namespace Mon
 		float bottom = 540.0f;
 #endif
 		mat4 projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
-		mat4 zoomMatrix = glm::scale(v3(camera->zoom));
+		mat4 zoomMatrix = glm::scale(v3(camera->FOV));
 		projection = projection * zoomMatrix;
 
 		return projection;

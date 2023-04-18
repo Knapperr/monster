@@ -5,6 +5,14 @@
 
 namespace Mon {
 
+
+	enum EntityFlag
+	{
+		Cube = 0x1,
+		Light = 0x2,
+		PieceType_Occluder = 0x4,
+	};
+
 	// Use this for now
 	enum class Direction
 	{
@@ -63,7 +71,7 @@ namespace Mon {
 	{
 		const char* name;
 		std::string impPath;
-		
+		uint32 flags;
 		// CellPosition is specific to the grid and editor?
 		// Should we use this to save and load the map data?
 		// position gets updated each frame?

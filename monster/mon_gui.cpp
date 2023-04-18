@@ -308,7 +308,7 @@ void CameraTab(Mon::GameState* game)
 		ImGui::DragFloat("z", &game->cameras[game->currCameraIndex].pos.z, 0.01f, 1.0f, 200.0f, "%.02f");
 
 		ImGui::DragFloat("cam speed", &game->cameras[game->currCameraIndex].speed, 0.01f, 1.0f, 200.0f, "%.02f");
-		ImGui::DragFloat("cam zoom", &game->cameras[game->currCameraIndex].zoom, 0.1f, -1000.0f, 1000.0f, "%.02f");
+		ImGui::DragFloat("FOV", &game->cameras[game->currCameraIndex].FOV, 0.1f, -1000.0f, 1000.0f, "%.02f");
 		ImGui::DragFloat("near plane", &game->cameras[game->currCameraIndex].nearPlane, 0.01f, 0.1f, 100.0f, "%.02f");
 		ImGui::DragFloat("far plane", &game->cameras[game->currCameraIndex].farPlane, 0.5f, 100.0f, 1000.0f, "%.02f");
 
@@ -319,7 +319,7 @@ void CameraTab(Mon::GameState* game)
 
 		if (ImGui::Button("Log"))
 		{
-			Mon::Log::print("cam zoom", game->cameras[game->currCameraIndex].zoom);
+			Mon::Log::print("FOV", game->cameras[game->currCameraIndex].FOV);
 			Mon::Log::print("near plane", game->cameras[game->currCameraIndex].nearPlane);
 			Mon::Log::print("far plane", game->cameras[game->currCameraIndex].farPlane);
 			Mon::Log::print("pitch", game->cameras[game->currCameraIndex].pitch);

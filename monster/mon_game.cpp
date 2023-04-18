@@ -81,7 +81,7 @@ namespace Mon
 
 		if (e->facingDir == Direction::Left)
 			speed = -speed;
-
+		
 		e->rb.worldPos.x += speed * dt;
 
 		// TODO(ck): Update entity and then update entity collider right after
@@ -112,7 +112,7 @@ namespace Mon
 
 		int followCam2Index = AddCamera(state);
 		InitCamera(&state->cameras[followCam2Index], CameraType::Follow, "Follow 2 (better?)", state->config.viewPort);
-		state->cameras[followCam2Index].zoom = 40.0f;
+		state->cameras[followCam2Index].FOV = 40.0f;
 		state->cameras[followCam2Index].pitch = 45.0f;
 
 		state->currCameraIndex = debugCamIndex;
@@ -138,6 +138,12 @@ namespace Mon
 		// world
 
 		// allocate assets
+		// Putting this right after the game_state in the storaged that is already
+		// allocated
+		// NOTE(ck): First push to the memory !
+		InitializeArena(&state->assetArena, memory->permanentStorageSize - sizeof(GameState),
+						(uint8_t*)memory->permanentStorage + sizeof(GameState));
+		g_Assets = PushStruct(&state->assetArena, Assets);
 		InitAssets(g_Assets);
 
 		state->mode = Mode::Debug;
@@ -317,14 +323,7 @@ namespace Mon
 		MonGL::DrawTerrain(&state->renderer, &state->grid->data, cam);
 		// 2. using cubemap program inside here
 		MonGL::DrawCubeMap(&state->renderer, state->setup);
-
-		// 3. Draw batch (temp)
-		MonGL::UseProgram(&state->renderer.quadProgram, state->setup);
-		MonGL::FillBatch(&state->renderer);
-		MonGL::BindBatchVertices(&state->renderer);
-		MonGL::DrawBatch(&state->renderer);
-
-		// 4. start using main obj shader here go back to main shader
+		// 3. start using main obj shader here go back to main shader
 		MonGL::UseProgram(&state->renderer.program, state->setup);
 
 
@@ -345,7 +344,10 @@ namespace Mon
 		// 
 		// SPRITE BATCH
 		//
-
+		MonGL::UseProgram(&state->renderer.quadProgram, state->setup);
+		MonGL::FillBatch(&state->renderer);
+		MonGL::BindBatchVertices(&state->renderer);
+		MonGL::DrawBatch(&state->renderer);
 
 
 		//
@@ -354,6 +356,7 @@ namespace Mon
 		//MonGL::DrawLine(&state->renderer, &state->lineOne);
 		//MonGL::DrawLine(&state->renderer, &state->lineTwo);
 		//DrawDebugInfo(); //MonGL:: calls inside 
+		MonGL::UseProgram(&state->renderer.program, state->setup);
 		MonGL::DrawLights(&state->renderer);
 
 		MonGL::EndRender();

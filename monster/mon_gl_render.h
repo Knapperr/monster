@@ -204,7 +204,7 @@ namespace MonGL
 		Batch batch;
 		Batch gridBatch;
 		Light lights[32];
-		Texture textures[32]; // These use images from the asset pipeline
+		Texture textures[32]; // NOTE(ck): These use images from the asset pipeline
 		BatchData batches[4];
 		int lightCount;
 		int textureCount;

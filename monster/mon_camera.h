@@ -22,7 +22,7 @@ namespace Mon
 		v3 worldUp;
 		v3 up;
 		float speed;
-		float zoom;
+		float FOV;
 		float nearPlane;
 		float farPlane;
 		float yaw;
