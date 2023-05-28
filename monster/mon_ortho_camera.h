@@ -15,6 +15,7 @@ namespace Mon
 		float zoom;
 		float smoothness;
 		float lerpSpeed;
+		float pixelsPerMeter;
 	};
 
 	void InitCamera(Camera2D* camera);

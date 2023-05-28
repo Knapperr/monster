@@ -12,6 +12,15 @@ namespace Mon
 		camera->smoothness = 0.10f;
 		camera->lerpSpeed = 7.0f;
 		camera->zoom = 64.0f;
+		
+
+		// BASED OFF OF screen size
+		//float metersToPixels = 16.0f / 1.4f;
+		//float orthoSize = 480.0f / (2.0f * metersToPixels);
+		//// screenSizeInPixels / (orthoSize * 2.0f)
+		//camera->pixelsPerMeter = 480.0f / (orthoSize * 2.0f);
+		// 16 pixels = 1 meter
+		camera->pixelsPerMeter = 16.0f;
 	}
 
 	void Update(Camera2D* camera, v2* target, float dt)
@@ -20,10 +29,12 @@ namespace Mon
 		// target pos in world space
 		camera->pos.x = target->x * 16.0f;
 		camera->pos.y = target->y * 16.0f;
-		// screen space
-		// TODO(ck): Width, Height variables
+
 		camera->pos.x = camera->pos.x - (480.0f / 2.0f);
 		camera->pos.y = camera->pos.y - (270.0f / 2.0f);
+
+		/*camera->pos.x = camera->pos.x - ((480.0f / 16.0f) / 2.0f);
+		camera->pos.y = camera->pos.y - ((270.0f / 16.0f) / 2.0f);*/
 
 		// Smooth camera will not work with coordinate system 1:1 pixels and screen space
 		//v2 targetPos = *target;
@@ -34,10 +45,16 @@ namespace Mon
 
 	mat4 Projection(Camera2D* camera, Rect viewPort)
 	{
-		// TODO(ck): Width, Height variables
-		// NOTE(ck): half of the view port width and height 
 		mat4 projection = glm::ortho(0.0f, 480.0f, 0.0f, 270.0f, -1.0f, 1.0f);
 		return projection;
+
+		//mat4 projection = glm::ortho(0.0f, (480.0f / pixelsPerMeter), 0.0f, (270.0f / pixelsPerMeter), -1.0f, 1.0f);
+		//return projection;
+
+		// TODO(ck): Width, Height variables
+		// NOTE(ck): half of the view port width and height 
+		//mat4 projection = glm::ortho(0.0f, 480.0f, 0.0f, 270.0f, -1.0f, 1.0f);
+		//return projection;
 	}
 
 	mat4 ViewMatrix(Camera2D* camera)

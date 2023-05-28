@@ -19,8 +19,6 @@ namespace Mon {
 		// might still want to have trees in entities because they can be attacked or respond to player interaction?
 		// StaticEntities??? staticEntities[256];
 
-		unsigned int instancedDataCount;
-		MonGL::InstancedData instancedData[2];
 	};
 
 	static unsigned int AddEntity(World* world)
@@ -31,16 +29,6 @@ namespace Mon {
 		entity = {};
 
 		return entityIndex;
-	}
-
-	static unsigned int AddInstancedData(World* world)
-	{
-		unsigned int instancedIndex = world->instancedDataCount++;
-		
-		MonGL::InstancedData* data = &world->instancedData[world->instancedDataCount];
-		data = {};
-
-		return instancedIndex;
 	}
 
 	static Entity* GetEntity(World* world, unsigned int index)
@@ -78,15 +66,6 @@ namespace Mon {
 		//}
 	}
 
-	static MonGL::InstancedData* GetInstancedData(World* world, unsigned int index)
-	{
-		MonGL::InstancedData* data = 0;
-		if ((index > 0) && (index < ArrayCount(world->instancedData)))
-		{
-			data = &world->instancedData[index];
-		}
-		return data;
-	}
 
 	static void InitEntity(Entity* e, const char* name, v3 pos, v3 scale, float angleDegrees, int shaderHandle, int textureIndex, int meshIndex)
 	{
@@ -257,15 +236,6 @@ namespace Mon {
 
 	}
 	
-	static void CreateInstancedGrass(World* world, int shaderHandle)
-	{
-		AddInstancedData(world);
-		MonGL::InstancedData* data = GetInstancedData(world, world->instancedDataCount - 1);
-		MonGL::InitInstancedData(data, 100);
-		//MonGL::LoadTexture(&data->renderData, 0, MonGL::TextureType::Diffuse, shaderHandle, "res/textures/grass.png", false);
-
-	}
-
 	static void UpdateWorld(World* world)
 	{
 		// move entity in here?

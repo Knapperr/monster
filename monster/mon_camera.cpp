@@ -206,7 +206,7 @@ namespace Mon
 		camera->pitch = 50.0f;
 		camera->front = v3(0.0f, 0.0f, -1.0f);
 		camera->velocity = v3(0.0f);
-		camera->distanceFromTarget = 10.0f;
+		camera->distanceFromTarget = 20.0f;
 		camera->angleAroundTarget = 180.0f;
 		camera->smoothness = 0.15f;
 		camera->lerpSpeed = 7.0f;

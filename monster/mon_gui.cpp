@@ -627,8 +627,9 @@ void RendererTab(Mon::GameState* game)
 			}
 
 			ImGui::EndChild();
-			ImGui::SameLine();
 
+			// Start Right Pane details
+			ImGui::SameLine();
 			ImGui::BeginGroup();
 			ImGui::BeginChild("light details", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
 
@@ -712,6 +713,29 @@ void RendererTab(Mon::GameState* game)
 				}
 			}
 			ImGui::EndChild();
+
+			// Start Right Pane Details
+			ImGui::SameLine();
+			ImGui::BeginGroup();
+			ImGui::BeginChild("texture details", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
+
+			//ImGui::Text("%s", game->renderer.textures[selectedTexture].id);
+			ImGui::Separator();
+			if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
+			{
+				if (ImGui::BeginTabItem("details"))
+				{
+					ImGui::Text("Width: %d", game->renderer.textures[selectedTexture].width);
+					ImGui::Text("Height: %d", game->renderer.textures[selectedTexture].height);
+
+					ImGui::EndTabItem();
+				}
+
+				ImGui::EndTabBar();
+			}
+
+			ImGui::EndChild();
+			ImGui::EndGroup();
 
 			ImGui::TreePop();
 		} // END TEXTURES
@@ -944,14 +968,14 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::GameMemory* memory)
 		Mon::SetViewPort(game, 960, 540);
 	}
 
-	if (ImGui::Button("720"))
+	if (ImGui::Button("sm"))
 	{
 		settings->windowWidth = 1280;
 		settings->windowHeight = 720;
 		SDL_SetWindowSize(window, settings->windowWidth, settings->windowHeight);
 	}
 	ImGui::SameLine();
-	if (ImGui::Button("1440"))
+	if (ImGui::Button("md"))
 	{
 		settings->windowWidth = 1440;
 		settings->windowHeight = 900;

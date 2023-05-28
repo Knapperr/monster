@@ -112,7 +112,7 @@ namespace Mon
 
 		int followCam2Index = AddCamera(state);
 		InitCamera(&state->cameras[followCam2Index], CameraType::Follow, "Follow 2 (better?)", state->config.viewPort);
-		state->cameras[followCam2Index].FOV = 40.0f;
+		state->cameras[followCam2Index].FOV = 17.0f;
 		state->cameras[followCam2Index].pitch = 45.0f;
 
 		state->currCameraIndex = debugCamIndex;
@@ -301,6 +301,15 @@ namespace Mon
 		mat4 projection = Projection(cam);
 		mat4 viewMatrix = ViewMatrix(cam);
 	 
+		//
+		// PRE RENDER
+		// Fill batch
+		//
+		// GetBatch is for 2D write 3D version
+		MonGL::Batch* batch = MonGL::GetBatch(&state->renderer, 1);
+		MonGL::FillBatch(batch, 10.0f, 10.0f, 3, 7, 32);
+		
+
 		// TODO(ck): UseProgram should be called only one time before switching shaders
 		//			 DO NOT CALL every time you draw an entity glUseProgram is expensive
 		MonGL::UseProgram(&state->renderer.program, state->setup);
@@ -345,10 +354,9 @@ namespace Mon
 		// SPRITE BATCH
 		//
 		MonGL::UseProgram(&state->renderer.quadProgram, state->setup);
-		MonGL::FillBatch(&state->renderer);
-		MonGL::BindBatchVertices(&state->renderer);
-		MonGL::DrawBatch(&state->renderer);
-
+		
+		MonGL::BindBatchVertices(batch);
+		MonGL::DrawBatch(&state->renderer, batch);
 
 		//
 		// DEBUG TOOLS

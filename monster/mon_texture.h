@@ -42,11 +42,5 @@ namespace MonGL
 	void LoadFrameBufferTexture(Texture* texture, int screenWidth, int screenHeight);
 	void Load2DTextureArrayFile(Texture* texture, const char* file);
 
-
-	struct SubTexture
-	{
-		int textureId;
-
-	};
 }
 #endif

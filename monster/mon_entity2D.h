@@ -23,7 +23,6 @@ namespace Mon
 
 		// TODO(ck): Fix this. We need this position to be in 
 		v2 pos; // currently screen space is used for world position and is sent to render data
-		TileMapPosition mapPos;
 		
 		v2 velocity;
 		float speed;
@@ -31,6 +30,7 @@ namespace Mon
 		float rotation;
 		bool destroyed;
 
+		int subTextureIndex;
 	};
 
 	void InitEntity(Entity2D* e, const char* name, v2 position, int size);

@@ -127,15 +127,8 @@ namespace MonGL
 		int verticeCount;
 		int indiceCount;
 
-		// TEMP TODO(ck): REMOVE
+		
 		int sheetTextureIndex;
-	};
-
-	struct InstancedData
-	{
-		mat4* matrices;
-		int amount = 1000;
-		RenderData renderData;
 	};
 
 	struct Line
@@ -159,6 +152,7 @@ namespace MonGL
 	//
 	// 2D structs 
 	//
+
 	struct Vertex
 	{
 		v3 position;
@@ -171,13 +165,28 @@ namespace MonGL
 		unsigned int VAO;
 		unsigned int VBO;
 		unsigned int IBO;
-		mat4 matrix = mat4(1.0f);
-		std::stack<mat4> matrixStack;
-
+		
+		std::vector<MonGL::Vertex> vertices;
 		uint32_t* indices;
+		int usedIndices;
 		int maxVertices;
 		int indicesLength;
 		int quadCount;
+
+		// sheet index
+		int textureSheetIndex;
+	};
+
+	struct GLSubTexture
+	{
+		int textureAtlasIndex;
+
+		float sheetSize;
+		int tileSize;
+		int width;
+		int height;
+
+		v2 texCoords[4];
 	};
 
 	struct RenderData2D
@@ -202,13 +211,18 @@ namespace MonGL
 		// we know that they work properly then we will combine for the grid
 		// and the 
 		Batch batch;
-		Batch gridBatch;
 		Light lights[32];
 		Texture textures[32]; // NOTE(ck): These use images from the asset pipeline
+		GLSubTexture subTextures[64];
+
+		Batch batches_[4];
 		BatchData batches[4];
+		RenderData renderObjects[64];
 		int lightCount;
 		int textureCount;
-		int batchCount;
+		int subTextureCount;
+		int batchCount2D;
+		int batchCount_;
 
 		Cubemap cubemap;
 
@@ -255,12 +269,6 @@ namespace MonGL
 	void DrawLine(OpenGL* gl, Line* data);
 
 	// Render data 
-	void InitBatch(OpenGL* gl);
-	void BindBatchVertices(OpenGL* gl);
-	void FillBatch(OpenGL* gl);
-	void DrawBatch(OpenGL* gl);
-
-	void InitInstancedData(InstancedData* data, int amount);
 	void SetModel(RenderData* data);
 	void SetBoundingBox(RenderData* data);
 
@@ -271,8 +279,12 @@ namespace MonGL
 	void DrawBoundingBox(OpenGL* gl, RenderData* data, Camera* camera);
 	void DrawTerrain(OpenGL* gl, RenderData* data, Camera* camera);
 	
-	void InitBatch(OpenGL* gl);
-	void FillBatch(OpenGL* gl);
+	// Batching
+	void InitBatch(OpenGL* gl, int batchIndex);
+
+	void FillBatch(Batch* batch, float posX, float posY, int texOffsetX, int texOffsetY, int tileSize);
+	void BindBatchVertices(Batch* batch);
+	void DrawBatch(OpenGL* gl, Batch* batch);
 
 	void EndRender();
 
@@ -317,7 +329,48 @@ namespace MonGL
 		return l;
 	}
 
-	static BatchData* GetBatch(OpenGL* gl, unsigned int index)
+
+	static Batch* GetBatch(OpenGL* gl, unsigned int index)
+	{
+		MonGL::Batch* b = 0;
+		if ((index > 0) && (index < ArrayCount(gl->batches_)))
+		{
+			b = &gl->batches_[index];
+		}
+		return b;
+	}
+
+	static unsigned int AddBatch(OpenGL* gl)
+	{
+		unsigned int index = gl->batchCount_++;
+
+		Batch* batch = &gl->batches_[index];
+		batch = {};
+
+		return index;
+	}
+
+	//
+	// 2D
+	//
+	void InitRenderer2D(OpenGL* gl);
+	void InitOpenGLBatchMesh(Mesh* mesh);
+
+	void InitLine2D(RenderData2D* data);
+	void DrawLine2D(RenderData2D* data);
+
+	void InitRenderData2D(RenderData2D* sprite, int size);
+	
+	void InitBatch(BatchData* batch, int tileAmount);
+	void InitBatch(OpenGL* gl, int batchIndex, int tileAmount);
+	void FillBatch(BatchData* batch, float sheetSize, int tileSize, float worldX, float worldY, v2 textureOffset, v2 cameraPos);	
+	void BindVertices(BatchData* batch);
+	
+	void DrawObject(CommonProgram* shader, RenderData2D* data, v2 cameraPos);
+	void DrawBatch(BatchData* batch, CommonProgram* shader, unsigned int textureID, bool wireFrame);
+
+
+	static BatchData* GetBatch2D(OpenGL* gl, unsigned int index)
 	{
 		MonGL::BatchData* b = 0;
 		if ((index > 0) && (index < ArrayCount(gl->batches)))
@@ -327,46 +380,15 @@ namespace MonGL
 		return b;
 	}
 
-	static unsigned int AddBatch(OpenGL* gl)
+	static unsigned int AddBatch2D(OpenGL* gl)
 	{
-		unsigned int index = gl->batchCount++;
+		unsigned int index = gl->batchCount2D++;
 
 		BatchData* batch = &gl->batches[index];
 		batch = {};
 
 		return index;
 	}
-
-
-
-	//
-	// 2D
-	//
-	void InitRenderer2D(OpenGL* gl);
-	void InitOpenGLBatchMesh(Mesh* mesh);
-
-	void PushMatrix(BatchData* batch, mat4 matrix);
-	void PopMatrix(BatchData* batch);
-
-	void InitLine2D(RenderData2D* data);
-	void DrawLine2D(RenderData2D* data);
-
-	void InitRenderData2D(RenderData2D* sprite, int size);
-	
-	void InitTileMap(int tileAmount); // This just inits the batch the same way InitBatch does
-	void InitBatch(int tileAmount);
-	void InitBatch(BatchData* batch, int tileAmount);
-	void InitBatch(OpenGL* gl, int batchIndex, int tileAmount);
-	void FillBatch(int tileOffsetX, int tileOffsetY, float tileXPos, float tileYPos, int tileSize, v2 cameraPos);
-	void FillBatch(float sheetSize, int tileSize, float worldX, float worldY, v2 textureOffset, v2 cameraPos);
-	void BindVertices();
-	void BindVertices(BatchData* batch);
-	
-	void DrawObject(CommonProgram* shader, RenderData2D* data, v2 cameraPos);
-	void DrawMap(CommonProgram* shader, v2 cameraPos, unsigned int textureID, bool wireFrame);
-	void DrawMap(CommonProgram* shader, unsigned int textureID, int batchThing);
-	void DrawBatch(CommonProgram* shader, unsigned int textureID, bool wireFrame);
-
 }
 #endif // MON_GL_RENDER_H
 

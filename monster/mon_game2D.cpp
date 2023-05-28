@@ -17,7 +17,8 @@ namespace Mon {
 			World2D();
 
 		*/
-
+		// TODO(ck) : memory allocation
+		g_Assets = new Assets();
 		InitAssets(g_Assets);
 		MonGL::InitRenderer2D(&game->renderer);
 		
@@ -102,20 +103,42 @@ namespace Mon {
 		//mat4 view = game->cameras[game->currentCameraIndex].viewMatrix();
 		mat4 view = ViewMatrix(&game->cameras[game->currentCameraIndex]);
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(view));
+		
 
-		DrawTileMap(game->world->map, &game->renderer.program, game->world->sheet.texture.id, 
-					game->cameras[game->currentCameraIndex].pos);
+		// TODO(ck): The batch should be internal to the renderer and not really in the game layer although
+		// this does make it easier... i guess you should be able to access the batch functions but the batch itself
+		// you shouldn't be calling GetBatch in here... it should be in the renderer.
+		// can we send a buffer to fill batch instead? and then loop internally?
 
+		// Pre-Render Fill sprite and tile batches
+		MonGL::BatchData* tileBatch = MonGL::GetBatch2D(&game->renderer, 1);
+		for (int i = 0; i < game->world->map->tiles.size(); ++i)
+		{
+			v2 textOffset = v2(game->world->map->tiles[i]->textureOffsetX, game->world->map->tiles[i]->textureOffsetY);
+			MonGL::FillBatch(tileBatch, 256.0f, 16.0f, game->world->map->tiles[i]->x, game->world->map->tiles[i]->y,
+							 textOffset,
+							 game->cameras[game->currentCameraIndex].pos);
+		}
+
+
+		MonGL::BatchData* spriteBatch = MonGL::GetBatch2D(&game->renderer, 2);
 		v2 textureOffset = v2(2.0f, 7.0f);
 		for (unsigned int i = 1; i < game->world->entityCount; ++i)
 		{
 			Entity2D e = game->world->entities[i];
-			MonGL::FillBatch(256.0f, 32.0f, e.pos.x, e.pos.y, 
+			MonGL::FillBatch(spriteBatch, 256.0f, 32.0f, e.pos.x, e.pos.y,
 							 textureOffset,
 							 game->cameras[game->currentCameraIndex].pos);
 		}
+
+		
+		// TODO(ck): Pull Texture out of sheet
+		
+		// Loop through batches 
+		// batch needs its own shader id and texture id for the sheet
+		DrawBatch(tileBatch, &game->renderer.program, game->world->sheet.texture.id, false);
 		MonGL::Texture* texture = MonGL::GetTexture(&game->renderer, 17);
-		DrawBatch(&game->renderer.program, texture->id, false);
+		DrawBatch(spriteBatch, &game->renderer.program, texture->id, false);
 	}
 
 	void SetViewPort(MonGL::Config *config, int width, int height)

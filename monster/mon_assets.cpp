@@ -278,10 +278,10 @@ namespace Mon
 		stbi_image_free(image->data);
 	}
 
-	void InitTextureAsset(TextureAsset* asset, std::string name, MonGL::TextureType type, bool pixelArt, int imageIndex)
+	void InitTextureAsset(TextureAsset* asset, std::string &name, MonGL::TextureType type, bool pixelArt, int imageIndex)
 	{
 
-		asset->name = name;
+		asset->name = std::string(name);
 		asset->type = type;
 		asset->isPixelArt = pixelArt;
 		asset->imageIndex = imageIndex;
@@ -591,6 +591,7 @@ namespace Mon
 		}
 
 		int indiceCount = xSize * zSize * 6;
+		// TODO(ck): Memory allocation
 		mesh->indices = new unsigned int[indiceCount];
 		for (int ti = 0, vi = 0, z = 0; z < zSize; z++, vi++)
 		{
