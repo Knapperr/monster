@@ -67,7 +67,7 @@ namespace Mon {
 	}
 
 
-	static void InitEntity(Entity* e, const char* name, v3 pos, v3 scale, float angleDegrees, int shaderHandle, int textureIndex, int meshIndex)
+	static void InitEntity(Entity* e, const char* name, v3 pos, v3 scale, float angleDegrees, int shaderHandle, int textureIndex, int meshIndex, bool isModel = false)
 	{
 		e->setup = {};
 		e->name = name;
@@ -91,6 +91,11 @@ namespace Mon {
 		e->spriteAngleDegrees = angleDegrees;
 		
 		e->data.programData.texCoordScale = 1.0f;
+
+		if (isModel)
+			e->flags = EntityRenderFlag::Model;
+		else
+			e->flags = EntityRenderFlag::Sprite;
 	}
 
 	static void InitPlayer(Entity* player, int shaderHandle)
@@ -122,6 +127,7 @@ namespace Mon {
 		//player->data.mat.shininess = 32.0f;
 		player->impPath = "none";
 		player->spriteAngleDegrees = -45.0f;
+		player->flags = EntityRenderFlag::Sprite;
 	}
 
 	static void InitWater(Entity* e, int shaderHandle)
@@ -173,7 +179,7 @@ namespace Mon {
 
 		AddEntity(world);
 		Entity* light = GetEntity(world, 2);
-		InitEntity(light, "light", v3(1.0f), v3(1.0f), angleDegrees, shaderHandle, 1, 2);
+		InitEntity(light, "light", v3(1.0f), v3(1.0f), angleDegrees, shaderHandle, 1, 2, true);
 
 		/*
 		how should lights work? are they attached to an entity? right now they are part of the rendering layer which i think
@@ -193,7 +199,7 @@ namespace Mon {
 		
 		AddEntity(world);
 		Entity* cube = GetEntity(world, world->entityCount - 1);
-		InitEntity(cube, "cube_1", v3(50.0f, 0.3f, 20.0f), v3(1.0f), angleDegrees, shaderHandle, 18, 2);
+		InitEntity(cube, "cube_1", v3(50.0f, 0.3f, 20.0f), v3(1.0f), angleDegrees, shaderHandle, 18, 2, true);
 
 		// ch_minion
 		AddEntity(world);
@@ -221,17 +227,17 @@ namespace Mon {
 
 		AddEntity(world);
 		Entity* plane64 = GetEntity(world, world->entityCount - 1);
-		InitEntity(plane64, "plane64", v3(6.0f, 0.0f, 6.0f), v3(1.0f), 0.0f, shaderHandle, 8, 7);
+		InitEntity(plane64, "plane64", v3(6.0f, 0.0f, 6.0f), v3(1.0f), 0.0f, shaderHandle, 8, 7, true);
 		plane64->data.meshIndex = 7;
 
 		AddEntity(world);
 		Entity* gem = GetEntity(world, world->entityCount - 1);
-		InitEntity(gem, "gem", v3(6.0f, 0.0f, 6.0f), v3(1.0f), 0.0f, shaderHandle, 8, 8);
+		InitEntity(gem, "gem", v3(6.0f, 0.0f, 6.0f), v3(1.0f), 0.0f, shaderHandle, 8, 8, true);
 		gem->data.meshIndex = 8;
 
 		AddEntity(world);
 		Entity* house = GetEntity(world, world->entityCount - 1);
-		InitEntity(house, "house", v3(16.0f, 0.0f, 16.0f), v3(1.0f), 0.0f, shaderHandle, 23, 10);
+		InitEntity(house, "house", v3(16.0f, 0.0f, 16.0f), v3(1.0f), 0.0f, shaderHandle, 23, 10, true);
 		house->data.meshIndex = 10;
 
 	}

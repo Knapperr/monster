@@ -111,22 +111,27 @@ namespace Mon {
 		// can we send a buffer to fill batch instead? and then loop internally?
 
 		// Pre-Render Fill sprite and tile batches
+
 		MonGL::BatchData* tileBatch = MonGL::GetBatch2D(&game->renderer, 1);
 		for (int i = 0; i < game->world->map->tiles.size(); ++i)
 		{
+			
 			v2 textOffset = v2(game->world->map->tiles[i]->textureOffsetX, game->world->map->tiles[i]->textureOffsetY);
-			MonGL::FillBatch(tileBatch, 256.0f, 16.0f, game->world->map->tiles[i]->x, game->world->map->tiles[i]->y,
+			MonGL::FillBatch(tileBatch, 256.0f, 16, 1.0f, game->world->map->tiles[i]->x, game->world->map->tiles[i]->y,
 							 textOffset,
 							 game->cameras[game->currentCameraIndex].pos);
 		}
 
 
 		MonGL::BatchData* spriteBatch = MonGL::GetBatch2D(&game->renderer, 2);
+
+		// Fill array called batch items and sort them by y position before 
+		// sending them to the batch
 		v2 textureOffset = v2(2.0f, 7.0f);
 		for (unsigned int i = 1; i < game->world->entityCount; ++i)
 		{
 			Entity2D e = game->world->entities[i];
-			MonGL::FillBatch(spriteBatch, 256.0f, 32.0f, e.pos.x, e.pos.y,
+			MonGL::FillBatch(spriteBatch, 256.0f, 32, 2.0f, e.pos.x, e.pos.y,
 							 textureOffset,
 							 game->cameras[game->currentCameraIndex].pos);
 		}

@@ -301,13 +301,7 @@ namespace Mon
 		mat4 projection = Projection(cam);
 		mat4 viewMatrix = ViewMatrix(cam);
 	 
-		//
-		// PRE RENDER
-		// Fill batch
-		//
-		// GetBatch is for 2D write 3D version
-		MonGL::Batch* batch = MonGL::GetBatch(&state->renderer, 1);
-		MonGL::FillBatch(batch, 10.0f, 10.0f, 3, 7, 32);
+
 		
 
 		// TODO(ck): UseProgram should be called only one time before switching shaders
@@ -336,9 +330,10 @@ namespace Mon
 		MonGL::UseProgram(&state->renderer.program, state->setup);
 
 
+		
 		//
-		// 3D ENTITIES
-		//
+		// PRE RENDER go through entities
+		// 
 		for (unsigned int i = 1; i < state->world->entityCount; ++i)
 		{
 			Entity e = state->world->entities[i];
@@ -347,6 +342,24 @@ namespace Mon
 				MonGL::DrawBoundingBox(&state->renderer, &e.collider.data, cam);
 			MonGL::Draw(&state->renderer, &state->config, state->setup, e.spriteAngleDegrees, &e.data, e.rb.worldPos, cam);
 
+			// TODO(ck): 
+
+			
+			if(e.flags & EntityRenderFlag::Sprite)
+			{
+				//init batch item
+				MonGL::BatchItem batchItem;
+				batchItem.worldPos = e.rb.worldPos;
+				batchItem.tileSize = 32;
+				batchItem.spriteSize = 1.0f;
+				state->renderer.batchItems_.push_back(batchItem);
+			
+			}
+			if (e.flags & EntityRenderFlag::Model)
+			{
+				// init and add render data
+				state->renderer.renderItems_.push_back(e.data);
+			 }
 			GetGridPosition(e.rb.worldPos);
 		}
 
@@ -355,6 +368,16 @@ namespace Mon
 		//
 		MonGL::UseProgram(&state->renderer.quadProgram, state->setup);
 		
+
+
+		MonGL::Batch* batch = MonGL::GetBatch(&state->renderer, 1);
+		for (int i = 0; i < state->renderer.batchItems_.size(); ++i)
+		{
+			MonGL::BatchItem item = state->renderer.batchItems_[i];
+			//(Batch * batch, float posX, float posY, int texOffsetX, int texOffsetY, int tileSize)
+			MonGL::FillBatch(batch, item.worldPos.x, item.worldPos.y, item.worldPos.z, 3, 7, 32);
+		}
+
 		MonGL::BindBatchVertices(batch);
 		MonGL::DrawBatch(&state->renderer, batch);
 
@@ -367,7 +390,7 @@ namespace Mon
 		MonGL::UseProgram(&state->renderer.program, state->setup);
 		MonGL::DrawLights(&state->renderer);
 
-		MonGL::EndRender();
+		MonGL::EndRender(&state->renderer);
 	}
 
 	void CleanUp(GameState* state)

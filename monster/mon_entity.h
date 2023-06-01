@@ -6,11 +6,11 @@
 namespace Mon {
 
 
-	enum EntityFlag
+	enum EntityRenderFlag
 	{
-		Cube = 0x1,
-		Light = 0x2,
-		PieceType_Occluder = 0x4,
+		Sprite = 0x1,
+		Model = 0x2,
+		Light = 0x4,
 	};
 
 	// Use this for now

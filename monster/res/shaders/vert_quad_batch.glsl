@@ -17,10 +17,11 @@ uniform float texCoordScale = 1.0;
 
 void main()
 {
-	// NOTE(ck): No more model matrix... the world position
-	// is calculated in the vertices for the quad?
-	vs_out.FragPos = vec3(vec4(aPos, 1.0));
+	// NOTE(ck): Go back to model matrix
+	//vs_out.FragPos = vec3(vec4(aPos, 1.0));
+	vs_out.FragPos = vec3(model * vec4(aPos, 1.0));
 	vs_out.Normal = mat3(transpose(inverse(model))) * aNormal;
 	vs_out.TexCoords = aTexCoords * texCoordScale;
+	// use model matrix for rotation
 	gl_Position = projection * view * vec4(vs_out.FragPos, 1.0);
 }

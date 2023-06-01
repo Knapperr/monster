@@ -183,11 +183,6 @@ namespace Mon
 	{
 		assert(sheet->tileCount > 0);
 
-		map->tileSideInMeters = 1.7f; // 1.7 meters = 5.5feet
-		map->tileSideInPixels = 16; // 16 pixels = 1 unit
-		map->metersToPixels = (float)map->tileSideInPixels / map->tileSideInMeters;
-
-
 		// NOTE(ck): Sheet must be created first
 #define MAP_SIZE 40
 

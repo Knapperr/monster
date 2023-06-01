@@ -11,6 +11,7 @@ DESC:	Imp loader current uses Assimp to load popular model formats.
 		The Assimp loaded models are then exported to .imp files to be consumed by the Monster engine
 		
 		This loader will be a crucial part of the Monster engine for asset loading and exporting
+
 		Audio will be dealt with in the imp loader as well once that bridge appears.
 
 		Jan 01/2022 - Cole Knapp
@@ -27,13 +28,6 @@ sub projects? the main project requires the dll to be elsewhere.. could be some 
 
 - load .obj .fbx and whatever is the easiest to work with file format for 3d models
 - export out .imp files with Assimp for now
-
-
-
-Assimp is heavy I do not want it in the main engine. Eventually I would like to write
-the loader on my own and not rely on assimp. Remember that we can use this project in finnsie
-the best thing to do is have this project loading the file and call it from monster instead of 
-having an import/export logic in Monster
 */
 
 #include <assimp/Importer.hpp>
@@ -267,7 +261,8 @@ int main(int argc, char** argv)
 	printf("2022\n");
 	//printf("LAST USE - JULY 13 2022");
 	//printf("LAST USE - JULY 23 2022");
-	printf("LAST USE - JULY 31 2022");
+	//printf("LAST USE - JULY 31 2022");
+	printf("LAST USE - OCT 24 2022");
 	// TODO(ck): LOG THIS keep a data file of all the asset changes and stuff?
 
 	/*
@@ -301,14 +296,31 @@ int main(int argc, char** argv)
 	LoadModel(&model, "models/village_house/village_house_combined.obj", false);
 	ExportImpFile(&model, "village_house_combined", "village_house.imp");
 
+	model = {};
+	LoadModel(&model, "models/pumpkin/new_pumpkin.obj", false);
+	ExportImpFile(&model, "pumpkin", "pumpkin.imp");
 	// Verify Exported Imp Files before check for (nan) and exponents in the data
 
 	// Export out to asset folder location as well and the debug folder for RenderDoc
+
+	// Asset file
+	/* NOTE(ck): Stores path to .imp (model file)? 
+				 Stores image assets
+				 Stores shader information 
+				 Stores textures with index to image asset texture type, is pixel texture, shader index, image asset Index
+
+
+		Need a way to map indexes to friendly names to make gui easy to read and creating assets easy as well
+		LoadTexture(t1, MonGL::TextureType::Diffuse, true, shaderID, GetImage(g_Assets, 1));
+
+	*/
 
 	// TODO WEEKEND PROJECT 
 	// WRITE A LITTLE CONSOLE COMMAND WINDOW THAT CAN BE USED TO 
 	// OR EVEN BETTER WRITE AN API THAT ALLOWS YOU TO CALL FUNCTIONS FROM OUR GUI TO USE IT!
 	// LAUNCH THE EXE AND SEND COMMANDS TO IT
+
+
 
 	std::string e;
 	std::cin >> e;

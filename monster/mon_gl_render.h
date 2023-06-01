@@ -189,6 +189,15 @@ namespace MonGL
 		v2 texCoords[4];
 	};
 
+
+	struct BatchItem
+	{
+		v3 worldPos;
+		int tileSize;
+		float spriteSize;
+		// textureOffsets
+	};
+
 	struct RenderData2D
 	{
 		unsigned int meshIndex;
@@ -217,7 +226,11 @@ namespace MonGL
 
 		Batch batches_[4];
 		BatchData batches[4];
-		RenderData renderObjects[64];
+		//BatchItem batchItems[64]; 
+		//RenderData renderItems[64];
+		std::vector<BatchItem> batchItems_;
+		std::vector<RenderData> renderItems_;
+		
 		int lightCount;
 		int textureCount;
 		int subTextureCount;
@@ -282,11 +295,11 @@ namespace MonGL
 	// Batching
 	void InitBatch(OpenGL* gl, int batchIndex);
 
-	void FillBatch(Batch* batch, float posX, float posY, int texOffsetX, int texOffsetY, int tileSize);
+	void FillBatch(Batch* batch, float posX, float posY, float posZ, int texOffsetX, int texOffsetY, int tileSize);
 	void BindBatchVertices(Batch* batch);
 	void DrawBatch(OpenGL* gl, Batch* batch);
 
-	void EndRender();
+	void EndRender(OpenGL* gl);
 
 
 	static unsigned int AddTexture(OpenGL* gl)
@@ -363,7 +376,7 @@ namespace MonGL
 	
 	void InitBatch(BatchData* batch, int tileAmount);
 	void InitBatch(OpenGL* gl, int batchIndex, int tileAmount);
-	void FillBatch(BatchData* batch, float sheetSize, int tileSize, float worldX, float worldY, v2 textureOffset, v2 cameraPos);	
+	void FillBatch(BatchData* batch, float sheetSize, int tileSize, float spriteSize, float worldX, float worldY, v2 textureOffset, v2 cameraPos);	
 	void BindVertices(BatchData* batch);
 	
 	void DrawObject(CommonProgram* shader, RenderData2D* data, v2 cameraPos);
@@ -384,7 +397,7 @@ namespace MonGL
 	{
 		unsigned int index = gl->batchCount2D++;
 
-		BatchData* batch = &gl->batches[index];
+		BatchData *batch = &gl->batches[index];
 		batch = {};
 
 		return index;

@@ -290,7 +290,6 @@ namespace MonGL
 		gl->lights[index].specular = v3(1.0f);
 		gl->lights[index].attachedToEntity = false;
 
-
 		// Init Batches
 		// 0 is null batch
 		AddBatch(gl);
@@ -298,8 +297,13 @@ namespace MonGL
 		InitBatch(gl, batchIndex);
 
 		// Init Sub Textures for sprite animation
-		// advance when initializing subtextures
-		//gl->subTextureCount++;
+		for (int i = 0; i < 10; ++i)
+		{
+
+			unsigned int index = gl->subTextureCount++;
+			GLSubTexture *subText = &gl->subTextures[index];
+			subText = {};
+		}
 
 
 		// Frame buffer
@@ -925,7 +929,7 @@ namespace MonGL
 	}
 
 
-	void FillBatch(Batch* batch, float posX, float posY, int texOffsetX, int texOffsetY, int tileSize)
+	void FillBatch(Batch* batch, float posX, float posY, float posZ, int texOffsetX, int texOffsetY, int tileSize)
 	{
 		float textureSheetSize = 256.0f;
 		posX = posX - 0.5f;
@@ -943,25 +947,25 @@ namespace MonGL
 		v2 bl = v2((texOffsetX * tileSize) / textureSheetSize, (texOffsetY * tileSize) / textureSheetSize);
 
 		Vertex3D vec0 = {
-			v3(posX, posY, 0.0f),
+			v3(posX, posY, posZ),
 			v3(1.0f, 0.0f, 0.0f),
 			bl
 		};
 
 		Vertex3D vec1 = {
-			v3((posX + vertSize), posY, 0.0f),
+			v3((posX + vertSize), posY, posZ),
 			v3(1.0f, 1.0f, 1.0f),
 			br
 		};
 
 		Vertex3D vec2 = {
-			v3((posX + vertSize), (posY + vertSize), 0.0f),
+			v3((posX + vertSize), (posY + vertSize), (posZ)),
 			v3(1.0f, 1.0f, 1.0f),
 			tr
 		};
 
 		Vertex3D vec3 = {
-			v3(posX, (posY + vertSize), 0.0f),
+			v3(posX, (posY + vertSize), posZ),
 			v3(1.0f, 1.0f, 1.0f),
 			tl
 		};
@@ -997,8 +1001,12 @@ namespace MonGL
 		pos.y = basePos.y;
 
 
+
 		mat4 model = mat4(1.0f);
 		model = glm::translate(model, pos);
+		// TODO(ck): Rotation causes Z axis to grow??? how to apply rotations to a sprite batcher?
+		// .. world coordinates are baked into vertices can it be done in shader?
+		//model = glm::rotate(model, glm::radians(-45.0f), v3{ 0.0f, 0.0f, 1.0f });
 
 		//v2 worldScale = v2(64.0f);
 		//model = glm::scale(model, v3(worldScale, 1.0f));
@@ -1019,9 +1027,7 @@ namespace MonGL
 
 
 		//glUniform1i(glGetUniformLocation(batchShaderHandle, "texture_diffuse1"), 0);
-
-		int batchVAO = batch->VAO;
-		glBindVertexArray(batchVAO);
+		glBindVertexArray(batch->VAO);
 		// (void*)(index_size * pass.index_start)
 
 		bool wireFrame = false;
@@ -1048,10 +1054,13 @@ namespace MonGL
 	///	[BEGIN] End Rendering
 	///
 
-	void EndRender()
+	void EndRender(OpenGL* gl)
 	{
 		assert(globalDrawCalls > 0);
 		
+		gl->batchItems_.clear();
+		gl->renderItems_.clear();
+
 		// now bind back to default framebuffer and draw a quad plane with the attached framebuffer color texture
 		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		//glDisable(GL_DEPTH_TEST); // disable depth test so screen-space quad isn't discarded due to depth test.
@@ -1211,6 +1220,19 @@ namespace MonGL
 		InitBatch(gl, batchIndex, 1000);
 
 
+		// Init Sub Textures for sprite animation
+		for (int i = 0; i < 10; ++i)
+		{
+
+			unsigned int index = gl->subTextureCount++;
+			GLSubTexture* subText = &gl->subTextures[index];
+			subText = {};
+		} 
+
+		
+
+
+
 		// Set Blend Function
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -1368,7 +1390,7 @@ namespace MonGL
 		InitBatch(batch, tileAmount);
 	}
 
-	void FillBatch(BatchData* batch, float sheetSize, int tileSize, float worldX, float worldY, v2 textureOffset, v2 cameraPos)
+	void FillBatch(BatchData* batch, float sheetSize, int tileSize, float spriteSize, float worldX, float worldY, v2 textureOffset, v2 cameraPos)
 	{
 		// TODO(ck): Pass Point or integer Rect no floating points
 		int tileOffsetX = (int)textureOffset.x;
@@ -1401,7 +1423,7 @@ namespace MonGL
 		v2 bl = v2(left, bottom);
 #endif
 
-		float size = 2.0f * 16.0f; // 32.0f  spriteSize * pixelsPerMeter
+		float size = spriteSize * 16.0f; // 32.0f  spriteSize * pixelsPerMeter
 
 		float tileSizeMeters = 1.0f;
 		float metersToPixels = 16.0f / tileSizeMeters;
@@ -1414,14 +1436,6 @@ namespace MonGL
 		worldY *= pixelsPerMeter;
 		float x = worldX;
 		float y = worldY;
-
-		/*
-		FROM TILEMAP FILL BATCH	
-		float x = tileXPos * 16.0f;
-		float y = tileYPos * 16.0f;
-		float size = 16.0f; // 16.0f
-		
-		*/
 
 		// tile coords to world coords
 		/*
