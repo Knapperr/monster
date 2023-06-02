@@ -139,7 +139,6 @@ void App::run()
 		glClear(GL_COLOR_BUFFER_BIT);
 #endif
 
-
 #ifdef _3D_
 		float time = float(SDL_GetTicks() / 1000.0f);
 		Mon::Render(&memory, time, 1.0f);
@@ -157,6 +156,7 @@ void App::run()
 			RenderGui();
 		}
 		platform->swapWindow();
+
 
 		// Swap input
 		Mon::Input* temp = newInput;

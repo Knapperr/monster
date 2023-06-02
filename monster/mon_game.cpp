@@ -60,6 +60,7 @@ namespace Mon
 
 		//qsort(game->world->entities, game->world->entityCount, sizeof(Entity), sortEntities);
 	}
+
 	void UpdateEntities(World* world, float dt)
 	{
 		// update minion around for fun
@@ -93,6 +94,8 @@ namespace Mon
 			// TODO(ck): Precise Collision check
 
 			SetBoxTransform(&world->entities[i].collider, world->entities[i].rb.worldPos, world->entities[i].data.scale);
+			world->entities[i].data.pos = world->entities[i].rb.worldPos;
+			world->entities[i].data.angleDegrees = world->entities[i].spriteAngleDegrees;
 		}
 	}
 
@@ -340,10 +343,6 @@ namespace Mon
 
 			if (state->drawCollisions)
 				MonGL::DrawBoundingBox(&state->renderer, &e.collider.data, cam);
-			MonGL::Draw(&state->renderer, &state->config, state->setup, e.spriteAngleDegrees, &e.data, e.rb.worldPos, cam);
-
-			// TODO(ck): 
-
 			
 			if(e.flags & EntityRenderFlag::Sprite)
 			{
@@ -361,6 +360,15 @@ namespace Mon
 				state->renderer.renderItems_.push_back(e.data);
 			 }
 			GetGridPosition(e.rb.worldPos);
+		}
+
+		// 
+		// 3D Models
+		//
+		for (int i = 0; i < state->renderer.renderItems_.size(); ++i)
+		{
+			MonGL::RenderData data = state->renderer.renderItems_[i];
+			MonGL::Draw(&state->renderer, &state->config, state->setup, data.angleDegrees, &data, data.pos, cam);
 		}
 
 		// 

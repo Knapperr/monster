@@ -110,6 +110,8 @@ namespace MonGL
 
 		v3 color;
 		v3 scale = v3(1.0f);
+		v3 pos;
+		float angleDegrees;
 		mat4 worldMatrix;
 	};
 
