@@ -303,6 +303,8 @@ namespace MonGL
 			unsigned int index = gl->subTextureCount++;
 			GLSubTexture *subText = &gl->subTextures[index];
 			subText = {};
+
+
 		}
 
 
@@ -1103,12 +1105,14 @@ namespace MonGL
 	//glDeleteBuffers(1, &player.data.VBO);
 
 	//MonGL::DeleteShader(&shader);
-
-
-
+ 
+	/// =================================================================================
+	
 	///
-	/// 2D
+	///	2D Renderer Methods
 	///
+
+	/// =================================================================================
 
 	void InitRenderer2D(OpenGL* gl)
 	{
@@ -1187,14 +1191,16 @@ namespace MonGL
 		LoadTexture((char*)"temp15", t15, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 15));
 		LoadTexture((char*)"temp16", t16, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 18));
 		
-		// Texture Atlas for sprites
-		//LoadTexture(t17, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 31));
+		// Texture Atlases
 		AddTexture(gl);
 		MonGL::Texture* t17 = GetTexture(gl, 17);
 		AddTexture(gl);
 		MonGL::Texture* t18 = GetTexture(gl, 18);
+		AddTexture(gl);
+		MonGL::Texture* t19 = GetTexture(gl, 19);
 		LoadTextureFile((char*)"sprite_atlas", t17, GetImage(g_Assets, 31), TextureType::Diffuse, true, true);
 		LoadTextureFile((char*)"debug_icons", t18, GetImage(g_Assets, 32), TextureType::Diffuse, true, true);
+		LoadTextureFile((char*)"tilemap", t19, GetImage(g_Assets, 16), TextureType::Diffuse, true, true);
 
 		// Get textures loading from file like 3D
 // NOTE(ck): first index loaded
@@ -1423,14 +1429,8 @@ namespace MonGL
 		v2 bl = v2(left, bottom);
 #endif
 
-		float size = spriteSize * 16.0f; // 32.0f  spriteSize * pixelsPerMeter
-
-		float tileSizeMeters = 1.0f;
-		float metersToPixels = 16.0f / tileSizeMeters;
-		float screenWidthMeters = 480.0f / metersToPixels;
-		float pixelsPerMeter = 480.0f / screenWidthMeters;
-
-		pixelsPerMeter = 16.0f;
+		float size = spriteSize * 16.0f; // spriteSize * pixelsPerMeter
+		float pixelsPerMeter = 16.0f;
 
 		worldX *= pixelsPerMeter;
 		worldY *= pixelsPerMeter;
@@ -1559,7 +1559,4 @@ namespace MonGL
 		glDrawElements(GL_TRIANGLES, mesh->indiceCount, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 	}
-
-
-
 }

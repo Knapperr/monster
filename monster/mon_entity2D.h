@@ -38,7 +38,7 @@ namespace Mon
 	// TODO(ck): Should this param be pointer?
 	// should velocity be acceleration?
 	void MovePlayer(TileMap* map, Entity2D* p, v2* velocity, float deltaTime);
-
+	void MovePlayer(Entity2D* p, v2* velocity, float deltaTime);
 	// "factory" methods for creating entities
 	Entity2D* InitPlayer();
 	Entity2D* InitEnemy();

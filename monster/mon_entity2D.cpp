@@ -7,7 +7,7 @@ namespace Mon
 		e->name = name;
 
 		e->pos = position;
-		e->speed = 50.0f;
+		e->speed = 6.5f;
 		e->velocity = v2(0.0f);
 		e->rotation = 0.0f;
 		e->destroyed = false;
@@ -56,5 +56,13 @@ namespace Mon
 
 		p->pos = newPos;
 	}
+
+	void MovePlayer(Entity2D* p, v2* velocity, float deltaTime)
+	{
+		p->pos.x += (velocity->x * p->speed * deltaTime);
+		p->pos.y += (velocity->y * p->speed * deltaTime);
+
+	}
+
 
 }

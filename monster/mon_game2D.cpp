@@ -74,8 +74,9 @@ namespace Mon {
 				if (input->right.endedDown) { velocity.x = 1.0f; }
 			}
 
-			Mon::MovePlayer(game->world->map, p, &velocity, dt);			 
-			Update(&game->cameras[game->currentCameraIndex], &p->pos, dt);
+			//Mon::MovePlayer(game->world->map, p, &velocity, (float)dt);
+			Mon::MovePlayer(p, &velocity, (float)dt);
+			Update(&game->cameras[game->currentCameraIndex], &p->pos, (float)dt);
 
 			// Update after camera update
 			// Updating sprite information (moved to fill batch... sending tile positions to batcher)
@@ -96,15 +97,12 @@ namespace Mon {
 		int shaderID = game->renderer.program.handle;
 		glUseProgram(shaderID);
 
-		//mat4 projection = game->cameras[game->currentCameraIndex].projectionMatrix();
 		mat4 projection = Projection(&game->cameras[game->currentCameraIndex], game->config->viewPort);
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
-		//mat4 view = game->cameras[game->currentCameraIndex].viewMatrix();
 		mat4 view = ViewMatrix(&game->cameras[game->currentCameraIndex]);
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(view));
 		
-
 		// TODO(ck): The batch should be internal to the renderer and not really in the game layer although
 		// this does make it easier... i guess you should be able to access the batch functions but the batch itself
 		// you shouldn't be calling GetBatch in here... it should be in the renderer.
@@ -141,9 +139,11 @@ namespace Mon {
 		
 		// Loop through batches 
 		// batch needs its own shader id and texture id for the sheet
-		DrawBatch(tileBatch, &game->renderer.program, game->world->sheet.texture.id, false);
-		MonGL::Texture* texture = MonGL::GetTexture(&game->renderer, 17);
-		DrawBatch(spriteBatch, &game->renderer.program, texture->id, false);
+		MonGL::Texture* tilemapAtlas = MonGL::GetTexture(&game->renderer, 19);
+		DrawBatch(tileBatch, &game->renderer.program, tilemapAtlas->id, false);
+
+		MonGL::Texture* spriteAtlas = MonGL::GetTexture(&game->renderer, 17);
+		DrawBatch(spriteBatch, &game->renderer.program, spriteAtlas->id, false);
 	}
 
 	void SetViewPort(MonGL::Config *config, int width, int height)

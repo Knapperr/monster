@@ -33,13 +33,12 @@ namespace Mon
 		camera->pos.x = camera->pos.x - (480.0f / 2.0f);
 		camera->pos.y = camera->pos.y - (270.0f / 2.0f);
 
-		/*camera->pos.x = camera->pos.x - ((480.0f / 16.0f) / 2.0f);
-		camera->pos.y = camera->pos.y - ((270.0f / 16.0f) / 2.0f);*/
-
 		// Smooth camera will not work with coordinate system 1:1 pixels and screen space
 		//v2 targetPos = *target;
-		//camera->pos.x = smoothDamp(camera->pos.x, (targetPos.x), camera->vel.x, camera->smoothness, dt);
-		//camera->pos.y = smoothDamp(camera->pos.y, (targetPos.y), camera->vel.y, camera->smoothness, dt);
+		// 
+		// IMPORTANT(ck): won't work with pixels and screen as 1:1 need to figure out meters to pixels
+		//camera->pos.x = smoothDamp(camera->pos.x, (target->x * 16.0f - (480.0f / 2.0f)), camera->vel.x, camera->smoothness, dt);
+		//camera->pos.y = smoothDamp(camera->pos.y, (target->y * 16.0f - (270.0f / 2.0f)), camera->vel.y, camera->smoothness, dt);
 
 	}
 

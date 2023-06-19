@@ -45,9 +45,9 @@ namespace Mon
 		// TODO(ck): MEMORY MANAGEMENT - Efficient tile map creation
 		// TODO(ck): Move all of this into the initTileMap
 		world->map = new TileMap();
-		world->sheet = {};
-		InitTileSheet(&world->sheet, "res/textures/basic_16.png");
-		InitTileMap(world->map, &world->sheet);
+		//world->sheet = {};
+		//InitTileSheet(&world->sheet, "res/textures/basic_16.png");
+		InitTileMap(world->map);
 
 		// ------------------------------------------------------------------
 

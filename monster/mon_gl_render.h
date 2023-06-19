@@ -191,13 +191,17 @@ namespace MonGL
 		v2 texCoords[4];
 	};
 
+	struct GLAnimation
+	{
+		GLSubTexture subTextures[32];
+	};
+
 
 	struct BatchItem
 	{
 		v3 worldPos;
 		int tileSize;
 		float spriteSize;
-		// textureOffsets
 	};
 
 	struct RenderData2D

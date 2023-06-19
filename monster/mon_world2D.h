@@ -8,9 +8,7 @@ namespace Mon
 	struct World2D
 	{
 		Entity2D entities[256];
-		MonGL::RenderData2D renderData[256];
 		TileMap* map;
-		TileSheet sheet;
 
 		int selectedEntityIndex;
 		int entityCount;

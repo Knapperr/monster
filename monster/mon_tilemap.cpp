@@ -42,18 +42,6 @@ namespace Mon
 
 	void InitTileSheet(TileSheet* sheet, const char* fileName)
 	{
-		// TODO(ck): DO NOT DO THIS HERE
-		Image* img = GetImage(g_Assets, 16);
-		// NOTE(ck): For some reason GL_LINEAR is causing my pixel shader to fail in 2D but is fine for 3D pixel art?
-		/*if (linearFilter)
-				texture->wrapS = GL_REPEAT; // TODO(ck): Not sure if necessary
-				texture->wrapT = GL_REPEAT; // TODO(ck): Not sure if necessary
-				texture->filterMin = GL_LINEAR;
-				texture->filterMax = GL_LINEAR*/
-		MonGL::LoadTextureFile((char*)"atlas", &sheet->texture, img, MonGL::TextureType::Diffuse, true, true);
-		//MonGL::LoadTexture(&sheet->texture, MonGL::TextureType::Diffuse, true, img);
-		//MonGL::Load2DTextureArrayFile(&sheet->texture, fileName);
-
 		// TODO(ck): 
 		// Parse the loaded texture and calculate the tileids
 		// all we need is the width and height i.e 256x256 and the gridX and gridY
@@ -179,9 +167,8 @@ namespace Mon
 		return newTile;
 	}
 
-	void InitTileMap(TileMap* map, TileSheet* sheet)
+	void InitTileMap(TileMap* map)
 	{
-		assert(sheet->tileCount > 0);
 
 		// NOTE(ck): Sheet must be created first
 #define MAP_SIZE 40
@@ -238,6 +225,8 @@ namespace Mon
 			{4, 8, 8, 8, 8,  8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,  8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5},
 		};
 		
+
+
 		for (int y = 0; y < MAP_SIZE - 1; ++y)
 		{
 			for (int x = 0; x < MAP_SIZE - 1; ++x)
@@ -245,7 +234,11 @@ namespace Mon
 				if (testmap[y][x] != 99)
 				{
 
-					Tile sheetTile = *sheet->createTile(testmap[y][x]);
+					Tile sheetTile = Tile();
+					sheetTile.id = 3;
+					sheetTile.textureOffsetX = 1;
+					sheetTile.textureOffsetY = 11;
+					//Tile sheetTile = *sheet->createTile(testmap[y][x]);
 					// TODO(ck): Copy constructor - MEMORY MANAGEMENT
 					Tile* newTile = new Tile();
 					newTile->id = sheetTile.id;
