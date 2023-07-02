@@ -94,6 +94,7 @@ namespace Mon {
 		// to send through and sort from camera
 		MonGL::RenderData data;
 		MonGL::RenderSetup setup;
+		// subtexture indexes?
 		Collider collider;
 
 		Direction facingDir;
@@ -103,6 +104,8 @@ namespace Mon {
 		// world matrix?
 		bool follow;
 		float spriteAngleDegrees;
+
+		int spriteAnimationIndex;
 	};
 
 	static void SetFacingDirection(Entity* e)

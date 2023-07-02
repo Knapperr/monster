@@ -3,7 +3,7 @@
 
 
 #define SIZE 64
-#define VERTEX_COUNT 64
+#define VERTEX_COUNT 32
 
 /*
 https://www.reddit.com/r/opengl/comments/ujcaeh/best_way_to_handle_2d_grid_lines_in_opengl/

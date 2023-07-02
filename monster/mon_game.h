@@ -74,6 +74,10 @@ namespace Mon
 
 		// Note(ck): Current game state - State::Debug is default
 		int mode;
+
+		// TEMP(ck): REMOVE THIS IS FOR TESTING GUI
+		int selectedSubTextureIndex;
+
 		// TODO(ck): Handle Multiple selected IDS i.e: selectedIDs[64]; selectedCount; need to store the count as well
 		int selectedIndex;
 		int mainShaderID;

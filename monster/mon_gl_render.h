@@ -181,6 +181,8 @@ namespace MonGL
 
 	struct GLSubTexture
 	{
+		// Maybe keep this in the animation...
+		// subtexture is just data...???
 		int textureAtlasIndex;
 
 		float sheetSize;
@@ -188,20 +190,26 @@ namespace MonGL
 		int width;
 		int height;
 
+		// topright, topleft, bottomright, bottomleft
 		v2 texCoords[4];
 	};
 
-	struct GLAnimation
+	struct GLSpriteAnimation
 	{
+		int textureAtlasIndex;
+		int subTextureCount;
 		GLSubTexture subTextures[32];
 	};
 
 
 	struct BatchItem
 	{
-		v3 worldPos;
+		int animationIndex;
+		int subTextureIndex;
+
 		int tileSize;
 		float spriteSize;
+		v3 worldPos;
 	};
 
 	struct RenderData2D
@@ -228,7 +236,7 @@ namespace MonGL
 		Batch batch;
 		Light lights[32];
 		Texture textures[32]; // NOTE(ck): These use images from the asset pipeline
-		GLSubTexture subTextures[64];
+		GLSpriteAnimation spriteAnimations[32];
 
 		Batch batches_[4];
 		BatchData batches[4];
@@ -239,7 +247,7 @@ namespace MonGL
 		
 		int lightCount;
 		int textureCount;
-		int subTextureCount;
+		int spriteAnimationCount;
 		int batchCount2D;
 		int batchCount_;
 
@@ -302,6 +310,7 @@ namespace MonGL
 	void InitBatch(OpenGL* gl, int batchIndex);
 
 	void FillBatch(Batch* batch, float posX, float posY, float posZ, int texOffsetX, int texOffsetY, int tileSize);
+	void FillBatch(Batch* batch, float posX, float posY, float posZ, GLSubTexture* subTexture, int tileSize);
 	void BindBatchVertices(Batch* batch);
 	void DrawBatch(OpenGL* gl, Batch* batch);
 

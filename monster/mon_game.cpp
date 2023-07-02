@@ -150,6 +150,11 @@ namespace Mon
 		InitAssets(g_Assets);
 
 		state->mode = Mode::Debug;
+		
+		// TODO(ck): REMOVE TESTING FOR GUI
+		state->selectedSubTextureIndex = 1;
+
+		// TODO(ck): Memory Allocation for Renderer
 		// allocate renderer
 		state->renderer = {};
 		MonGL::InitRenderer(&state->renderer);
@@ -305,8 +310,6 @@ namespace Mon
 		mat4 viewMatrix = ViewMatrix(cam);
 	 
 
-		
-
 		// TODO(ck): UseProgram should be called only one time before switching shaders
 		//			 DO NOT CALL every time you draw an entity glUseProgram is expensive
 		MonGL::UseProgram(&state->renderer.program, state->setup);
@@ -333,7 +336,6 @@ namespace Mon
 		MonGL::UseProgram(&state->renderer.program, state->setup);
 
 
-		
 		//
 		// PRE RENDER go through entities
 		// 
@@ -351,6 +353,7 @@ namespace Mon
 				batchItem.worldPos = e.rb.worldPos;
 				batchItem.tileSize = 32;
 				batchItem.spriteSize = 1.0f;
+				batchItem.animationIndex = e.spriteAnimationIndex;
 				state->renderer.batchItems_.push_back(batchItem);
 			
 			}
@@ -358,8 +361,7 @@ namespace Mon
 			{
 				// init and add render data
 				state->renderer.renderItems_.push_back(e.data);
-			 }
-			GetGridPosition(e.rb.worldPos);
+			}
 		}
 
 		// 
@@ -383,7 +385,10 @@ namespace Mon
 		{
 			MonGL::BatchItem item = state->renderer.batchItems_[i];
 			//(Batch * batch, float posX, float posY, int texOffsetX, int texOffsetY, int tileSize)
-			MonGL::FillBatch(batch, item.worldPos.x, item.worldPos.y, item.worldPos.z, 3, 7, 32);
+			MonGL::GLSpriteAnimation* animation = &state->renderer.spriteAnimations[item.animationIndex];
+			MonGL::GLSubTexture* subTexture = &animation->subTextures[state->selectedSubTextureIndex];
+			//MonGL::FillBatch(batch, item.worldPos.x, item.worldPos.y, item.worldPos.z, 3, 7, 32);
+			MonGL::FillBatch(batch, item.worldPos.x, item.worldPos.y, item.worldPos.z, subTexture, 32);
 		}
 
 		MonGL::BindBatchVertices(batch);

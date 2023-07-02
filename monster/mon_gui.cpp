@@ -1014,6 +1014,9 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::GameMemory* memory)
 	}
 	ImGui::Separator();
 
+	// TODO(ck): Remove for testing subtexture animations
+	ImGui::SliderInt("Selected Sub texture index", &game->selectedSubTextureIndex, 0, 3);
+
 	ImGui::Checkbox("Demo", &showDemoWindow);
 	ImGui::SameLine();
 	ImGui::Checkbox("stats", &showStatsWindow);

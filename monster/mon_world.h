@@ -83,6 +83,7 @@ namespace Mon {
 		e->data.visible = true;
 		e->rb.worldPos = pos;
 		e->follow = false;
+		e->spriteAnimationIndex = 1; // TODO(ck): Set sprite animation index for sprite entities
 		Mesh* mesh = Mon::GetMesh(g_Assets, meshIndex);
 		v3 meshSize = mesh->max - mesh->min;
 		//if (meshSize.x == 0.0f && meshSize.y == 0.0f && meshSize.z == 0.0f)
@@ -127,6 +128,7 @@ namespace Mon {
 		//player->data.mat.shininess = 32.0f;
 		player->impPath = "none";
 		player->spriteAngleDegrees = -45.0f;
+		player->spriteAnimationIndex = 1;
 		player->flags = EntityRenderFlag::Sprite;
 	}
 
