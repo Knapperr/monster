@@ -128,7 +128,7 @@ void LoadSceneFile(Mon::GameState* game)
 
 	// TODO(ck): Not shader index it just needs shader type
 	//Mon::Entity* e = Mon::GetPlayer(game->world);
-	//Mon::InitPlayer(e, game->renderer.program.handle);
+	//Mon::InitPlayer(e, game->renderer->program.handle);
 
 	bool finished = false;
 	std::string tempName;
@@ -145,13 +145,13 @@ void LoadSceneFile(Mon::GameState* game)
 				//e->name = tempName.c_str();
 				file >> tempName;
 				//e->name tempName.c_str();
-				//Mon::InitEntity(e, tempName.c_str(), Mon::v3(1.0f), Mon::v3(1.0f), -45.0f, game->renderer.program.handle, 1, 1);
+				//Mon::InitEntity(e, tempName.c_str(), Mon::v3(1.0f), Mon::v3(1.0f), -45.0f, game->renderer->program.handle, 1, 1);
 			}
 			//else
 			//{
 				//tempName = line;
 				//e->name = line.c_str();
-				//Mon::InitEntity(e, line.c_str(), Mon::v3(1.0f), Mon::v3(1.0f), -45.0f, game->renderer.program.handle, 1, 1);
+				//Mon::InitEntity(e, line.c_str(), Mon::v3(1.0f), Mon::v3(1.0f), -45.0f, game->renderer->program.handle, 1, 1);
 			//}
 
 			file >> e->data.meshIndex;
@@ -234,7 +234,7 @@ void AddNewEntity(Mon::GameState* game, int meshIndex, int texIndex = 18, Mon::v
 
 	unsigned int entity = Mon::AddEntity(game->world);
 	Mon::Entity* e = Mon::GetEntity(game->world, game->world->entityCount - 1);
-	Mon::InitEntity(e, "new", Mon::v3(1.0f, 0.0f, 1.0f), scale, -45.0f, game->renderer.program.handle, texIndex, meshIndex, true);
+	Mon::InitEntity(e, "new", Mon::v3(1.0f, 0.0f, 1.0f), scale, -45.0f, game->renderer->program.handle, texIndex, meshIndex, true);
 
 	game->world->entities[entity].collider.data.color = Mon::v3(0.0f, 0.0f, 1.0f);
 	game->selectedIndex = entity;
@@ -244,7 +244,7 @@ void AddWater(Mon::GameState* game)
 {
 	Mon::AddEntity(game->world);
 	Mon::Entity* water = Mon::GetEntity(game->world, game->world->entityCount - 1);
-	Mon::InitWater(water, game->renderer.waterProgram.common.handle);
+	Mon::InitWater(water, game->renderer->waterProgram.common.handle);
 }
 
 void TerrainTab(Mon::GameState* game)
@@ -551,8 +551,8 @@ void EntityTab(Mon::GameState* game)
 					ImGui::DragFloat("angle", &game->world->entities[selected].spriteAngleDegrees, 0.10f, -180.0f, 360.0f, "%.10f");
 
 					ImGui::SliderInt("Mesh index", &game->world->entities[selected].data.meshIndex, 1, Mon::g_Assets->meshCount - 1);
-					// NOTE(ck): game->renderer.textureCount-2 removes the cubemap texture from the selection
-					ImGui::SliderInt("Texture index", &game->world->entities[selected].data.textureIndex, 1, game->renderer.textureCount - 2);
+					// NOTE(ck): game->renderer->textureCount-2 removes the cubemap texture from the selection
+					ImGui::SliderInt("Texture index", &game->world->entities[selected].data.textureIndex, 1, game->renderer->textureCount - 2);
 
 					ImGui::Checkbox("Wireframe", &game->world->entities[selected].data.wireFrame);
 					ImGui::Checkbox("Visible", &game->world->entities[selected].data.visible);
@@ -619,10 +619,10 @@ void RendererTab(Mon::GameState* game)
 			static unsigned int selectedLight = 1;
 			ImGui::BeginChild("left pane lights", ImVec2(150.0f, 0.0f), true);
 
-			for (unsigned int i = 1; i < game->renderer.lightCount; ++i)
+			for (unsigned int i = 1; i < game->renderer->lightCount; ++i)
 			{
 				char label[128];
-				sprintf_s(label, "%s %d", game->renderer.lights[i].id, i);
+				sprintf_s(label, "%s %d", game->renderer->lights[i].id, i);
 				if (ImGui::Selectable(label, selectedLight == i))
 				{
 					selectedLight = i;
@@ -636,7 +636,7 @@ void RendererTab(Mon::GameState* game)
 			ImGui::BeginGroup();
 			ImGui::BeginChild("light details", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
 
-			ImGui::Text("%s", game->renderer.lights[selectedLight].id);
+			ImGui::Text("%s", game->renderer->lights[selectedLight].id);
 			ImGui::Separator();
 			if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
 			{
@@ -646,45 +646,45 @@ void RendererTab(Mon::GameState* game)
 					//sprintf_s(buf, "%s", std::to_string(Mon::g_Assets->meshes[selected].VAO).c_str());
 					//ImGui::Text("VAO %s", buf, IM_ARRAYSIZE(buf));
 
-					ImGui::DragFloat("x", &game->renderer.lights[selectedLight].pos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");
-					ImGui::DragFloat("y", &game->renderer.lights[selectedLight].pos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
-					ImGui::DragFloat("z", &game->renderer.lights[selectedLight].pos.z, 0.1f, -1000.0f, 1000.0f, "%.02f");
-					ImGui::SliderFloat3("ambient", &game->renderer.lights[selectedLight].ambient[0], 0.0f, 1.0f, "%0.01f");
-					ImGui::SliderFloat3("diffuse", &game->renderer.lights[selectedLight].diffuse[0], 0.0f, 1.0f, "%0.01f");
-					ImGui::SliderFloat3("specular", &game->renderer.lights[selectedLight].specular[0], 0.0f, 1.0f, "%0.01f");
+					ImGui::DragFloat("x", &game->renderer->lights[selectedLight].pos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::DragFloat("y", &game->renderer->lights[selectedLight].pos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::DragFloat("z", &game->renderer->lights[selectedLight].pos.z, 0.1f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::SliderFloat3("ambient", &game->renderer->lights[selectedLight].ambient[0], 0.0f, 1.0f, "%0.01f");
+					ImGui::SliderFloat3("diffuse", &game->renderer->lights[selectedLight].diffuse[0], 0.0f, 1.0f, "%0.01f");
+					ImGui::SliderFloat3("specular", &game->renderer->lights[selectedLight].specular[0], 0.0f, 1.0f, "%0.01f");
 
 
 					if (ImGui::Button("dim"))
 					{
-						if (!game->renderer.lights[selectedLight].attachedToEntity)
+						if (!game->renderer->lights[selectedLight].attachedToEntity)
 						{
-							game->renderer.lights[selectedLight].pos.x = 0.0f;
-							game->renderer.lights[selectedLight].pos.y = 3.0f;
-							game->renderer.lights[selectedLight].pos.z = 0.0f;
+							game->renderer->lights[selectedLight].pos.x = 0.0f;
+							game->renderer->lights[selectedLight].pos.y = 3.0f;
+							game->renderer->lights[selectedLight].pos.z = 0.0f;
 						}
-						game->renderer.lights[selectedLight].ambient = Mon::v3(0.2f);
-						game->renderer.lights[selectedLight].diffuse = Mon::v3(1.0f);
-						game->renderer.lights[selectedLight].specular = Mon::v3(0.3f);
+						game->renderer->lights[selectedLight].ambient = Mon::v3(0.2f);
+						game->renderer->lights[selectedLight].diffuse = Mon::v3(1.0f);
+						game->renderer->lights[selectedLight].specular = Mon::v3(0.3f);
 					}
 					ImGui::SameLine();
 					if (ImGui::Button("avg"))
 					{
-						game->renderer.lights[selectedLight].pos.x = 0.0f;
-						game->renderer.lights[selectedLight].pos.y = 20.0f;
-						game->renderer.lights[selectedLight].pos.z = 0.0f;
-						game->renderer.lights[selectedLight].ambient = Mon::v3(0.3f);
-						game->renderer.lights[selectedLight].diffuse = Mon::v3(0.8f);
-						game->renderer.lights[selectedLight].specular = Mon::v3(0.3f);
+						game->renderer->lights[selectedLight].pos.x = 0.0f;
+						game->renderer->lights[selectedLight].pos.y = 20.0f;
+						game->renderer->lights[selectedLight].pos.z = 0.0f;
+						game->renderer->lights[selectedLight].ambient = Mon::v3(0.3f);
+						game->renderer->lights[selectedLight].diffuse = Mon::v3(0.8f);
+						game->renderer->lights[selectedLight].specular = Mon::v3(0.3f);
 					}
 					ImGui::SameLine();
 					if (ImGui::Button("evening"))
 					{
-						game->renderer.lights[selectedLight].pos.x = 24.0f;
-						game->renderer.lights[selectedLight].pos.y = 64.0f;
-						game->renderer.lights[selectedLight].pos.z = 26.0f;
-						game->renderer.lights[selectedLight].ambient = Mon::v3(0.3f, 0.1f, 0.0f);
-						game->renderer.lights[selectedLight].diffuse = Mon::v3(0.8f);
-						game->renderer.lights[selectedLight].specular = Mon::v3(0.3f);
+						game->renderer->lights[selectedLight].pos.x = 24.0f;
+						game->renderer->lights[selectedLight].pos.y = 64.0f;
+						game->renderer->lights[selectedLight].pos.z = 26.0f;
+						game->renderer->lights[selectedLight].ambient = Mon::v3(0.3f, 0.1f, 0.0f);
+						game->renderer->lights[selectedLight].diffuse = Mon::v3(0.8f);
+						game->renderer->lights[selectedLight].specular = Mon::v3(0.3f);
 					}
 
 
@@ -705,10 +705,10 @@ void RendererTab(Mon::GameState* game)
 		{
 			static unsigned int selectedTexture = 1;
 			ImGui::BeginChild("left pane textures", ImVec2(150.0f, 0.0f), true);
-			for (unsigned int i = 1; i < game->renderer.textureCount; ++i)
+			for (unsigned int i = 1; i < game->renderer->textureCount; ++i)
 			{
 				char label[128];
-				sprintf_s(label, "%s %d", game->renderer.textures[i].name.c_str(), i);
+				sprintf_s(label, "%s %d", game->renderer->textures[i].name.c_str(), i);
 				if (ImGui::Selectable(label, selectedTexture == i))
 				{
 					selectedTexture = i;
@@ -724,18 +724,18 @@ void RendererTab(Mon::GameState* game)
 			ImGui::BeginGroup();
 			ImGui::BeginChild("texture details", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
 
-			//ImGui::Text("%s", game->renderer.textures[selectedTexture].id);
+			//ImGui::Text("%s", game->renderer->textures[selectedTexture].id);
 			ImGui::Separator();
 			if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
 			{
 				if (ImGui::BeginTabItem("details"))
 				{
-					float width = (float)game->renderer.textures[selectedTexture].width;
-					float height = (float)game->renderer.textures[selectedTexture].height;
-					ImGui::Text("Width: %d", game->renderer.textures[selectedTexture].width);
-					ImGui::Text("Height: %d", game->renderer.textures[selectedTexture].height);
+					float width = (float)game->renderer->textures[selectedTexture].width;
+					float height = (float)game->renderer->textures[selectedTexture].height;
+					ImGui::Text("Width: %d", game->renderer->textures[selectedTexture].width);
+					ImGui::Text("Height: %d", game->renderer->textures[selectedTexture].height);
 					// flip uv coordinates
-					ImGui::Image((void*)(intptr_t)game->renderer.textures[selectedTexture].id, ImVec2(width, height), { 0, 1 }, { 1, 0 });
+					ImGui::Image((void*)(intptr_t)game->renderer->textures[selectedTexture].id, ImVec2(width, height), { 0, 1 }, { 1, 0 });
 
 
 					ImGui::EndTabItem();
@@ -754,10 +754,10 @@ void RendererTab(Mon::GameState* game)
 		{
 			static unsigned int selectedAnimator = 1;
 			ImGui::BeginChild("left pane animations", ImVec2(150.0f, 0.0f), true);
-			for (unsigned int i = 1; i < game->renderer.spriteAnimatorCount; ++i)
+			for (unsigned int i = 1; i < game->renderer->spriteAnimatorCount; ++i)
 			{
 				char label[128];
-				sprintf_s(label, "%s %d", game->renderer.spriteAnimators[i].animationIndex, i);
+				sprintf_s(label, "%s %d", game->renderer->spriteAnimators[i].animationIndex, i);
 				if (ImGui::Selectable(label, selectedAnimator == i))
 				{
 					selectedAnimator = i;
@@ -773,14 +773,14 @@ void RendererTab(Mon::GameState* game)
 			ImGui::BeginGroup();
 			ImGui::BeginChild("animator details", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
 
-			//ImGui::Text("%s", game->renderer.textures[selectedTexture].id);
+			//ImGui::Text("%s", game->renderer->textures[selectedTexture].id);
 			ImGui::Separator();
 			if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
 			{
 				if (ImGui::BeginTabItem("details"))
 				{
-					MonGL::GLSpriteAnimator* ani = &game->renderer.spriteAnimators[selectedAnimator];
-					MonGL::Texture* t = &game->renderer.textures[8];
+					MonGL::GLSpriteAnimator* ani = &game->renderer->spriteAnimators[selectedAnimator];
+					MonGL::Texture* t = &game->renderer->textures[8];
 
 
 					// TODO(ck): Convert My texcoords to uv coordinates for IMGUI or just parse myself can just use 
@@ -1292,7 +1292,7 @@ void EntityTab(Mon::Game2D* game)
 					//ImGui::DragFloat("angle", &game->world->entities[selected].spriteAngleDegrees, 0.10f, -180.0f, 360.0f, "%.10f");
 
 					//ImGui::SliderInt("Mesh index", &game->world->entities[selected].data.meshIndex, 1, Mon::g_Assets->meshCount - 1);
-					//ImGui::SliderInt("Texture index", &game->world->entities[selected].data.textureIndex, 1, game->renderer.textureCount - 1);
+					//ImGui::SliderInt("Texture index", &game->world->entities[selected].data.textureIndex, 1, game->renderer->textureCount - 1);
 
 					//ImGui::Checkbox("Wireframe", &game->world->entities[selected].data.wireFrame);
 					//ImGui::Checkbox("Visible", &game->world->entities[selected].data.visible);

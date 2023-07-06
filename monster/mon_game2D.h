@@ -63,7 +63,7 @@ namespace Mon {
 
 	bool Init(Game2D* game);
 	void Update(Game2D* game, double dt, Input* input);
-	void Render(Game2D* game);
+	void Render(Game2D* game, double dt);
 
 	void SetViewPort(MonGL::Config* config, int width, int height);
 	bool Playing(Game2D* game);

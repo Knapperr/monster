@@ -140,10 +140,12 @@ void App::run()
 #endif
 
 #ifdef _3D_
+		// TODO(ck): PASS DELTA TIME TO RENDERER
 		float time = float(SDL_GetTicks() / 1000.0f);
 		Mon::Render(&memory, time, 1.0f);
 #else
-		Mon::Render(game2D);
+		// TODO(ck): PASS DELTA TIME TO RENDERER
+		Mon::Render(game2D, 1.0f);
 #endif
 
 		if (showGUI)

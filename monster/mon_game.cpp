@@ -156,8 +156,8 @@ namespace Mon
 
 		// TODO(ck): Memory Allocation for Renderer
 		// allocate renderer
-		state->renderer = {};
-		MonGL::InitRenderer(&state->renderer);
+		state->renderer =  new MonGL::OpenGL();
+		MonGL::InitRenderer(state->renderer);
 
 		state->setup = {};
 		state->setup.materialShininess = 64.0f;
@@ -193,7 +193,7 @@ namespace Mon
 		// TODO(ck): MEMORY MANAGEMENT
 		// allocate world
 		state->world = new World();
-		InitWorld(state->world, state->renderer.program.handle, state->renderer.waterProgram.common.handle, state->config.spriteAngleDegrees);
+		InitWorld(state->world, state->renderer->program.handle, state->renderer->waterProgram.common.handle, state->config.spriteAngleDegrees);
 
 
 		state->initialized = true;
@@ -278,7 +278,7 @@ namespace Mon
 		//
 		//	ENTITIES UPDATE
 		//
-		UpdateEntities(state->world, &state->renderer, dt);
+		UpdateEntities(state->world, state->renderer, dt);
 		
 		// 
 		// CAMERA UPDATE
@@ -312,9 +312,9 @@ namespace Mon
 
 		// TODO(ck): UseProgram should be called only one time before switching shaders
 		//			 DO NOT CALL every time you draw an entity glUseProgram is expensive
-		MonGL::UseProgram(&state->renderer.program, state->setup);
+		MonGL::UseProgram(&state->renderer->program, state->setup);
 
-		MonGL::BeginRender(&state->renderer, &state->config, projection, viewMatrix, state->renderer.program.handle);
+		MonGL::BeginRender(state->renderer, &state->config, projection, viewMatrix, state->renderer->program.handle);
 		state->setup.projection = projection;
 		state->setup.viewMatrix = viewMatrix;
 		state->setup.time = time;
@@ -329,11 +329,11 @@ namespace Mon
 		// 3. start using main obj shader here go back to main shader
 		
 		// 1. grid/terrain needs its own shader anyways
-		MonGL::DrawTerrain(&state->renderer, &state->grid->data, cam);
+		MonGL::DrawTerrain(state->renderer, &state->grid->data, cam);
 		// 2. using cubemap program inside here
-		MonGL::DrawCubeMap(&state->renderer, state->setup);
+		MonGL::DrawCubeMap(state->renderer, state->setup);
 		// 3. start using main obj shader here go back to main shader
-		MonGL::UseProgram(&state->renderer.program, state->setup);
+		MonGL::UseProgram(&state->renderer->program, state->setup);
 
 
 		//
@@ -344,7 +344,7 @@ namespace Mon
 			Entity e = state->world->entities[i];
 
 			if (state->drawCollisions)
-				MonGL::DrawBoundingBox(&state->renderer, &e.collider.data, cam);
+				MonGL::DrawBoundingBox(state->renderer, &e.collider.data, cam);
 			
 			if(e.flags & EntityRenderFlag::Sprite)
 			{
@@ -354,45 +354,45 @@ namespace Mon
 				batchItem.tileSize = 32;
 				batchItem.spriteSize = 1.0f;
 				batchItem.animationIndex = e.spriteAnimationIndex;
-				state->renderer.batchItems_.push_back(batchItem);
+				state->renderer->batchItems_.push_back(batchItem);
 			
 			}
 			if (e.flags & EntityRenderFlag::Model)
 			{
 				// init and add render data
-				state->renderer.renderItems_.push_back(e.data);
+				state->renderer->renderItems_.push_back(e.data);
 			}
 		}
 
 		// 
 		// 3D Models
 		//
-		for (int i = 0; i < state->renderer.renderItems_.size(); ++i)
+		for (int i = 0; i < state->renderer->renderItems_.size(); ++i)
 		{
-			MonGL::RenderData data = state->renderer.renderItems_[i];
-			MonGL::Draw(&state->renderer, &state->config, state->setup, data.angleDegrees, &data, data.pos, cam);
+			MonGL::RenderData data = state->renderer->renderItems_[i];
+			MonGL::Draw(state->renderer, &state->config, state->setup, data.angleDegrees, &data, data.pos, cam);
 		}
 
 		// 
 		// SPRITE BATCH
 		//
-		MonGL::UseProgram(&state->renderer.quadProgram, state->setup);
+		MonGL::UseProgram(&state->renderer->quadProgram, state->setup);
 		
-		MonGL::Batch* batch = MonGL::GetBatch(&state->renderer, 1);
-		for (int i = 0; i < state->renderer.batchItems_.size(); ++i)
+		MonGL::Batch* batch = MonGL::GetBatch(state->renderer, 1);
+		for (int i = 0; i < state->renderer->batchItems_.size(); ++i)
 		{
-			MonGL::BatchItem item = state->renderer.batchItems_[i];
+			MonGL::BatchItem item = state->renderer->batchItems_[i];
 			//(Batch * batch, float posX, float posY, int texOffsetX, int texOffsetY, int tileSize)			
-			MonGL::GLSpriteAnimation* anim = &state->renderer.spriteAnimators[1].animations[item.animationIndex];
+			MonGL::GLSpriteAnimation* anim = &state->renderer->spriteAnimators[1].animations[item.animationIndex];
 			
-			MonGL::UpdateSpriteAnimation(anim, 1, (float)dt);
+			//MonGL::UpdateSpriteAnimation(anim, 1, (float)dt);
 
 			MonGL::GLSubTexture* subTexture = &anim->frames[anim->frameIndex].subTexture;//&animator->animations[item.animationIndex].frames[state->selectedSubTextureIndex].subTexture;
 			MonGL::FillBatch(batch, item.worldPos.x, item.worldPos.y, item.worldPos.z, subTexture, 32);
 		}
 
 		MonGL::BindBatchVertices(batch);
-		MonGL::DrawBatch(&state->renderer, batch);
+		MonGL::DrawBatch(state->renderer, batch);
 
 		//
 		// DEBUG TOOLS
@@ -400,10 +400,10 @@ namespace Mon
 		//MonGL::DrawLine(&state->renderer, &state->lineOne);
 		//MonGL::DrawLine(&state->renderer, &state->lineTwo);
 		//DrawDebugInfo(); //MonGL:: calls inside 
-		MonGL::UseProgram(&state->renderer.program, state->setup);
-		MonGL::DrawLights(&state->renderer);
+		MonGL::UseProgram(&state->renderer->program, state->setup);
+		MonGL::DrawLights(state->renderer);
 
-		MonGL::EndRender(&state->renderer);
+		MonGL::EndRender(state->renderer);
 	}
 
 	void CleanUp(GameState* state)
@@ -413,7 +413,7 @@ namespace Mon
 		//glDeleteVertexArrays(1, &world->player->data.VAO);
 		//glDeleteBuffers(1, &world->player->data.VBO);
 		delete state->grid;
-		MonGL::DeleteShader(&state->renderer.program);
+		MonGL::DeleteShader(&state->renderer->program);
 	}
 
 	void SetViewPort(GameState* state, int width, int height)

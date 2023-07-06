@@ -90,7 +90,7 @@ namespace Mon {
 		}
 	}
 
-	void Render(Game2D* game)
+	void Render(Game2D* game, double dt)
 	{
 		MonGL::ViewPort(&game->config->viewPort);
 
@@ -125,8 +125,22 @@ namespace Mon {
 
 		// Fill array called batch items and sort them by y position before 
 		// sending them to the batch
+		/*
+					MonGL::BatchItem item = state->renderer->batchItems_[i];
+			//(Batch * batch, float posX, float posY, int texOffsetX, int texOffsetY, int tileSize)			
+			MonGL::GLSpriteAnimation* anim = &state->renderer->spriteAnimators[1].animations[item.animationIndex];
+			
+			//MonGL::UpdateSpriteAnimation(anim, 1, (float)dt);
+
+			MonGL::GLSubTexture* subTexture = &anim->frames[anim->frameIndex].subTexture;//&animator->animations[item.animationIndex].frames[state->selectedSubTextureIndex].subTexture;
+
+		*/
 		MonGL::GLSpriteAnimator* animator = &game->renderer.spriteAnimators[1];
-		MonGL::GLSubTexture* subTexture = &animator->animations[0].frames[0].subTexture;
+		MonGL::GLSpriteAnimation* animation = &animator->animations[0];
+
+		MonGL::UpdateSpriteAnimation(animation, 1, dt);
+		
+		MonGL::GLSubTexture* subTexture = &animation->frames[animation->frameIndex].subTexture;
 		for (unsigned int i = 1; i < game->world->entityCount; ++i)
 		{
 			Entity2D e = game->world->entities[i];

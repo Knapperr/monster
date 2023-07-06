@@ -85,7 +85,7 @@ namespace Mon
 
 		// This should be a global static struct that gets called outside
 		// of the game?
-		MonGL::OpenGL renderer;
+		MonGL::OpenGL* renderer;
 		MonGL::RenderSetup setup;
 
 		// TODO(ck): Should this be in here???
