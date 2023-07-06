@@ -295,61 +295,69 @@ namespace MonGL
 		int batchIndex = AddBatch(gl);
 		InitBatch(gl, batchIndex);
 
-		// Init Sub Textures for sprite animation
-		//for (int i = 0; i < 10; ++i)
-		//{
-
-		//	unsigned int index = gl->subTextureCount++;
-		//	GLSubTexture *subText = &gl->subTextures[index];
-		//	subText = {};
-
-
-		//}
 		// Init Animations
 		{
 			// null at index 0
-			GLSpriteAnimation* glAnimation = &gl->spriteAnimations[0];
-			glAnimation = {};
-			gl->spriteAnimationCount++;
+			GLSpriteAnimator* glAnimator = &gl->spriteAnimators[0];
+			glAnimator = {};
+			gl->spriteAnimatorCount++;
 
-			GLSpriteAnimation* glAni1 = &gl->spriteAnimations[1];
-			glAni1->textureAtlasIndex = 1;
-			gl->spriteAnimationCount++;
+			// Add animator method
+			GLSpriteAnimator* glAnimator1 = &gl->spriteAnimators[1];
+			glAnimator1->animationIndex = 1;
+			gl->spriteAnimatorCount++;
+
+			const int animationCount = 1;
+			const int frameCount = 4;
 
 			const int subTextureCount = 4;
 			float sheetSize = 256.0f;
 			int tileSize = 32;
-			int tileOffsetX = 3;			
+			int tileOffsetX = 3;
 			int tileOffsetY = 7;
 
-			for (int i = 0; i < subTextureCount; ++i)
+			for (int i = 0; i < animationCount; ++i)
 			{
-				if (i == 1)
-				{
-					tileOffsetX = 2;
-				}
-				else if (i == 2)
-				{
-					tileOffsetX = 1;
-				}
-				else if (i == 3)
-				{
-					tileOffsetX = 0;
-				}
+				// Add animation method
+				GLSpriteAnimation* ani = &gl->spriteAnimators[1].animations[i];
+				ani->textureAtlasIndex = 1;
+				glAnimator1->animationCount++;
 
-				GLSubTexture* subT = &gl->spriteAnimations[1].subTextures[i];
-				
-				subT->height = 32;
-				subT->width = 32;
-				subT->textureAtlasIndex = 1;
-				subT->tileSize = 32;
-				subT->texCoords[0] = v2((tileOffsetX * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize); // bottom left
-				subT->texCoords[1] = v2(((tileOffsetX + 1) * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize); // bottom right
-				subT->texCoords[2] = v2(((tileOffsetX + 1) * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize); // top right
-				subT->texCoords[3] = v2((tileOffsetX * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize); // top left 
+				ani->frameIndex = 0;
+				ani->frameCounter = 0;
 
+				for (int frameIndex = 0; frameIndex < frameCount; ++frameIndex)
+				{
+					// Add frame method
+					GLFrame* frame = &ani->frames[frameIndex];
+					ani->frameCount++;
+
+					if (frameIndex == 1)
+					{
+						tileOffsetX = 2;
+					}
+					else if (frameIndex == 2)
+					{
+						tileOffsetX = 1;
+					}
+					else if (frameIndex == 3)
+					{
+						tileOffsetX = 0;
+					}
+
+					frame->subTexture = {};
+					frame->subTexture.height = 32;
+					frame->subTexture.height = 32;
+					frame->subTexture.tileSize = 32;
+					frame->subTexture.texCoords[0] = v2((tileOffsetX * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize); // bottom left
+					frame->subTexture.texCoords[1] = v2(((tileOffsetX + 1) * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize); // bottom right
+					frame->subTexture.texCoords[2] = v2(((tileOffsetX + 1) * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize); // top right
+					frame->subTexture.texCoords[3] = v2((tileOffsetX * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize); // top left 
+
+					frame->duration = 1000.0f;
+				}
 			}
-		}
+		} // Animations 
 
 		// Frame buffer
 		int screenWidth = 960;
@@ -1136,32 +1144,25 @@ namespace MonGL
 	/// [BEGIN] Sprite Animation
 	///
 
-	void UpdateAnimation(GLSpriteAnimation* animation)
+	void UpdateSpriteAnimation(GLSpriteAnimation* animation, int animationIndex, float dt)
 	{
-		/*
-		 PLAY ()
+
+		GLFrame* frame = &animation->frames[animation->frameIndex];
+		
+		animation->frameCounter += dt;
+
+		while (animation->frameCounter >= frame->duration)
 		{
-		BLAH_ASSERT(m_sprite, "No Sprite Assigned!");
+			// reset frame counter
+			animation->frameCounter -= frame->duration;
 
-		for (int i = 0; i < m_sprite->animations.size(); i++)
-		{
-			if (m_sprite->animations[i].name == animation)
-			{
-				if (m_animation_index != i || restart)
-				{
-					m_animation_index = i;
-					m_frame_index = 0;
-					m_frame_counter = 0;
-				}
+			// increment frame, move back if we're at the end
+			animation->frameIndex++;
+			if (animation->frameIndex >= animation->frameCount)
+				animation->frameIndex = 0;
+		}
 
-				break;
-			}
-		*/
-
-
-		// I think play is advancing the animation and saying play it while this is true
-		// and update is just updating it so if its not being called nothing will change?
-
+		
 		/*
 		 // UPDATE ()
 		// only update if we're in a valid state
@@ -1198,6 +1199,29 @@ namespace MonGL
 			}
 		}
 		*/
+
+		// I think play is advancing the animation and saying play it while this is true
+		// and update is just updating it so if its not being called nothing will change?
+				/*
+		 PLAY ()
+		{
+		BLAH_ASSERT(m_sprite, "No Sprite Assigned!");
+
+		for (int i = 0; i < m_sprite->animations.size(); i++)
+		{
+			if (m_sprite->animations[i].name == animation)
+			{
+				if (m_animation_index != i || restart)
+				{
+					m_animation_index = i;
+					m_frame_index = 0;
+					m_frame_counter = 0;
+				}
+
+				break;
+			}
+		*/
+
 	}
 
 	///
@@ -1365,6 +1389,72 @@ namespace MonGL
 //	MonGL::Texture* t = GetTexture(gl, i);
 //	LoadTexture(t, asset->type, asset->isPixelArt, GetImage(g_Assets, asset->imageIndex));
 //}
+
+		// Init Animations
+		{
+			// null at index 0
+			GLSpriteAnimator* glAnimator = &gl->spriteAnimators[0];
+			glAnimator = {};
+			gl->spriteAnimatorCount++;
+
+			// Add animator method
+			GLSpriteAnimator* glAnimator1 = &gl->spriteAnimators[1];
+			glAnimator1->animationIndex = 1;
+			gl->spriteAnimatorCount++;
+
+			const int animationCount = 1;
+			const int frameCount = 4;
+
+			const int subTextureCount = 4;
+			float sheetSize = 256.0f;
+			int tileSize = 32;
+			int tileOffsetX = 3;
+			int tileOffsetY = 7;
+
+			for (int i = 0; i < animationCount; ++i)
+			{
+				// Add animation method
+				GLSpriteAnimation* ani = &gl->spriteAnimators[1].animations[i];
+				ani->textureAtlasIndex = 1;
+				glAnimator1->animationCount++;
+
+				ani->frameIndex = 0;
+				ani->frameCount = 0;
+
+				for (int frameIndex = 0; frameIndex < frameCount; ++frameIndex)
+				{
+					// Add frame method
+					GLFrame* frame = &ani->frames[frameIndex];
+					ani->frameCount++;
+
+					if (frameIndex == 1)
+					{
+						tileOffsetX = 2;
+					}
+					else if (frameIndex == 2)
+					{
+						tileOffsetX = 1;
+					}
+					else if (frameIndex == 3)
+					{
+						tileOffsetX = 0;
+					}
+
+					frame->subTexture = {};
+					frame->subTexture.height = 32;
+					frame->subTexture.height = 32;
+					frame->subTexture.tileSize = 32;
+					frame->subTexture.texCoords[0] = v2((tileOffsetX * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize); // bottom left
+					frame->subTexture.texCoords[1] = v2(((tileOffsetX + 1) * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize); // bottom right
+					frame->subTexture.texCoords[2] = v2(((tileOffsetX + 1) * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize); // top right
+					frame->subTexture.texCoords[3] = v2((tileOffsetX * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize); // top left 
+
+					frame->duration = 5.0f;
+
+				}
+			}
+		} // Animations 
+
 
 		// null at 0 index
 		AddBatch(gl);
@@ -1624,6 +1714,88 @@ namespace MonGL
 		batch->vertices.push_back(vec2);
 		batch->vertices.push_back(vec3);
 	}
+
+	void FillBatch(BatchData* batch, float sheetSize, int tileSize, float spriteSize, float worldX, float worldY, GLSubTexture subTexture, v2 cameraPos)
+	{
+#if 0
+		// top left
+		float u = tileOffsetX / sheetSize;
+		float v = tileOffsetY / sheetSize;
+		// bottom right
+		float u2 = (tileOffsetX + tileSize) / sheetSize;
+		float v2_ = (tileOffsetY + tileSize) / sheetSize;
+
+		v4 uvRect = v4(u, v, u2 - u, v2_ - v);
+		float left = uvRect.x;
+		float right = uvRect.x + uvRect.z;
+		float top = uvRect.y;
+		float bottom = uvRect.y + uvRect.w;
+
+		v2 tr = v2(right, top);
+		v2 tl = v2(left, top);
+		v2 br = v2(right, bottom);
+		v2 bl = v2(left, bottom);
+#endif
+
+		float size = spriteSize * 16.0f; // spriteSize * pixelsPerMeter
+		float pixelsPerMeter = 16.0f;
+
+		worldX *= pixelsPerMeter;
+		worldY *= pixelsPerMeter;
+		float x = worldX;
+		float y = worldY;
+
+		// tile coords to world coords
+		/*
+		worldX *= 16.0f;
+		worldY *= 16.0f;
+		float x = worldX;
+		float y = worldY;
+		*/
+		// world to screen position
+		//v2 cameraCoords = v2(worldX, worldY) - cameraPos;
+		//float screenW = 480.0f;
+		//float screenH = 270.0f;
+		//float x = cameraCoords.x + screenW / 2.0f;
+		//float y = cameraCoords.y + screenH / 2.0f;
+
+
+		Vertex vec0 = {
+				v3(x,
+				   y,
+				   0.0f),
+				v3(1.0f, 0.0f, 0.0f),
+				subTexture.texCoords[0]
+		};
+		Vertex vec1 = {
+			v3((x + size),
+				y,
+				0.0f),
+			v3(0.0f, 1.0f, 0.0f),
+			subTexture.texCoords[1]
+		};
+		Vertex vec2 = {
+			v3((x + size),
+				(y + size),
+				0.0f),
+			v3(0.0f, 0.0f, 1.0f),
+			subTexture.texCoords[2]
+		};
+		Vertex vec3 = {
+			v3((x),
+				(y + size),
+				0.0f),
+			v3(1.0f, 1.0f, 0.0f),
+			subTexture.texCoords[3]
+		};
+
+		batch->usedIndices += 6;
+		batch->vertices.push_back(vec0);
+		batch->vertices.push_back(vec1);
+		batch->vertices.push_back(vec2);
+		batch->vertices.push_back(vec3);
+	}
+
 
 	void BindVertices(BatchData* batch)
 	{

@@ -181,10 +181,6 @@ namespace MonGL
 
 	struct GLSubTexture
 	{
-		// Maybe keep this in the animation...
-		// subtexture is just data...???
-		int textureAtlasIndex;
-
 		float sheetSize;
 		int tileSize;
 		int width;
@@ -194,13 +190,32 @@ namespace MonGL
 		v2 texCoords[4];
 	};
 
+	struct GLFrame
+	{
+		float duration;
+		GLSubTexture subTexture;
+	};
+
 	struct GLSpriteAnimation
 	{
 		int textureAtlasIndex;
-		int subTextureCount;
-		GLSubTexture subTextures[32];
+		float totalDuration;
+
+		int frameIndex;
+		int frameCounter;
+
+		GLFrame frames[32];
+		int frameCount;
 	};
 
+	struct GLSpriteAnimator
+	{
+		int textureAtlasIndex;
+
+		int animationIndex;
+		GLSpriteAnimation animations[16];
+		int animationCount;
+	};
 
 	struct BatchItem
 	{
@@ -236,7 +251,7 @@ namespace MonGL
 		Batch batch;
 		Light lights[32];
 		Texture textures[32]; // NOTE(ck): These use images from the asset pipeline
-		GLSpriteAnimation spriteAnimations[32];
+		GLSpriteAnimator spriteAnimators[32];
 
 		Batch batches_[4];
 		BatchData batches[4];
@@ -248,6 +263,7 @@ namespace MonGL
 		int lightCount;
 		int textureCount;
 		int spriteAnimationCount;
+		int spriteAnimatorCount;
 		int batchCount2D;
 		int batchCount_;
 
@@ -313,6 +329,9 @@ namespace MonGL
 	void FillBatch(Batch* batch, float posX, float posY, float posZ, GLSubTexture* subTexture, int tileSize);
 	void BindBatchVertices(Batch* batch);
 	void DrawBatch(OpenGL* gl, Batch* batch);
+
+	// Animations
+	void UpdateSpriteAnimation(GLSpriteAnimation* animation, int animationIndex, float dt);
 
 	void EndRender(OpenGL* gl);
 
@@ -392,6 +411,7 @@ namespace MonGL
 	void InitBatch(BatchData* batch, int tileAmount);
 	void InitBatch(OpenGL* gl, int batchIndex, int tileAmount);
 	void FillBatch(BatchData* batch, float sheetSize, int tileSize, float spriteSize, float worldX, float worldY, v2 textureOffset, v2 cameraPos);	
+	void FillBatch(BatchData* batch, float sheetSize, int tileSize, float spriteSize, float worldX, float worldY, GLSubTexture subTexture, v2 cameraPos);
 	void BindVertices(BatchData* batch);
 	
 	void DrawObject(CommonProgram* shader, RenderData2D* data, v2 cameraPos);

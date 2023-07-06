@@ -125,12 +125,13 @@ namespace Mon {
 
 		// Fill array called batch items and sort them by y position before 
 		// sending them to the batch
-		v2 textureOffset = v2(2.0f, 7.0f);
+		MonGL::GLSpriteAnimator* animator = &game->renderer.spriteAnimators[1];
+		MonGL::GLSubTexture* subTexture = &animator->animations[0].frames[0].subTexture;
 		for (unsigned int i = 1; i < game->world->entityCount; ++i)
 		{
 			Entity2D e = game->world->entities[i];
 			MonGL::FillBatch(spriteBatch, 256.0f, 32, 2.0f, e.pos.x, e.pos.y,
-							 textureOffset,
+							 *subTexture,
 							 game->cameras[game->currentCameraIndex].pos);
 		}
 

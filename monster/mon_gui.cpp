@@ -540,6 +540,9 @@ void EntityTab(Mon::GameState* game)
 					ImGui::PopStyleColor();
 					ImGui::PopID();
 
+					ImGui::SliderInt("Animation Index", &game->world->entities[selected].spriteAnimationIndex, 0, 10);
+
+
 					ImGui::SliderFloat3("scale", &game->world->entities[selected].data.scale[0], 1.0f, 20.0f, "%1.0f");
 					ImGui::SliderFloat3("Collider min", &game->world->entities[selected].collider.min[0], 0.0f, 100.0f, "%1.0f");
 					ImGui::SliderFloat3("Collider max", &game->world->entities[selected].collider.max[0], 0.0f, 100.0f, "%1.0f");
@@ -686,7 +689,6 @@ void RendererTab(Mon::GameState* game)
 
 
 
-
 					ImGui::EndTabItem();
 				}
 
@@ -748,6 +750,63 @@ void RendererTab(Mon::GameState* game)
 			ImGui::TreePop();
 		} // END TEXTURES
 
+		if (ImGui::TreeNode("Animations"))
+		{
+			static unsigned int selectedAnimator = 1;
+			ImGui::BeginChild("left pane animations", ImVec2(150.0f, 0.0f), true);
+			for (unsigned int i = 1; i < game->renderer.spriteAnimatorCount; ++i)
+			{
+				char label[128];
+				sprintf_s(label, "%s %d", game->renderer.spriteAnimators[i].animationIndex, i);
+				if (ImGui::Selectable(label, selectedAnimator == i))
+				{
+					selectedAnimator = i;
+				}
+
+
+			}
+			ImGui::EndChild();
+			// Start Right Pane Details
+			ImGui::SameLine();
+
+
+			ImGui::BeginGroup();
+			ImGui::BeginChild("animator details", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
+
+			//ImGui::Text("%s", game->renderer.textures[selectedTexture].id);
+			ImGui::Separator();
+			if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
+			{
+				if (ImGui::BeginTabItem("details"))
+				{
+					MonGL::GLSpriteAnimator* ani = &game->renderer.spriteAnimators[selectedAnimator];
+					MonGL::Texture* t = &game->renderer.textures[8];
+
+
+					// TODO(ck): Convert My texcoords to uv coordinates for IMGUI or just parse myself can just use 
+					// the texture atlas asset. 
+					// Maybe change my uv coordinates to work this way
+
+					for (int i = 0; i < ani->animationCount; ++i)
+					{
+						MonGL::GLSpriteAnimation* a = &ani->animations[i];
+						MonGL::GLSubTexture* subT = &ani->animations[i].frames[0].subTexture;
+						ImGui::Image((void*)(intptr_t)t->id, ImVec2(32.0f, 32.0f), ImVec2(subT->texCoords[0].x, subT->texCoords[0].y), ImVec2(subT->texCoords[3].x, subT->texCoords[3].y));
+						ImGui::Separator();
+					}
+
+
+					ImGui::EndTabItem();
+				}
+
+				ImGui::EndTabBar();
+			}
+
+			ImGui::EndChild();
+			ImGui::EndGroup();
+
+			ImGui::TreePop();
+		} // END ANIMATIONS
 
 		ImGui::EndTabItem();
 	} // Renderer Tab

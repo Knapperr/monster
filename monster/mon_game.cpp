@@ -61,7 +61,7 @@ namespace Mon
 		//qsort(game->world->entities, game->world->entityCount, sizeof(Entity), sortEntities);
 	}
 
-	void UpdateEntities(World* world, float dt)
+	void UpdateEntities(World* world, MonGL::OpenGL* gl, float dt)
 	{
 		// update minion around for fun
 
@@ -278,7 +278,7 @@ namespace Mon
 		//
 		//	ENTITIES UPDATE
 		//
-		UpdateEntities(state->world, dt);
+		UpdateEntities(state->world, &state->renderer, dt);
 		
 		// 
 		// CAMERA UPDATE
@@ -378,16 +378,16 @@ namespace Mon
 		//
 		MonGL::UseProgram(&state->renderer.quadProgram, state->setup);
 		
-
-
 		MonGL::Batch* batch = MonGL::GetBatch(&state->renderer, 1);
 		for (int i = 0; i < state->renderer.batchItems_.size(); ++i)
 		{
 			MonGL::BatchItem item = state->renderer.batchItems_[i];
-			//(Batch * batch, float posX, float posY, int texOffsetX, int texOffsetY, int tileSize)
-			MonGL::GLSpriteAnimation* animation = &state->renderer.spriteAnimations[item.animationIndex];
-			MonGL::GLSubTexture* subTexture = &animation->subTextures[state->selectedSubTextureIndex];
-			//MonGL::FillBatch(batch, item.worldPos.x, item.worldPos.y, item.worldPos.z, 3, 7, 32);
+			//(Batch * batch, float posX, float posY, int texOffsetX, int texOffsetY, int tileSize)			
+			MonGL::GLSpriteAnimation* anim = &state->renderer.spriteAnimators[1].animations[item.animationIndex];
+			
+			MonGL::UpdateSpriteAnimation(anim, 1, (float)dt);
+
+			MonGL::GLSubTexture* subTexture = &anim->frames[anim->frameIndex].subTexture;//&animator->animations[item.animationIndex].frames[state->selectedSubTextureIndex].subTexture;
 			MonGL::FillBatch(batch, item.worldPos.x, item.worldPos.y, item.worldPos.z, subTexture, 32);
 		}
 
