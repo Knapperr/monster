@@ -266,8 +266,9 @@ namespace MonGL
 		// TODO(ck): IMPORTANT(ck): FIX THIS 
 		// NOTE(ck): using image indexes [24 to 29] need a better way to handle this
 		AddTexture(gl);
-		MonGL::Texture* t23 = GetTexture(gl, assetCount+1);
-		LoadCubeMapTexture(t23);
+		MonGL::Texture* t = GetTexture(gl, assetCount+1);
+		gl->cubemapProgram.skyboxTextureIndex = assetCount+1;
+		LoadCubeMapTexture(t);
 		gl->cubemap = {};
 		LoadCubemap(&gl->cubemap);
 
@@ -308,7 +309,7 @@ namespace MonGL
 			gl->spriteAnimatorCount++;
 
 			const int animationCount = 1;
-			const int frameCount = 4;
+			int frameCount = 4;
 
 			const int subTextureCount = 4;
 			float sheetSize = 256.0f;
@@ -354,9 +355,53 @@ namespace MonGL
 					frame->subTexture.texCoords[2] = v2(((tileOffsetX + 1) * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize); // top right
 					frame->subTexture.texCoords[3] = v2((tileOffsetX * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize); // top left 
 
-					frame->duration = 1000.0f;
+					frame->duration = 5.0f;
 				}
 			}
+
+			// Walk animation
+
+			// Add animator method
+			GLSpriteAnimator* glAnimatorWalk = &gl->spriteAnimators[1];
+			glAnimatorWalk->animationIndex = 1;
+			gl->spriteAnimatorCount++;
+
+			frameCount = 10;
+
+			//sheet size 
+			for (int i = 0; i < animationCount; ++i)
+			{
+				// Add animation method
+				GLSpriteAnimation* ani = &gl->spriteAnimators[2].animations[i];
+				ani->textureAtlasIndex = 1;
+				glAnimatorWalk->animationCount++;
+
+				ani->frameIndex = 0;
+				ani->frameCounter = 0;
+				tileOffsetY = 4;
+				tileOffsetX = 0;
+
+				for (int frameIndex = 0; frameIndex < frameCount; ++frameIndex)
+				{
+					// Add frame method
+					GLFrame* frame = &ani->frames[frameIndex];
+					ani->frameCount++;
+
+					frame->subTexture = {};
+					frame->subTexture.height = 32;
+					frame->subTexture.height = 32;
+					frame->subTexture.tileSize = 32;
+					frame->subTexture.texCoords[0] = v2((tileOffsetX * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize); // bottom left
+					frame->subTexture.texCoords[1] = v2(((tileOffsetX + 1) * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize); // bottom right
+					frame->subTexture.texCoords[2] = v2(((tileOffsetX + 1) * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize); // top right
+					frame->subTexture.texCoords[3] = v2((tileOffsetX * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize); // top left 
+
+					frame->duration = 0.2f;
+
+					tileOffsetX++;
+				}
+			}
+
 		} // Animations 
 
 		// Frame buffer
@@ -632,8 +677,6 @@ namespace MonGL
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(data->worldMatrix));
 		glBindVertexArray(mesh->VAO);
 
-		glEnable(GL_LINE_SMOOTH);
-		glLineWidth((float)data->lineWidth);
 		glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, 0);
 
 		glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, (GLvoid*)(4 * sizeof(GLushort)));
@@ -1403,7 +1446,7 @@ namespace MonGL
 			gl->spriteAnimatorCount++;
 
 			const int animationCount = 1;
-			const int frameCount = 4;
+			int frameCount = 4;
 
 			const int subTextureCount = 4;
 			float sheetSize = 256.0f;
@@ -1451,6 +1494,49 @@ namespace MonGL
 
 					frame->duration = 100.0f;
 
+				}
+			}
+
+			// Walk animation
+
+			// Add animator method
+			GLSpriteAnimator* glAnimatorWalk = &gl->spriteAnimators[1];
+			glAnimatorWalk->animationIndex = 1;
+			gl->spriteAnimatorCount++;
+
+			frameCount = 10;
+
+			//sheet size 
+			for (int i = 0; i < animationCount; ++i)
+			{
+				// Add animation method
+				GLSpriteAnimation* ani = &gl->spriteAnimators[2].animations[i];
+				ani->textureAtlasIndex = 1;
+				glAnimatorWalk->animationCount++;
+
+				ani->frameIndex = 0;
+				ani->frameCounter = 0;
+				tileOffsetY = 4;
+				tileOffsetX = 0;
+
+				for (int frameIndex = 0; frameIndex < frameCount; ++frameIndex)
+				{
+					// Add frame method
+					GLFrame* frame = &ani->frames[frameIndex];
+					ani->frameCount++;
+
+					frame->subTexture = {};
+					frame->subTexture.height = 32;
+					frame->subTexture.height = 32;
+					frame->subTexture.tileSize = 32;
+					frame->subTexture.texCoords[0] = v2((tileOffsetX * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize); // bottom left
+					frame->subTexture.texCoords[1] = v2(((tileOffsetX + 1) * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize); // bottom right
+					frame->subTexture.texCoords[2] = v2(((tileOffsetX + 1) * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize); // top right
+					frame->subTexture.texCoords[3] = v2((tileOffsetX * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize); // top left 
+
+					frame->duration = 15.0f;
+
+					tileOffsetX++;
 				}
 			}
 		} // Animations 
@@ -1817,6 +1903,8 @@ namespace MonGL
 		model = glm::translate(model, pos);
 
 		glUniformMatrix4fv(glGetUniformLocation(shader->handle, "model"), 1, GL_FALSE, glm::value_ptr(model));
+
+		//glUniform1i(shader->collider, useCollider);
 
 		glActiveTexture(GL_TEXTURE0);
 		glUniform1i(glGetUniformLocation(shader->handle, "image"), 0);

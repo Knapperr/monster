@@ -15,6 +15,13 @@ uniform mat4 projection;
 
 uniform float texCoordScale = 1.0;
 
+// Values that stay constant for the whole mesh.
+uniform vec3 CameraRight_worldspace;
+uniform vec3 CameraUp_worldspace;
+uniform mat4 VP; // Model-View-Projection matrix, but without the Model (the position is in BillboardPos; the orientation depends on the camera)
+uniform vec3 BillboardPos; // Position of the center of the billboard
+uniform vec2 BillboardSize; // Size of the billboard, in world units (probably meters)
+
 void main()
 {
 	// NOTE(ck): Go back to model matrix

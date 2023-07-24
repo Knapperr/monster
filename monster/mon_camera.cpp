@@ -68,9 +68,11 @@ namespace Mon
 		}
 	}
 
+
 	/// 
 	/// Standard Fly Camera
 	///
+
 	void InitFlyCamera(Camera* camera, Rect viewPort)
 	{
 		camera->worldUp = v3(0.0f, 1.0f, 0.0f);
@@ -194,6 +196,7 @@ namespace Mon
 		}
 	}
 
+
 	/// 
 	/// Follow 3D Camera 
 	///
@@ -250,6 +253,16 @@ namespace Mon
 		//pos.y = (tPos.y + verticalDistance) + offsety;
 
 		camera->yaw = 180 - (glm::radians(orientation.y) + camera->angleAroundTarget);
+
+		// Camera Front and Right
+		v3 frontResult = {};
+		frontResult.x = cos(glm::radians(camera->yaw)) * cos(glm::radians(camera->pitch));
+		frontResult.y = sin(glm::radians(camera->pitch));
+		frontResult.z = sin(glm::radians(camera->yaw)) * cos(glm::radians(camera->pitch));
+		camera->front = glm::normalize(frontResult);
+
+		camera->right = glm::normalize(glm::cross(camera->front, camera->worldUp));
+		camera->up = glm::normalize(glm::cross(camera->right, camera->front));
 	}
 
 	void CalculateAngleAroundTarget(Camera* camera, v2 offset)
@@ -261,9 +274,11 @@ namespace Mon
 		//}
 	}
 
-	//
-	// Orthographic Camera
-	//
+
+	///
+	/// Orthographic Camera
+	///
+
 	void InitOrthoCamera(Camera* camera)
 	{
 		camera->lerpSpeed = 7.0f;

@@ -144,6 +144,22 @@ namespace Mon {
 		for (unsigned int i = 1; i < game->world->entityCount; ++i)
 		{
 			Entity2D e = game->world->entities[i];
+
+			// TEMP update player animation
+			if (i == 1)
+			{
+				MonGL::GLSpriteAnimator* walkAnim = &game->renderer.spriteAnimators[2];
+				MonGL::GLSpriteAnimation* anim = &walkAnim->animations[0];
+				MonGL::UpdateSpriteAnimation(anim, 1, (float)dt);
+
+				MonGL::GLSubTexture* walkSubText = &anim->frames[anim->frameIndex].subTexture;//&animator->animations[item.animationIndex].frames[state->selectedSubTextureIndex].subTexture;
+				MonGL::FillBatch(spriteBatch, 256.0f, 32, 2.0f, e.pos.x, e.pos.y,
+								 *walkSubText,
+								 game->cameras[game->currentCameraIndex].pos);
+				continue;
+			}
+
+
 			MonGL::FillBatch(spriteBatch, 256.0f, 32, 2.0f, e.pos.x, e.pos.y,
 							 *subTexture,
 							 game->cameras[game->currentCameraIndex].pos);

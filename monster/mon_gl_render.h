@@ -202,7 +202,7 @@ namespace MonGL
 		float totalDuration;
 
 		int frameIndex;
-		int frameCounter;
+		float frameCounter;
 
 		GLFrame frames[32];
 		int frameCount;

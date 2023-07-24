@@ -8,6 +8,22 @@ namespace Mon
 {
 	const int JOYSTICK_DEAD_ZONE = 7849;
 
+	static void APIENTRY OpenGLDebugMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity,
+													GLsizei length, const GLchar* message, const void* userParam)
+	{
+		// SET UP LOGGER HERE
+
+		if (type == GL_DEBUG_TYPE_ERROR)
+		{
+			printf("OpenGL Error:\nType = 0x%x\nID = %u\nSeverity = 0x%x\nMessage= %s", type, id, severity, message);
+		}
+		else
+		{
+			printf("OpenGL Debug Callback:\n\tType = 0x%x\n\tID = %u\n\tSeverity = 0x%x\n\tmessage = %s\n", type, id, severity, message);
+		}
+	}
+
+
 	bool SDLPlatform::init(Settings* settings)
 	{
 		state = {};
@@ -21,6 +37,9 @@ namespace Mon
 		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_EVENTS | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) < 0)
 			return false;
 
+		//
+		// TODO(ck): Renderer Settings 
+		//
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -28,10 +47,14 @@ namespace Mon
 		// TODO(ck): Do I want to double buffer here?
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
+
 #ifdef _3D_
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 #endif
+
+		
+
 		int flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI;
 		window = SDL_CreateWindow(settings->title,
 								  SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -39,6 +62,8 @@ namespace Mon
 
 		if (window == nullptr)
 			return false;
+
+
 
 		// Window Icon
 		// https://wiki.libsdl.org/SDL_CreateRGBSurfaceFrom
@@ -94,6 +119,14 @@ namespace Mon
 		Mon::Log::print("Platform: SDL2");
 		gladLoadGLLoader(SDL_GL_GetProcAddress);
 		
+
+		// Only enable when needed? Prints a lot
+		// Debug Renderer Settings
+		//glEnable(GL_DEBUG_OUTPUT);
+		//glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+		//glDebugMessageCallback(OpenGLDebugMessageCallback, NULL);
+
+
 		unsigned char* info[3] = {};
 		info[0] = (unsigned char*)glGetString(GL_VENDOR);
 		info[1] = (unsigned char*)glGetString(GL_RENDERER);

@@ -333,7 +333,7 @@ namespace Mon
 		// 2. using cubemap program inside here
 		MonGL::DrawCubeMap(state->renderer, state->setup);
 		// 3. start using main obj shader here go back to main shader
-		MonGL::UseProgram(&state->renderer->program, state->setup);
+ 		MonGL::UseProgram(&state->renderer->program, state->setup);
 
 
 		//
@@ -381,10 +381,24 @@ namespace Mon
 		MonGL::Batch* batch = MonGL::GetBatch(state->renderer, 1);
 		for (int i = 0; i < state->renderer->batchItems_.size(); ++i)
 		{
-			MonGL::BatchItem item = state->renderer->batchItems_[i];
-			//(Batch * batch, float posX, float posY, int texOffsetX, int texOffsetY, int tileSize)			
+			// TEMP update player animation
+			if (i == 0)
+			{
+				MonGL::BatchItem item = state->renderer->batchItems_[i];		
+				MonGL::GLSpriteAnimation* anim = &state->renderer->spriteAnimators[2].animations[item.animationIndex];
+
+				MonGL::UpdateSpriteAnimation(anim, 1, (float)dt);
+
+				MonGL::GLSubTexture* subTexture = &anim->frames[anim->frameIndex].subTexture;//&animator->animations[item.animationIndex].frames[state->selectedSubTextureIndex].subTexture;
+				MonGL::FillBatch(batch, item.worldPos.x, item.worldPos.y, item.worldPos.z, subTexture, 32);
+				continue;
+			}
+
+
+			MonGL::BatchItem item = state->renderer->batchItems_[i];		
 			MonGL::GLSpriteAnimation* anim = &state->renderer->spriteAnimators[1].animations[item.animationIndex];
 			
+			// NOTE(ck): Running faster because its getting updated each time the batch is filled
 			//MonGL::UpdateSpriteAnimation(anim, 1, (float)dt);
 
 			MonGL::GLSubTexture* subTexture = &anim->frames[anim->frameIndex].subTexture;//&animator->animations[item.animationIndex].frames[state->selectedSubTextureIndex].subTexture;

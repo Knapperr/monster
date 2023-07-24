@@ -96,6 +96,7 @@ void App::run()
 	double t = 0.0;
 	double frameRate = 60.0;
 	double dt = 1 / frameRate;
+	double deltaTime = 0.0;
 
 	// hires time in seconds
 	uint64_t currentTime = SDL_GetPerformanceCounter();
@@ -122,7 +123,7 @@ void App::run()
 		while (frameTime > 0.0)
 		{
 
-			double deltaTime = std::min(frameTime, dt);
+			deltaTime = std::min(frameTime, dt);
 
 #ifdef _3D_
 			Mon::Update(&memory, deltaTime, newInput);
@@ -142,7 +143,7 @@ void App::run()
 #ifdef _3D_
 		// TODO(ck): PASS DELTA TIME TO RENDERER
 		float time = float(SDL_GetTicks() / 1000.0f);
-		Mon::Render(&memory, time, 1.0f);
+		Mon::Render(&memory, time, deltaTime);
 #else
 		// TODO(ck): PASS DELTA TIME TO RENDERER
 		Mon::Render(game2D, 1.0f);

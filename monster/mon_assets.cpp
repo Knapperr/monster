@@ -70,6 +70,10 @@ namespace Mon
 		Mesh* pumpkin = GetMesh(assets, 11);
 		InitModelMesh(pumpkin, "pumpkin.imp");
 
+		AddMesh(assets);
+		Mesh* tall_monster = GetMesh(assets, 12);
+		InitModelMesh(tall_monster, "tall_monster.imp");
+
 		// empty #0 for image
 		AddImage(assets);
 		// empty #0 for textureAssets
@@ -701,7 +705,6 @@ namespace Mon
 		atlas->rows = atlasSize / tileSize;
 		atlas->cols = atlasSize / tileSize;
 
-	
 
 		// TODO(ck): Temp for now
 		int index = 0;

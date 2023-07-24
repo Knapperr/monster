@@ -6,6 +6,7 @@ in vec2 TexCoord;
 
 // texture samplers
 uniform sampler2D image;
+uniform bool collider;
 
 // https://gist.github.com/Beefster09/7264303ee4b4b2086f372f1e70e8eddd
 // This method is working for making the pixel art look nice
@@ -27,6 +28,13 @@ vec2 duv = fwidth(uv);
 uv = floor(uv) + vec2(0.5) + clamp((fract(uv) - vec2(0.5) + duv)/duv, 0, 1);
 uv /= size;
 */
+
+	if (collider)
+	{
+		vec4 orange = vec4(1.0f, 0.5f, 0.2f, 1.0f); 
+		FragColor = orange;
+		return;
+	}
 
 
 	// TODO(ck): https://www.shadertoy.com/view/ltBGWc
