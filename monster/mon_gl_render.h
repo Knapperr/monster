@@ -339,7 +339,7 @@ namespace MonGL
 	void InitBatch(OpenGL* gl, int batchIndex);
 
 	void FillBatch(Batch* batch, float posX, float posY, float posZ, int texOffsetX, int texOffsetY, int tileSize);
-	void FillBatch(Batch* batch, v3 cameraRight, float posX, float posY, float posZ, float camX, float camY, float camZ, GLSubTexture* subTexture, int tileSize);
+	void FillBatch(Batch* batch, float posX, float posY, float posZ, float camX, float camY, float camZ, GLSubTexture* subTexture, int tileSize);
 	void BindBatchVertices(Batch* batch);
 	void DrawBatch(OpenGL* gl, Batch* batch, v3 cameraRight, v3 cameraUp);
 

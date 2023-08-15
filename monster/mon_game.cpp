@@ -390,7 +390,7 @@ namespace Mon
 				MonGL::UpdateSpriteAnimation(anim, 1, (float)dt);
 
 				MonGL::GLSubTexture* subTexture = &anim->frames[anim->frameIndex].subTexture;//&animator->animations[item.animationIndex].frames[state->selectedSubTextureIndex].subTexture;
-				MonGL::FillBatch(batch, cam->right, item.worldPos.x, item.worldPos.y, item.worldPos.z, 
+				MonGL::FillBatch(batch, item.worldPos.x, item.worldPos.y, item.worldPos.z, 
 								 cam->pos.x, cam->pos.y, cam->pos.z,
 								 subTexture, 32);
 				continue;
@@ -403,8 +403,8 @@ namespace Mon
 			// NOTE(ck): Running faster because its getting updated each time the batch is filled
 			//MonGL::UpdateSpriteAnimation(anim, 1, (float)dt);
 
-			MonGL::GLSubTexture* subTexture = &anim->frames[anim->frameIndex].subTexture;//&animator->animations[item.animationIndex].frames[state->selectedSubTextureIndex].subTexture;
-			MonGL::FillBatch(batch, cam->right, item.worldPos.x, item.worldPos.y, item.worldPos.z,
+			MonGL::GLSubTexture* subTexture = &anim->frames[1].subTexture;//&animator->animations[item.animationIndex].frames[state->selectedSubTextureIndex].subTexture;
+			MonGL::FillBatch(batch, item.worldPos.x, item.worldPos.y, item.worldPos.z,
 							 cam->pos.x, cam->pos.y, cam->pos.z,
 							 subTexture, 32);
 		}

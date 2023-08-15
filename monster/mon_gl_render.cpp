@@ -1102,40 +1102,13 @@ namespace MonGL
 		batch->vertices_.push_back(vec3);
 	}
 
-	void FillBatch(Batch* batch, v3 cameraRight, float posX, float posY, float posZ, float camX, float camY, float camZ, GLSubTexture* subTexture, int tileSize)
+	void FillBatch(Batch* batch, float posX, float posY, float posZ, float camX, float camY, float camZ, GLSubTexture* subTexture, int tileSize)
 	{
-#if 0
-		// billboard orientation
-		v3 camPos = v3(camX, camY, camZ);
-		v3 spritePos = v3(posX, posY, posZ);
-		v3 lookDirection = glm::normalize(camPos - spritePos);
-		v3 worldUp = v3(0.0f, 1.0f, 0.0f);
-
-		//v3 right = glm::normalize(glm::cross(worldUp, lookDirection)); // ,
-		v3 right = cameraRight;
-		v3 up = worldUp;//glm::cross(lookDirection, right);
-#endif
-
-#if 0
-
-		v3 spritePos = v3(posX, posY, posZ);
-		float angle = -45.0f;
-		float degreesToRadians = 3.14159265358979323846 / 180.0f;
-		float cosTheta = cos(angle * degreesToRadians);
-		float sinTheta = sin(angle * degreesToRadians);
-		
-		float rotatedPosY = cosTheta * spritePos.y - sinTheta * spritePos.z;
-		float rotatedPosZ = sinTheta * spritePos.y + cosTheta * spritePos.z;
-#endif
-
 
 		float textureSheetSize = 256.0f;
-	//	posX = posX - 0.5f;
-//		posY = posY - 0.5f;
 		posX = posX - 0.5f;
-		posZ = posZ - 0.5f;
-		//posY = rotatedPosY - 0.5f;
-		//posZ = rotatedPosZ - 0.5f;
+		posY = posY - 0.5f;
+		posZ = posZ + 0.5f;
 		float vertSize = 1.0f;
 
 #if 1
@@ -1194,33 +1167,6 @@ namespace MonGL
 #endif
 
 #if 0
-		Vertex3D vec0 = {
-			p1, // BL
-			v3(1.0f, 0.0f, 0.0f),
-			subTexture->texCoords[0]
-		};
-
-		Vertex3D vec1 = {
-			p2, // BR
-			v3(1.0f, 1.0f, 1.0f),
-			subTexture->texCoords[1]
-		};
-
-		Vertex3D vec2 = {
-			p3, // TR
-			v3(1.0f, 1.0f, 1.0f),
-			subTexture->texCoords[2]
-		};
-
-		Vertex3D vec3 = {
-			p4, // TL
-			v3(1.0f, 1.0f, 1.0f),
-			subTexture->texCoords[3]
-		};
-#endif
-
-		batch->usedIndices += 6;
-#if 0
 		batch->vertices_.push_back(vec0);
 		batch->vertices_.push_back(vec1);
 		batch->vertices_.push_back(vec2);
@@ -1230,7 +1176,8 @@ namespace MonGL
 		batch->vertices__.push_back(batchvec1);
 		batch->vertices__.push_back(batchvec2);
 		batch->vertices__.push_back(batchvec3);
-
+		
+		batch->usedIndices += 6;
 
 
 		// fill the uniform buffer with modelmatrices for rotation
@@ -1248,7 +1195,6 @@ namespace MonGL
 		// because we are updating the ubo for each sprite we don't need to containerize it
 		// need to bind it here..? 
 		//uniformBuffer.push_back(model); // kind of want to keep the data though since its small right now?
-		
 	}
 
 	void BindBatchVertices(Batch* batch)

@@ -112,7 +112,7 @@ namespace Mon {
 		player->facingDir = Direction::Forward;
 		player->data.programType = MonGL::ProgramType::Common;
 
-		player->rb.worldPos = v3(3.0f, -0.15f, 2.0);
+		player->rb.worldPos = v3(3.0f, 0.0f, 2.0);
 		player->rb.inverseMass = 10.0f;
 		player->rb.velocity = v3(0.0f, 0.0f, 0.0f); // 35m/s
 		player->rb.gravity = 10.0f;
@@ -195,8 +195,8 @@ namespace Mon {
 		{
 			AddEntity(world);
 			Entity* tree = GetEntity(world, i);
-			v3 offset = v3(i * 4, 1.50f ,i * 4) + basePoint; 
-			InitEntity(tree, "tree", offset, v3(6.0f), angleDegrees, shaderHandle, 7, 1);
+			v3 offset = v3(i * 4, 0.0f ,i * 4) + basePoint; 
+			InitEntity(tree, "tree", offset, v3(1.0f), angleDegrees, shaderHandle, 7, 1);
 		}
 		
 		AddEntity(world);
