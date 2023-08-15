@@ -227,6 +227,7 @@ namespace Mon
 	}
 
 	void InitAssets(Assets* assets);
+	void InitAssets2D(Assets* assets, const char* fileName);
 
 	extern Assets* g_Assets; // NULL
 };

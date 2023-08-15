@@ -11,7 +11,7 @@ namespace MonGL
 	{
 		int programID = program->handle;
 
-		// NOTE(ck): should be renderer->getAttribLocation something like that
+		// NOTE(ck): should be renderer->getAttribLocation - do not call OpenGL directly
 		program->model = glGetUniformLocation(programID, "model");
 		program->view = glGetUniformLocation(programID, "view");
 		program->projection = glGetUniformLocation(programID, "projection");
@@ -33,6 +33,17 @@ namespace MonGL
 		uniform Material material;
 		uniform Light light;
 		*/
+	}
+
+	void LoadUniforms(QuadBatchProgram* program)
+	{
+		int programID = program->common.handle;
+
+		program->cameraRight_worldspace = glGetUniformLocation(programID, "cameraRight_worldspace");
+		program->cameraUp_worldspace = glGetUniformLocation(programID, "cameraUp_worldspace");
+		program->VP = glGetUniformLocation(programID, "VP");
+		program->billboardPos = glGetUniformLocation(programID, "billboardPos");
+		program->billboardSize = glGetUniformLocation(programID, "billboardSize");
 	}
 
 	void LoadUniforms(WaterProgram* program)
@@ -59,7 +70,6 @@ namespace MonGL
 		program->skybox = glGetUniformLocation(programID, "skybox");
 		program->skyboxTextureIndex = 23;
 	}
-
 
 	unsigned int CompileShader(const char* source, GLenum shaderType)
 	{

@@ -19,7 +19,8 @@ namespace Mon
 	};
 
 	void InitCamera(Camera2D* camera);
-	void Update(Camera2D* camera, v2* target, float dt);
+	void Update(Camera2D* camera, v2 target, float dt);
+	bool IsInBounds(Camera2D* camera, v2 pos);
 	mat4 Projection(Camera2D* camera, Rect viewPort);
 	mat4 ViewMatrix(Camera2D* camera);
 }

@@ -51,7 +51,6 @@ Mon::v3 BinarySearch(MonGL::Mesh* mesh, int count, float start, float finish, Mo
 bool IntersectionInRange(MonGL::Mesh* mesh, float start, float finish, Mon::v3 ray, Mon::v3 cameraPosition);
 bool IsUnderGround(MonGL::Mesh* mesh, Mon::v3 testPoint);
 
-float BarryCentric(Mon::v3 p1, Mon::v3 p2, Mon::v3 p3, Mon::v2 pos);
 float GetHeight(MonGL::Mesh* mesh, int x, int z);
 float LookUpHeight(MonGL::Mesh* mesh, int x, int z);
 

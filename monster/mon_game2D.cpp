@@ -20,6 +20,7 @@ namespace Mon {
 		// TODO(ck) : memory allocation
 		g_Assets = new Assets();
 		InitAssets(g_Assets);
+		//InitAssets2D(g_Assets);
 		MonGL::InitRenderer2D(&game->renderer);
 		
 		// TODO(ck): Memory management - allocate world
@@ -76,7 +77,7 @@ namespace Mon {
 
 			//Mon::MovePlayer(game->world->map, p, &velocity, (float)dt);
 			Mon::MovePlayer(p, &velocity, (float)dt);
-			Update(&game->cameras[game->currentCameraIndex], &p->pos, (float)dt);
+			Update(&game->cameras[game->currentCameraIndex], p->pos, (float)dt);
 
 			// Update after camera update
 			// Updating sprite information (moved to fill batch... sending tile positions to batcher)

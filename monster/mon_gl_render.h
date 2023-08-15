@@ -53,6 +53,15 @@ namespace MonGL
 		v3 bitangent;
 	};
 
+	struct BatchVertex3D
+	{
+		// TODO(ck): smaller types on vertex? position=vec3, color=uint32, texCoord=short2
+		v3 position;
+		v3 normal;
+		v2 texCoords;
+		v3 worldPosition;
+	};
+
 	// RenderSetup is for the common attributes that are shared among these are found in CommonProgram
 	struct RenderSetup
 	{
@@ -121,8 +130,12 @@ namespace MonGL
 		unsigned int VBO;
 		unsigned int IBO;
 
+		unsigned int UBO;
+		std::vector<mat4> modelMatrices;
+
 		Vertex3D* vertices;
 		std::vector<Vertex3D> vertices_;
+		std::vector<BatchVertex3D> vertices__;
 		unsigned int* indices;
 		int usedIndices;
 
@@ -186,7 +199,7 @@ namespace MonGL
 		int width;
 		int height;
 
-		// topright, topleft, bottomright, bottomleft
+		// bottom left, bottom right, top right, top left
 		v2 texCoords[4];
 	};
 
@@ -326,9 +339,9 @@ namespace MonGL
 	void InitBatch(OpenGL* gl, int batchIndex);
 
 	void FillBatch(Batch* batch, float posX, float posY, float posZ, int texOffsetX, int texOffsetY, int tileSize);
-	void FillBatch(Batch* batch, float posX, float posY, float posZ, GLSubTexture* subTexture, int tileSize);
+	void FillBatch(Batch* batch, v3 cameraRight, float posX, float posY, float posZ, float camX, float camY, float camZ, GLSubTexture* subTexture, int tileSize);
 	void BindBatchVertices(Batch* batch);
-	void DrawBatch(OpenGL* gl, Batch* batch);
+	void DrawBatch(OpenGL* gl, Batch* batch, v3 cameraRight, v3 cameraUp);
 
 	// Animations
 	void UpdateSpriteAnimation(GLSpriteAnimation* animation, int animationIndex, float dt);

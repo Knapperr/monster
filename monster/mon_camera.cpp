@@ -254,6 +254,7 @@ namespace Mon
 
 		camera->yaw = 180 - (glm::radians(orientation.y) + camera->angleAroundTarget);
 
+		// TODO(ck): The right axis calculation may be incorrect
 		// Camera Front and Right
 		v3 frontResult = {};
 		frontResult.x = cos(glm::radians(camera->yaw)) * cos(glm::radians(camera->pitch));
@@ -261,8 +262,14 @@ namespace Mon
 		frontResult.z = sin(glm::radians(camera->yaw)) * cos(glm::radians(camera->pitch));
 		camera->front = glm::normalize(frontResult);
 
-		camera->right = glm::normalize(glm::cross(camera->front, camera->worldUp));
-		camera->up = glm::normalize(glm::cross(camera->right, camera->front));
+		// NOTE(ck): This may be incorrect
+		v3 forward = glm::normalize(pos - camera->pos);
+		camera->right = glm::normalize(glm::cross(camera->worldUp, forward));
+		camera->up = glm::normalize(glm::cross(camera->direction, camera->right));
+		//mat4 viewMatrix = FollowViewMatrix(camera);
+		//camera->right = v3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]);// *camera->worldUp;// *camera->worldUp;
+		//camera->up = v3(viewMatrix[0][1], viewMatrix[1][1], viewMatrix[2][1]) * camera->worldUp;
+
 	}
 
 	void CalculateAngleAroundTarget(Camera* camera, v2 offset)

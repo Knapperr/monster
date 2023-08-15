@@ -66,14 +66,14 @@ float GetHeight(MonGL::Mesh* mesh, int x, int z)
 	float result;
 	if (xCoord <= (1 - zCoord))
 	{
-		result = BarryCentric(Mon::v3(0, LookUpHeight(mesh, gridX, gridZ), 0),
+		result = Mon::BarryCentric(Mon::v3(0, LookUpHeight(mesh, gridX, gridZ), 0),
 							  Mon::v3(1, LookUpHeight(mesh, gridX + 1, gridZ), 0),
 							  Mon::v3(0, LookUpHeight(mesh, gridX, gridZ + 1), 1),
 							  Mon::v2(xCoord, zCoord));
 	}
 	else
 	{
-		result = BarryCentric(Mon::v3(1, LookUpHeight(mesh, gridX + 1, gridZ), 0),
+		result = Mon::BarryCentric(Mon::v3(1, LookUpHeight(mesh, gridX + 1, gridZ), 0),
 							  Mon::v3(1, LookUpHeight(mesh, gridX + 1, gridZ + 1), 1),
 							  Mon::v3(0, LookUpHeight(mesh, gridX, gridZ + 1), 1),
 							  Mon::v2(xCoord, zCoord));
@@ -82,15 +82,6 @@ float GetHeight(MonGL::Mesh* mesh, int x, int z)
 	return result;
 }
 
-// NOTE(ck): https://github.com/munro98/LandscapeWorld/blob/master/src/Terrain.cpp
-float BarryCentric(Mon::v3 p1, Mon::v3 p2, Mon::v3 p3, Mon::v2 pos)
-{
-	float det = (p2.z - p3.z) * (p1.x - p3.x) + (p3.x - p2.x) * (p1.z - p3.z);
-	float l1 = ((p2.z - p3.z) * (pos.x - p3.x) + (p3.x - p2.x) * (pos.y - p3.z)) / det;
-	float l2 = ((p3.z - p1.z) * (pos.x - p3.x) + (p1.x - p3.x) * (pos.y - p3.z)) / det;
-	float l3 = 1.0f - l1 - l2;
-	return l1 * p1.y + l2 * p2.y + l3 * p3.y;
-}
 
 float LookUpHeight(MonGL::Mesh* mesh, int x, int z)
 {

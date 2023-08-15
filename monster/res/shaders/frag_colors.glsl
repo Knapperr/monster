@@ -64,14 +64,14 @@ void main()
         {
             // Smooth the texture
             // https://handmade.network/forums/t/7883-pixel_art_fragment_shader
-            // Make sure texture has bilinear sampling set, and does not have mipmaps
+            // NOTE(ck): Make sure texture has bilinear sampling set, and does not have mipmaps
             vec2 textureSize = textureSize(texture_diffuse1, 0);
             vec2 pixel = fs_in.TexCoords * textureSize;
             vec2 duDv = fwidth(pixel);
             vec2 seam = floor(pixel + 0.5);
             pixel = seam + clamp((pixel - seam)/duDv, -0.5, 0.5);
             vec2 modifiedTextCoordinate = pixel / textureSize;
-            // NOTE(ck): this is to just use the texture no lighting
+            // NOTE(ck): this is to just use the texture with no lighting
             //vec4 tex = texture(texture_diffuse1, modifiedTextCoordinate);
             //FragColor = tex;
 
@@ -99,11 +99,6 @@ void main()
             FragColor = vec4(result, texture(texture_diffuse1, modifiedTextCoordinate).a);
             
             return;
-            // vec2 vres = textureSize(texture_diffuse1, 0);
-            // FragColor = texture(texture_diffuse1, vec2(
-		    //     sharpen(TexCoords.x * vres.x) / vres.x,
-		    //     sharpen(TexCoords.y * vres.y) / vres.y
-            // )); 
         }
         
         return;

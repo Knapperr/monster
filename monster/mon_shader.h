@@ -32,6 +32,12 @@ namespace MonGL
 	struct QuadBatchProgram
 	{
 		CommonProgram common;
+
+		int cameraRight_worldspace;
+		int cameraUp_worldspace;
+		int VP; // Model-View-Projection matrix, but without the Model (the position is in BillboardPos; the orientation depends on the camera)
+		int billboardPos; // Position of the center of the billboard
+		int billboardSize;
 	};
 
 	// TODO(ck): Match struct in the shader also make a 

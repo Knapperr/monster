@@ -1,8 +1,9 @@
 #include "sdl_platform.h"
-
 #include "mon_log.h"
 
 #include <stb_image/stb_image.h>
+
+//#define RENDERER_CALLBACK
 
 namespace Mon
 {
@@ -12,7 +13,8 @@ namespace Mon
 													GLsizei length, const GLchar* message, const void* userParam)
 	{
 		// SET UP LOGGER HERE
-
+		// enum for opengl severities
+		
 		if (type == GL_DEBUG_TYPE_ERROR)
 		{
 			printf("OpenGL Error:\nType = 0x%x\nID = %u\nSeverity = 0x%x\nMessage= %s", type, id, severity, message);
@@ -120,12 +122,13 @@ namespace Mon
 		gladLoadGLLoader(SDL_GL_GetProcAddress);
 		
 
+#ifdef RENDERER_CALLBACK
 		// Only enable when needed? Prints a lot
 		// Debug Renderer Settings
-		//glEnable(GL_DEBUG_OUTPUT);
-		//glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-		//glDebugMessageCallback(OpenGLDebugMessageCallback, NULL);
-
+		glEnable(GL_DEBUG_OUTPUT);
+		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+		glDebugMessageCallback(OpenGLDebugMessageCallback, NULL);
+#endif
 
 		unsigned char* info[3] = {};
 		info[0] = (unsigned char*)glGetString(GL_VENDOR);

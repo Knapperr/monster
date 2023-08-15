@@ -23,12 +23,12 @@ namespace Mon
 		camera->pixelsPerMeter = 16.0f;
 	}
 
-	void Update(Camera2D* camera, v2* target, float dt)
+	void Update(Camera2D* camera, v2 target, float dt)
 	{
 	
 		// target pos in world space
-		camera->pos.x = target->x * 16.0f;
-		camera->pos.y = target->y * 16.0f;
+		camera->pos.x = target.x * 16.0f;
+		camera->pos.y = target.y * 16.0f;
 
 		camera->pos.x = camera->pos.x - (480.0f / 2.0f);
 		camera->pos.y = camera->pos.y - (270.0f / 2.0f);
@@ -40,6 +40,14 @@ namespace Mon
 		//camera->pos.x = smoothDamp(camera->pos.x, (target->x * 16.0f - (480.0f / 2.0f)), camera->vel.x, camera->smoothness, dt);
 		//camera->pos.y = smoothDamp(camera->pos.y, (target->y * 16.0f - (270.0f / 2.0f)), camera->vel.y, camera->smoothness, dt);
 
+	}
+
+	bool IsInBounds(Camera2D* camera, v2 pos)
+	{
+		bool result = false;
+
+
+		return result;
 	}
 
 	mat4 Projection(Camera2D* camera, Rect viewPort)

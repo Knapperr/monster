@@ -170,6 +170,11 @@ namespace Mon
 		Init2DQuadMesh(&assets->quad2D);
 	}
 
+	void InitAssets2D(Assets* assets, const char* fileName)
+	{
+		return;
+	}
+
 
 	void LoadImpFile(Mesh* mesh, const char* fileName)
 	{

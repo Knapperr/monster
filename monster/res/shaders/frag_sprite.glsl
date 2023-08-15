@@ -29,12 +29,13 @@ uv = floor(uv) + vec2(0.5) + clamp((fract(uv) - vec2(0.5) + duv)/duv, 0, 1);
 uv /= size;
 */
 
-	if (collider)
-	{
-		vec4 orange = vec4(1.0f, 0.5f, 0.2f, 1.0f); 
-		FragColor = orange;
-		return;
-	}
+	// cant do this in a batcher
+	// if (collider)
+	// {
+	// 	vec4 orange = vec4(1.0f, 0.5f, 0.2f, 1.0f); 
+	// 	FragColor = orange;
+	// 	return;
+	// }
 
 
 	// TODO(ck): https://www.shadertoy.com/view/ltBGWc
@@ -64,6 +65,7 @@ uv /= size;
 	vec2 modifiedTextCoordinate = pixel / texSize;
 	vec4 tex = texture(image, modifiedTextCoordinate);
 	
+	//vec4 orange = vec4(1.0f, 0.5f, 0.2f, 1.0f); 
 	FragColor = tex;
 	
 	

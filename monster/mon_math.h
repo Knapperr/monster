@@ -22,6 +22,7 @@ namespace Mon
 	typedef glm::vec3 v3;
 	typedef glm::vec4 v4;
 
+	typedef glm::mat2 mat2;
 	typedef glm::mat3 mat3;
 	typedef glm::mat4 mat4;
 
@@ -122,6 +123,17 @@ namespace Mon
 		float result = (float)fabs(real);
 		return result;
 	}
+
+	// NOTE(ck): https://github.com/munro98/LandscapeWorld/blob/master/src/Terrain.cpp
+	inline float BarryCentric(Mon::v3 p1, Mon::v3 p2, Mon::v3 p3, Mon::v2 pos)
+	{
+		float det = (p2.z - p3.z) * (p1.x - p3.x) + (p3.x - p2.x) * (p1.z - p3.z);
+		float l1 = ((p2.z - p3.z) * (pos.x - p3.x) + (p3.x - p2.x) * (pos.y - p3.z)) / det;
+		float l2 = ((p3.z - p1.z) * (pos.x - p3.x) + (p1.x - p3.x) * (pos.y - p3.z)) / det;
+		float l3 = 1.0f - l1 - l2;
+		return l1 * p1.y + l2 * p2.y + l3 * p3.y;
+	}
+
 
 }
 

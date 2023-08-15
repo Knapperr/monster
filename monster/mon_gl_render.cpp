@@ -404,6 +404,23 @@ namespace MonGL
 
 		} // Animations 
 
+		// Uniform buffer
+		// configure a uniform buffer object
+		// ---------------------------------
+		// first. We get the relevant block indices
+		//unsigned int uniformBlockIndexQuad = glGetUniformBlockIndex(gl->quadProgram.common.handle, "WorldMatrices");
+		//// then we link each shader's uniform block to this uniform binding point
+		//glUniformBlockBinding(gl->quadProgram.common.handle, uniformBlockIndexQuad, 0);
+
+		//// Now actually create the buffer
+		////glGenBuffers(1, &gl->ubo);
+		////glBindBuffer(GL_UNIFORM_BUFFER, gl->ubo);
+		////glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), NULL, GL_DYNAMIC_DRAW);
+		////// define the range of the buffer that links to a uniform binding point
+		//////glBindBufferRange(GL_UNIFORM_BUFFER, 0, gl->ubo, 0, 2 * sizeof(glm::mat4));
+		////glBindBufferBase(GL_UNIFORM_BUFFER, 0, gl->ubo);
+		
+
 		// Frame buffer
 		int screenWidth = 960;
 		int screenHeight = 540;
@@ -490,6 +507,7 @@ namespace MonGL
 
 
 		// BEGIN RENDER UNIFORMS
+
 		glUniformMatrix4fv(program->common.projection, 1, GL_FALSE, glm::value_ptr(setup.projection));
 		glUniformMatrix4fv(program->common.view, 1, GL_FALSE, glm::value_ptr(setup.viewMatrix));
 	}
@@ -1007,18 +1025,29 @@ namespace MonGL
 
 		glGenBuffers(1, &batch->VBO);
 		glBindBuffer(GL_ARRAY_BUFFER, batch->VBO);
-		glBufferData(GL_ARRAY_BUFFER, maxVertices * sizeof(Vertex3D), nullptr, GL_DYNAMIC_DRAW);
+		//glBufferData(GL_ARRAY_BUFFER, maxVertices * sizeof(Vertex3D), nullptr, GL_DYNAMIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, maxVertices * sizeof(BatchVertex3D), nullptr, GL_DYNAMIC_DRAW);
+
 
 		glGenBuffers(1, &batch->IBO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, batch->IBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesLength * sizeof(batch->IBO), batch->indices, GL_DYNAMIC_DRAW);
 
+		//glEnableVertexAttribArray(0);
+		//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, position));
+		//glEnableVertexAttribArray(1);
+		//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, normal));
+		//glEnableVertexAttribArray(2);
+		//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, texCoords));
+
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, position));
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(BatchVertex3D), (void*)offsetof(BatchVertex3D, position));
 		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, normal));
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(BatchVertex3D), (void*)offsetof(BatchVertex3D, normal));
 		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, texCoords));
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(BatchVertex3D), (void*)offsetof(BatchVertex3D, texCoords));
+		glEnableVertexAttribArray(3);
+		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(BatchVertex3D), (void*)offsetof(BatchVertex3D, worldPosition));
 
 		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -1073,42 +1102,153 @@ namespace MonGL
 		batch->vertices_.push_back(vec3);
 	}
 
-	void FillBatch(Batch* batch, float posX, float posY, float posZ, GLSubTexture* subTexture, int tileSize)
+	void FillBatch(Batch* batch, v3 cameraRight, float posX, float posY, float posZ, float camX, float camY, float camZ, GLSubTexture* subTexture, int tileSize)
 	{
+#if 0
+		// billboard orientation
+		v3 camPos = v3(camX, camY, camZ);
+		v3 spritePos = v3(posX, posY, posZ);
+		v3 lookDirection = glm::normalize(camPos - spritePos);
+		v3 worldUp = v3(0.0f, 1.0f, 0.0f);
+
+		//v3 right = glm::normalize(glm::cross(worldUp, lookDirection)); // ,
+		v3 right = cameraRight;
+		v3 up = worldUp;//glm::cross(lookDirection, right);
+#endif
+
+#if 0
+
+		v3 spritePos = v3(posX, posY, posZ);
+		float angle = -45.0f;
+		float degreesToRadians = 3.14159265358979323846 / 180.0f;
+		float cosTheta = cos(angle * degreesToRadians);
+		float sinTheta = sin(angle * degreesToRadians);
+		
+		float rotatedPosY = cosTheta * spritePos.y - sinTheta * spritePos.z;
+		float rotatedPosZ = sinTheta * spritePos.y + cosTheta * spritePos.z;
+#endif
+
+
 		float textureSheetSize = 256.0f;
+	//	posX = posX - 0.5f;
+//		posY = posY - 0.5f;
 		posX = posX - 0.5f;
-		posY = posY - 0.5f;
+		posZ = posZ - 0.5f;
+		//posY = rotatedPosY - 0.5f;
+		//posZ = rotatedPosZ - 0.5f;
 		float vertSize = 1.0f;
 
-		Vertex3D vec0 = {
+#if 1
+		//Vertex3D vec0 = {
+		//	v3(posX, posY, posZ),
+		//	v3(1.0f, 0.0f, 0.0f),
+		//	subTexture->texCoords[0]
+		//};
+
+		//Vertex3D vec1 = {
+		//	v3((posX + vertSize), posY, posZ),
+		//	v3(1.0f, 1.0f, 1.0f),
+		//	subTexture->texCoords[1]
+		//};
+
+		//Vertex3D vec2 = {
+		//	v3((posX + vertSize), (posY + vertSize), (posZ)),
+		//	v3(1.0f, 1.0f, 1.0f),
+		//	subTexture->texCoords[2]
+		//};
+
+		//Vertex3D vec3 = {
+		//	v3(posX, (posY + vertSize), posZ),
+		//	v3(1.0f, 1.0f, 1.0f),
+		//	subTexture->texCoords[3]
+		//};
+
+		BatchVertex3D batchvec0 = {
 			v3(posX, posY, posZ),
+			v3(1.0f, 0.0f, 0.0f),
+			subTexture->texCoords[0],
+			v3(posX, posY, posZ)
+		};
+
+		BatchVertex3D batchvec1 = {
+			v3((posX + vertSize), posY, posZ),
+			v3(1.0f, 1.0f, 1.0f),
+			subTexture->texCoords[1],
+			v3(posX, posY, posZ)
+		};
+
+		BatchVertex3D batchvec2 = {
+			v3((posX + vertSize), (posY + vertSize), (posZ)),
+			v3(1.0f, 1.0f, 1.0f),
+			subTexture->texCoords[2],
+			v3(posX, posY, posZ)
+		};
+
+		BatchVertex3D batchvec3 = {
+			v3(posX, (posY + vertSize), posZ),
+			v3(1.0f, 1.0f, 1.0f),
+			subTexture->texCoords[3],
+			v3(posX, posY, posZ)
+		};
+
+#endif
+
+#if 0
+		Vertex3D vec0 = {
+			p1, // BL
 			v3(1.0f, 0.0f, 0.0f),
 			subTexture->texCoords[0]
 		};
 
 		Vertex3D vec1 = {
-			v3((posX + vertSize), posY, posZ),
+			p2, // BR
 			v3(1.0f, 1.0f, 1.0f),
 			subTexture->texCoords[1]
 		};
 
 		Vertex3D vec2 = {
-			v3((posX + vertSize), (posY + vertSize), (posZ)),
+			p3, // TR
 			v3(1.0f, 1.0f, 1.0f),
 			subTexture->texCoords[2]
 		};
 
 		Vertex3D vec3 = {
-			v3(posX, (posY + vertSize), posZ),
+			p4, // TL
 			v3(1.0f, 1.0f, 1.0f),
 			subTexture->texCoords[3]
 		};
+#endif
 
 		batch->usedIndices += 6;
+#if 0
 		batch->vertices_.push_back(vec0);
 		batch->vertices_.push_back(vec1);
 		batch->vertices_.push_back(vec2);
 		batch->vertices_.push_back(vec3);
+#endif
+		batch->vertices__.push_back(batchvec0);
+		batch->vertices__.push_back(batchvec1);
+		batch->vertices__.push_back(batchvec2);
+		batch->vertices__.push_back(batchvec3);
+
+
+
+		// fill the uniform buffer with modelmatrices for rotation
+		// set rotation matrix for ubo
+		//mat4 model = mat4(1.0f);
+		//v3 spritePos = v3(posX, posY, posZ);
+		//model = glm::translate(model, spritePos);
+
+		// TODO(ck): Rotation causes Z axis to grow??? how to apply rotations to a sprite batcher?
+		// .. world coordinates are baked into vertices can it be done in shader?
+		//model = glm::rotate(model, glm::radians(-45.0f), v3{ 1.0f, 0.0f, 0.0f });
+		//model = glm::translate(model, -spritePos);
+
+		
+		// because we are updating the ubo for each sprite we don't need to containerize it
+		// need to bind it here..? 
+		//uniformBuffer.push_back(model); // kind of want to keep the data though since its small right now?
+		
 	}
 
 	void BindBatchVertices(Batch* batch)
@@ -1117,13 +1257,15 @@ namespace MonGL
 		glBindBuffer(GL_ARRAY_BUFFER, batch->VBO);
 
 		// Use glMapBuffer instead, if moving large chunks of data > 1MB 
-		glBufferSubData(GL_ARRAY_BUFFER, 0, batch->vertices_.size() * sizeof(Vertex3D), &batch->vertices_[0]);
+		//glBufferSubData(GL_ARRAY_BUFFER, 0, batch->vertices_.size() * sizeof(Vertex3D), &batch->vertices_[0]);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, batch->vertices__.size() * sizeof(BatchVertex3D), &batch->vertices__[0]);
+
 
 		glBindVertexArray(0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 	
-	void DrawBatch(OpenGL* gl, Batch* batch)
+	void DrawBatch(OpenGL* gl, Batch* batch, v3 cameraRight, v3 cameraUp)
 	{
 		// TODO(ck): If we want the ability to change the map at runtime we need to constantly
 // be filling and binding the batch (if things have changed)
@@ -1135,12 +1277,33 @@ namespace MonGL
 		pos.y = basePos.y;
 
 
+		//glUniform3fv(program->lightSpecular, 1, &light.specular[0]);
+		//glUniformMatrix4fv(glGetUniformLocation(batchShaderHandle, "model"), 1, GL_FALSE, glm::value_ptr(model));
+		
+		//glUniform3fv(gl->quadProgram.billboardPos, 1, 0); // &light.specular[0]);
+		//glUniform3fv(gl->quadProgram.billboardSize, 1, 0); // &light.specular[0]);
+		//glUniformMatrix4fv(gl->quadProgram.VP, 1, GL_FALSE, glm::value_ptr(model));
+
+		// set the view and projection matrix in the uniform block - we only have to do this once per loop iteration.
+
 
 		mat4 model = mat4(1.0f);
-		model = glm::translate(model, pos);
-		// TODO(ck): Rotation causes Z axis to grow??? how to apply rotations to a sprite batcher?
-		// .. world coordinates are baked into vertices can it be done in shader?
-		//model = glm::rotate(model, glm::radians(-45.0f), v3{ 0.0f, 0.0f, 1.0f });
+		/// Rotation
+		//v3 playerPos = gl->batchItems_[0].worldPos;
+		//pos = playerPos;
+		//model = glm::translate(model, pos);
+		//
+		//// TODO(ck): Rotation causes Z axis to grow??? how to apply rotations to a sprite batcher?
+		//// .. world coordinates are baked into vertices can it be done in shader?
+		//model = glm::rotate(model, glm::radians(-45.0f), v3{ 1.0f, 0.0f, 0.0f });
+		//model = glm::translate(model, -pos);
+
+
+		// STUDY(ck): TODO(ck): Why does this work?
+		// My thought process is that you add the translation in (which is already there because the vertices are in world space
+		//  then afterwards the rotation is applied to make sure its rotating around the sprite's current position in world space
+		//  we need to subtract the world position out because we are done rotating and the world position is already encoded in our
+		//  vertices. Confirm this.....
 
 		//v2 worldScale = v2(64.0f);
 		//model = glm::scale(model, v3(worldScale, 1.0f));
@@ -1148,15 +1311,16 @@ namespace MonGL
 		int batchShaderHandle = gl->quadProgram.common.handle;
 		glUniformMatrix4fv(glGetUniformLocation(batchShaderHandle, "model"), 1, GL_FALSE, glm::value_ptr(model));
 
+
+
 		//glActiveTexture(GL_TEXTURE0);
 		// IMPORTANT(ck):
 		// NOTE(ck): the reason why you set it to 0 is because thats the base texture slot
 		// its not expecting the textureID thats only for binding
 		// bind textures on corresponding texture units
-		int textureSheetLocation = gl->quadProgram.common.textureDiffuse1;
 		Texture* textureSheet = GetTexture(gl, batch->sheetTextureIndex);
 		glActiveTexture(GL_TEXTURE0);
-		glUniform1i(textureSheetLocation, 0);
+		glUniform1i(gl->quadProgram.common.textureDiffuse1, 0); // texture sheet location
 		glBindTexture(GL_TEXTURE_2D, textureSheet->id); // texture index
 
 
@@ -1175,7 +1339,9 @@ namespace MonGL
 		//_config.iPriority = 0;
 
 		batch->usedIndices = 0;
-		batch->vertices_.clear();
+		//batch->vertices_.clear();
+
+		batch->vertices__.clear();
 	}
 
 
