@@ -72,6 +72,7 @@ namespace Mon {
 		const char* name;
 		std::string impPath;
 		uint32 flags;
+		bool isPlayer;
 		// CellPosition is specific to the grid and editor?
 		// Should we use this to save and load the map data?
 		// position gets updated each frame?

@@ -1,6 +1,8 @@
 #include "mon_gl_render.h"
 
 #include <glad/glad.h>
+// TODO(ck): NO STL
+#include <algorithm>
 
 namespace MonGL
 {
@@ -1053,6 +1055,22 @@ namespace MonGL
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
+	bool SortBatchItems(BatchItem& left, BatchItem& right)
+	{
+		float distToCameraA = left.worldPos.z - left.cameraZ;
+		float distToCameraB = right.worldPos.z - right.cameraZ;
+		return (distToCameraA < distToCameraB);
+	}
+
+	void SortBatch(std::vector<BatchItem>& batchItems)
+	{
+		assert(batchItems.size() > 0);
+		// TODO(ck): Hack for now put the camera position inside of the batch item
+		std::sort(batchItems.begin(), batchItems.end(), SortBatchItems);
+
+		// std::qsort(batchItems, batchItems.size(), sizeof(BatchItem), sortBatchItems);
+		return;
+	}
 
 	void FillBatch(Batch* batch, float posX, float posY, float posZ, int texOffsetX, int texOffsetY, int tileSize)
 	{
@@ -1217,10 +1235,10 @@ namespace MonGL
 // be filling and binding the batch (if things have changed)
 // Fill batch 
 // bind vertices
-		v3 pos = {};
-		v3 basePos = v3(0.0f, 0.0f, 0.0f);
-		pos.x = basePos.x;
-		pos.y = basePos.y;
+		//v3 pos = {};
+		//v3 basePos = v3(0.0f, 0.0f, 0.0f);
+		//pos.x = basePos.x;
+		//pos.y = basePos.y;
 
 
 		//glUniform3fv(program->lightSpecular, 1, &light.specular[0]);
@@ -1233,7 +1251,7 @@ namespace MonGL
 		// set the view and projection matrix in the uniform block - we only have to do this once per loop iteration.
 
 
-		mat4 model = mat4(1.0f);
+		//mat4 model = mat4(1.0f);
 		/// Rotation
 		//v3 playerPos = gl->batchItems_[0].worldPos;
 		//pos = playerPos;
@@ -1253,10 +1271,6 @@ namespace MonGL
 
 		//v2 worldScale = v2(64.0f);
 		//model = glm::scale(model, v3(worldScale, 1.0f));
-
-		int batchShaderHandle = gl->quadProgram.common.handle;
-		glUniformMatrix4fv(glGetUniformLocation(batchShaderHandle, "model"), 1, GL_FALSE, glm::value_ptr(model));
-
 
 
 		//glActiveTexture(GL_TEXTURE0);

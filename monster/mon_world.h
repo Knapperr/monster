@@ -102,7 +102,8 @@ namespace Mon {
 	static void InitPlayer(Entity* player, int shaderHandle)
 	{
 		player->name = "player";
-		
+		player->isPlayer = true;
+
 		player->setup = {};
 		player->data.meshIndex = 1;
 		player->data.textureIndex = 17;

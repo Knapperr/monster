@@ -38,29 +38,6 @@ namespace Mon
 		state->mode = Mode::Debug;
 	}
 
-	//bool sortEntities(Entity leftEnt, Entity rightEnt)
-	//{
-	//	//Camera* cam = getCamera(this, currCameraIndex);
-
-
-	//	float distToCameraA = glm::distance(leftEnt.rb.pos.z, 10.0f);
-	//	float distToCameraB = glm::distance(rightEnt.rb.pos.z, 1.0f);
-	//	return (distToCameraA > distToCameraB);
-	//}
-
-	void SortEntitiesFromCamera(GameState* game)
-	{
-
-		//for (int i = 1; i < game->world->entityCount; i++)
-		//{
-		//	Entity* e = GetEntity(game->world, i);
-		//	if (e->rb.pos <)
-		//}
-
-
-		//qsort(game->world->entities, game->world->entityCount, sizeof(Entity), sortEntities);
-	}
-
 	void UpdateEntities(World* world, MonGL::OpenGL* gl, float dt)
 	{
 		// update minion around for fun
@@ -117,6 +94,11 @@ namespace Mon
 		InitCamera(&state->cameras[followCam2Index], CameraType::Follow, "Follow 2 (better?)", state->config.viewPort);
 		state->cameras[followCam2Index].FOV = 17.0f;
 		state->cameras[followCam2Index].pitch = 45.0f;
+
+		int followCam3Index = AddCamera(state);
+		InitCamera(&state->cameras[followCam3Index], CameraType::Follow, "Really top down.. easier to see?", state->config.viewPort);
+		state->cameras[followCam3Index].FOV = 17.0f;
+		state->cameras[followCam3Index].pitch = 65;
 
 		state->currCameraIndex = debugCamIndex;
 	}
@@ -350,12 +332,15 @@ namespace Mon
 			{
 				//init batch item
 				MonGL::BatchItem batchItem;
+				if (e.isPlayer) 
+					batchItem.isPlayer = e.isPlayer;
+
 				batchItem.worldPos = e.rb.worldPos;
 				batchItem.tileSize = 32;
 				batchItem.spriteSize = 1.0f;
 				batchItem.animationIndex = e.spriteAnimationIndex;
+				batchItem.cameraZ = cam->pos.z;
 				state->renderer->batchItems_.push_back(batchItem);
-			
 			}
 			if (e.flags & EntityRenderFlag::Model)
 			{
@@ -363,6 +348,8 @@ namespace Mon
 				state->renderer->renderItems_.push_back(e.data);
 			}
 		}
+
+		MonGL::SortBatch(state->renderer->batchItems_);
 
 		// 
 		// 3D Models
@@ -382,9 +369,10 @@ namespace Mon
 		for (int i = 0; i < state->renderer->batchItems_.size(); ++i)
 		{
 			// TEMP update player animation
-			if (i == 0)
+			MonGL::BatchItem item = state->renderer->batchItems_[i];
+			if (item.isPlayer)
 			{
-				MonGL::BatchItem item = state->renderer->batchItems_[i];		
+					
 				MonGL::GLSpriteAnimation* anim = &state->renderer->spriteAnimators[2].animations[item.animationIndex];
 
 				MonGL::UpdateSpriteAnimation(anim, 1, (float)dt);
@@ -395,9 +383,7 @@ namespace Mon
 								 subTexture, 32);
 				continue;
 			}
-
-
-			MonGL::BatchItem item = state->renderer->batchItems_[i];		
+		
 			MonGL::GLSpriteAnimation* anim = &state->renderer->spriteAnimators[1].animations[item.animationIndex];
 			
 			// NOTE(ck): Running faster because its getting updated each time the batch is filled

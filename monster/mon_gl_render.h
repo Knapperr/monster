@@ -232,11 +232,13 @@ namespace MonGL
 
 	struct BatchItem
 	{
+		bool isPlayer = false;
 		int animationIndex;
 		int subTextureIndex;
 
 		int tileSize;
 		float spriteSize;
+		float cameraZ;
 		v3 worldPos;
 	};
 
@@ -336,12 +338,16 @@ namespace MonGL
 	void DrawTerrain(OpenGL* gl, RenderData* data, Camera* camera);
 	
 	// Batching
+	// TODO(ck): Batch manager to deal with these...
+	//  remove the AddBatch, GetBatch methods let the manager deal
+	//  with it internally. public methods in manager
 	void InitBatch(OpenGL* gl, int batchIndex);
 
 	void FillBatch(Batch* batch, float posX, float posY, float posZ, int texOffsetX, int texOffsetY, int tileSize);
 	void FillBatch(Batch* batch, float posX, float posY, float posZ, float camX, float camY, float camZ, GLSubTexture* subTexture, int tileSize);
 	void BindBatchVertices(Batch* batch);
 	void DrawBatch(OpenGL* gl, Batch* batch, v3 cameraRight, v3 cameraUp);
+	void SortBatch(std::vector<BatchItem>& batchItems);
 
 	// Animations
 	void UpdateSpriteAnimation(GLSpriteAnimation* animation, int animationIndex, float dt);
