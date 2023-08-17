@@ -122,6 +122,60 @@ namespace MonGL
 
 	}
 
+	void UploadBatchMesh(Batch* batch, int maxVertices, int indicesLength)
+	{
+		// TODO(ck): TEMP remove
+		batch->sheetTextureIndex = 8;
+
+		batch->indices = new uint32_t[indicesLength];
+		int offset = 0;
+		for (int i = 0; i < indicesLength; i += 6)
+		{
+			batch->indices[i + 0] = 0 + offset;
+			batch->indices[i + 1] = 1 + offset;
+			batch->indices[i + 2] = 2 + offset;
+
+			batch->indices[i + 3] = 2 + offset;
+			batch->indices[i + 4] = 3 + offset;
+			batch->indices[i + 5] = 0 + offset;
+
+			offset += 4;
+		}
+
+		glGenVertexArrays(1, &batch->VAO);
+		glBindVertexArray(batch->VAO);
+
+		glGenBuffers(1, &batch->VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, batch->VBO);
+		//glBufferData(GL_ARRAY_BUFFER, maxVertices * sizeof(Vertex3D), nullptr, GL_DYNAMIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, maxVertices * sizeof(BatchVertex3D), nullptr, GL_DYNAMIC_DRAW);
+
+
+		glGenBuffers(1, &batch->IBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, batch->IBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesLength * sizeof(batch->IBO), batch->indices, GL_DYNAMIC_DRAW);
+
+		//glEnableVertexAttribArray(0);
+		//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, position));
+		//glEnableVertexAttribArray(1);
+		//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, normal));
+		//glEnableVertexAttribArray(2);
+		//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, texCoords));
+
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(BatchVertex3D), (void*)offsetof(BatchVertex3D, position));
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(BatchVertex3D), (void*)offsetof(BatchVertex3D, normal));
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(BatchVertex3D), (void*)offsetof(BatchVertex3D, texCoords));
+		glEnableVertexAttribArray(3);
+		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(BatchVertex3D), (void*)offsetof(BatchVertex3D, worldPosition));
+
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	}
+
 	///
 	/// [begin] CUBE MAP
 	///
@@ -523,63 +577,6 @@ namespace MonGL
 	///
 	/// [BEGIN] Init RenderData
 	///
-
-	void InitBatchData(int amount)
-	{
-		// These will be figured out after looping our tilemap and pushing quads
-		// TODO(ck): Need to be able to choose amount of vertices and indices
-		int usedVertices = 1;
-		const int quadCount = 2000;
-		const int maxVertices = quadCount * 4;
-		const int indicesLength = quadCount * 6;
-
-
-
-		// TODO(ck): MEMORY 
-		//batch = new BatchData();
-
-		//glGenVertexArrays(1, &batch->VAO);
-		//glBindVertexArray(batch->VAO);
-
-		//glGenBuffers(1, &batch->VBO);
-		//glBindBuffer(GL_ARRAY_BUFFER, batch->VBO);
-		glBufferData(GL_ARRAY_BUFFER, maxVertices * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
-
-		// position attribute
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
-		// color attribute
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
-		// texture coord attribute
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
-
-		// TODO(ck): Memory management
-		uint32_t* tileIndices = new uint32_t[indicesLength];
-		int offset = 0;
-		for (int i = 0; i < indicesLength; i += 6)
-		{
-			tileIndices[i + 0] = 0 + offset;
-			tileIndices[i + 1] = 1 + offset;
-			tileIndices[i + 2] = 2 + offset;
-
-			tileIndices[i + 3] = 2 + offset;
-			tileIndices[i + 4] = 3 + offset;
-			tileIndices[i + 5] = 0 + offset;
-
-			offset += 4;
-		}
-
-		unsigned int EBO;
-		glGenBuffers(1, &EBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesLength * sizeof(tileIndices), tileIndices, GL_DYNAMIC_DRAW);
-
-		delete[] tileIndices;
-		glBindVertexArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-	};
 
 	void SetBoundingBox(RenderData* data)
 	{
@@ -991,7 +988,6 @@ namespace MonGL
 	///	[BEGIN] Batch Rendering
 	///
 
-	
 	void InitBatch(OpenGL* gl, int batchIndex)
 	{
 		// batch 
@@ -999,60 +995,9 @@ namespace MonGL
 		int maxVertices = quadCount * 4;
 		int indicesLength = quadCount * 6;
 
-
 		// init batch mesh
 		Batch* batch = GetBatch(gl, batchIndex);
-
-
-		// TODO(ck): TEMP remove
-		batch->sheetTextureIndex = 8;
-
-		batch->indices = new uint32_t[indicesLength];
-		int offset = 0;
-		for (int i = 0; i < indicesLength; i += 6)
-		{
-			batch->indices[i + 0] = 0 + offset;
-			batch->indices[i + 1] = 1 + offset;
-			batch->indices[i + 2] = 2 + offset;
-				 
-			batch->indices[i + 3] = 2 + offset;
-			batch->indices[i + 4] = 3 + offset;
-			batch->indices[i + 5] = 0 + offset;
-
-			offset += 4;
-		}
-
-		glGenVertexArrays(1, &batch->VAO);
-		glBindVertexArray(batch->VAO);
-
-		glGenBuffers(1, &batch->VBO);
-		glBindBuffer(GL_ARRAY_BUFFER, batch->VBO);
-		//glBufferData(GL_ARRAY_BUFFER, maxVertices * sizeof(Vertex3D), nullptr, GL_DYNAMIC_DRAW);
-		glBufferData(GL_ARRAY_BUFFER, maxVertices * sizeof(BatchVertex3D), nullptr, GL_DYNAMIC_DRAW);
-
-
-		glGenBuffers(1, &batch->IBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, batch->IBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesLength * sizeof(batch->IBO), batch->indices, GL_DYNAMIC_DRAW);
-
-		//glEnableVertexAttribArray(0);
-		//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, position));
-		//glEnableVertexAttribArray(1);
-		//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, normal));
-		//glEnableVertexAttribArray(2);
-		//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, texCoords));
-
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(BatchVertex3D), (void*)offsetof(BatchVertex3D, position));
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(BatchVertex3D), (void*)offsetof(BatchVertex3D, normal));
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(BatchVertex3D), (void*)offsetof(BatchVertex3D, texCoords));
-		glEnableVertexAttribArray(3);
-		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(BatchVertex3D), (void*)offsetof(BatchVertex3D, worldPosition));
-
-		glBindVertexArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		UploadBatchMesh(batch, maxVertices, indicesLength);
 	}
 
 	bool SortBatchItems(BatchItem& left, BatchItem& right)
@@ -1077,6 +1022,7 @@ namespace MonGL
 		float textureSheetSize = 256.0f;
 		posX = posX - 0.5f;
 		posY = posY - 0.5f;
+		posZ = posZ + 0.5f;
 		float vertSize = 1.0f;
 
 		// Texture coords
@@ -1198,7 +1144,8 @@ namespace MonGL
 		batch->usedIndices += 6;
 
 
-		// fill the uniform buffer with modelmatrices for rotation
+		// TODO(ck): Alternate path for filling up uniform buffer and holding the matrices in there
+		
 		// set rotation matrix for ubo
 		//mat4 model = mat4(1.0f);
 		//v3 spritePos = v3(posX, posY, posZ);
@@ -1209,7 +1156,6 @@ namespace MonGL
 		//model = glm::rotate(model, glm::radians(-45.0f), v3{ 1.0f, 0.0f, 0.0f });
 		//model = glm::translate(model, -spritePos);
 
-		
 		// because we are updating the ubo for each sprite we don't need to containerize it
 		// need to bind it here..? 
 		//uniformBuffer.push_back(model); // kind of want to keep the data though since its small right now?
@@ -1300,7 +1246,6 @@ namespace MonGL
 
 		batch->usedIndices = 0;
 		//batch->vertices_.clear();
-
 		batch->vertices__.clear();
 	}
 

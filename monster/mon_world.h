@@ -254,6 +254,9 @@ namespace Mon {
 	{
 		Entity* player = GetPlayer(world);
 
+
+// handmade hero method
+#if 1
 		// ddPLength
 		float velocityLength = lengthSq(*velocity);
 		if (velocityLength > 1.0f)
@@ -281,6 +284,9 @@ namespace Mon {
 
 		player->rb.velocity.x = velocity->x * dt + player->rb.velocity.x;
 		player->rb.velocity.z = velocity->z * dt + player->rb.velocity.z;
+#endif
+
+
 
 
 		// TODO(ck): Update entity and then update entity collider right after
@@ -303,6 +309,10 @@ namespace Mon {
 			}
 		}
 
+
+		// I don't want to use casey's method. I want something that feels more tile
+		// game based
+		//player->rb.worldPos += (*velocity * player->rb.speed * dt);
 		player->rb.worldPos = newPos;
 
 		SetFacingDirection(player);

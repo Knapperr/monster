@@ -205,7 +205,6 @@ void InitGui(SDL_Window* window, SDL_GLContext* context)
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 
-
 	/*ImGui::GetStyle().WindowRounding = 0.0f;
 	ImGui::GetStyle().AntiAliasedFill = false;
 	ImGui::GetStyle().AntiAliasedLines = false;*/
@@ -311,6 +310,7 @@ void CameraTab(Mon::GameState* game)
 		ImGui::DragFloat("FOV", &game->cameras[game->currCameraIndex].FOV, 0.1f, -1000.0f, 1000.0f, "%.02f");
 		ImGui::DragFloat("near plane", &game->cameras[game->currCameraIndex].nearPlane, 0.01f, 0.1f, 100.0f, "%.02f");
 		ImGui::DragFloat("far plane", &game->cameras[game->currCameraIndex].farPlane, 0.5f, 100.0f, 1000.0f, "%.02f");
+		ImGui::DragFloat("offset z", &game->cameras[game->currCameraIndex].offsetZ, -10.0f, 50.0f, 1000.0f, "%.02f");
 
 		ImGui::SliderFloat("pitch", &game->cameras[game->currCameraIndex].pitch, -1.10f, 100.0f, "%1.0f");
 		ImGui::SliderFloat("angle", &game->cameras[game->currCameraIndex].angleAroundTarget, -360.0f, 180.0f);
@@ -757,7 +757,7 @@ void RendererTab(Mon::GameState* game)
 			for (unsigned int i = 1; i < game->renderer->spriteAnimatorCount; ++i)
 			{
 				char label[128];
-				sprintf_s(label, "%s %d", game->renderer->spriteAnimators[i].animationIndex, i);
+				sprintf_s(label, "%d %d", game->renderer->spriteAnimators[i].animationIndex, i);
 				if (ImGui::Selectable(label, selectedAnimator == i))
 				{
 					selectedAnimator = i;

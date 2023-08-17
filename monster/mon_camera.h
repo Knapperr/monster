@@ -36,6 +36,7 @@ namespace Mon
 		float smoothness;
 		float distanceFromTarget;
 		float angleAroundTarget;
+		float offsetZ;
 
 		const char* name;
 		CameraType type;

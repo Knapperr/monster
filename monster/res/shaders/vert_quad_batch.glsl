@@ -99,7 +99,7 @@ void main()
 	modelMat = modelMat * translationMatrix;
 
 	vs_out.FragPos = vec3(modelMat * vec4(aPos.x, aPos.y, aPos.z, 1.0));
-	vs_out.Normal = mat3(transpose(inverse(modelMat))) * aNormal;
+	vs_out.Normal = mat3(transpose(inverse(translationMatrix))) * aNormal;
 	vs_out.TexCoords = aTexCoords * texCoordScale;
 	gl_Position = projection * view * vec4(vs_out.FragPos, 1.0);
 	//gl_Position = projection * view * vec4(vertexPositionWorldSpace, 1.0);

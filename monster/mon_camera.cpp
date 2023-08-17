@@ -214,6 +214,7 @@ namespace Mon
 		camera->smoothness = 0.15f;
 		camera->lerpSpeed = 7.0f;
 		camera->FOV = 17.0f;
+		camera->offsetZ = 1.5f;
 	}
 
 	mat4 FollowViewMatrix(Camera* camera)
@@ -240,7 +241,7 @@ namespace Mon
 		float verticalDistance = (float)(camera->distanceFromTarget * sinf(glm::radians(camera->pitch)));
 		float theta = glm::radians(orientation.y) + camera->angleAroundTarget;
 		float offsetx = horizontalDistance * sinf(glm::radians(theta));
-		float offsetz = horizontalDistance * cosf(glm::radians(theta));
+		float offsetz = (horizontalDistance * cosf(glm::radians(theta))) - camera->offsetZ; // subtract 1.0 to bring the camera down a bit
 		float offsety = 2.0f;
 
 		// NOTE(ck): Smooth spring dampening
