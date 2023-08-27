@@ -154,6 +154,10 @@ namespace Mon
 	//				uint32 absTileX, uint32 absTileY, uint32 absTileZ,
 	//				uint32 tileValue);
 
+	// New tilemap methods
+	void InitTilemap_(TileMap_* map);
+
+
 	void InitTileMap(TileMap* map);
 	TileMapPosition RecanonicalizePosition(TileMap* tileMap, TileMapPosition pos);
 	void UpdateTile(TileMap* map, TileSheet* sheet, int tileIndex, int newTileId);

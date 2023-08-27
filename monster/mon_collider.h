@@ -18,10 +18,10 @@ namespace Mon {
 	{
 		ColliderType type;
 		MonGL::RenderData data;
-		v3 min;
-		v3 max;
-		v3 meshSize;
-		v3 extents;
+		v3 min = {};
+		v3 max = {};
+		v3 meshSize = {};
+		v3 extents = {};
 	};
 
 	void InitBoxCollider(Collider* c);

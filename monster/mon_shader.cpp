@@ -160,6 +160,7 @@ namespace MonGL
 	void LoadShader(QuadBatchProgram* program, const char* vertexFile, const char* fragmentFile, const char* geometryFile)
 	{
 		LoadShader(&program->common, vertexFile, fragmentFile, geometryFile);
+		LoadUniforms(program);
 	}
 
 	void LoadShader(WaterProgram* program, const char* vertexFile, const char* fragmentFile, const char* geometryFile)

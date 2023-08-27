@@ -352,6 +352,7 @@ namespace MonGL
 	// Animations
 	void UpdateSpriteAnimation(GLSpriteAnimation* animation, int animationIndex, float dt);
 
+
 	void EndRender(OpenGL* gl);
 
 

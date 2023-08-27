@@ -115,6 +115,19 @@ namespace MonGL
 
 	void Load2DTextureArrayFile(Texture* texture, const char* file)
 	{
+
+
+	// The below method uses glCopyImageSubData
+	/*
+		From my understanding glCopyImageSubData is used for taking one layer and putting into the next. I think what you would do is
+		take a texture sheet from the first layer and copy each sprite to a new layer? I think this is the idea/
+
+		The simple approach is to use glTexSubImage3D. I am not exactly sure how to use a sprite sheet iwht it
+		You can copy a sprite sheet using glTexSubImage3D as well
+	
+	*/
+		
+
 #if 0
 		// Get pixel data
 		int nrChannels;

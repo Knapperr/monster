@@ -13,6 +13,7 @@ namespace Mon
 		AddEntity2D(world);
 		Entity2D* player = GetPlayer(world);
 		InitEntity(player, "player", v2(1, 1), 32);
+		player->isPlayer = true;
 		// InitPlayer(player, shaderHandle);
 		//Entity2D* collider = new Entity2D();
 		//initEntity(collider, "res/textures/p1.png", true, v2(50, 50), 32);

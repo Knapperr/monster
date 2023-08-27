@@ -45,9 +45,7 @@ namespace Mon {
 		int lightIndex;
 	};
 
-
-	// Get to this starts pg49 Ian Millington
-	// TODO(ck): PARTICLE CHANGE TO RIGIDBODY AND FIX PARAMS
+	// Starts at pg49 Ian Millington
 	struct RigidBody
 	{
 		v3 worldPos; // should this be CellPosition?

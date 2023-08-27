@@ -13,6 +13,9 @@ out VS_OUT {
 uniform mat4 view;
 uniform mat4 projection;
 
+uniform vec3 cameraRight_worldspace;
+uniform vec3 cameraUp_worldspace;
+
 uniform float texCoordScale = 1.0;
 
 void main()
@@ -71,6 +74,18 @@ void main()
 
 	*/
 
+	//
+	// face camera
+	//
+/*
+	mat4 modelMat = mat4(1.0);
+	vec3 vertPos = worldPos + cameraRight_worldspace * aPos.x * 1.0
+		+ cameraUp_worldspace * aPos.y * 1.0;
+*/
+	//
+	//	rotation matrix
+	//
+
 	// Add our world position the model matrix
 	mat4 modelMat = mat4(1.0);
 	mat4 translationMatrix = mat4(1.0);
@@ -98,8 +113,10 @@ void main()
 	translationMatrix[3] = vec4(-worldPos, 1.0);
 	modelMat = modelMat * translationMatrix;
 
+
+	//vs_out.FragPos = vec3(modelMat * vec4(vertPos.x, vertPos.y, vertPos.z, 1.0));
 	vs_out.FragPos = vec3(modelMat * vec4(aPos.x, aPos.y, aPos.z, 1.0));
-	vs_out.Normal = mat3(transpose(inverse(translationMatrix))) * aNormal;
+	vs_out.Normal = mat3(transpose(inverse(modelMat))) * aNormal;
 	vs_out.TexCoords = aTexCoords * texCoordScale;
 	gl_Position = projection * view * vec4(vs_out.FragPos, 1.0);
 	//gl_Position = projection * view * vec4(vertexPositionWorldSpace, 1.0);

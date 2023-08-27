@@ -272,8 +272,74 @@ namespace Mon
 		}
 		else
 		{
+			// Allow us to still use keyboard if controller is plugged in
 			newInput->isAnalog = false;
 		}
+
+
+			/*		  
+			- ::SDL_HAT_CENTERED
+            - ::SDL_HAT_UP
+            - ::SDL_HAT_RIGHT
+            - ::SDL_HAT_DOWN
+            - ::SDL_HAT_LEFT
+            - ::SDL_HAT_RIGHTUP
+            - ::SDL_HAT_RIGHTDOWN
+            - ::SDL_HAT_LEFTUP
+            - ::SDL_HAT_LEFTDOWN
+			*/
+		//if (e.type == SDL_JOYHATMOTION)
+		//{
+		//	bool isDown = (e.jhat.value == 0 ? false : true);
+
+		//	printf("value: %d\n", e.jhat.value);
+		//	printf("isDown: %d\n\n", isDown);
+
+		//	if (e.jhat.value > 0)
+		//	{
+		//		printf("apple");
+		//	}
+		//	if (e.jhat.value == 0)
+		//	{
+		//		printf("banan");
+		//	}
+
+		//	// 0 means the pad is centered
+		//	if (e.jhat.value == SDL_HAT_CENTERED)
+		//	{
+		//		if (newInput->left.endedDown)
+		//			processKeyboard(&newInput->left, isDown);
+		//		if (newInput->right.endedDown)
+		//			processKeyboard(&newInput->right, isDown);
+		//		if (newInput->up.endedDown)
+		//			processKeyboard(&newInput->up, isDown);
+		//		if (newInput->down.endedDown)
+		//			processKeyboard(&newInput->down, isDown);
+		//	}
+
+		//	if (e.jhat.value == SDL_HAT_UP)
+		//	{
+		//		processKeyboard(&newInput->up, isDown);
+		//		printf("hit! up\n");
+		//	}
+		//	if (e.jhat.value == SDL_HAT_DOWN)
+		//	{
+		//		processKeyboard(&newInput->down, isDown);
+		//		printf("hit! down\n");
+		//	}
+		//	if (e.jhat.value == SDL_HAT_LEFT || e.jhat.value == SDL_HAT_LEFTDOWN || e.jhat.value == SDL_HAT_LEFTUP)
+		//	{
+		//		processKeyboard(&newInput->left, isDown);
+		//		printf("hit! left\n");
+		//	}
+		//	if (e.jhat.value == SDL_HAT_RIGHT || e.jhat.value == SDL_HAT_RIGHTDOWN || e.jhat.value == SDL_HAT_RIGHTUP)
+		//	{
+		//		processKeyboard(&newInput->right, isDown);
+		//		printf("hit! right\n");
+		//	}
+
+		//}
+
 
 		// ============================================================
 
@@ -388,7 +454,14 @@ namespace Mon
 				{
 					processKeyboard(&newInput->rBumper, isDown);
 				}
-
+				//if (e.jbutton.button == 1) // a button
+				//if (e.jbutton.button == 2) // y button
+				//if (e.jbutton.button == 3) // x button
+				//if (e.jbutton.button == 7) // start button
+				//if (e.jbutton.button == 8) // L3
+				//if (e.jbutton.button == 9) // R3
+				if (e.jbutton.button > 0)
+					printf("button: %d\n", e.jbutton.button);
 			}
 			else if (e.type == SDL_MOUSEWHEEL)
 			{
@@ -404,6 +477,7 @@ namespace Mon
 					// Joystick
 				}
 			}
+
 		}
 	}
 
@@ -420,8 +494,6 @@ namespace Mon
 		// static constexpr u64 ticks_per_second = 1000000;
 		return (uint64_t)(counter * (1000000 / per_second));
 	}
-
-
 
 	uint64_t SDLPlatform::performanceFrequency()
 	{

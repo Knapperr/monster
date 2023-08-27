@@ -114,7 +114,6 @@ namespace Mon {
 		MonGL::BatchData* tileBatch = MonGL::GetBatch2D(&game->renderer, 1);
 		for (int i = 0; i < game->world->map->tiles.size(); ++i)
 		{
-			
 			v2 textOffset = v2(game->world->map->tiles[i]->textureOffsetX, game->world->map->tiles[i]->textureOffsetY);
 			MonGL::FillBatch(tileBatch, 256.0f, 16, 1.0f, game->world->map->tiles[i]->x, game->world->map->tiles[i]->y,
 							 textOffset,
@@ -138,8 +137,7 @@ namespace Mon {
 		*/
 		MonGL::GLSpriteAnimator* animator = &game->renderer.spriteAnimators[1];
 		MonGL::GLSpriteAnimation* animation = &animator->animations[0];
-
-		MonGL::UpdateSpriteAnimation(animation, 1, dt);
+		//MonGL::UpdateSpriteAnimation(animation, 1, dt);
 		
 		MonGL::GLSubTexture* subTexture = &animation->frames[animation->frameIndex].subTexture;
 		for (unsigned int i = 1; i < game->world->entityCount; ++i)
@@ -147,7 +145,7 @@ namespace Mon {
 			Entity2D e = game->world->entities[i];
 
 			// TEMP update player animation
-			if (i == 1)
+			if (e.isPlayer)
 			{
 				MonGL::GLSpriteAnimator* walkAnim = &game->renderer.spriteAnimators[2];
 				MonGL::GLSpriteAnimation* anim = &walkAnim->animations[0];

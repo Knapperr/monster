@@ -1219,6 +1219,9 @@ namespace MonGL
 		//model = glm::scale(model, v3(worldScale, 1.0f));
 
 
+		glUniform3fv(gl->quadProgram.cameraRight_worldspace, 1, &cameraRight[0]);
+		glUniform3fv(gl->quadProgram.cameraUp_worldspace, 1, &cameraUp[0]);
+
 		//glActiveTexture(GL_TEXTURE0);
 		// IMPORTANT(ck):
 		// NOTE(ck): the reason why you set it to 0 is because thats the base texture slot
@@ -1491,6 +1494,13 @@ namespace MonGL
 		LoadTextureFile((char*)"sprite_atlas", t17, GetImage(g_Assets, 31), TextureType::Diffuse, true, true);
 		LoadTextureFile((char*)"debug_icons", t18, GetImage(g_Assets, 32), TextureType::Diffuse, true, true);
 		LoadTextureFile((char*)"tilemap", t19, GetImage(g_Assets, 16), TextureType::Diffuse, true, true);
+
+		// 2D Texture Array 
+		// need this to use different textures in the same batch
+		AddTexture(gl);
+		MonGL::Texture* t20 = GetTexture(gl, 20);
+		Load2DTextureArrayFile(t20, "");
+
 
 		// Get textures loading from file like 3D
 // NOTE(ck): first index loaded

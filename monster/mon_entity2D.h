@@ -29,6 +29,7 @@ namespace Mon
 		float weight;
 		float rotation;
 		bool destroyed;
+		bool isPlayer;
 
 		int subTextureIndex;
 	};

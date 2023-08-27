@@ -41,7 +41,6 @@ namespace Mon
 	struct Point
 	{
 		int x, y;
-
 	};
 
 	inline float square(float a)

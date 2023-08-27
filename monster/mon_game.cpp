@@ -98,7 +98,7 @@ namespace Mon
 		int followCam3Index = AddCamera(state);
 		InitCamera(&state->cameras[followCam3Index], CameraType::Follow, "Really top down.. easier to see?", state->config.viewPort);
 		state->cameras[followCam3Index].FOV = 17.0f;
-		state->cameras[followCam3Index].pitch = 65;
+		state->cameras[followCam3Index].pitch = 65.0f;
 
 		state->currCameraIndex = debugCamIndex;
 	}
@@ -148,6 +148,9 @@ namespace Mon
 		// allocate grid
 		state->grid = new Grid();
 		InitGrid(state->grid);
+
+		state->grid_ = new Grid_();
+		InitGrid(state->grid_);
 
 		state->simulate = false;
 
@@ -359,6 +362,9 @@ namespace Mon
 			MonGL::RenderData data = state->renderer->renderItems_[i];
 			MonGL::Draw(state->renderer, &state->config, state->setup, data.angleDegrees, &data, data.pos, cam);
 		}
+		// 
+		// end common shader rendering
+		//
 
 		// 
 		// SPRITE BATCH
@@ -366,13 +372,13 @@ namespace Mon
 		MonGL::UseProgram(&state->renderer->quadProgram, state->setup);
 		
 		MonGL::Batch* batch = MonGL::GetBatch(state->renderer, 1);
+
 		for (int i = 0; i < state->renderer->batchItems_.size(); ++i)
 		{
 			// TEMP update player animation
 			MonGL::BatchItem item = state->renderer->batchItems_[i];
 			if (item.isPlayer)
 			{
-					
 				MonGL::GLSpriteAnimation* anim = &state->renderer->spriteAnimators[2].animations[item.animationIndex];
 
 				MonGL::UpdateSpriteAnimation(anim, 1, (float)dt);

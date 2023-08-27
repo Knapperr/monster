@@ -14,6 +14,7 @@ struct CellPosition
 
 struct Chunk
 {
+	// struct CellPosition
 	Mon::int32* cells;
 };
 
@@ -28,6 +29,14 @@ struct Grid
 	MonGL::RenderData data;
 };
 
+struct Grid_
+{
+	Chunk* chunks;
+
+	float x;
+	float z;
+};
+
 struct MousePicker
 {
 	Mon::v3 currentTerrainPoint;
@@ -37,6 +46,7 @@ struct MousePicker
 };
 
 void InitGrid(Grid* grid);
+void InitGrid(Grid_* grid);
 void GetGridPosition(Mon::v3 pos);
 
 void InitMousePicker(MousePicker* picker);

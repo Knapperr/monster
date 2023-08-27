@@ -40,12 +40,31 @@ void InitGrid(Grid* grid)
 }
 
 
+void InitGrid(Grid_* grid)
+{
+	grid->x = 0;
+	grid->z = 0;
+
+	// TODO(ck): Memory allocation 
+	// Loading chunks and cells 
+	int tileChunkCountXYZ = 1;
+	int chunkDim = 8;
+	int tileCount = chunkDim * chunkDim;
+	grid->chunks = new Chunk[tileChunkCountXYZ];
+	grid->chunks[0].cells = new Mon::int32[tileCount];
+	for (int i = 0; i < tileCount; ++i)
+	{
+		// initialize all tiles in chunk but sparesly
+		grid->chunks->cells[i] = 1;
+	}
+}
+
 void GetGridPosition(Mon::v3 pos)
 {
-	Mon::v3 gridPos;
-	gridPos.x = (int)(pos.x / 1.0f);
+	Mon::v3 gridPos = {};
+	gridPos.x = float((int)(pos.x / 1.0f));
 	gridPos.y = 0.0f;
-	gridPos.z = (int)(pos.z / 1.0f);
+	gridPos.z = float((int)(pos.z / 1.0f));
 }
 
 float GetHeight(MonGL::Mesh* mesh, int x, int z)

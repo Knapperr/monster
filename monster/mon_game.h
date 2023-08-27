@@ -56,6 +56,7 @@ namespace Mon
 		//MemoryArena worldArena;
 		World* world;
 		Grid* grid;
+		Grid_* grid_;
 		MousePicker picker;
 		Input input;
 

@@ -33,10 +33,10 @@ namespace Mon {
 		c->type = ColliderType::BoundingBox;
 		MonGL::SetBoundingBox(&c->data);
 
-		c->min = v3(-0.5f);
-		c->max = v3(0.5f);
+		c->min = v3(-0.5f, -0.2f, -0.5f);
+		c->max = v3(0.5f, 0.2f, 0.5f);
 		c->meshSize = meshSize;
-		c->extents = meshSize * 0.5f;
+		c->extents = meshSize * 0.25f;
 	}
 
 	void SetBoxTransform(Collider *c, v3 entityPos, v3 entityScale)

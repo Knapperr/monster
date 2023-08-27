@@ -272,15 +272,14 @@ namespace Mon {
 		*velocity += -6.0f * player->rb.velocity;
 
 		v3 oldPos = player->rb.worldPos;
-		v3 newPos = oldPos;
+		
 		float deltaX = (0.5f * velocity->x * square(dt) + player->rb.velocity.x * dt);
 		float deltaY = player->rb.velocity.y * 0.5f;
 		//float deltaY = velocity->y * square(deltaTime) + player.particle.velocity.y * deltaTime);
 		float deltaZ = (0.5f * velocity->z * square(dt) + player->rb.velocity.z * dt);
 		v3 delta = { deltaX, deltaY, deltaZ };
 
-		// TODO(ck): need to set an offest like casey does
-		newPos += delta;
+		v3 newPos = oldPos + delta;
 
 		player->rb.velocity.x = velocity->x * dt + player->rb.velocity.x;
 		player->rb.velocity.z = velocity->z * dt + player->rb.velocity.z;
@@ -303,7 +302,8 @@ namespace Mon {
 
 				if (TestAABBAABB(player->collider, testEntity.collider))
 				{
-					
+					newPos = player->rb.worldPos + 0.05f;
+					newPos.y = 0.0f;
 					break;
 				}
 			}

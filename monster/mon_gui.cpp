@@ -619,7 +619,7 @@ void RendererTab(Mon::GameState* game)
 			static unsigned int selectedLight = 1;
 			ImGui::BeginChild("left pane lights", ImVec2(150.0f, 0.0f), true);
 
-			for (unsigned int i = 1; i < game->renderer->lightCount; ++i)
+			for (int i = 1; i < game->renderer->lightCount; ++i)
 			{
 				char label[128];
 				sprintf_s(label, "%s %d", game->renderer->lights[i].id, i);
@@ -705,7 +705,7 @@ void RendererTab(Mon::GameState* game)
 		{
 			static unsigned int selectedTexture = 1;
 			ImGui::BeginChild("left pane textures", ImVec2(150.0f, 0.0f), true);
-			for (unsigned int i = 1; i < game->renderer->textureCount; ++i)
+			for (int i = 1; i < game->renderer->textureCount; ++i)
 			{
 				char label[128];
 				sprintf_s(label, "%s %d", game->renderer->textures[i].name.c_str(), i);
@@ -754,7 +754,7 @@ void RendererTab(Mon::GameState* game)
 		{
 			static unsigned int selectedAnimator = 1;
 			ImGui::BeginChild("left pane animations", ImVec2(150.0f, 0.0f), true);
-			for (unsigned int i = 1; i < game->renderer->spriteAnimatorCount; ++i)
+			for (int i = 1; i < game->renderer->spriteAnimatorCount; ++i)
 			{
 				char label[128];
 				sprintf_s(label, "%d %d", game->renderer->spriteAnimators[i].animationIndex, i);
@@ -820,7 +820,7 @@ void AssetTab(Mon::GameState* game)
 		static unsigned int selected = 1;
 		ImGui::BeginChild("left pane assets", ImVec2(150.0f, 0.0f), true);
 
-		for (unsigned int i = 1; i < Mon::g_Assets->meshCount; ++i)
+		for (int i = 1; i < Mon::g_Assets->meshCount; ++i)
 		{
 			char label[128];
 			sprintf_s(label, "%s %d", Mon::g_Assets->meshes[i].id, i);
