@@ -51,7 +51,7 @@ void GetGridPosition(Mon::v3 pos);
 
 void InitMousePicker(MousePicker* picker);
 void UpdatePicker(MousePicker* picker, MonGL::Mesh* mesh, Mon::v2 mousePos, Mon::mat4 viewMatrix, Mon::mat4 projection, Mon::v3 cameraPos);
-Mon::v3 CalculateMouseRay(MousePicker* picker, Mon::v2 mousePos, Mon::mat4 viewMatrix);
+Mon::v3 CalculateWorldMouseRay(MousePicker* picker, Mon::v2 mousePos, Mon::mat4 viewMatrix);
 Mon::v4 ToEyeCoords(MousePicker* picker, Mon::v4 clipCoords);
 Mon::v3 ToWorldCoords(Mon::v4 eyeCoords, Mon::mat4 viewMatrix);
 Mon::v2 GetNormalizedDeviceCoords(Mon::v2 mousePos);

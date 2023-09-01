@@ -26,7 +26,6 @@ void InitGrid(Grid* grid)
 	grid->chunks[0].cells = new Mon::int32[tileCount];
 	for (int i = 0; i < tileCount; ++i)
 	{
-		// initialize all tiles in chunk but sparesly
 		grid->chunks->cells[i] = 1;
 	}
 
@@ -54,7 +53,6 @@ void InitGrid(Grid_* grid)
 	grid->chunks[0].cells = new Mon::int32[tileCount];
 	for (int i = 0; i < tileCount; ++i)
 	{
-		// initialize all tiles in chunk but sparesly
 		grid->chunks->cells[i] = 1;
 	}
 }
@@ -124,11 +122,11 @@ void UpdatePicker(MousePicker* picker, MonGL::Mesh* mesh, Mon::v2 mousePos, Mon:
 	// TODO(ck): Do this for now? the java implementation points to it 
 	// ours cant cause of glm
 	picker->projectionMatrix = projection;
-	picker->currentRay = CalculateMouseRay(picker, mousePos, viewMatrix);
+	picker->currentRay = CalculateWorldMouseRay(picker, mousePos, viewMatrix);
 	picker->currentTerrainPoint = BinarySearch(mesh, 0, 0, RAY_RANGE, picker->currentRay, cameraPos);
 }
 
-Mon::v3 CalculateMouseRay(MousePicker* picker, Mon::v2 mousePos, Mon::mat4 viewMatrix)
+Mon::v3 CalculateWorldMouseRay(MousePicker* picker, Mon::v2 mousePos, Mon::mat4 viewMatrix)
 {
 	Mon::v2 normalizedCoords = GetNormalizedDeviceCoords(mousePos);
 	Mon::v4 clipCoords = Mon::v4(normalizedCoords.x, normalizedCoords.y, -1.0f, 1.0f);

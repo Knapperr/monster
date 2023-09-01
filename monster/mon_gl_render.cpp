@@ -1466,7 +1466,6 @@ namespace MonGL
 		AddTexture(gl);
 		MonGL::Texture* t16 = GetTexture(gl, 16);
 
-		int shaderID = gl->program.handle;
 		LoadTexture((char*)"temp1", t1, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 1));
 		LoadTexture((char*)"temp2", t2, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 2));
 		LoadTexture((char*)"temp3", t3, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 3));
@@ -1484,6 +1483,30 @@ namespace MonGL
 		LoadTexture((char*)"temp15", t15, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 15));
 		LoadTexture((char*)"temp16", t16, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 18));
 		
+
+		/*
+		AddTexture(gl);	
+		unsigned int assetCount = g_Assets->textureAssetCount;
+		for (unsigned int i = 1; i < assetCount; ++i)
+		{
+			TextureAsset* asset = Mon::GetTextureAsset(g_Assets, i);
+			AddTexture(gl);
+			MonGL::Texture* t = GetTexture(gl, i);
+			//std::string name = std::string(asset->name);
+			
+			// TODO(ck): remove std::string
+			LoadTexture(asset->name, t, asset->type, asset->isPixelArt, GetImage(g_Assets, asset->imageIndex));
+		}
+
+		// TODO(ck): IMPORTANT(ck): FIX THIS 
+		// NOTE(ck): using image indexes [24 to 29] need a better way to handle this
+		AddTexture(gl);
+		MonGL::Texture* t = GetTexture(gl, assetCount+1);
+		
+		
+		*/
+
+
 		// Texture Atlases
 		AddTexture(gl);
 		MonGL::Texture* t17 = GetTexture(gl, 17);

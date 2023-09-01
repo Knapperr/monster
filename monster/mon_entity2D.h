@@ -20,7 +20,6 @@ namespace Mon
 		// TODO(ck): Subtexture
 		// MonGL::SubTexture subTexture;
 
-
 		// TODO(ck): Fix this. We need this position to be in 
 		v2 pos; // currently screen space is used for world position and is sent to render data
 		
@@ -40,8 +39,6 @@ namespace Mon
 	// should velocity be acceleration?
 	void MovePlayer(TileMap* map, Entity2D* p, v2* velocity, float deltaTime);
 	void MovePlayer(Entity2D* p, v2* velocity, float deltaTime);
-	// "factory" methods for creating entities
-	Entity2D* InitPlayer();
-	Entity2D* InitEnemy();
+
 }
 #endif

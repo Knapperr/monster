@@ -21,7 +21,8 @@ namespace Mon {
 		g_Assets = new Assets();
 		InitAssets(g_Assets);
 		//InitAssets2D(g_Assets);
-		MonGL::InitRenderer2D(&game->renderer);
+		game->renderer = new MonGL::OpenGL();
+		MonGL::InitRenderer2D(game->renderer);
 		
 		// TODO(ck): Memory management - allocate world
 		game->world = new World2D();
@@ -95,7 +96,7 @@ namespace Mon {
 	{
 		MonGL::ViewPort(&game->config->viewPort);
 
-		int shaderID = game->renderer.program.handle;
+		int shaderID = game->renderer->program.handle;
 		glUseProgram(shaderID);
 
 		mat4 projection = Projection(&game->cameras[game->currentCameraIndex], game->config->viewPort);
@@ -111,7 +112,7 @@ namespace Mon {
 
 		// Pre-Render Fill sprite and tile batches
 
-		MonGL::BatchData* tileBatch = MonGL::GetBatch2D(&game->renderer, 1);
+		MonGL::BatchData* tileBatch = MonGL::GetBatch2D(game->renderer, 1);
 		for (int i = 0; i < game->world->map->tiles.size(); ++i)
 		{
 			v2 textOffset = v2(game->world->map->tiles[i]->textureOffsetX, game->world->map->tiles[i]->textureOffsetY);
@@ -121,7 +122,7 @@ namespace Mon {
 		}
 
 
-		MonGL::BatchData* spriteBatch = MonGL::GetBatch2D(&game->renderer, 2);
+		MonGL::BatchData* spriteBatch = MonGL::GetBatch2D(game->renderer, 2);
 
 		// Fill array called batch items and sort them by y position before 
 		// sending them to the batch
@@ -135,7 +136,7 @@ namespace Mon {
 			MonGL::GLSubTexture* subTexture = &anim->frames[anim->frameIndex].subTexture;//&animator->animations[item.animationIndex].frames[state->selectedSubTextureIndex].subTexture;
 
 		*/
-		MonGL::GLSpriteAnimator* animator = &game->renderer.spriteAnimators[1];
+		MonGL::GLSpriteAnimator* animator = &game->renderer->spriteAnimators[1];
 		MonGL::GLSpriteAnimation* animation = &animator->animations[0];
 		//MonGL::UpdateSpriteAnimation(animation, 1, dt);
 		
@@ -147,7 +148,7 @@ namespace Mon {
 			// TEMP update player animation
 			if (e.isPlayer)
 			{
-				MonGL::GLSpriteAnimator* walkAnim = &game->renderer.spriteAnimators[2];
+				MonGL::GLSpriteAnimator* walkAnim = &game->renderer->spriteAnimators[2];
 				MonGL::GLSpriteAnimation* anim = &walkAnim->animations[0];
 				MonGL::UpdateSpriteAnimation(anim, 1, (float)dt);
 
@@ -169,11 +170,11 @@ namespace Mon {
 		
 		// Loop through batches 
 		// batch needs its own shader id and texture id for the sheet
-		MonGL::Texture* tilemapAtlas = MonGL::GetTexture(&game->renderer, 19);
-		DrawBatch(tileBatch, &game->renderer.program, tilemapAtlas->id, false);
+		MonGL::Texture* tilemapAtlas = MonGL::GetTexture(game->renderer, 19);
+		DrawBatch(tileBatch, &game->renderer->program, tilemapAtlas->id, false);
 
-		MonGL::Texture* spriteAtlas = MonGL::GetTexture(&game->renderer, 17);
-		DrawBatch(spriteBatch, &game->renderer.program, spriteAtlas->id, false);
+		MonGL::Texture* spriteAtlas = MonGL::GetTexture(game->renderer, 17);
+		DrawBatch(spriteBatch, &game->renderer->program, spriteAtlas->id, false);
 	}
 
 	void SetViewPort(MonGL::Config *config, int width, int height)

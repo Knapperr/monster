@@ -6,32 +6,29 @@ float inputTimer = 0.0f;
 
 // TODO(ck): open files with current platform layer
 #include <fstream>
-#ifdef _3D_GUI_
 
-void CreateBinaryFile()
-{
-
-}
-
-const char * RenderTypeText(Mon::RenderType type)
+const char* RenderTypeText(Mon::RenderType type)
 {
 	switch (type)
 	{
-		case Mon::RenderType::Model:
-			return "model";
-		case Mon::RenderType::Cube:
-			return "cube";
-		case Mon::RenderType::Quad:
-			return "quad";
-		case Mon::RenderType::Debug:
-			return "debug";
-		case Mon::RenderType::None:
-			return "none";
-		default:
-			return "none";
+	case Mon::RenderType::Model:
+		return "model";
+	case Mon::RenderType::Cube:
+		return "cube";
+	case Mon::RenderType::Quad:
+		return "quad";
+	case Mon::RenderType::Debug:
+		return "debug";
+	case Mon::RenderType::None:
+		return "none";
+	default:
+		return "none";
 	}
 	return "none";
 }
+
+
+#ifdef _3D_GUI_
 
 // TODO(ck): Write WORLD not entities
 void WriteEntities(Mon::Entity* entities, unsigned int entityCount, int shaderID)
@@ -56,7 +53,6 @@ void WriteEntities(Mon::Entity* entities, unsigned int entityCount, int shaderID
 	// if (entities[i].data.type == MonGL::RenderType.Model)
 	//	file << entities.impFilePath;
 	
-
 	file.close();
 }
 
@@ -1105,6 +1101,276 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::GameMemory* memory)
 /// 2D
 /// 
 
+void RendererTab(Mon::Game2D* game)
+{
+	if (ImGui::BeginTabItem("Renderer"))
+	{
+		if (ImGui::TreeNode("Lights"))
+		{
+			static unsigned int selectedLight = 1;
+			ImGui::BeginChild("left pane lights", ImVec2(150.0f, 0.0f), true);
+
+			for (int i = 1; i < game->renderer->lightCount; ++i)
+			{
+				char label[128];
+				sprintf_s(label, "%s %d", game->renderer->lights[i].id, i);
+				if (ImGui::Selectable(label, selectedLight == i))
+				{
+					selectedLight = i;
+				}
+			}
+
+			ImGui::EndChild();
+
+			// Start Right Pane details
+			ImGui::SameLine();
+			ImGui::BeginGroup();
+			ImGui::BeginChild("light details", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
+
+			ImGui::Text("%s", game->renderer->lights[selectedLight].id);
+			ImGui::Separator();
+			if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
+			{
+				if (ImGui::BeginTabItem("details"))
+				{
+					//static char buf[32];
+					//sprintf_s(buf, "%s", std::to_string(Mon::g_Assets->meshes[selected].VAO).c_str());
+					//ImGui::Text("VAO %s", buf, IM_ARRAYSIZE(buf));
+
+					ImGui::DragFloat("x", &game->renderer->lights[selectedLight].pos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::DragFloat("y", &game->renderer->lights[selectedLight].pos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::DragFloat("z", &game->renderer->lights[selectedLight].pos.z, 0.1f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::SliderFloat3("ambient", &game->renderer->lights[selectedLight].ambient[0], 0.0f, 1.0f, "%0.01f");
+					ImGui::SliderFloat3("diffuse", &game->renderer->lights[selectedLight].diffuse[0], 0.0f, 1.0f, "%0.01f");
+					ImGui::SliderFloat3("specular", &game->renderer->lights[selectedLight].specular[0], 0.0f, 1.0f, "%0.01f");
+
+
+					if (ImGui::Button("dim"))
+					{
+						if (!game->renderer->lights[selectedLight].attachedToEntity)
+						{
+							game->renderer->lights[selectedLight].pos.x = 0.0f;
+							game->renderer->lights[selectedLight].pos.y = 3.0f;
+							game->renderer->lights[selectedLight].pos.z = 0.0f;
+						}
+						game->renderer->lights[selectedLight].ambient = Mon::v3(0.2f);
+						game->renderer->lights[selectedLight].diffuse = Mon::v3(1.0f);
+						game->renderer->lights[selectedLight].specular = Mon::v3(0.3f);
+					}
+					ImGui::SameLine();
+					if (ImGui::Button("avg"))
+					{
+						game->renderer->lights[selectedLight].pos.x = 0.0f;
+						game->renderer->lights[selectedLight].pos.y = 20.0f;
+						game->renderer->lights[selectedLight].pos.z = 0.0f;
+						game->renderer->lights[selectedLight].ambient = Mon::v3(0.3f);
+						game->renderer->lights[selectedLight].diffuse = Mon::v3(0.8f);
+						game->renderer->lights[selectedLight].specular = Mon::v3(0.3f);
+					}
+					ImGui::SameLine();
+					if (ImGui::Button("evening"))
+					{
+						game->renderer->lights[selectedLight].pos.x = 24.0f;
+						game->renderer->lights[selectedLight].pos.y = 64.0f;
+						game->renderer->lights[selectedLight].pos.z = 26.0f;
+						game->renderer->lights[selectedLight].ambient = Mon::v3(0.3f, 0.1f, 0.0f);
+						game->renderer->lights[selectedLight].diffuse = Mon::v3(0.8f);
+						game->renderer->lights[selectedLight].specular = Mon::v3(0.3f);
+					}
+
+
+
+					ImGui::EndTabItem();
+				}
+
+				ImGui::EndTabBar();
+			}
+
+			ImGui::EndChild();
+			ImGui::EndGroup();
+
+			ImGui::TreePop();
+		} // END LIGHTS
+
+		if (ImGui::TreeNode("Textures"))
+		{
+			static unsigned int selectedTexture = 1;
+			ImGui::BeginChild("left pane textures", ImVec2(150.0f, 0.0f), true);
+			for (int i = 1; i < game->renderer->textureCount; ++i)
+			{
+				char label[128];
+				sprintf_s(label, "%s %d", game->renderer->textures[i].name.c_str(), i);
+				if (ImGui::Selectable(label, selectedTexture == i))
+				{
+					selectedTexture = i;
+				}
+
+
+			}
+			ImGui::EndChild();
+			// Start Right Pane Details
+			ImGui::SameLine();
+
+
+			ImGui::BeginGroup();
+			ImGui::BeginChild("texture details", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
+
+			//ImGui::Text("%s", game->renderer->textures[selectedTexture].id);
+			ImGui::Separator();
+			if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
+			{
+				if (ImGui::BeginTabItem("details"))
+				{
+					float width = (float)game->renderer->textures[selectedTexture].width;
+					float height = (float)game->renderer->textures[selectedTexture].height;
+					ImGui::Text("Width: %d", game->renderer->textures[selectedTexture].width);
+					ImGui::Text("Height: %d", game->renderer->textures[selectedTexture].height);
+					// flip uv coordinates
+					ImGui::Image((void*)(intptr_t)game->renderer->textures[selectedTexture].id, ImVec2(width, height), { 0, 1 }, { 1, 0 });
+
+
+					ImGui::EndTabItem();
+				}
+
+				ImGui::EndTabBar();
+			}
+
+			ImGui::EndChild();
+			ImGui::EndGroup();
+
+			ImGui::TreePop();
+		} // END TEXTURES
+
+		if (ImGui::TreeNode("Animations"))
+		{
+			static unsigned int selectedAnimator = 1;
+			ImGui::BeginChild("left pane animations", ImVec2(150.0f, 0.0f), true);
+			for (int i = 1; i < game->renderer->spriteAnimatorCount; ++i)
+			{
+				char label[128];
+				sprintf_s(label, "%d %d", game->renderer->spriteAnimators[i].animationIndex, i);
+				if (ImGui::Selectable(label, selectedAnimator == i))
+				{
+					selectedAnimator = i;
+				}
+
+
+			}
+			ImGui::EndChild();
+			// Start Right Pane Details
+			ImGui::SameLine();
+
+
+			ImGui::BeginGroup();
+			ImGui::BeginChild("animator details", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
+
+			//ImGui::Text("%s", game->renderer->textures[selectedTexture].id);
+			ImGui::Separator();
+			if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
+			{
+				if (ImGui::BeginTabItem("details"))
+				{
+					MonGL::GLSpriteAnimator* ani = &game->renderer->spriteAnimators[selectedAnimator];
+					MonGL::Texture* t = &game->renderer->textures[8];
+
+
+					// TODO(ck): Convert My texcoords to uv coordinates for IMGUI or just parse myself can just use 
+					// the texture atlas asset. 
+					// Maybe change my uv coordinates to work this way
+
+					for (int i = 0; i < ani->animationCount; ++i)
+					{
+						MonGL::GLSpriteAnimation* a = &ani->animations[i];
+						MonGL::GLSubTexture* subT = &ani->animations[i].frames[0].subTexture;
+						ImGui::Image((void*)(intptr_t)t->id, ImVec2(32.0f, 32.0f), ImVec2(subT->texCoords[0].x, subT->texCoords[0].y), ImVec2(subT->texCoords[3].x, subT->texCoords[3].y));
+						ImGui::Separator();
+					}
+
+
+					ImGui::EndTabItem();
+				}
+
+				ImGui::EndTabBar();
+			}
+
+			ImGui::EndChild();
+			ImGui::EndGroup();
+
+			ImGui::TreePop();
+		} // END ANIMATIONS
+
+		ImGui::EndTabItem();
+	} // Renderer Tab
+}
+
+
+void AssetTab(Mon::Game2D* game)
+{
+	if (ImGui::BeginTabItem("Assets"))
+	{
+
+		static unsigned int selected = 1;
+		ImGui::BeginChild("left pane assets", ImVec2(150.0f, 0.0f), true);
+
+		for (int i = 1; i < Mon::g_Assets->meshCount; ++i)
+		{
+			char label[128];
+			sprintf_s(label, "%s %d", Mon::g_Assets->meshes[i].id, i);
+			if (ImGui::Selectable(label, selected == i))
+			{
+				selected = i;
+			}
+		}
+
+		ImGui::EndChild();
+		ImGui::SameLine();
+
+		ImGui::BeginGroup();
+		ImGui::BeginChild("mesh details", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
+
+		ImGui::Text("%s", Mon::g_Assets->meshes[selected].id);
+		ImGui::Separator();
+		if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
+		{
+			if (ImGui::BeginTabItem("details"))
+			{
+				static char buf[64];
+				sprintf_s(buf, "%s", std::to_string(Mon::g_Assets->meshes[selected].VAO).c_str());
+				ImGui::Text("VAO %s", buf, IM_ARRAYSIZE(buf));
+
+				sprintf_s(buf, "%s", std::to_string(Mon::g_Assets->meshes[selected].verticeCount).c_str());
+				ImGui::Text("Vertice Count %s", buf, IM_ARRAYSIZE(buf));
+
+				sprintf_s(buf, "%s", std::to_string(Mon::g_Assets->meshes[selected].indiceCount).c_str());
+				ImGui::Text("Indice Count %s", buf, IM_ARRAYSIZE(buf));
+
+				//sprintf_s(buf, "%s", std::to_string(Mon::g_Assets->meshes[selected].width).c_str());
+				//ImGui::Text("Width %s", buf, IM_ARRAYSIZE(buf));
+				ImGui::SliderFloat3("min", &Mon::g_Assets->meshes[selected].min[0], 0.0f, 100.0f, "%1.0f");
+				ImGui::SliderFloat3("max", &Mon::g_Assets->meshes[selected].max[0], 0.0f, 100.0f, "%1.0f");
+
+
+
+				//sprintf_s(buf, "%s", std::to_string(Mon::g_Assets->meshes[selected].height).c_str());
+				//ImGui::Text("Height %s", buf, IM_ARRAYSIZE(buf));
+
+				sprintf_s(buf, "%s", RenderTypeText(Mon::g_Assets->meshes[selected].type));
+				ImGui::Text("Type %s", buf, IM_ARRAYSIZE(buf));
+
+				ImGui::EndTabItem();
+			}
+
+			ImGui::EndTabBar();
+		}
+
+		ImGui::EndChild();
+		ImGui::EndGroup();
+
+
+		ImGui::EndTabItem();
+	}
+}
+
 void StatsWindow(bool* p_open, Mon::Game2D* game)
 {
 	ImGui::Begin("stats for me", p_open);
@@ -1471,10 +1737,9 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game2D* game2D)
 	{
 		// NOTE(ck): Maybe pull out the if(ImGui::TabItem()) into here? 
 		EntityTab(game2D);
-		//RendererTab(game);
-		//TerrainTab(game);
+		RendererTab(game2D);
 		//CameraTab(game);
-		//AssetTab(game);
+		AssetTab(game2D);
 
 		ImGui::EndTabBar();
 	}

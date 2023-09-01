@@ -226,7 +226,7 @@ namespace MonGL
 		int textureAtlasIndex;
 
 		int animationIndex;
-		GLSpriteAnimation animations[16];
+		GLSpriteAnimation animations[8];
 		int animationCount;
 	};
 

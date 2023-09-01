@@ -10,7 +10,6 @@ namespace Mon
 		v2 vel;
 		v2 pos;
 		v2 offset;
-		v3 posOffset; // TODO(Ck): Do I need this?
 
 		float zoom;
 		float smoothness;

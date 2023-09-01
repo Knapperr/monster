@@ -223,8 +223,7 @@ namespace Mon
 		viewMatrix = glm::rotate(viewMatrix, glm::radians(camera->pitch), glm::vec3(1, 0, 0));
 		viewMatrix = glm::rotate(viewMatrix, glm::radians(camera->yaw), glm::vec3(0, 1, 0));
 
-		glm::vec3 negativeCameraPos = glm::vec3(-camera->pos);
-		glm::mat4 translate = glm::translate(glm::mat4(1.0f), negativeCameraPos);
+		glm::mat4 translate = glm::translate(glm::mat4(1.0f), -camera->pos);
 		viewMatrix = viewMatrix * translate;
 
 		return viewMatrix;
