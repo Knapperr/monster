@@ -125,7 +125,7 @@ Mesh ProcessMesh(Model* model, aiMesh* mesh, const aiScene* scene)
 
 		if (mesh->mTextureCoords[0])
 		{
-			v2 vec; 
+			v2 vec = {};
 			// a vertex can contain up to 8 different texture coordinates. We thus make the assumption that we won't 
 			// use models where a vertex can have multiple texture coordinates so we always take the first set (0).
 			vec.x = mesh->mTextureCoords[0][i].x;
@@ -247,6 +247,7 @@ void ExportImpFile(Model* model, std::string name, std::string impPath)
 				<< mesh->vertices[vertIndex].tangent.x << "\n" << mesh->vertices[vertIndex].tangent.y << "\n" << mesh->vertices[vertIndex].tangent.z << "\n"
 				<< mesh->vertices[vertIndex].bitangent.x << "\n" << mesh->vertices[vertIndex].bitangent.y << "\n" << mesh->vertices[vertIndex].bitangent.z << "\n";
 		}
+
 		for (int indIndex = 0; indIndex < mesh->indices.size(); ++indIndex)
 		{
 			file << mesh->indices[indIndex] << "\n";
@@ -272,6 +273,8 @@ int main(int argc, char** argv)
 	h - help show commands
 	*/
 	Model model = {};
+
+	// loop over models folder and export them out
 
 	LoadModel(&model, "models/grass_star/Grass.obj", false);
 	ExportImpFile(&model, "grass", "test_grass.imp");
@@ -299,8 +302,14 @@ int main(int argc, char** argv)
 	model = {};
 	LoadModel(&model, "models/pumpkin/new_pumpkin.obj", false);
 	ExportImpFile(&model, "pumpkin", "pumpkin.imp");
-	// Verify Exported Imp Files before check for (nan) and exponents in the data
 
+
+	model = {};
+	LoadModel(&model, "models/tall_monster/tall_monster.obj", false);
+	ExportImpFile(&model, "tall_monster", "tall_monster.imp");
+
+
+	// Verify Exported Imp Files before check for (nan) and exponents in the data
 	// Export out to asset folder location as well and the debug folder for RenderDoc
 
 	// Asset file
