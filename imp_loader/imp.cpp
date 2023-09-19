@@ -38,6 +38,12 @@ sub projects? the main project requires the dll to be elsewhere.. could be some 
 #include <fstream>
 #include <vector>
 #include <iostream>
+#include <sstream>
+
+#include <time.h>
+
+
+
 
 struct Texture
 {
@@ -255,17 +261,192 @@ void ExportImpFile(Model* model, std::string name, std::string impPath)
 	}
 }
 
+// WRITING TO A BINARY FILE
+/*
+#include <iostream>
+#include <fstream>
+
+int main() {
+	int myArray[] = {1, 2, 3, 4, 5};
+	int arraySize = sizeof(myArray) / sizeof(myArray[0]);
+
+	std::ofstream outFile("myArray.bin", std::ios::binary);
+	if (!outFile) {
+		std::cerr << "Failed to open the file for writing." << std::endl;
+		return 1;
+	}
+
+	// Write the array size as binary data
+	outFile.write(reinterpret_cast<const char*>(&arraySize), sizeof(int));
+
+	// Write the array as binary data
+	outFile.write(reinterpret_cast<const char*>(myArray), sizeof(int) * arraySize);
+
+	outFile.close();
+
+	return 0;
+}
+*/
+
+// READING FROM A BINARY FILE
+/*
+#include <iostream>
+#include <fstream>
+
+int main() {
+	std::ifstream inFile("myArray.bin", std::ios::binary);
+	if (!inFile) {
+		std::cerr << "Failed to open the file for reading." << std::endl;
+		return 1;
+	}
+
+	int arraySize;
+	inFile.read(reinterpret_cast<char*>(&arraySize), sizeof(int));
+
+	if (arraySize <= 0) {
+		std::cerr << "Invalid array size in the file." << std::endl;
+		return 1;
+	}
+
+	int* loadedArray = new int[arraySize];
+	inFile.read(reinterpret_cast<char*>(loadedArray), sizeof(int) * arraySize);
+
+	inFile.close();
+
+	// Now, 'loadedArray' contains the data from the binary file.
+
+	// Don't forget to release the dynamically allocated memory when you're done.
+	delete[] loadedArray;
+
+	return 0;
+}
+*/
+
+struct Date
+{
+	int year;
+	int month;
+	int day;
+	int hour;
+	int min;
+
+	std::string toString()
+	{
+		std::stringstream result;
+
+		result << (year) << "-" << (month) << "-" << day << " " << hour << ":" << min;
+		return result.str();
+	}
+
+	std::string fileName()
+	{
+		std::stringstream result;
+
+		result << (year) << "-" << (month) << "-" << day << ".log";
+		return result.str();
+	}
+};
+
+enum class Severity
+{
+	ERROR,
+	WARN,
+	TRACE
+};
+
+struct Log
+{
+	std::ofstream file;
+	std::string name;
+};
+
+void InitLogger(Log* log, const char* fileName)
+{
+	log->file = std::ofstream(fileName);
+	log->name = fileName;
+}
+
+void CleanLogger(Log* log)
+{
+	printf("[INFO]: Cleaning the logger...");
+	log->file << "[INFO]: Cleaning the logger... Closing file: " << log->name << "\n";
+
+	log->file.close();
+	delete log;
+}
+
+void Error(Log* log, const char* msg)
+{
+	printf("[ERROR]: %s\n", msg);
+	log->file << "[ERROR]: " << msg << "\n";
+}
+
+void Warn(Log* log, const char* msg)
+{
+	printf("[WARN]: %s\n", msg);
+	log->file << "[WARN]: " << msg << "\n";
+}
+
+void Trace(Log* log, const char* msg)
+{
+	printf("[TRACE]: %s\n", msg);
+	log->file << "[TRACE]: " << msg << "\n";
+}
+
+void PrintLog(Log* log, Severity severity, const char* msg)
+{
+	switch (severity)
+	{
+		case Severity::ERROR:
+			Error(log, msg);
+			break;
+		case Severity::WARN:
+			Warn(log, msg);
+			break;
+		case Severity::TRACE:
+			Trace(log, msg);
+			break;
+		default:
+			Error(log, msg);
+			break;
+	}
+}
+
+void PrintLog(Log* log, const char* msg, bool printLabel = true)
+{
+	if (printLabel)
+	{
+		printf("[INFO]: %s\n", msg);
+		log->file << "[INFO]: " << msg << "\n";
+	}
+	else
+	{
+		printf("%s\n", msg);
+		log->file << msg << "\n";
+	}
+}
 
 int main(int argc, char** argv)
 {
-	printf("================\nimp loader\n================\nCole Knapp\n-----------------\n");
-	printf("2022\n");
-	//printf("LAST USE - JULY 13 2022");
-	//printf("LAST USE - JULY 23 2022");
-	//printf("LAST USE - JULY 31 2022");
-	printf("LAST USE - OCT 24 2022");
-	// TODO(ck): LOG THIS keep a data file of all the asset changes and stuff?
 
+	// TODO(ck): LOG THIS keep a data file of all the asset changes and stuff?
+	time_t t = time(NULL);
+	tm dateTime;
+	localtime_s(&dateTime, &t);
+	Date date = {};
+	date.year = dateTime.tm_year+1900;
+	date.month = dateTime.tm_mon+1;
+	date.day = dateTime.tm_mday;
+	date.hour = dateTime.tm_hour;
+	date.min = dateTime.tm_min;
+
+	Log* log = new Log();
+	InitLogger(log, date.fileName().c_str());
+	
+	PrintLog(log, "============================\n\timp loader\n============================\n\tCole Knapp\n----------------------------", false);
+
+	std::string dateLabel = "Current date: " + date.toString();
+	PrintLog(log, dateLabel.c_str());
 	/*
 	cmd commands 
 	f - "directory" export folder of files
@@ -275,6 +456,9 @@ int main(int argc, char** argv)
 	Model model = {};
 
 	// loop over models folder and export them out
+
+	// LOG EVERY MODEL BEING PRINTED
+	PrintLog(log, Severity::TRACE, "Loading: models/grass_star/Grass.obj");
 
 	LoadModel(&model, "models/grass_star/Grass.obj", false);
 	ExportImpFile(&model, "grass", "test_grass.imp");
@@ -330,9 +514,12 @@ int main(int argc, char** argv)
 	// LAUNCH THE EXE AND SEND COMMANDS TO IT
 
 
+	/*
+	Allocate tilemap and put buffers into binary file for direct loading?
+	
+	*/
 
-	std::string e;
-	std::cin >> e;
+	CleanLogger(log);
 
 	return 0;
 }
