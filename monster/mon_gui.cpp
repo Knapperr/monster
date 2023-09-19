@@ -229,7 +229,7 @@ void AddNewEntity(Mon::GameState* game, int meshIndex, int texIndex = 18, Mon::v
 
 	unsigned int entity = Mon::AddEntity(game->world);
 	Mon::Entity* e = Mon::GetEntity(game->world, game->world->entityCount - 1);
-	Mon::InitEntity(e, "new", Mon::v3(1.0f, 0.0f, 1.0f), scale, -45.0f, game->renderer->program.handle, texIndex, meshIndex, true);
+	Mon::InitEntity(e, "new", Mon::v3(1.0f, 0.0f, 1.0f), scale, -45.0f, texIndex, meshIndex, true);
 
 	game->world->entities[entity].collider.data.color = Mon::v3(0.0f, 0.0f, 1.0f);
 	game->selectedIndex = entity;

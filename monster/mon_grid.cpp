@@ -22,12 +22,12 @@ void InitGrid(Grid* grid)
 	int tileChunkCountXYZ = 1;
 	int chunkDim = 8;
 	int tileCount = chunkDim * chunkDim;
-	grid->chunks = new Chunk[tileChunkCountXYZ];
+	/*grid->chunks = new Chunk[tileChunkCountXYZ];
 	grid->chunks[0].cells = new Mon::int32[tileCount];
 	for (int i = 0; i < tileCount; ++i)
 	{
 		grid->chunks->cells[i] = 1;
-	}
+	}*/
 
 
 	// NOTE(ck): Power of 2 needs to be used for SIZE so that
@@ -49,12 +49,12 @@ void InitGrid(Grid_* grid)
 	int tileChunkCountXYZ = 1;
 	int chunkDim = 8;
 	int tileCount = chunkDim * chunkDim;
-	grid->chunks = new Chunk[tileChunkCountXYZ];
-	grid->chunks[0].cells = new Mon::int32[tileCount];
-	for (int i = 0; i < tileCount; ++i)
-	{
-		grid->chunks->cells[i] = 1;
-	}
+	//grid->chunks = new Chunk[tileChunkCountXYZ];
+	//grid->chunks[0].cells = new Mon::int32[tileCount];
+	//for (int i = 0; i < tileCount; ++i)
+	//{
+	//	grid->chunks->cells[i] = 1;
+	//}
 }
 
 void GetGridPosition(Mon::v3 pos)

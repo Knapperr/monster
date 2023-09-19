@@ -268,7 +268,34 @@ namespace Mon
 	{
 		// allocate the tilemap
 		// allocate the tilemap chunks
+		for (int y = 0; y < MAP_SIZE - 1; ++y)
+		{
+			for (int x = 0; x < MAP_SIZE - 1; ++x)
+			{
+				if (testmap[y][x] != 99)
+				{
+					// Init tile to 
 
+					// Set Tile value 
+
+					//Tile sheetTile = Tile();
+					//sheetTile.id = 3;
+					//sheetTile.textureOffsetX = 1;
+					//sheetTile.textureOffsetY = 11;
+					////Tile sheetTile = *sheet->createTile(testmap[y][x]);
+					//// TODO(ck): Copy constructor - MEMORY MANAGEMENT
+					//Tile* newTile = new Tile();
+					//newTile->id = sheetTile.id;
+					//newTile->width = sheetTile.width;
+					//newTile->height = sheetTile.height;
+					//newTile->textureOffsetX = sheetTile.textureOffsetX;
+					//newTile->textureOffsetY = sheetTile.textureOffsetY;
+					//newTile->x = (float)x;
+					//newTile->y = (float)y;
+					//map->tiles.push_back(newTile);
+				}
+			}
+		}
 
 		return;
 	}

@@ -12,10 +12,22 @@ struct CellPosition
 	Mon::v2 offset;
 };
 
+struct world_entity_block
+{
+	//uint32 entityCount;
+	//uint32 lowEntityIndex[16];
+	world_entity_block* next;
+};
+
 struct Chunk
 {
-	// struct CellPosition
-	Mon::int32* cells;
+	Mon::int32 chunkX;
+	Mon::int32 chunkY;
+	Mon::int32 chunkZ;
+
+	world_entity_block firstBlock;
+
+	Chunk* nextInHash;
 };
 
 struct Grid

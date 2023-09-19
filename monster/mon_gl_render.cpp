@@ -1175,7 +1175,7 @@ namespace MonGL
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 	
-	void DrawBatch(OpenGL* gl, Batch* batch, v3 cameraRight, v3 cameraUp)
+	void DrawBatch(OpenGL* gl, Batch* batch, v3 cameraRight, v3 cameraUp, bool rotateBatch)
 	{
 		// TODO(ck): If we want the ability to change the map at runtime we need to constantly
 // be filling and binding the batch (if things have changed)
@@ -1221,6 +1221,8 @@ namespace MonGL
 
 		glUniform3fv(gl->quadProgram.cameraRight_worldspace, 1, &cameraRight[0]);
 		glUniform3fv(gl->quadProgram.cameraUp_worldspace, 1, &cameraUp[0]);
+
+		glUniform1i(gl->quadProgram.rotateBatch, rotateBatch);
 
 		//glActiveTexture(GL_TEXTURE0);
 		// IMPORTANT(ck):
@@ -1661,6 +1663,19 @@ namespace MonGL
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
+	void Renderer2DCleanUp()
+	{
+		// Clean up vaos, vbos all of that stuff Assets?
+
+		// textures?
+
+		// shaders?
+
+		// framebuffers?
+
+		
+	}
+
 	void InitOpenGLBatchMesh(BatchData* data)
 	{
 		int usedVertices = 0;
@@ -1826,26 +1841,6 @@ namespace MonGL
 		v2 bottomRight = v2(((tileOffsetX + 1) * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize);
 		v2 bottomLeft = v2((tileOffsetX * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize);
 
-#if 0
-		// top left
-		float u = tileOffsetX / sheetSize;
-		float v = tileOffsetY / sheetSize;
-		// bottom right
-		float u2 = (tileOffsetX + tileSize) / sheetSize;
-		float v2_ = (tileOffsetY + tileSize) / sheetSize;
-
-		v4 uvRect = v4(u, v, u2 - u, v2_ - v);
-		float left = uvRect.x;
-		float right = uvRect.x + uvRect.z;
-		float top = uvRect.y;
-		float bottom = uvRect.y + uvRect.w;
-
-		v2 tr = v2(right, top);
-		v2 tl = v2(left, top);
-		v2 br = v2(right, bottom);
-		v2 bl = v2(left, bottom);
-#endif
-
 		float size = spriteSize * 16.0f; // spriteSize * pixelsPerMeter
 		float pixelsPerMeter = 16.0f;
 
@@ -1907,26 +1902,6 @@ namespace MonGL
 
 	void FillBatch(BatchData* batch, float sheetSize, int tileSize, float spriteSize, float worldX, float worldY, GLSubTexture subTexture, v2 cameraPos)
 	{
-#if 0
-		// top left
-		float u = tileOffsetX / sheetSize;
-		float v = tileOffsetY / sheetSize;
-		// bottom right
-		float u2 = (tileOffsetX + tileSize) / sheetSize;
-		float v2_ = (tileOffsetY + tileSize) / sheetSize;
-
-		v4 uvRect = v4(u, v, u2 - u, v2_ - v);
-		float left = uvRect.x;
-		float right = uvRect.x + uvRect.z;
-		float top = uvRect.y;
-		float bottom = uvRect.y + uvRect.w;
-
-		v2 tr = v2(right, top);
-		v2 tl = v2(left, top);
-		v2 br = v2(right, bottom);
-		v2 bl = v2(left, bottom);
-#endif
-
 		float size = spriteSize * 16.0f; // spriteSize * pixelsPerMeter
 		float pixelsPerMeter = 16.0f;
 
@@ -1949,32 +1924,23 @@ namespace MonGL
 		//float x = cameraCoords.x + screenW / 2.0f;
 		//float y = cameraCoords.y + screenH / 2.0f;
 
-
 		Vertex vec0 = {
-				v3(x,
-				   y,
-				   0.0f),
-				v3(1.0f, 0.0f, 0.0f),
-				subTexture.texCoords[0]
+			v3(x, y, 0.0f),
+			v3(1.0f, 0.0f, 0.0f),
+			subTexture.texCoords[0]
 		};
 		Vertex vec1 = {
-			v3((x + size),
-				y,
-				0.0f),
+			v3((x + size), y, 0.0f),
 			v3(0.0f, 1.0f, 0.0f),
 			subTexture.texCoords[1]
 		};
 		Vertex vec2 = {
-			v3((x + size),
-				(y + size),
-				0.0f),
+			v3((x + size), (y + size), 0.0f),
 			v3(0.0f, 0.0f, 1.0f),
 			subTexture.texCoords[2]
 		};
 		Vertex vec3 = {
-			v3((x),
-				(y + size),
-				0.0f),
+			v3(x, (y + size), 0.0f),
 			v3(1.0f, 1.0f, 0.0f),
 			subTexture.texCoords[3]
 		};
@@ -1985,7 +1951,6 @@ namespace MonGL
 		batch->vertices.push_back(vec2);
 		batch->vertices.push_back(vec3);
 	}
-
 
 	void BindVertices(BatchData* batch)
 	{

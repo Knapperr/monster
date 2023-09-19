@@ -67,7 +67,7 @@ namespace Mon {
 	}
 
 
-	static void InitEntity(Entity* e, const char* name, v3 pos, v3 scale, float angleDegrees, int shaderHandle, int textureIndex, int meshIndex, bool isModel = false)
+	static void InitEntity(Entity* e, const char* name, v3 pos, v3 scale, float angleDegrees, int textureIndex, int meshIndex, bool isModel = false)
 	{
 		e->setup = {};
 		e->name = name;
@@ -99,7 +99,7 @@ namespace Mon {
 			e->flags = EntityRenderFlag::Sprite;
 	}
 
-	static void InitPlayer(Entity* player, int shaderHandle)
+	static void InitPlayer(Entity* player)
 	{
 		player->name = "player";
 		player->isPlayer = true;
@@ -177,12 +177,12 @@ namespace Mon {
 		// reserve slot 1 for player entity
 		AddEntity(world);
 		Entity* player = GetPlayer(world);
-		InitPlayer(player, shaderHandle);
+		InitPlayer(player);
 		
 
 		AddEntity(world);
 		Entity* light = GetEntity(world, 2);
-		InitEntity(light, "light", v3(1.0f), v3(1.0f), angleDegrees, shaderHandle, 1, 2, true);
+		InitEntity(light, "light", v3(1.0f), v3(1.0f), angleDegrees, 1, 2, true);
 
 		/*
 		how should lights work? are they attached to an entity? right now they are part of the rendering layer which i think
@@ -197,50 +197,50 @@ namespace Mon {
 			AddEntity(world);
 			Entity* tree = GetEntity(world, i);
 			v3 offset = v3(i * 4, 0.0f ,i * 4) + basePoint; 
-			InitEntity(tree, "tree", offset, v3(1.0f), angleDegrees, shaderHandle, 7, 1);
+			InitEntity(tree, "tree", offset, v3(1.0f), angleDegrees, 7, 1);
 		}
 		
 		AddEntity(world);
 		Entity* cube = GetEntity(world, world->entityCount - 1);
-		InitEntity(cube, "cube_1", v3(50.0f, 0.3f, 20.0f), v3(1.0f), angleDegrees, shaderHandle, 18, 2, true);
+		InitEntity(cube, "cube_1", v3(50.0f, 0.3f, 20.0f), v3(1.0f), angleDegrees, 18, 2, true);
 
 		// ch_minion
 		AddEntity(world);
 		Entity* ent = GetEntity(world, world->entityCount - 1);
-		InitEntity(ent, "minion1", v3(10.0f,4.0f,10.0f), v3(1.0f), angleDegrees, shaderHandle, 9, 1);
+		InitEntity(ent, "minion1", v3(10.0f,4.0f,10.0f), v3(1.0f), angleDegrees, 9, 1);
 		ent->facingDir = Direction::Right;
 
 		AddEntity(world);
 		Entity* ent1 = GetEntity(world, world->entityCount - 1);
-		InitEntity(ent1, "minion2", v3(30.0f, 4.0f, 5.0f), v3(1.0f), angleDegrees, shaderHandle, 9, 1);
+		InitEntity(ent1, "minion2", v3(30.0f, 4.0f, 5.0f), v3(1.0f), angleDegrees, 9, 1);
 		ent1->facingDir = Direction::Right;
 		ent1->follow = true;
 
 		AddEntity(world);
 		Entity* ent2 = GetEntity(world, world->entityCount - 1);
-		InitEntity(ent2, "minion3", v3(26.0f, 2.0f, 7.0f), v3(1.0f), angleDegrees, shaderHandle, 9, 1);
+		InitEntity(ent2, "minion3", v3(26.0f, 2.0f, 7.0f), v3(1.0f), angleDegrees, 9, 1);
 
 		AddEntity(world);
 		Entity* ent3 = GetEntity(world, world->entityCount - 1);
-		InitEntity(ent3, "minion4", v3(2.0f, 6.0f, 1.0f), v3(1.0f), angleDegrees, shaderHandle, 9, 1);
+		InitEntity(ent3, "minion4", v3(2.0f, 6.0f, 1.0f), v3(1.0f), angleDegrees, 9, 1);
 
 		AddEntity(world);
 		Entity* ent4 = GetEntity(world, world->entityCount - 1);
-		InitEntity(ent4, "ch_witch2", v3(12.0f, 0.0f, 9.0f), v3(1.0f), angleDegrees, shaderHandle, 10, 1);
+		InitEntity(ent4, "ch_witch2", v3(12.0f, 0.0f, 9.0f), v3(1.0f), angleDegrees, 10, 1);
 
 		AddEntity(world);
 		Entity* plane64 = GetEntity(world, world->entityCount - 1);
-		InitEntity(plane64, "plane64", v3(6.0f, 0.0f, 6.0f), v3(1.0f), 0.0f, shaderHandle, 8, 7, true);
+		InitEntity(plane64, "plane64", v3(6.0f, 0.0f, 6.0f), v3(1.0f), 0.0f, 8, 7, true);
 		plane64->data.meshIndex = 7;
 
 		AddEntity(world);
 		Entity* gem = GetEntity(world, world->entityCount - 1);
-		InitEntity(gem, "gem", v3(6.0f, 0.0f, 6.0f), v3(1.0f), 0.0f, shaderHandle, 8, 8, true);
+		InitEntity(gem, "gem", v3(6.0f, 0.0f, 6.0f), v3(1.0f), 0.0f, 8, 8, true);
 		gem->data.meshIndex = 8;
 
 		AddEntity(world);
 		Entity* house = GetEntity(world, world->entityCount - 1);
-		InitEntity(house, "house", v3(16.0f, 0.0f, 16.0f), v3(1.0f), 0.0f, shaderHandle, 23, 10, true);
+		InitEntity(house, "house", v3(16.0f, 0.0f, 16.0f), v3(1.0f), 0.0f, 23, 10, true);
 		house->data.meshIndex = 10;
 
 	}

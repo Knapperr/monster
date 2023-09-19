@@ -16,6 +16,8 @@ uniform mat4 projection;
 uniform vec3 cameraRight_worldspace;
 uniform vec3 cameraUp_worldspace;
 
+uniform bool rotateBatch;
+
 uniform float texCoordScale = 1.0;
 
 void main()
@@ -88,31 +90,34 @@ void main()
 
 	// Add our world position the model matrix
 	mat4 modelMat = mat4(1.0);
-	mat4 translationMatrix = mat4(1.0);
-	translationMatrix[3] = vec4(worldPos, 1.0);
-	modelMat = modelMat * translationMatrix;
 
-    // Build the rotation matrix
-	float angle = 45.0;
-    float c = cos(angle);
-    float s = sin(angle);
-    float t = 1.0 - c;
+	if (rotateBatch)
+	{
+		mat4 translationMatrix = mat4(1.0);
+		translationMatrix[3] = vec4(worldPos, 1.0);
+		modelMat = modelMat * translationMatrix;
 
-	// add rotation in
-	vec3 rotationAxis = vec3(1.0, 0.0, 0.0);
-    mat3 rotMatrix = mat3(
-        c + rotationAxis.x * rotationAxis.x * t, rotationAxis.x * rotationAxis.y * t - rotationAxis.z * s, rotationAxis.x * rotationAxis.z * t + rotationAxis.y * s,
-        rotationAxis.y * rotationAxis.x * t + rotationAxis.z * s, c + rotationAxis.y * rotationAxis.y * t, rotationAxis.y * rotationAxis.z * t - rotationAxis.x * s,
-        rotationAxis.z * rotationAxis.x * t - rotationAxis.y * s, rotationAxis.z * rotationAxis.y * t + rotationAxis.x * s, c + rotationAxis.z * rotationAxis.z * t
-    );
-    // Apply the rotation matrix to the model matrix
-    modelMat = modelMat * mat4(rotMatrix);
+		// Build the rotation matrix
+		float angle = 45.0;
+		float c = cos(angle);
+		float s = sin(angle);
+		float t = 1.0 - c;
 
-	// now remove worldPos and move back after rotating
-	translationMatrix = mat4(1.0);
-	translationMatrix[3] = vec4(-worldPos, 1.0);
-	modelMat = modelMat * translationMatrix;
+		// add rotation in
+		vec3 rotationAxis = vec3(1.0, 0.0, 0.0);
+		mat3 rotMatrix = mat3(
+			c + rotationAxis.x * rotationAxis.x * t, rotationAxis.x * rotationAxis.y * t - rotationAxis.z * s, rotationAxis.x * rotationAxis.z * t + rotationAxis.y * s,
+			rotationAxis.y * rotationAxis.x * t + rotationAxis.z * s, c + rotationAxis.y * rotationAxis.y * t, rotationAxis.y * rotationAxis.z * t - rotationAxis.x * s,
+			rotationAxis.z * rotationAxis.x * t - rotationAxis.y * s, rotationAxis.z * rotationAxis.y * t + rotationAxis.x * s, c + rotationAxis.z * rotationAxis.z * t
+		);
+		// Apply the rotation matrix to the model matrix
+		modelMat = modelMat * mat4(rotMatrix);
 
+		// now remove worldPos and move back after rotating
+		translationMatrix = mat4(1.0);
+		translationMatrix[3] = vec4(-worldPos, 1.0);
+		modelMat = modelMat * translationMatrix;
+	}
 
 	//vs_out.FragPos = vec3(modelMat * vec4(vertPos.x, vertPos.y, vertPos.z, 1.0));
 	vs_out.FragPos = vec3(modelMat * vec4(aPos.x, aPos.y, aPos.z, 1.0));

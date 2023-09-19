@@ -44,6 +44,7 @@ namespace MonGL
 		program->VP = glGetUniformLocation(programID, "VP");
 		program->billboardPos = glGetUniformLocation(programID, "billboardPos");
 		program->billboardSize = glGetUniformLocation(programID, "billboardSize");
+		program->rotateBatch = glGetUniformLocation(programID, "rotateBatch");
 	}
 
 	void LoadUniforms(WaterProgram* program)

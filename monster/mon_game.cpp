@@ -402,7 +402,7 @@ namespace Mon
 		}
 
 		MonGL::BindBatchVertices(batch);
-		MonGL::DrawBatch(state->renderer, batch, cam->right, cam->worldUp);
+		MonGL::DrawBatch(state->renderer, batch, cam->right, cam->worldUp, true);
 
 		//
 		// DEBUG TOOLS
