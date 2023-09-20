@@ -13,6 +13,8 @@ namespace Mon
 #include <string>
 	void InitAssets(Assets* assets)
 	{
+		Mon::Log::print("Init assets...");
+
 		//empty mesh #0
 		AddMesh(assets);
 
@@ -108,6 +110,7 @@ namespace Mon
 
 					AddImage(assets);
 					Image* img = GetImage(assets, i);
+
 					InitImage(img, line.c_str(), flipImage);
 
 					file >> line;
@@ -197,6 +200,8 @@ namespace Mon
 				break;
 			}
 
+			Mon::Log::print("Loading model", fileName);
+			Mon::Log::print("with vertices/indices", mesh->verticeCount, mesh->indiceCount);
 			mesh->vertices = new MonGL::Vertex3D[mesh->verticeCount];
 			mesh->indices = new unsigned int[mesh->indiceCount];
 
@@ -277,6 +282,8 @@ namespace Mon
 
 	void InitImage(Image* image, const char* file, bool flip)
 	{
+		MonGL::Log::print("loading image", file);
+
 		stbi_set_flip_vertically_on_load(flip);
 		image->data = stbi_load(file, &image->width, &image->height, &image->nrChannels, 0);
 	}
@@ -298,6 +305,8 @@ namespace Mon
 
 	void InitQuadMesh(Mesh* mesh, bool tangents)
 	{
+		Mon::Log::print("Loading quad mesh");
+
 		// TODO(ck): Actual GUID
 		mesh->id = "QUAD";
 
@@ -369,6 +378,7 @@ namespace Mon
 
 	void Init2DQuadMesh(Mesh2D* mesh)
 	{
+		Mon::Log::print("Loading 2D quad mesh");
 		mesh->id = "2D_QUAD";
 
 		int verticeCount = 4;
@@ -423,6 +433,8 @@ namespace Mon
 
 	void InitCubeMesh(Mesh* mesh)
 	{
+		Mon::Log::print("Loading cube mesh");
+
 		mesh->id = "CUBE";
 		// Load from .vt file (need to do efficient as possible)
 		// maybe dont need to do this but?? tilemap does a quad and its a huge
@@ -559,6 +571,7 @@ namespace Mon
 
 	void InitModelMesh(Mesh* mesh, const char* fileName)
 	{
+		Mon::Log::print("Loading model mesh");
 		// IMPORTANT(ck):
 		// TODO(ck):  This can't be 003 there are always going to be more than one
 		//			  model mesh. the other meshes are fine but the model mesh is dynamic
@@ -571,6 +584,8 @@ namespace Mon
 
 	void InitGridMesh(Mesh* mesh, int xSize, int zSize)
 	{
+		Mon::Log::print("Loading grid mesh");
+
 		mesh->id = "GRID";
 		mesh->type = RenderType::Model;
 		int verticeCount = (xSize + 1) * (zSize + 1);
@@ -620,6 +635,8 @@ namespace Mon
 
 	void InitCubeMapMesh(Mesh* mesh)
 	{
+		Mon::Log::print("Loading cube map");
+
 		mesh->id = "CUBEMAP";
 		mesh->type = RenderType::CubeMap;
 
@@ -633,6 +650,8 @@ namespace Mon
 
 	void InitBoundingBoxMesh(Mesh* mesh)
 	{
+		Mon::Log::print("Loading bounding box mesh");
+
 		mesh->id = "BOUNDING_BOX";
 		mesh->type = RenderType::Debug;
 		int verticeCount = 8;
@@ -682,6 +701,8 @@ namespace Mon
 
 	void InitLineMesh(Mesh* mesh)
 	{
+		Mon::Log::print("Loading line mesh");
+
 		mesh->id = "006";
 		int verticeCount = 2;
 		mesh->vertices = new MonGL::Vertex3D[verticeCount];
@@ -703,6 +724,8 @@ namespace Mon
 	
 	void InitTextureAtlas(TextureAtlas* atlas, int assetIndex, int atlasSize, int tileSize)
 	{
+		Mon::Log::print("Loading texture atlas");
+
 		atlas->assetIndex = assetIndex;
 
 		atlas->size = atlasSize;

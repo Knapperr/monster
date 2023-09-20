@@ -286,6 +286,8 @@ namespace MonGL
 
 	void InitRenderer(OpenGL* gl)
 	{
+		Mon::Log::print("Init renderer...");
+
 		/*
 		TODO(ck): Load from a configuration file
 		should only load meshses in current chunk or level
@@ -316,6 +318,7 @@ namespace MonGL
 			//std::string name = std::string(asset->name);
 			
 			// TODO(ck): remove std::string
+			Mon::Log::print("Loading texture", asset->name.c_str());
 			LoadTexture(asset->name, t, asset->type, asset->isPixelArt, GetImage(g_Assets, asset->imageIndex));
 		}
 
