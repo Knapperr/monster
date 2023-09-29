@@ -10,6 +10,8 @@ namespace Mon
 		v2 vel;
 		v2 pos;
 		v2 offset;
+		Rect screen; // not sure what this is
+		Rect resolution;
 
 		float zoom;
 		float smoothness;
@@ -17,10 +19,10 @@ namespace Mon
 		float pixelsPerMeter;
 	};
 
-	void InitCamera(Camera2D* camera);
+	void InitCamera(Camera2D* camera, Rect viewPort);
 	void Update(Camera2D* camera, v2 target, float dt);
 	bool IsInBounds(Camera2D* camera, v2 pos);
-	mat4 Projection(Camera2D* camera, Rect viewPort);
+	mat4 Projection(Camera2D* camera);
 	mat4 ViewMatrix(Camera2D* camera);
 }
 #endif

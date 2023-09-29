@@ -25,8 +25,8 @@ namespace MonGL
 		// set wrap and filter here for now same with internal formats
 		if (pixelArtTexture)
 		{
-			texture->wrapS = GL_CLAMP_TO_EDGE;
-			texture->wrapT = GL_CLAMP_TO_EDGE;
+			texture->wrapS = GL_REPEAT;// GL_CLAMP_TO_EDGE
+			texture->wrapT = GL_REPEAT;//GL_CLAMP_TO_EDGE
 			texture->filterMin = GL_NEAREST;
 			texture->filterMax = GL_NEAREST;
 
@@ -376,6 +376,8 @@ namespace MonGL
 			int tileOffsetX = 3;
 			int tileOffsetY = 7;
 
+			float uvPadding = 0.001f;
+
 			for (int i = 0; i < animationCount; ++i)
 			{
 				// Add animation method
@@ -409,10 +411,15 @@ namespace MonGL
 					frame->subTexture.height = 32;
 					frame->subTexture.height = 32;
 					frame->subTexture.tileSize = 32;
-					frame->subTexture.texCoords[0] = v2((tileOffsetX * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize); // bottom left
-					frame->subTexture.texCoords[1] = v2(((tileOffsetX + 1) * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize); // bottom right
-					frame->subTexture.texCoords[2] = v2(((tileOffsetX + 1) * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize); // top right
-					frame->subTexture.texCoords[3] = v2((tileOffsetX * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize); // top left 
+					//frame->subTexture.texCoords[0] = v2(((tileOffsetX * tileSize) / sheetSize), ((tileOffsetY * tileSize) / sheetSize)); // bottom left
+					//frame->subTexture.texCoords[1] = v2((((tileOffsetX + 1) * tileSize) / sheetSize), ((tileOffsetY * tileSize) / sheetSize)); // bottom right
+					//frame->subTexture.texCoords[2] = v2((((tileOffsetX + 1) * tileSize) / sheetSize), (((tileOffsetY + 1) * tileSize) / sheetSize)); // top right
+					//frame->subTexture.texCoords[3] = v2(((tileOffsetX * tileSize) / sheetSize), (((tileOffsetY + 1) * tileSize) / sheetSize)); // top left 
+
+					frame->subTexture.texCoords[0] = v2(((tileOffsetX * tileSize) / sheetSize) + uvPadding, ((tileOffsetY * tileSize) / sheetSize)) + uvPadding; // bottom left
+					frame->subTexture.texCoords[1] = v2((((tileOffsetX + 1) * tileSize) / sheetSize) - uvPadding, ((tileOffsetY * tileSize) / sheetSize)) - uvPadding; // bottom right
+					frame->subTexture.texCoords[2] = v2((((tileOffsetX + 1) * tileSize) / sheetSize) - uvPadding, (((tileOffsetY + 1) * tileSize) / sheetSize)) - uvPadding; // top right
+					frame->subTexture.texCoords[3] = v2(((tileOffsetX * tileSize) / sheetSize) + uvPadding, (((tileOffsetY + 1) * tileSize) / sheetSize)) + uvPadding; // top left 
 
 					frame->duration = 5.0f;
 				}
@@ -450,11 +457,11 @@ namespace MonGL
 					frame->subTexture.height = 32;
 					frame->subTexture.height = 32;
 					frame->subTexture.tileSize = 32;
+
 					frame->subTexture.texCoords[0] = v2((tileOffsetX * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize); // bottom left
 					frame->subTexture.texCoords[1] = v2(((tileOffsetX + 1) * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize); // bottom right
 					frame->subTexture.texCoords[2] = v2(((tileOffsetX + 1) * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize); // top right
 					frame->subTexture.texCoords[3] = v2((tileOffsetX * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize); // top left 
-
 					frame->duration = 0.2f;
 
 					tileOffsetX++;
@@ -1519,7 +1526,7 @@ namespace MonGL
 		MonGL::Texture* t18 = GetTexture(gl, 18);
 		AddTexture(gl);
 		MonGL::Texture* t19 = GetTexture(gl, 19);
-		LoadTextureFile((char*)"sprite_atlas", t17, GetImage(g_Assets, 31), TextureType::Diffuse, true, true);
+		LoadTextureFile((char*)"sprite_atlas", t17, GetImage(g_Assets, 31), TextureType::Diffuse, false, true);
 		LoadTextureFile((char*)"debug_icons", t18, GetImage(g_Assets, 32), TextureType::Diffuse, true, true);
 		LoadTextureFile((char*)"tilemap", t19, GetImage(g_Assets, 16), TextureType::Diffuse, true, true);
 

@@ -3,7 +3,7 @@
 namespace Mon
 {
 
-	void InitCamera(Camera2D* camera)
+	void InitCamera(Camera2D* camera, Rect viewPort)
 	{
 		camera->pos = v2(1.0f);
 		camera->vel = v2(0.0f);
@@ -13,7 +13,10 @@ namespace Mon
 		camera->lerpSpeed = 7.0f;
 		camera->zoom = 64.0f;
 		
-
+		// TODO(ck): Is this the right name? Should it be called camera size? camera viewport size?
+		// I guess orthoprojectionsize is the right name
+		camera->resolution.w = viewPort.w / 2.0f;
+		camera->resolution.h = viewPort.h / 2.0f;
 		// BASED OFF OF screen size
 		//float metersToPixels = 16.0f / 1.4f;
 		//float orthoSize = 480.0f / (2.0f * metersToPixels);
@@ -25,21 +28,15 @@ namespace Mon
 
 	void Update(Camera2D* camera, v2 target, float dt)
 	{
-	
-		// target pos in world space
-		camera->pos.x = target.x * 16.0f;
-		camera->pos.y = target.y * 16.0f;
-
-		camera->pos.x = camera->pos.x - (480.0f / 2.0f);
-		camera->pos.y = camera->pos.y - (270.0f / 2.0f);
-
+		// target position in world space and center of screen
+		camera->pos.x = (target.x * 16.0f) - camera->resolution.w / 2.0f;
+		camera->pos.y = (target.y * 16.0f) - camera->resolution.h / 2.0f;
 		// Smooth camera will not work with coordinate system 1:1 pixels and screen space
-		//v2 targetPos = *target;
+		//v2 targetPos = target;
 		// 
 		// IMPORTANT(ck): won't work with pixels and screen as 1:1 need to figure out meters to pixels
-		//camera->pos.x = smoothDamp(camera->pos.x, (target->x * 16.0f - (480.0f / 2.0f)), camera->vel.x, camera->smoothness, dt);
-		//camera->pos.y = smoothDamp(camera->pos.y, (target->y * 16.0f - (270.0f / 2.0f)), camera->vel.y, camera->smoothness, dt);
-
+		//camera->pos.x = smoothDamp(camera->pos.x, (target.x * 16.0f - (480.0f / 2.0f)), camera->vel.x, camera->smoothness, dt);
+		//camera->pos.y = smoothDamp(camera->pos.y, (target.y * 16.0f - (270.0f / 2.0f)), camera->vel.y, camera->smoothness, dt);
 	}
 
 	bool IsInBounds(Camera2D* camera, v2 pos)
@@ -50,18 +47,10 @@ namespace Mon
 		return result;
 	}
 
-	mat4 Projection(Camera2D* camera, Rect viewPort)
+	mat4 Projection(Camera2D* camera)
 	{
-		mat4 projection = glm::ortho(0.0f, 480.0f, 0.0f, 270.0f, -1.0f, 1.0f);
+		mat4 projection = glm::ortho(0.0f, camera->resolution.w, 0.0f, camera->resolution.h, -1.0f, 1.0f);
 		return projection;
-
-		//mat4 projection = glm::ortho(0.0f, (480.0f / pixelsPerMeter), 0.0f, (270.0f / pixelsPerMeter), -1.0f, 1.0f);
-		//return projection;
-
-		// TODO(ck): Width, Height variables
-		// NOTE(ck): half of the view port width and height 
-		//mat4 projection = glm::ortho(0.0f, 480.0f, 0.0f, 270.0f, -1.0f, 1.0f);
-		//return projection;
 	}
 
 	mat4 ViewMatrix(Camera2D* camera)

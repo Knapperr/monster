@@ -42,7 +42,7 @@ namespace Mon {
 		AddCamera(game);
 		game->currentCameraIndex = AddCamera(game);
 		// InitCamera
-		InitCamera(&game->cameras[game->currentCameraIndex]);
+		InitCamera(&game->cameras[game->currentCameraIndex], game->config->viewPort);
 
 
 		//Entity2D* player = GetPlayer(game->world);
@@ -94,12 +94,13 @@ namespace Mon {
 
 	void Render(Game2D* game, double dt)
 	{
+		// TODO(ck): Camera also needs to update its resolution
 		MonGL::ViewPort(&game->config->viewPort);
 
 		int shaderID = game->renderer->program.handle;
 		glUseProgram(shaderID);
 
-		mat4 projection = Projection(&game->cameras[game->currentCameraIndex], game->config->viewPort);
+		mat4 projection = Projection(&game->cameras[game->currentCameraIndex]);
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
 		mat4 view = ViewMatrix(&game->cameras[game->currentCameraIndex]);

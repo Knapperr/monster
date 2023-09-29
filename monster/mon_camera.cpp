@@ -220,8 +220,8 @@ namespace Mon
 	mat4 FollowViewMatrix(Camera* camera)
 	{
 		glm::mat4 viewMatrix = glm::mat4(1.0f);
-		viewMatrix = glm::rotate(viewMatrix, glm::radians(camera->pitch), glm::vec3(1, 0, 0));
-		viewMatrix = glm::rotate(viewMatrix, glm::radians(camera->yaw), glm::vec3(0, 1, 0));
+		viewMatrix = glm::rotate(viewMatrix, glm::radians(camera->pitch), glm::vec3(1.0f, 0.0f, 0.0f));
+		viewMatrix = glm::rotate(viewMatrix, glm::radians(camera->yaw), glm::vec3(0.0f, 1.0f, 0.0f));
 
 		glm::mat4 translate = glm::translate(glm::mat4(1.0f), -camera->pos);
 		viewMatrix = viewMatrix * translate;
@@ -252,7 +252,7 @@ namespace Mon
 		//pos.z = tPos.z - offsetz;
 		//pos.y = (tPos.y + verticalDistance) + offsety;
 
-		camera->yaw = 180 - (glm::radians(orientation.y) + camera->angleAroundTarget);
+		camera->yaw = 180.0f + (glm::radians(orientation.y) + camera->angleAroundTarget);
 
 		// TODO(ck): The right axis calculation may be incorrect
 		// Camera Front and Right

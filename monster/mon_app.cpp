@@ -42,7 +42,7 @@ bool App::init()
 #endif
 
 	memory = {};
-	memory.permanentStorageSize = Megabytes(64);
+	memory.permanentStorageSize = Megabytes(256);
 	memory.transientStorageSize = Gigabytes(1);
 	// memory.debugStorageSize = Gigabytes(1); 
 
