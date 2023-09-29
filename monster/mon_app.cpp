@@ -34,12 +34,13 @@ bool App::init()
 
 	//Platform->SetTitle(window, "Monster");
 
-#ifdef _3D_
+
 #if 0 // HANDMADE_INTERNAL
 	LPVOID BaseAddress = (LPVOID)Terabytes(2);
 #else
 	LPVOID BaseAddress = 0;
 #endif
+#ifdef _3D_
 
 	memory = {};
 	memory.permanentStorageSize = Megabytes(256);
@@ -62,13 +63,33 @@ bool App::init()
 			return false;
 	}
 #else
+	memory = {};
+	memory.permanentStorageSize = Megabytes(256);
+	memory.transientStorageSize = Gigabytes(1);
+	// memory.debugStorageSize = Gigabytes(1); 
 
-	// TODO(ck): memory allocation
-	game2D = new Mon::Game2D();
-	if (!Mon::Init(game2D))
-		return false;
+	platform->state.totalSize = (memory.permanentStorageSize + memory.transientStorageSize);
+	// debugsize
+	//platform->state.totalSize = (memory.permanentStorageSize + memory.transientStorageSize + memory.debugStorageSize);
+	platform->state.gameMemoryBlock = VirtualAlloc(BaseAddress, (size_t)platform->state.totalSize,
+												   MEM_RESERVE | MEM_COMMIT,
+												   PAGE_READWRITE);
+	memory.permanentStorage = platform->state.gameMemoryBlock;
+	memory.transientStorage = ((uint8_t*)memory.permanentStorage + memory.permanentStorageSize);
+	//memory.debugStorage = ((uint8_t *)memory.transientStorage + memory.transientStorageSize)
+
+	if (memory.permanentStorage && memory.transientStorage)
+	{
+		if (!Mon::Init(&memory, settings.windowWidth, settings.windowHeight, settings.portWidth, settings.portHeight))
+		{
+			Mon::Log::print("2D Game Init failed...");
+			return false;
+		}
+	}
 #endif
 
+	Mon::Log::print("App init successful");
+	Mon::Log::print("Launching Monster...");
 	return true;
 }
 
@@ -128,7 +149,7 @@ void App::run()
 #ifdef _3D_
 			Mon::Update(&memory, deltaTime, newInput);
 #else
-			Mon::Update(game2D, deltaTime, newInput);
+			Mon::Update(&memory, deltaTime, newInput);
 #endif
 			frameTime -= deltaTime;
 			// NOTE(ck): T is the current time ... not using this?
@@ -146,7 +167,7 @@ void App::run()
 		Mon::Render(&memory, time, deltaTime);
 #else
 		// TODO(ck): PASS DELTA TIME TO RENDERER
-		Mon::Render(game2D, 1.0f);
+		Mon::Render(&memory, 1.0f);
 #endif
 
 		if (showGUI)
@@ -154,7 +175,7 @@ void App::run()
 #ifdef _3D_
 			UpdateGui(platform->window, &settings, &memory);
 #else
-			UpdateGui(platform->window, &settings, game2D);
+			UpdateGui(platform->window, &settings, &memory);
 #endif
 			RenderGui();
 		}

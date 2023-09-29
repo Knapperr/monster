@@ -1595,8 +1595,10 @@ void EntityTab(Mon::Game2D* game)
 	}
 }
 
-void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game2D* game2D)
+void UpdateGui(SDL_Window* window, Settings* settings, Mon::game_memory* memory)
 {
+	Mon::Game2D* game2D = (Mon::Game2D*)memory->permanentStorage;
+
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame(window);
 	ImGui::NewFrame();
@@ -1655,13 +1657,17 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game2D* game2D)
 		SDL_SetWindowSize(window, dm.w, dm.h);
 		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 		Mon::SetViewPort(game2D->config, dm.w, dm.h);
+		game2D->cameras[1].resolution.w = game2D->config->viewPort.w / 2.0f;
+		game2D->cameras[1].resolution.h = game2D->config->viewPort.h / 2.0f;
 	}
 	ImGui::SameLine();
-	if (ImGui::Button("Exit"))
+	if (ImGui::Button("Windowed"))
 	{
 		SDL_SetWindowSize(window, settings->windowWidth, settings->windowHeight);
 		SDL_SetWindowFullscreen(window, 0);
 		Mon::SetViewPort(game2D->config, 960.0f, 540.0f);
+		game2D->cameras[1].resolution.w = game2D->config->viewPort.w / 2.0f;
+		game2D->cameras[1].resolution.h = game2D->config->viewPort.h / 2.0f;
 	}
 
 	if (ImGui::Button("720"))

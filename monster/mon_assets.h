@@ -64,7 +64,7 @@ namespace Mon
 
 	struct TextureAtlas
 	{
-		int assetIndex;
+		int textureAssetIndex;
 		int tileSize;
 		int size;
 		int rows;

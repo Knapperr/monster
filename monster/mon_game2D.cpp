@@ -3,8 +3,11 @@
 namespace Mon {
 	
 	// New 
-	bool Init(Game2D* game)
+	bool Init(game_memory* memory, int windowWidth, int windowHeight, float portWidth, float portHeight)
 	{
+		Game2D* game = (Game2D*)memory->permanentStorage;
+		if (game->initialized)
+			return true;
 		//
 		// Initialize Assets for game here
 		//
@@ -28,15 +31,10 @@ namespace Mon {
 		game->world = new World2D();
 		InitWorld(game->world);
 
-		int screenWidth = 1440;
-		int screenHeight = 900;
-		int portWidth = 960; // 960
-		int portHeight = 540; // 540
 		game->config = new MonGL::Config();
-
 		// TODO(ck): View Port in Middle of screen
 		//game->config->viewPort = { (float)(screenWidth - portWidth) / 2 , (float)(screenHeight - portHeight) / 2, (float)portWidth, (float)portHeight };
-		game->config->viewPort = { 0.0f , 0.0f, (float)portWidth, (float)portHeight };
+		game->config->viewPort = { 0.0f , 0.0f, portWidth, portHeight };
 		MonGL::ViewPort(&game->config->viewPort);
 
 		AddCamera(game);
@@ -49,11 +47,14 @@ namespace Mon {
 		//game->camera = OrthoCamera(player->pos, &game->config->viewPort);
 		
 		game->state = State::Play;
-		return true;
+		game->initialized = true;
+		return game->initialized;
 	}
 
-	void Update(Game2D* game, double dt, Input* input)
+	void Update(game_memory* memory, double dt, Input* input)
 	{
+
+		Game2D *game = (Game2D*)memory->permanentStorage;
 		//if (dt > deltaTime || dt < deltaTime)
 		//printf("dt: %f\n", dt);
 		//game->deltaTime = dt;
@@ -92,8 +93,10 @@ namespace Mon {
 		}
 	}
 
-	void Render(Game2D* game, double dt)
+	void Render(game_memory* memory, double dt)
 	{
+		Game2D* game = (Game2D*)memory->permanentStorage;
+
 		// TODO(ck): Camera also needs to update its resolution
 		MonGL::ViewPort(&game->config->viewPort);
 

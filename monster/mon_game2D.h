@@ -7,6 +7,8 @@
 #include "mon_ortho_camera.h"
 #include "mon_world2D.h"
 
+#include "mon_memory.h"
+
 namespace Mon {
 
 	struct game_memory
@@ -46,6 +48,8 @@ namespace Mon {
 
 	struct Game2D
 	{
+		bool initialized;
+
 		World2D* world;
 
 		Input input;
@@ -61,9 +65,9 @@ namespace Mon {
 		int state;
 	};
 
-	bool Init(Game2D* game);
-	void Update(Game2D* game, double dt, Input* input);
-	void Render(Game2D* game, double dt);
+	bool Init(game_memory* memory, int windowWidth, int windowHeight, float portWidth, float portHeight);
+	void Update(game_memory* memory, double dt, Input* input);
+	void Render(game_memory* memory, double dt);
 
 	void SetViewPort(MonGL::Config* config, int width, int height);
 	bool Playing(Game2D* game);

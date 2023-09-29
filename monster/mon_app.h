@@ -15,6 +15,7 @@ public:
 #ifdef _3D_
 	Mon::GameMemory memory;
 #else
+	Mon::game_memory memory;
 	Mon::Game2D* game2D;
 #endif
 	Mon::Input input[2];

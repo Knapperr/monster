@@ -52,7 +52,7 @@ void InitGui(SDL_Window* window, SDL_GLContext* context);
 #ifdef _3D_GUI_
 void UpdateGui(SDL_Window* window, Settings* settings, Mon::GameMemory* memory);
 #else
-void UpdateGui(SDL_Window* window, Settings* settings, Mon::Game2D* game2D);
+void UpdateGui(SDL_Window* window, Settings* settings, Mon::game_memory* memory);
 #endif
 
 void RenderGui();

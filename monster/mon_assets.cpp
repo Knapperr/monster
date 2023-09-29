@@ -724,9 +724,10 @@ namespace Mon
 	
 	void InitTextureAtlas(TextureAtlas* atlas, int assetIndex, int atlasSize, int tileSize)
 	{
-		Mon::Log::print("Loading texture atlas");
+		TextureAsset* t = GetTextureAsset(g_Assets, assetIndex);
+		Mon::Log::print("Loading texture atlas", t->name.c_str());
 
-		atlas->assetIndex = assetIndex;
+		atlas->textureAssetIndex = assetIndex;
 
 		atlas->size = atlasSize;
 		atlas->tileSize = tileSize;
