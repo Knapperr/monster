@@ -1368,6 +1368,8 @@ namespace MonGL
 		gl->batchItems_.clear();
 		gl->renderItems_.clear();
 
+		gl->batchItems2D.clear();
+
 		// now bind back to default framebuffer and draw a quad plane with the attached framebuffer color texture
 		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		//glDisable(GL_DEPTH_TEST); // disable depth test so screen-space quad isn't discarded due to depth test.
@@ -1973,6 +1975,22 @@ namespace MonGL
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 
+	bool SortBatchItems2D(BatchItem2D& left, BatchItem2D& right)
+	{
+		return (left.worldPos.y > right.worldPos.y);
+	}
+
+	void SortBatch2D(std::vector<BatchItem2D>& batchItems)
+	{
+		assert(batchItems.size() > 0);
+		// TODO(ck): Hack for now put the camera position inside of the batch item
+		std::sort(batchItems.begin(), batchItems.end(), SortBatchItems2D);
+
+		// std::qsort(batchItems, batchItems.size(), sizeof(BatchItem), sortBatchItems);
+		return;
+	}
+
+
 	void DrawBatch(BatchData* batch, CommonProgram* shader, unsigned int textureID, bool wireFrame)
 	{
 		BindVertices(batch);
@@ -1996,6 +2014,8 @@ namespace MonGL
 		// reset buffer
 		batch->usedIndices = 0;
 		batch->vertices.clear();
+
+		globalDrawCalls++;
 	}
 
 	void DrawObject(CommonProgram* shader, RenderData2D* data, v2 cameraPos)
@@ -2034,5 +2054,7 @@ namespace MonGL
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glDrawElements(GL_TRIANGLES, mesh->indiceCount, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
+
+		globalDrawCalls++;
 	}
 }

@@ -136,6 +136,8 @@ namespace Mon
 	};
 
 	// TODO(ck): Clean up these... Need generic container
+	// AssetManager to handle all of these things internally
+	// 
 	static unsigned int AddMesh(Assets* assets)
 	{
 		unsigned int index = assets->meshCount++; 

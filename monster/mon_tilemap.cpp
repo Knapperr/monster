@@ -57,7 +57,6 @@ namespace Mon
 	};
 
 
-
 	int GetTileValueUnchecked(TileMap* map, int tileX, int tileY)
 	{
 		// Not using chunks right now

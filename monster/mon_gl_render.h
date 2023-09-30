@@ -242,6 +242,17 @@ namespace MonGL
 		v3 worldPos;
 	};
 
+	struct BatchItem2D
+	{
+		bool isPlayer = false;
+		int animationIndex;
+		int subTextureIndex;
+
+		int tileSize;
+		float spriteSize;
+		v2 worldPos;
+	};
+
 	struct RenderData2D
 	{
 		unsigned int meshIndex;
@@ -275,6 +286,8 @@ namespace MonGL
 		std::vector<BatchItem> batchItems_;
 		std::vector<RenderData> renderItems_;
 		
+		std::vector<BatchItem2D> batchItems2D;
+
 		int lightCount;
 		int textureCount;
 		int spriteAnimationCount;
@@ -434,6 +447,8 @@ namespace MonGL
 	void FillBatch(BatchData* batch, float sheetSize, int tileSize, float spriteSize, float worldX, float worldY, GLSubTexture subTexture, v2 cameraPos);
 	void BindVertices(BatchData* batch);
 	
+	void SortBatch2D(std::vector<BatchItem2D>& batchItems);
+
 	void DrawObject(CommonProgram* shader, RenderData2D* data, v2 cameraPos);
 	void DrawBatch(BatchData* batch, CommonProgram* shader, unsigned int textureID, bool wireFrame);
 

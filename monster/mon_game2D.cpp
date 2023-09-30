@@ -84,11 +84,19 @@ namespace Mon {
 			// Update after camera update
 			// Updating sprite information (moved to fill batch... sending tile positions to batcher)
 			//p->sprite.pos = p->pos;
-			//for (unsigned int i = 2; i < game->world->entityCount; ++i)
-			//{
-			//	Entity2D* e = &game->world->entities[i];
-			//	e->sprite.pos = e->pos;
-			//}
+			for (unsigned int i = 1; i < game->world->entityCount; ++i)
+			{
+				Entity2D* e = &game->world->entities[i];
+				MonGL::BatchItem2D batchItem;
+				if (e->isPlayer)
+					batchItem.isPlayer = e->isPlayer;
+
+				batchItem.worldPos = e->pos;
+				batchItem.tileSize = 16;
+				batchItem.spriteSize = 1.0f;
+				batchItem.animationIndex = 1;
+				game->renderer->batchItems2D.push_back(batchItem);
+			}
 
 		}
 	}
@@ -128,43 +136,30 @@ namespace Mon {
 
 		MonGL::BatchData* spriteBatch = MonGL::GetBatch2D(game->renderer, 2);
 
-		// Fill array called batch items and sort them by y position before 
-		// sending them to the batch
-		/*
-					MonGL::BatchItem item = state->renderer->batchItems_[i];
-			//(Batch * batch, float posX, float posY, int texOffsetX, int texOffsetY, int tileSize)			
-			MonGL::GLSpriteAnimation* anim = &state->renderer->spriteAnimators[1].animations[item.animationIndex];
-			
-			//MonGL::UpdateSpriteAnimation(anim, 1, (float)dt);
+		MonGL::SortBatch2D(game->renderer->batchItems2D);
 
-			MonGL::GLSubTexture* subTexture = &anim->frames[anim->frameIndex].subTexture;//&animator->animations[item.animationIndex].frames[state->selectedSubTextureIndex].subTexture;
-
-		*/
 		MonGL::GLSpriteAnimator* animator = &game->renderer->spriteAnimators[1];
 		MonGL::GLSpriteAnimation* animation = &animator->animations[0];
 		//MonGL::UpdateSpriteAnimation(animation, 1, dt);
 		
 		MonGL::GLSubTexture* subTexture = &animation->frames[animation->frameIndex].subTexture;
-		for (unsigned int i = 1; i < game->world->entityCount; ++i)
+		for (int i = 0; i < game->renderer->batchItems2D.size(); ++i)
 		{
-			Entity2D e = game->world->entities[i];
-
-			// TEMP update player animation
-			if (e.isPlayer)
+			MonGL::BatchItem2D item = game->renderer->batchItems2D[i];
+			if (item.isPlayer)
 			{
 				MonGL::GLSpriteAnimator* walkAnim = &game->renderer->spriteAnimators[2];
 				MonGL::GLSpriteAnimation* anim = &walkAnim->animations[0];
 				MonGL::UpdateSpriteAnimation(anim, 1, (float)dt);
 
 				MonGL::GLSubTexture* walkSubText = &anim->frames[anim->frameIndex].subTexture;//&animator->animations[item.animationIndex].frames[state->selectedSubTextureIndex].subTexture;
-				MonGL::FillBatch(spriteBatch, 256.0f, 32, 2.0f, e.pos.x, e.pos.y,
+				MonGL::FillBatch(spriteBatch, 256.0f, 32, 2.0f, item.worldPos.x, item.worldPos.y,
 								 *walkSubText,
 								 game->cameras[game->currentCameraIndex].pos);
 				continue;
 			}
 
-
-			MonGL::FillBatch(spriteBatch, 256.0f, 32, 2.0f, e.pos.x, e.pos.y,
+			MonGL::FillBatch(spriteBatch, 256.0f, 32, 2.0f, item.worldPos.x, item.worldPos.y,
 							 *subTexture,
 							 game->cameras[game->currentCameraIndex].pos);
 		}
@@ -179,6 +174,8 @@ namespace Mon {
 
 		MonGL::Texture* spriteAtlas = MonGL::GetTexture(game->renderer, 17);
 		DrawBatch(spriteBatch, &game->renderer->program, spriteAtlas->id, false);
+	
+		EndRender(game->renderer);
 	}
 
 	void SetViewPort(MonGL::Config *config, int width, int height)
