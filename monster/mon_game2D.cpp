@@ -6,7 +6,7 @@ namespace Mon {
 	bool Init(game_memory* memory, int windowWidth, int windowHeight, float portWidth, float portHeight)
 	{
 		Game2D* game = (Game2D*)memory->permanentStorage;
-		if (game->initialized)
+		if (memory->isInitialized)
 			return true;
 		//
 		// Initialize Assets for game here
@@ -46,9 +46,11 @@ namespace Mon {
 		//Entity2D* player = GetPlayer(game->world);
 		//game->camera = OrthoCamera(player->pos, &game->config->viewPort);
 		
+		// Only memory needs to be checked for init
+
 		game->state = State::Play;
-		game->initialized = true;
-		return game->initialized;
+		memory->isInitialized = true;
+		return memory->isInitialized;
 	}
 
 	void Update(game_memory* memory, double dt, Input* input)
@@ -81,9 +83,6 @@ namespace Mon {
 			Mon::MovePlayer(p, &velocity, (float)dt);
 			Update(&game->cameras[game->currentCameraIndex], p->pos, (float)dt);
 
-			// Update after camera update
-			// Updating sprite information (moved to fill batch... sending tile positions to batcher)
-			//p->sprite.pos = p->pos;
 			for (unsigned int i = 1; i < game->world->entityCount; ++i)
 			{
 				Entity2D* e = &game->world->entities[i];
@@ -105,11 +104,11 @@ namespace Mon {
 	{
 		Game2D* game = (Game2D*)memory->permanentStorage;
 
-		// TODO(ck): Camera also needs to update its resolution
 		MonGL::ViewPort(&game->config->viewPort);
 
 		int shaderID = game->renderer->program.handle;
 		glUseProgram(shaderID);
+
 
 		mat4 projection = Projection(&game->cameras[game->currentCameraIndex]);
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
@@ -153,13 +152,13 @@ namespace Mon {
 				MonGL::UpdateSpriteAnimation(anim, 1, (float)dt);
 
 				MonGL::GLSubTexture* walkSubText = &anim->frames[anim->frameIndex].subTexture;//&animator->animations[item.animationIndex].frames[state->selectedSubTextureIndex].subTexture;
-				MonGL::FillBatch(spriteBatch, 256.0f, 32, 2.0f, item.worldPos.x, item.worldPos.y,
+				MonGL::FillBatch(spriteBatch, 256.0f, 16, 2.0f, item.worldPos.x, item.worldPos.y,
 								 *walkSubText,
 								 game->cameras[game->currentCameraIndex].pos);
 				continue;
 			}
 
-			MonGL::FillBatch(spriteBatch, 256.0f, 32, 2.0f, item.worldPos.x, item.worldPos.y,
+			MonGL::FillBatch(spriteBatch, 256.0f, 16, 2.0f, item.worldPos.x, item.worldPos.y,
 							 *subTexture,
 							 game->cameras[game->currentCameraIndex].pos);
 		}

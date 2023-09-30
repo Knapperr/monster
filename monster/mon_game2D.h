@@ -48,8 +48,6 @@ namespace Mon {
 
 	struct Game2D
 	{
-		bool initialized;
-
 		World2D* world;
 
 		Input input;

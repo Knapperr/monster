@@ -643,9 +643,6 @@ namespace Mon
 		// TODO(ck): Memory Allocation
 		mesh->verticeCount = 36;
 		mesh->vertices = new MonGL::Vertex3D[mesh->verticeCount];
-		
-		
-
 	}
 
 	void InitBoundingBoxMesh(Mesh* mesh)

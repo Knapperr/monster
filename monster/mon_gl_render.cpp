@@ -1914,21 +1914,16 @@ namespace MonGL
 
 	void FillBatch(BatchData* batch, float sheetSize, int tileSize, float spriteSize, float worldX, float worldY, GLSubTexture subTexture, v2 cameraPos)
 	{
-		float size = spriteSize * 16.0f; // spriteSize * pixelsPerMeter
-		float pixelsPerMeter = 16.0f;
-
-		worldX *= pixelsPerMeter;
-		worldY *= pixelsPerMeter;
-		float x = worldX;
-		float y = worldY;
-
+		// 
+		float size = spriteSize * (float)tileSize;
+		
 		// tile coords to world coords
-		/*
-		worldX *= 16.0f;
-		worldY *= 16.0f;
+		worldX *= (float)tileSize;
+		worldY *= (float)tileSize;
 		float x = worldX;
 		float y = worldY;
-		*/
+
+		// We do this in our shader by multiplying against the camera's view matrix
 		// world to screen position
 		//v2 cameraCoords = v2(worldX, worldY) - cameraPos;
 		//float screenW = 480.0f;
@@ -1983,13 +1978,10 @@ namespace MonGL
 	void SortBatch2D(std::vector<BatchItem2D>& batchItems)
 	{
 		assert(batchItems.size() > 0);
-		// TODO(ck): Hack for now put the camera position inside of the batch item
 		std::sort(batchItems.begin(), batchItems.end(), SortBatchItems2D);
-
 		// std::qsort(batchItems, batchItems.size(), sizeof(BatchItem), sortBatchItems);
 		return;
 	}
-
 
 	void DrawBatch(BatchData* batch, CommonProgram* shader, unsigned int textureID, bool wireFrame)
 	{
@@ -2001,8 +1993,6 @@ namespace MonGL
 
 		glUniformMatrix4fv(glGetUniformLocation(shader->handle, "model"), 1, GL_FALSE, glm::value_ptr(model));
 
-		//glUniform1i(shader->collider, useCollider);
-
 		glActiveTexture(GL_TEXTURE0);
 		glUniform1i(glGetUniformLocation(shader->handle, "image"), 0);
 		glBindTexture(GL_TEXTURE_2D, textureID);
@@ -2011,13 +2001,16 @@ namespace MonGL
 		glDrawElements(GL_TRIANGLES, batch->usedIndices, GL_UNSIGNED_INT, (void*)(0));
 		glBindVertexArray(0);
 
+		// TODO(ck): convert this to use our own Array instead of an std::vector not sure what the perf
+		// is on .clear() especially if we have a lot of vertices in the batch?
 		// reset buffer
 		batch->usedIndices = 0;
 		batch->vertices.clear();
 
 		globalDrawCalls++;
 	}
-
+	
+	// One draw call using the 2d quad mesh from assets
 	void DrawObject(CommonProgram* shader, RenderData2D* data, v2 cameraPos)
 	{
 		mat4 model = mat4(1.0f);

@@ -120,12 +120,23 @@ void App::run()
 	double deltaTime = 0.0;
 
 	// hires time in seconds
-	uint64_t currentTime = SDL_GetPerformanceCounter();
+	// STUDY(ck): IMPORTANT(ck): idiot!! you can't have currentTime and newTime both set to SDL_GetPerformanceCounter()
+	// if you get the same time then you will subtract it to 0 and get no frametime then you will not call Update 
+	// before Render()
+	// I'm not sure why you do it this way? it seems to be 1 digit away but if they are the same
+	// value it crashes the frametime is 0 and i never get an update
+	
+	// Could just call one update here with a deltatime of 1 that way the batch is full if the
+	// first update is skipped for some reason?
+	uint64_t currentTime = SDL_GetPerformanceCounter()-100;
 
 	while (running)
 	{
 		uint64_t newTime = SDL_GetPerformanceCounter();
 		double frameTime = (newTime - currentTime) / (double)SDL_GetPerformanceFrequency();
+		//Mon::Log::print("performance frequency", std::to_string(SDL_GetPerformanceFrequency()).c_str());
+		//Mon::Log::print("current time", std::to_string(currentTime).c_str());
+		//Mon::Log::print("new time", std::to_string(newTime).c_str());
 		currentTime = newTime;
 
 		// TODO(ck): Deal with spiral of death here
@@ -141,6 +152,8 @@ void App::run()
 			showGUI = !showGUI;
 		}
 
+		
+		//Mon::Log::print(std::to_string(frameTime).c_str());
 		while (frameTime > 0.0)
 		{
 
