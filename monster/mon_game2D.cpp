@@ -92,10 +92,16 @@ namespace Mon {
 
 				batchItem.worldPos = e->pos;
 				batchItem.tileSize = 16;
-				batchItem.spriteSize = 1.0f;
+				batchItem.spriteSize = 2.0f;
 				batchItem.animationIndex = 1;
 				game->renderer->batchItems2D.push_back(batchItem);
 			}
+
+		}
+		else
+		{
+			// Debug updates down here?
+
 
 		}
 	}
@@ -152,13 +158,13 @@ namespace Mon {
 				MonGL::UpdateSpriteAnimation(anim, 1, (float)dt);
 
 				MonGL::GLSubTexture* walkSubText = &anim->frames[anim->frameIndex].subTexture;//&animator->animations[item.animationIndex].frames[state->selectedSubTextureIndex].subTexture;
-				MonGL::FillBatch(spriteBatch, 256.0f, 16, 2.0f, item.worldPos.x, item.worldPos.y,
+				MonGL::FillBatch(spriteBatch, 256.0f, item.tileSize, item.spriteSize, item.worldPos.x, item.worldPos.y,
 								 *walkSubText,
 								 game->cameras[game->currentCameraIndex].pos);
 				continue;
 			}
 
-			MonGL::FillBatch(spriteBatch, 256.0f, 16, 2.0f, item.worldPos.x, item.worldPos.y,
+			MonGL::FillBatch(spriteBatch, 256.0f, item.tileSize, item.spriteSize, item.worldPos.x, item.worldPos.y,
 							 *subTexture,
 							 game->cameras[game->currentCameraIndex].pos);
 		}

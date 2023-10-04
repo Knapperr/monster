@@ -180,7 +180,7 @@ void App::run()
 		Mon::Render(&memory, time, deltaTime);
 #else
 		// TODO(ck): PASS DELTA TIME TO RENDERER
-		Mon::Render(&memory, 1.0f);
+		Mon::Render(&memory, deltaTime);
 #endif
 
 		if (showGUI)

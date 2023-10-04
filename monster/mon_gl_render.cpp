@@ -25,7 +25,7 @@ namespace MonGL
 		// set wrap and filter here for now same with internal formats
 		if (pixelArtTexture)
 		{
-			texture->wrapS = GL_REPEAT;// GL_CLAMP_TO_EDGE
+			texture->wrapS = GL_REPEAT;// GL_CLAMP_TO_EDGE (clamp to edge not working in 2d. causes uvs to be completely wrong?)
 			texture->wrapT = GL_REPEAT;//GL_CLAMP_TO_EDGE
 			texture->filterMin = GL_NEAREST;
 			texture->filterMax = GL_NEAREST;
@@ -1081,7 +1081,7 @@ namespace MonGL
 
 		float textureSheetSize = 256.0f;
 		posX = posX - 0.5f;
-		posY = posY - 0.5f;
+		//posY = posY - 0.5f;
 		posZ = posZ + 0.5f;
 		float vertSize = 1.0f;
 
@@ -1118,6 +1118,7 @@ namespace MonGL
 		};
 
 		BatchVertex3D batchvec1 = {
+			//v3((posX), posY, posZ + vertSize),
 			v3((posX + vertSize), posY, posZ),
 			v3(1.0f, 1.0f, 1.0f),
 			subTexture->texCoords[1],
@@ -1125,6 +1126,7 @@ namespace MonGL
 		};
 
 		BatchVertex3D batchvec2 = {
+			//v3((posX + vertSize), (posY), (posZ + vertSize)),
 			v3((posX + vertSize), (posY + vertSize), (posZ)),
 			v3(1.0f, 1.0f, 1.0f),
 			subTexture->texCoords[2],
@@ -1132,6 +1134,7 @@ namespace MonGL
 		};
 
 		BatchVertex3D batchvec3 = {
+			//v3(posX, (posY), posZ + vertSize),
 			v3(posX, (posY + vertSize), posZ),
 			v3(1.0f, 1.0f, 1.0f),
 			subTexture->texCoords[3],
@@ -1610,7 +1613,7 @@ namespace MonGL
 					frame->subTexture.texCoords[2] = v2(((tileOffsetX + 1) * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize); // top right
 					frame->subTexture.texCoords[3] = v2((tileOffsetX * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize); // top left 
 
-					frame->duration = 100.0f;
+					frame->duration = 0.2f;
 
 				}
 			}
@@ -1652,7 +1655,7 @@ namespace MonGL
 					frame->subTexture.texCoords[2] = v2(((tileOffsetX + 1) * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize); // top right
 					frame->subTexture.texCoords[3] = v2((tileOffsetX * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize); // top left 
 
-					frame->duration = 15.0f;
+					frame->duration = 0.2f;
 
 					tileOffsetX++;
 				}

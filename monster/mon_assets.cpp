@@ -601,7 +601,7 @@ namespace Mon
 				mesh->vertices[index] = {};
 				//mesh->vertices[index].position.x = (float)((x + 0.5f) - (xSize / 2.0f));
 				mesh->vertices[index].position.x = (float)((x));
-				mesh->vertices[index].position.y = -0.5f;
+				mesh->vertices[index].position.y = 0.0f;
 				//mesh->vertices[index].position.z = (float)((z + 0.5f) - (zSize / 2.0f));
 				mesh->vertices[index].position.z = (float)((z));
 

@@ -90,7 +90,6 @@ void main()
 
 	// Add our world position the model matrix
 	mat4 modelMat = mat4(1.0);
-
 	if (rotateBatch)
 	{
 		mat4 translationMatrix = mat4(1.0);
