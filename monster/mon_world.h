@@ -121,7 +121,7 @@ namespace Mon {
 		player->rb.orientation = v3(1.0f, 1.0f, 1.0);
 		player->rb.damping = 0.9f;
 		player->rb.speed = 26.0f;
-		InitBoxCollider(&player->collider, player->rb.worldPos, v3(1.0f), v3(1.0f));
+		InitBoxCollider(&player->collider, player->rb.worldPos, v3(1.0f), v3(0.5f));
 
 		//player->data.mat.ambient = v3(1.0f, 0.5f, 0.6f);
 		//player->data.mat.diffuse = v3(1.0f, 0.5f, 0.31f);

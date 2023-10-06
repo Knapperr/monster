@@ -9,8 +9,9 @@ namespace Mon {
 
 	v3 GetBoxCenter(Collider* c)
 	{
-		//return v3((c->min.x + c->max.x) / 2, (c->min.y + c->max.y) / 2, (c->min.z + c->max.z) / 2);
-		return v3((c->min.x + c->max.x) / 2, 0.25f, (c->min.z + c->max.z) / 2);
+		//return v3((c->min.x + c->max.x) / 2, 0.25f, (c->min.z + c->max.z) / 2);
+		float yOffset = 0.25f;
+		return v3((c->min.x + c->max.x) / 2, ((c->min.y + c->max.y) / 2)+yOffset, (c->min.z + c->max.z) / 2);
 	}
 
 	mat4 GetBoxTransform(Collider* c)
@@ -37,8 +38,7 @@ namespace Mon {
 		//c->min = v3(-0.5f, -0.2f, -0.5f);
 		//c->max = v3(0.5f, 0.2f, 0.5f);
 		c->meshSize = meshSize;
-		// IMPORTANT(ck): .25f is for angled sprites right now to get collision up and running
-		c->extents = meshSize * 0.25f;
+		c->extents = meshSize * v3(0.5f, 1.0f, 0.5f);
 	}
 
 	void SetBoxTransform(Collider *c, v3 entityPos, v3 entityScale)
