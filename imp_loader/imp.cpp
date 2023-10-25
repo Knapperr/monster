@@ -34,6 +34,10 @@ sub projects? the main project requires the dll to be elsewhere.. could be some 
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include <glm/glm.hpp>
+//#include <glm/gtc/matrix_transform.hpp>
+//#include <glm/gtc/type_ptr.hpp>
+
 #include <stdio.h>
 #include <fstream>
 #include <vector>
@@ -69,33 +73,19 @@ std::vector<Texture> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, s
 	return textures;
 }
 
-struct v3
-{
-	float x;
-	float y;
-	float z;
-};
-
-struct v2
-{
-	float x;
-	float y;
-	float z;
-};
-
 struct Vertex
 {
-	v3 position;
-	v3 normal;
-	v2 texCoords;
-	v3 tangent;
-	v3 bitangent;
+	glm::vec3 position;
+	glm::vec3 normal;
+	glm::vec2 texCoords;
+	glm::vec3 tangent;
+	glm::vec3 bitangent;
 };
 
 struct Mesh
 {
 	std::vector<Vertex> vertices;
-	std::vector<unsigned int> indices;
+	std::vector<unsigned short int> indices;
 	std::vector<Texture> textures;
 };
 
@@ -110,7 +100,7 @@ Mesh ProcessMesh(Model* model, aiMesh* mesh, const aiScene* scene)
 {
 	// data to fill 
 	std::vector<Vertex> vertices;
-	std::vector<unsigned int> indices;
+	std::vector<unsigned short int> indices;
 	std::vector<Texture> textures;
 
 	for (int i = 0; i < mesh->mNumVertices; ++i)
@@ -118,7 +108,7 @@ Mesh ProcessMesh(Model* model, aiMesh* mesh, const aiScene* scene)
 		Vertex vertex;
 
 		// transfer assimp v3 to ours
-		v3 vec;
+		glm::vec3 vec;
 		vec.x = mesh->mVertices[i].x;
 		vec.y = mesh->mVertices[i].y;
 		vec.z = mesh->mVertices[i].z;
@@ -131,7 +121,7 @@ Mesh ProcessMesh(Model* model, aiMesh* mesh, const aiScene* scene)
 
 		if (mesh->mTextureCoords[0])
 		{
-			v2 vec = {};
+			glm::vec2 vec = {};
 			// a vertex can contain up to 8 different texture coordinates. We thus make the assumption that we won't 
 			// use models where a vertex can have multiple texture coordinates so we always take the first set (0).
 			vec.x = mesh->mTextureCoords[0][i].x;
@@ -140,7 +130,7 @@ Mesh ProcessMesh(Model* model, aiMesh* mesh, const aiScene* scene)
 		}
 		else
 		{
-			vertex.texCoords = v2{ 0.0f, 0.0f };
+			vertex.texCoords = glm::vec2{ 0.0f, 0.0f };
 		}
 
 		vec.x = mesh->mTangents[i].x;
@@ -230,6 +220,7 @@ void WriteModel(Model* model, std::string name, std::string impPath)
 
 }
 
+// old garbage format to get Monster engine loading models quickly
 void ExportImpFile(Model* model, std::string name, std::string impPath)
 {
 	std::ofstream file;
@@ -259,6 +250,50 @@ void ExportImpFile(Model* model, std::string name, std::string impPath)
 			file << mesh->indices[indIndex] << "\n";
 		}
 	}
+}
+
+// Write std::vector data directly to load directly into a Vertex* stream.
+void WriteBinaryModel(Model* model, const char* filename)
+{
+	std::ofstream file(filename, std::ios::binary);
+	// write all the data
+	int verticeCount = model->meshes[0].vertices.size();
+
+	file.write(reinterpret_cast<const char*>(&verticeCount), sizeof(int));
+	file.write(reinterpret_cast<const char*>(model->meshes[0].vertices.data()), sizeof(Vertex) * verticeCount);
+
+	int indiceCount = model->meshes[0].indices.size();
+	file.write(reinterpret_cast<const char*>(&indiceCount), sizeof(int));
+	file.write(reinterpret_cast<const char*>(model->meshes[0].indices.data()), sizeof(unsigned short int) * indiceCount);
+
+	file.close();
+}
+
+// Testing methods
+// how to ensure test is correct does it need set params to test properly??
+// how do i automate it? what am i looking for to ensure a model is loaded correctly
+void LoadBinaryModel(const char* filename)
+{
+	// ensure file can be loaded properly for the engine
+	// this keeps the test code out of the engine
+	std::ifstream file(filename, std::ios::binary);
+	int verticeCount;
+	file.read(reinterpret_cast<char*>(&verticeCount), sizeof(int));
+
+	Vertex* vertices = new Vertex[verticeCount];
+	file.read(reinterpret_cast<char*>(vertices), sizeof(Vertex) * verticeCount);
+
+	int indiceCount;
+	file.read(reinterpret_cast<char*>(&indiceCount), sizeof(int));
+	
+	unsigned short int* indices = new unsigned short int[indiceCount];
+	file.read(reinterpret_cast<char*>(indices), sizeof(unsigned short int) * indiceCount);
+
+	file.close();
+
+	delete[] vertices;
+	delete[] indices;
+
 }
 
 // WRITING TO A BINARY FILE
@@ -456,10 +491,31 @@ int main(int argc, char** argv)
 	Model model = {};
 
 	// loop over models folder and export them out
+	LoadModel(&model, "models/cube/blender_cube.obj", false);
+	WriteBinaryModel(&model, "cube.imp");
+
+	model = {};
+	LoadModel(&model, "models/sphere/sphere.obj", false);
+	WriteBinaryModel(&model, "sphere.imp");
+
+	model = {};
+	LoadModel(&model, "models/cone/cone.obj", false);
+	WriteBinaryModel(&model, "cone.imp");
+	LoadBinaryModel("sphere.imp");
+	LoadBinaryModel("cone.imp");
+	LoadBinaryModel("cube.imp");
+	//model = {};
+	//LoadModel(&model, "models/cube/blender_cube.obj", false);
+
+	// Export config file to a binary file that the engine can read easily
+	// the config file can be human readable and easy to edit
+	// this way people can edit the file themselves (think modding support)
 
 	// LOG EVERY MODEL BEING PRINTED
+	/*
 	PrintLog(log, Severity::TRACE, "Loading: models/grass_star/Grass.obj");
 
+	model = {};
 	LoadModel(&model, "models/grass_star/Grass.obj", false);
 	ExportImpFile(&model, "grass", "test_grass.imp");
 
@@ -492,7 +548,7 @@ int main(int argc, char** argv)
 	LoadModel(&model, "models/tall_monster/tall_monster.obj", false);
 	ExportImpFile(&model, "tall_monster", "tall_monster.imp");
 
-
+	*/
 	// Verify Exported Imp Files before check for (nan) and exponents in the data
 	// Export out to asset folder location as well and the debug folder for RenderDoc
 
