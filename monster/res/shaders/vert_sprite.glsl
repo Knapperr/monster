@@ -11,6 +11,7 @@ uniform mat4 model;
 uniform mat4 projection;
 uniform mat4 view;
 
+
 // Converts pixel coord to NDC 
 vec2 pixel2GL(vec2 pos)
 {

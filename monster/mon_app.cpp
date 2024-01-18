@@ -18,8 +18,8 @@ bool App::init()
 	platform = new Mon::SDLPlatform();
 	settings = {};
 	settings.title = "Monster";
-	settings.windowWidth = 1440;
-	settings.windowHeight = 900;
+	settings.windowWidth = 1440; // 1440
+	settings.windowHeight = 900; // 900
 	settings.portWidth = 960.0f;
 	settings.portHeight = 540.0f;
 	Mon::Log::print("Title", settings.title);
@@ -92,6 +92,16 @@ bool App::init()
 	Mon::Log::print("Launching Monster...");
 	return true;
 }
+
+struct MonTime
+{
+	uint64_t ticks = 0;
+	uint64_t prevousTicks = 0;
+	double seconds = 0.0;
+	double previousSeconds = 0.0;
+	float delta = 0.0f;
+	float pauseTimer = 0.0f;
+};
 
 void App::run()
 {

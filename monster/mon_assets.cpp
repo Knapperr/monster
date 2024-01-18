@@ -15,6 +15,8 @@ namespace Mon
 	{
 		Mon::Log::print("Init assets...");
 
+		// Go directly into the folder and load them
+
 		//empty mesh #0
 		AddMesh(assets);
 
@@ -179,6 +181,47 @@ namespace Mon
 	}
 
 
+	void LoadImpFile(Mesh* mesh, const char* filename, bool removethisparam)
+	{
+		// ensure file can be loaded properly for the engine
+		// this keeps the test code out of the engine
+		std::ifstream file(filename, std::ios::in | std::ios::binary);
+		file.read(reinterpret_cast<char*>(&mesh->verticeCount), sizeof(int));
+
+		mesh->vertices = new MonGL::Vertex3D[mesh->verticeCount];
+		file.read(reinterpret_cast<char*>(mesh->vertices), sizeof(MonGL::Vertex3D) * mesh->verticeCount);
+
+
+		file.read(reinterpret_cast<char*>(&mesh->indiceCount), sizeof(int));
+		mesh->indices = new unsigned short int[mesh->indiceCount];
+		file.read(reinterpret_cast<char*>(mesh->indices), sizeof(unsigned short int) * mesh->indiceCount);
+
+		file.close();
+
+
+		float minX = 0.0f;
+		float maxX = 0.0f;
+		float minY = 0.0f;
+		float maxY = 0.0f;
+		float minZ = 0.0f;
+		float maxZ = 0.0f;
+
+		for (int vertIndex = 0; vertIndex < mesh->verticeCount; ++vertIndex)
+		{
+			if (mesh->vertices[vertIndex].position.x > maxX) maxX = mesh->vertices[vertIndex].position.x;
+			if (mesh->vertices[vertIndex].position.x < minX) minX = mesh->vertices[vertIndex].position.x;
+
+			if (mesh->vertices[vertIndex].position.y > maxY) maxY = mesh->vertices[vertIndex].position.y;
+			if (mesh->vertices[vertIndex].position.y < minY) minY = mesh->vertices[vertIndex].position.y;
+
+			if (mesh->vertices[vertIndex].position.z > maxZ) maxZ = mesh->vertices[vertIndex].position.z;
+			if (mesh->vertices[vertIndex].position.z < minZ) minZ = mesh->vertices[vertIndex].position.z;
+		}
+
+		mesh->bbox.min = glm::vec3(minX, minY, minZ);
+		mesh->bbox.max = glm::vec3(maxX, maxY, maxZ);
+	}
+
 	void LoadImpFile(Mesh* mesh, const char* fileName)
 	{
 		std::ifstream file(fileName);
@@ -203,7 +246,7 @@ namespace Mon
 			Mon::Log::print("Loading model", fileName);
 			Mon::Log::print("with vertices/indices", mesh->verticeCount, mesh->indiceCount);
 			mesh->vertices = new MonGL::Vertex3D[mesh->verticeCount];
-			mesh->indices = new unsigned int[mesh->indiceCount];
+			mesh->indices = new unsigned short int[mesh->indiceCount];
 
 
 			float minX = 0.0f;
@@ -359,7 +402,7 @@ namespace Mon
 		}
 
 		int indiceCount = 6;
-		mesh->indices = new unsigned int[indiceCount];
+		mesh->indices = new unsigned short int[indiceCount];
 		mesh->indices[0] = 0;
 		mesh->indices[1] = 1;
 		mesh->indices[2] = 3;
@@ -566,18 +609,21 @@ namespace Mon
 		mesh->indiceCount = 0;
 		mesh->min = v3(-0.5f, -0.5f, -0.5f);
 		mesh->max = v3(0.5f, 0.5f, 0.5f);
+
 		MonGL::UploadOpenGLMesh(mesh);
 	}
 
 	void InitModelMesh(Mesh* mesh, const char* fileName)
 	{
-		Mon::Log::print("Loading model mesh");
+		Mon::Log::print("Loading mesh");
 		// IMPORTANT(ck):
 		// TODO(ck):  This can't be 003 there are always going to be more than one
 		//			  model mesh. the other meshes are fine but the model mesh is dynamic
 		mesh->id = fileName;
 		LoadImpFile(mesh, fileName);
 		mesh->type = RenderType::Model;
+
+		// separate this out we don't need to do this in the asset layer
 		MonGL::UploadOpenGLMesh(mesh);
 	}
 
@@ -616,7 +662,7 @@ namespace Mon
 
 		int indiceCount = xSize * zSize * 6;
 		// TODO(ck): Memory allocation
-		mesh->indices = new unsigned int[indiceCount];
+		mesh->indices = new unsigned short int[indiceCount];
 		for (int ti = 0, vi = 0, z = 0; z < zSize; z++, vi++)
 		{
 			for (int x = 0; x < xSize; x++, ti += 6, vi++)
@@ -676,8 +722,8 @@ namespace Mon
 		mesh->vertices[6].position = v3(0.5, 0.5, 0.5);
 		mesh->vertices[6].normal = v3(1.0f, 1.0f, 1.0f);
 		mesh->vertices[6].texCoords = v2(0.0f, 0.0f);
-		mesh->vertices[7].position = v3(-0.5, 0.5, 0.5);
 		mesh->vertices[7].normal = v3(1.0f, 1.0f, 1.0f);
+		mesh->vertices[7].position = v3(-0.5, 0.5, 0.5);
 		mesh->vertices[7].texCoords = v2(0.0f, 0.0f);
 
 		unsigned short elements[] = {
@@ -686,7 +732,7 @@ namespace Mon
 			0, 4, 1, 5, 2, 6, 3, 7 // back
 		};
 		int indiceCount = sizeof(elements) / sizeof(elements[0]);
-		mesh->indices = (unsigned int*)elements;
+		mesh->indices = (unsigned short int*)elements;
 
 		// Set world matrix to be the same size as the bounding box
 		//data->worldMatrix = GetTransform(&data->size);

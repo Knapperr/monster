@@ -1,6 +1,5 @@
 #include "mon_gl_render.h"
 
-#include <glad/glad.h>
 // TODO(ck): NO STL
 #include <algorithm>
 
@@ -72,7 +71,7 @@ namespace MonGL
 		{
 			glGenBuffers(1, &mesh->IBO);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->IBO);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->indiceCount * sizeof(unsigned int), mesh->indices, GL_STATIC_DRAW);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->indiceCount * sizeof(unsigned short int), mesh->indices, GL_STATIC_DRAW);
 		}
 
 		glEnableVertexAttribArray(0);
@@ -94,34 +93,6 @@ namespace MonGL
 		glBindVertexArray(0);
 	}
 
-	void UploadOpenGLMesh2D(Mesh2D* mesh)
-	{
-		glGenVertexArrays(1, &mesh->VAO);
-		glBindVertexArray(mesh->VAO);
-
-		glGenBuffers(1, &mesh->VBO);
-		glBindBuffer(GL_ARRAY_BUFFER, mesh->VBO);
-		glBufferData(GL_ARRAY_BUFFER, mesh->verticeCount * sizeof(Vertex), mesh->vertices, GL_STATIC_DRAW);
-
-		glGenBuffers(1, &mesh->IBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->IBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->indiceCount * sizeof(unsigned int), mesh->indices, GL_STATIC_DRAW);
-
-		// position attribute
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
-		// color attribute
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
-		// texture coord attribute
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
-
-		glBindVertexArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	}
-
 	void UploadBatchMesh(Batch* batch, int maxVertices, int indicesLength)
 	{
 		// TODO(ck): TEMP remove
@@ -129,6 +100,7 @@ namespace MonGL
 
 		batch->indices = new uint32_t[indicesLength];
 		int offset = 0;
+		// preload indices. this is for quads so we know the indices ahead of time
 		for (int i = 0; i < indicesLength; i += 6)
 		{
 			batch->indices[i + 0] = 0 + offset;
@@ -170,6 +142,47 @@ namespace MonGL
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(BatchVertex3D), (void*)offsetof(BatchVertex3D, texCoords));
 		glEnableVertexAttribArray(3);
 		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(BatchVertex3D), (void*)offsetof(BatchVertex3D, worldPosition));
+
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	}
+
+	void SetBlockSize(UniformObject* ubo, int blockSize, int blockCount)
+	{
+		ubo->blockSize = blockSize;
+		ubo->totalSize = blockSize * blockCount;
+	}
+
+	void InitUniformObject(UniformObject* ubo, int blockSize, int blockCount)
+	{
+		SetBlockSize(ubo, blockSize, blockCount);
+		// TODO(ck): Memory management -- allocate with renderer arena
+		ubo->buffer = (GLubyte*)malloc(ubo->totalSize);
+	}
+
+	void UploadOpenGLMesh2D(Mesh2D* mesh)
+	{
+		glGenVertexArrays(1, &mesh->VAO);
+		glBindVertexArray(mesh->VAO);
+
+		glGenBuffers(1, &mesh->VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, mesh->VBO);
+		glBufferData(GL_ARRAY_BUFFER, mesh->verticeCount * sizeof(Vertex), mesh->vertices, GL_STATIC_DRAW);
+
+		glGenBuffers(1, &mesh->IBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->IBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->indiceCount * sizeof(unsigned int), mesh->indices, GL_STATIC_DRAW);
+
+		// position attribute
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
+		// color attribute
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
+		// texture coord attribute
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
 
 		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -284,7 +297,7 @@ namespace MonGL
 	/// [BEGIN] Renderer
 	///	
 
-	void InitRenderer(OpenGL* gl)
+	void InitRenderer(OpenGL* gl, int entityCount)
 	{
 		Mon::Log::print("Init renderer...");
 
@@ -302,6 +315,29 @@ namespace MonGL
 		MonGL::LoadShader(&gl->waterProgram, "res/shaders/vert_water.glsl", "res/shaders/frag_water.glsl", NULL);
 		MonGL::LoadShader(&gl->cubemapProgram, "res/shaders/vert_cubemap.glsl", "res/shaders/frag_cubemap.glsl", NULL);
 		
+
+		gl->ubo = {};
+		int blockSize;
+		glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &blockSize);
+		// TODO(ck): Max entity size? not entity count we don't want this tied to our entity count inside because we will have to reallocate 
+		// the ubo each time
+		int totalBlocks = entityCount + 1;
+		InitUniformObject(&gl->ubo, blockSize, totalBlocks);
+		if (gl->ubo.buffer == nullptr)
+		{
+			printf("Failed to allocate for uniform buffer");
+		}
+
+		glCreateBuffers(1, &gl->ubo.gl_handle);
+		// need to bind to something for glObjectLabel to work
+		//glBindBuffer(GL_UNIFORM_BUFFER, state.ubo.gl_handle);
+		std::string uboName = "uniform buffer";
+		glObjectLabel(GL_BUFFER, gl->ubo.gl_handle, -1, uboName.c_str());
+
+		glNamedBufferStorage(gl->ubo.gl_handle, gl->ubo.totalSize, nullptr, GL_DYNAMIC_STORAGE_BIT);
+		glNamedBufferSubData(gl->ubo.gl_handle, 0, gl->ubo.totalSize, nullptr);
+
+
 		// TODO(ck): MOVE TEXTURE IDS TO data... program can have its own textues too?? 
 		// a program can be like a material that can be applied to a mesh so it needs to have its own textures
 		gl->waterProgram.textureIndexNormal1 = 6;
@@ -629,6 +665,9 @@ namespace MonGL
 		/////glEnable(GL_CULL_FACE);
 		/////glDepthFunc(GL_ALWAYS);
 
+		// Remove clear color from BeginRender... this is something we need to control while we are drawing
+		// so that we can clear the render target
+
 		// TODO(ck): Platform->Renderer->clearColor 
 		glClearColor(0.126f, 0.113f, 0.165f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -826,6 +865,16 @@ namespace MonGL
 	// Public Draw Calls
 	//
 
+	void Render(OpenGL* gl)
+	{
+		// Draw the transparent items
+		// Draw the opaque items
+
+
+
+		// Reset the buffers and other things like debug drawing
+	}
+
 	// TODO(ck): Maybe pass OpenGL to this then we have all the data?
 	void Draw(OpenGL* gl, Config* config, RenderSetup setup, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera)
 	{
@@ -860,7 +909,7 @@ namespace MonGL
 		glBindVertexArray(mesh->VAO);
 		if (mesh->indiceCount > 0)
 		{
-			glDrawElements(GL_TRIANGLES, mesh->indiceCount, GL_UNSIGNED_INT, 0);
+			glDrawElements(GL_TRIANGLES, mesh->indiceCount, GL_UNSIGNED_SHORT, 0);
 		}
 		else
 		{
@@ -978,7 +1027,7 @@ namespace MonGL
 		int polygonMode = data->wireFrame ? GL_LINE : GL_FILL;
 		glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
 
-		glDrawElements(GL_TRIANGLES, mesh->indiceCount, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, mesh->indiceCount, GL_UNSIGNED_SHORT, 0);
 
 		glBindVertexArray(0);
 		// Always good practice to set everything back to defaults once configured
@@ -1368,17 +1417,20 @@ namespace MonGL
 	{
 		assert(globalDrawCalls > 0);
 		
+		// We don't even need these we can use a raw array and clear it out each frame?
+		// just set everything to 0 
 		gl->batchItems_.clear();
+		gl->transparentItems.clear();
+		gl->opaqueItems.clear();
+		
+
+
 		gl->renderItems_.clear();
 
+
+
+
 		gl->batchItems2D.clear();
-
-		// now bind back to default framebuffer and draw a quad plane with the attached framebuffer color texture
-		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		//glDisable(GL_DEPTH_TEST); // disable depth test so screen-space quad isn't discarded due to depth test.
-
-		//glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-		//glClear(GL_COLOR_BUFFER_BIT);
 
 	}
 
@@ -1988,6 +2040,8 @@ namespace MonGL
 
 	void DrawBatch(BatchData* batch, CommonProgram* shader, unsigned int textureID, bool wireFrame)
 	{
+		glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 1, -1, "Batch Items");
+
 		BindVertices(batch);
 
 		v3 pos = {};
@@ -2001,6 +2055,8 @@ namespace MonGL
 		glBindTexture(GL_TEXTURE_2D, textureID);
 		glBindVertexArray(batch->VAO);
 
+		//int polygonMode = textureID == 19 ? GL_LINE : GL_FILL;
+		//glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
 		glDrawElements(GL_TRIANGLES, batch->usedIndices, GL_UNSIGNED_INT, (void*)(0));
 		glBindVertexArray(0);
 
@@ -2010,6 +2066,7 @@ namespace MonGL
 		batch->usedIndices = 0;
 		batch->vertices.clear();
 
+		glPopDebugGroup();
 		globalDrawCalls++;
 	}
 	

@@ -12,13 +12,6 @@ namespace Mon {
 
 		unsigned int entityCount;
 		Entity entities[256];
-
-		// Probably want this in the rendering layer?
-		MonGL::RenderData renderItems[256];
-		// TODO(ck): Not sure if I want things like trees but they can go into instanced data I guess?
-		// might still want to have trees in entities because they can be attacked or respond to player interaction?
-		// StaticEntities??? staticEntities[256];
-
 	};
 
 	static unsigned int AddEntity(World* world)
@@ -88,7 +81,7 @@ namespace Mon {
 		v3 meshSize = mesh->max - mesh->min;
 		//if (meshSize.x == 0.0f && meshSize.y == 0.0f && meshSize.z == 0.0f)
 			//meshSize = v3(1.0f);
-		InitBoxCollider(&e->collider, e->rb.worldPos, scale, meshSize);
+		
 		e->spriteAngleDegrees = angleDegrees;
 		
 		e->data.programData.texCoordScale = 1.0f;
@@ -121,7 +114,7 @@ namespace Mon {
 		player->rb.orientation = v3(1.0f, 1.0f, 1.0);
 		player->rb.damping = 0.9f;
 		player->rb.speed = 26.0f;
-		InitBoxCollider(&player->collider, player->rb.worldPos, v3(1.0f), v3(0.5f));
+		
 
 		//player->data.mat.ambient = v3(1.0f, 0.5f, 0.6f);
 		//player->data.mat.diffuse = v3(1.0f, 0.5f, 0.31f);
@@ -143,7 +136,7 @@ namespace Mon {
 		e->data.wireFrame = false;
 		e->data.visible = true;
 
-		InitBoxCollider(&e->collider);
+		
 		e->rb.worldPos = v3(15.00f, -0.40f, -19.95);
 		e->rb.speed = 40.0f;
 		e->data.scale = v3(18.0f, 1.0f, 18.0f);
@@ -167,7 +160,7 @@ namespace Mon {
 
 	}
 
-	static void InitWorld(World* world, int shaderHandle, int waterShaderHandle, float angleDegrees)
+	static void InitWorld(World* world, float angleDegrees)
 	{
 		world->origin = v3(0.0f, 0.0f, 0.0f);
 
@@ -290,24 +283,24 @@ namespace Mon {
 
 		// TODO(ck): Update entity and then update entity collider right after
 		// instead of having two separate loops for entities and their colliders.
-		for (unsigned int i = 1; i < world->entityCount; ++i)
-		{
-			// TODO(ck): Broad Phase Collision Check
+		//for (unsigned int i = 1; i < world->entityCount; ++i)
+		//{
+		//	// TODO(ck): Broad Phase Collision Check
 
-			// TODO(ck): Precise Collision check
+		//	// TODO(ck): Precise Collision check
 
-			if (i != 1) // 1 is player index
-			{
-				Entity testEntity = *GetEntity(world, i);
+		//	if (i != 1) // 1 is player index
+		//	{
+		//		Entity testEntity = *GetEntity(world, i);
 
-				if (TestAABBAABB(player->collider, testEntity.collider))
-				{
-					newPos = player->rb.worldPos + 0.05f;
-					newPos.y = 0.0f;
-					break;
-				}
-			}
-		}
+		//		if (TestAABBAABB(player->collider, testEntity.collider))
+		//		{
+		//			newPos = player->rb.worldPos + 0.05f;
+		//			newPos.y = 0.0f;
+		//			break;
+		//		}
+		//	}
+		//}
 
 
 		// I don't want to use casey's method. I want something that feels more tile

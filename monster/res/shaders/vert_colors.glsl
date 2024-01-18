@@ -15,6 +15,20 @@ uniform mat4 projection;
 
 uniform float texCoordScale = 1.0;
 
+
+// layout (std140) uniform CameraBlock
+// {
+// 	mat4 projection;
+// 	mat3 view;
+// 	vec3 lightDirection;
+// };
+
+// layout (std140) uniform ModelBlock
+// {
+// 	mat4 model;
+// 	vec4 colour; // offset 64 (64 bytes from mat4) -- size16 (alligned vec3)
+// };
+
 void main()
 {
 	vs_out.FragPos = vec3(model * vec4(aPos, 1.0));

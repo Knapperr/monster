@@ -74,6 +74,12 @@ namespace Mon
 		AssetTile tiles[256];
 	};
 
+	struct AABB
+	{
+		v3 min;
+		v3 max;
+	};
+
 	struct Mesh
 	{
 		const char* id;
@@ -85,10 +91,11 @@ namespace Mon
 		int indiceCount;
 		v3 max;
 		v3 min;
+		AABB bbox; // mesh bounding box for frustum culling
 		RenderType type;
 
 		MonGL::Vertex3D* vertices;
-		unsigned int* indices;
+		unsigned short int* indices;
 	};
 
 	// TODO(ck): Do not have specific for 2D

@@ -8,6 +8,8 @@
 #include <vector>
 #include <stack>
 
+#include <glad/glad.h>
+
 namespace MonGL
 {
 	using namespace Mon;
@@ -112,7 +114,7 @@ namespace MonGL
 		int textureIndex;
 		ProgramType programType;
 		int lineWidth;
-		bool visible;
+		bool visible; // this goes onto entity
 		bool wireFrame;
 
 		ProgramData programData;
@@ -122,6 +124,21 @@ namespace MonGL
 		v3 pos;
 		float angleDegrees;
 		mat4 worldMatrix;
+	};
+
+	struct RenderItem
+	{
+		int meshIndex;
+		int textureIndex;
+
+		glm::vec3 pos;
+		glm::vec4 colour;
+		glm::vec3 scale;
+
+		float angleDegrees;
+
+		float viewZ; // calculated while traversing entities
+		int uniformBufferOffset; // calculated in the uniform buffer model block upload when traversing entities
 	};
 
 	struct Batch
@@ -266,6 +283,15 @@ namespace MonGL
 		std::vector<Vertex> vertices;
 	};
 
+	struct UniformObject
+	{
+		unsigned int gl_handle;
+
+		GLubyte* buffer;
+		int blockSize;
+		int totalSize;
+	};
+
 	//
 	// Main Renderer 
 	//
@@ -274,6 +300,8 @@ namespace MonGL
 		// TODO(ck): keep the batches separated for now until
 		// we know that they work properly then we will combine for the grid
 		// and the 
+		UniformObject ubo;
+		
 		Batch batch;
 		Light lights[32];
 		Texture textures[32]; // NOTE(ck): These use images from the asset pipeline
@@ -283,8 +311,11 @@ namespace MonGL
 		BatchData batches[4];
 		//BatchItem batchItems[64]; 
 		//RenderData renderItems[64];
-		std::vector<BatchItem> batchItems_;
 		std::vector<RenderData> renderItems_;
+
+		std::vector<BatchItem> batchItems_;
+		std::vector<RenderItem> transparentItems;
+		std::vector<RenderItem> opaqueItems;
 		
 		std::vector<BatchItem2D> batchItems2D;
 
@@ -315,10 +346,13 @@ namespace MonGL
 	//
 	// Renderer 
 	//
+
+	void SetBlockSize(UniformObject* ubo, int blockSize, int blockCount);
+	void InitUniformObject(UniformObject* ubo, int blockSize, int blockCount);
 	
 	// TODO(ck): Remove std::string
 	void LoadTexture(std::string name, Texture* texture, TextureType type, bool pixelArtTexture, Image* image);
-	void InitRenderer(OpenGL* gl);
+	void InitRenderer(OpenGL* gl, int entityCount);
 	void UploadOpenGLMesh(Mesh* mesh);
 	void UploadOpenGLMesh2D(Mesh2D* mesh);
 
@@ -344,6 +378,7 @@ namespace MonGL
 	void SetBoundingBox(RenderData* data);
 
 	void Draw(OpenGL* gl, Config* config, RenderSetup setup, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera);
+	void Render(OpenGL* gl);
 	void DrawLights(OpenGL* gl);
 	void DrawCubeMap(OpenGL* gl, RenderSetup setup);
 

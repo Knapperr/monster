@@ -65,6 +65,14 @@ namespace Mon {
 		float speed;
 	};
 
+	enum EntityType
+	{
+		PLAYER,
+		PET,
+		NPC,
+		STATIC
+	};
+
 	struct Entity
 	{
 		const char* name;

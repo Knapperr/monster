@@ -70,7 +70,8 @@ namespace Mon
 
 			// TODO(ck): Precise Collision check
 
-			SetBoxTransform(&world->entities[i].collider, world->entities[i].rb.worldPos, world->entities[i].data.scale);
+			// Remove this we don't need to set render data in the update we simply just
+			// use the rb.worldPos
 			world->entities[i].data.pos = world->entities[i].rb.worldPos;
 			world->entities[i].data.angleDegrees = world->entities[i].spriteAngleDegrees;
 		}
@@ -136,10 +137,18 @@ namespace Mon
 		// TODO(ck): REMOVE TESTING FOR GUI
 		state->selectedSubTextureIndex = 1;
 
+
+		// Init the game world
+		// TODO(ck): MEMORY MANAGEMENT
+		// allocate world
+		state->world = new World();
+		InitWorld(state->world, state->config.spriteAngleDegrees);
+
+
 		// TODO(ck): Memory Allocation for Renderer
 		// allocate renderer
 		state->renderer =  new MonGL::OpenGL();
-		MonGL::InitRenderer(state->renderer);
+		MonGL::InitRenderer(state->renderer, state->world->entityCount);
 
 		state->setup = {};
 		state->setup.materialShininess = 64.0f;
@@ -167,19 +176,6 @@ namespace Mon
 
 		state->picker = {};
 		InitMousePicker(&state->picker);
-
-		state->mode = Mode::Debug;
-
-		// debug stuff
-		MonGL::InitLine(&state->lineOne);
-		MonGL::InitLine(&state->lineTwo);
-
-		// Init the game world
-		// TODO(ck): MEMORY MANAGEMENT
-		// allocate world
-		state->world = new World();
-		InitWorld(state->world, state->renderer->program.handle, state->renderer->waterProgram.common.handle, state->config.spriteAngleDegrees);
-
 
 		state->initialized = true;
 		return state->initialized;
@@ -324,13 +320,18 @@ namespace Mon
 		//
 		// PRE RENDER go through entities
 		// 
+
 		for (unsigned int i = 1; i < state->world->entityCount; ++i)
 		{
 			Entity e = state->world->entities[i];
 
 			if (state->drawCollisions)
-				MonGL::DrawBoundingBox(state->renderer, &e.collider.data, cam);
+				// Insert into the line buffer
+				//MonGL::DrawBoundingBox(state->renderer, &e.collider.data, cam);
 			
+			// Cull the entity regardless of sprite or model
+
+
 			if(e.flags & EntityRenderFlag::Sprite)
 			{
 				//init batch item
@@ -352,11 +353,80 @@ namespace Mon
 			}
 		}
 
+
+		/*
+		*	
+			Cull and submit to lists - memcpy into the ubo buffer - this is like a pre-render step
+			Upload to line buffer for bboxes on mesh and entities
+
+			Then in Draw()
+				Sort all items from camera
+				 - remember opaque and transparent sort differently front-to-back back-to-font
+				 - batch will be whatever the transparent items are
+				
+				glNamedBufferSubdata for the ubo
+
+
+				glBindFramebuffer the write buffer
+				glUseProgram(common)
+				glClearColor()
+				glClear()
+
+				These are the indexes for the uniform buffer structs in the shaders
+				camBlockIndex = 0
+				modelBlockIndex = 1
+
+				glBindBufferRange(cameraBlock and camera data)
+
+				glPushDebugGroup
+				for opaque
+					glBindVertexArray(mesh.vao)
+					glBindTextureUnit
+					glBindBufferRange(modelBlock, blockSize * state.opqueItems)
+					glDrawElements
+					drawCount++
+				glPopDebugGroup
+
+				glPushDebugGroup
+				for transparent
+					glBindVertexArray(mesh.vao)
+					glBindTextureUnit
+					glBindBufferRange(modelBlock, blockSize * state.opqueItems)
+					glDrawElements
+					drawCount++
+
+				glBindVertexArray(0)
+				glPopDebugGroup
+
+				now do the batch for the quads (maybe terrain is inside of this batch) unless we want that one drawn first
+
+				glBindFrameBuffer(0)
+				now draw to the framebuffer texture read buffer
+
+
+				now draw the contents of the lineBuffer this way its not mixed in with our
+				framebuffer
+
+
+
+				ResetBuffer Reset the line buffer
+				clear transparent
+				clear opaque
+
+
+
+		*/
+		
+
+		// Do this in the draw method
 		MonGL::SortBatch(state->renderer->batchItems_);
 
 		// 
 		// 3D Models
 		//
+
+		// TODO(ck): 
+		// Stop looping through here do it inside of the render layer...
 		for (int i = 0; i < state->renderer->renderItems_.size(); ++i)
 		{
 			MonGL::RenderData data = state->renderer->renderItems_[i];
@@ -407,7 +477,7 @@ namespace Mon
 		//
 		// DEBUG TOOLS
 		// 
-		//MonGL::DrawLine(&state->renderer, &state->lineOne);
+		MonGL::DrawLine(state->renderer, &state->lineOne);
 		//MonGL::DrawLine(&state->renderer, &state->lineTwo);
 		//DrawDebugInfo(); //MonGL:: calls inside 
 		MonGL::UseProgram(&state->renderer->program, state->setup);

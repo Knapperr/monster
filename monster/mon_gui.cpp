@@ -194,7 +194,7 @@ const char* GetSwapInterval()
 
 void InitGui(SDL_Window* window, SDL_GLContext* context)
 {
-	const char* glsl_version = "#version 330";
+	const char* glsl_version = "#version 450";
 
 	// set up
 	IMGUI_CHECKVERSION();
