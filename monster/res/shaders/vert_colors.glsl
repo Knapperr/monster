@@ -9,25 +9,23 @@ out VS_OUT {
 	out vec2 TexCoords;
 } vs_out;
 
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
 
 uniform float texCoordScale = 1.0;
 
 
-// layout (std140) uniform CameraBlock
-// {
-// 	mat4 projection;
-// 	mat3 view;
-// 	vec3 lightDirection;
-// };
+layout (std140) uniform CameraBlock
+{
+	mat4 projection; // 0   
+	mat4 view; // 64
+	vec3 lightDirection; // 0
+	vec3 lightColour; // 16
+};
 
-// layout (std140) uniform ModelBlock
-// {
-// 	mat4 model;
-// 	vec4 colour; // offset 64 (64 bytes from mat4) -- size16 (alligned vec3)
-// };
+layout (std140) uniform ModelBlock
+{
+	mat4 model;
+	vec4 colour; // offset 64 (64 bytes from mat4) -- size16 (alligned vec3)
+};
 
 void main()
 {

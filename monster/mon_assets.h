@@ -118,6 +118,7 @@ namespace Mon
 	void Init2DQuadMesh(Mesh2D* mesh);
 	void InitCubeMesh(Mesh* mesh);
 	void InitModelMesh(Mesh* mesh, const char* fileName);
+	void InitModelMesh(Mesh* mesh, const char* fileName, bool removeParam);
 	void InitGridMesh(Mesh* mesh, int xSize, int zSize);
 	void InitBoundingBoxMesh(Mesh* mesh);
 	void InitLineMesh(Mesh* mesh);

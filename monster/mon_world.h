@@ -224,17 +224,17 @@ namespace Mon {
 		AddEntity(world);
 		Entity* plane64 = GetEntity(world, world->entityCount - 1);
 		InitEntity(plane64, "plane64", v3(6.0f, 0.0f, 6.0f), v3(1.0f), 0.0f, 8, 7, true);
-		plane64->data.meshIndex = 7;
+		plane64->data.meshIndex = 2;
 
 		AddEntity(world);
 		Entity* gem = GetEntity(world, world->entityCount - 1);
 		InitEntity(gem, "gem", v3(6.0f, 0.0f, 6.0f), v3(1.0f), 0.0f, 8, 8, true);
-		gem->data.meshIndex = 8;
+		gem->data.meshIndex = 2;
 
 		AddEntity(world);
 		Entity* house = GetEntity(world, world->entityCount - 1);
 		InitEntity(house, "house", v3(16.0f, 0.0f, 16.0f), v3(1.0f), 0.0f, 23, 10, true);
-		house->data.meshIndex = 10;
+		house->data.meshIndex = 2;
 
 	}
 	

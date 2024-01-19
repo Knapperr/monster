@@ -18,65 +18,60 @@ namespace Mon
 		// Go directly into the folder and load them
 
 		//empty mesh #0
-		AddMesh(assets);
-
+		int index = AddMesh(assets);
 		// quad mesh #1
-		AddMesh(assets);
-		Mesh* quadMesh = GetMesh(assets, 1);
+		index = AddMesh(assets);
+		Mesh* quadMesh = GetMesh(assets, index);
 		InitQuadMesh(quadMesh);
 
 		//cube mesh #2
-		AddMesh(assets);
-		Mesh* cubeMesh = GetMesh(assets, 2);
-		InitCubeMesh(cubeMesh);
+		//index = AddMesh(assets);
+		//Mesh* cubeMesh = GetMesh(assets, index);
+		//InitCubeMesh(cubeMesh);
 
 		//grass mesh #3 
-		AddMesh(assets);
-		Mesh* grassMesh = GetMesh(assets, 3);
-		InitModelMesh(grassMesh, "test_grass.imp");
+		index = AddMesh(assets);
+		Mesh* grassMesh = GetMesh(assets, index);
+		//InitModelMesh(grassMesh, "test_grass.imp");
+		InitModelMesh(grassMesh, "res/models/cone.imp", true);
 
 		// This is for the terrain
 		//grid mesh #4 ??
-		AddMesh(assets);
-		Mesh* gridMesh = GetMesh(assets, 4);
-		InitGridMesh(gridMesh, 64, 64);
+		index = AddMesh(assets);
+		Mesh* gridMesh = GetMesh(assets, index);
+		InitGridMesh(gridMesh, 64, 64); // 3
 
 		// debug meshes
 		// collider mesh
-		AddMesh(assets);
-		Mesh* collider = GetMesh(assets, 5);
+		index = AddMesh(assets);
+		Mesh* collider = GetMesh(assets, index);
 		InitBoundingBoxMesh(collider);
 
-		// line mesh
-		AddMesh(assets);
-		Mesh* line = GetMesh(assets, 6);
-		InitLineMesh(line);
-
 		// plane_64 mesh 64x64 units
-		AddMesh(assets);
-		Mesh* plane64 = GetMesh(assets, 7);
-		InitModelMesh(plane64, "plane_64.imp");
+		index = AddMesh(assets);
+		Mesh* plane64 = GetMesh(assets, index);
+		InitModelMesh(plane64, "res/models/cone.imp", true);
 
 		// gem mesh
-		AddMesh(assets);
-		Mesh* gem = GetMesh(assets, 8);
-		InitModelMesh(gem, "gem_1x1.imp");
+		index = AddMesh(assets);
+		Mesh* gem = GetMesh(assets, index);
+		InitModelMesh(gem, "res/models/cone.imp", true);
 
-		AddMesh(assets);
-		Mesh* light = GetMesh(assets, 9);
-		InitModelMesh(light, "light_sphere.imp");
+		index = AddMesh(assets);
+		Mesh* light = GetMesh(assets, index);
+		InitModelMesh(light, "res/models/cone.imp", true);
 
-		AddMesh(assets);
-		Mesh* house = GetMesh(assets, 10);
-		InitModelMesh(house, "village_house.imp");
+		index = AddMesh(assets);
+		Mesh* house = GetMesh(assets, index);
+		InitModelMesh(house, "res/models/cone.imp", true);
 
-		AddMesh(assets);
-		Mesh* pumpkin = GetMesh(assets, 11);
-		InitModelMesh(pumpkin, "pumpkin.imp");
+		index = AddMesh(assets);
+		Mesh* pumpkin = GetMesh(assets, index);
+		InitModelMesh(pumpkin, "res/models/cone.imp", true);
 
-		AddMesh(assets);
-		Mesh* tall_monster = GetMesh(assets, 12);
-		InitModelMesh(tall_monster, "tall_monster.imp");
+		index = AddMesh(assets);
+		Mesh* tall_monster = GetMesh(assets, index);
+		InitModelMesh(tall_monster, "res/models/cone.imp", true);
 
 		// empty #0 for image
 		AddImage(assets);
@@ -613,14 +608,12 @@ namespace Mon
 		MonGL::UploadOpenGLMesh(mesh);
 	}
 
-	void InitModelMesh(Mesh* mesh, const char* fileName)
+	void InitModelMesh(Mesh* mesh, const char* fileName, bool removeParam)
 	{
 		Mon::Log::print("Loading mesh");
-		// IMPORTANT(ck):
-		// TODO(ck):  This can't be 003 there are always going to be more than one
-		//			  model mesh. the other meshes are fine but the model mesh is dynamic
+
 		mesh->id = fileName;
-		LoadImpFile(mesh, fileName);
+		LoadImpFile(mesh, fileName, true);
 		mesh->type = RenderType::Model;
 
 		// separate this out we don't need to do this in the asset layer
@@ -741,29 +734,6 @@ namespace Mon
 		mesh->indiceCount = indiceCount;
 		MonGL::UploadOpenGLMesh(mesh);
 	}
-
-	void InitLineMesh(Mesh* mesh)
-	{
-		Mon::Log::print("Loading line mesh");
-
-		mesh->id = "006";
-		int verticeCount = 2;
-		mesh->vertices = new MonGL::Vertex3D[verticeCount];
-
-		mesh->vertices[0].position = v3(0.0f, 0.0f, 1.0f);
-		mesh->vertices[0].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[0].texCoords = v2(1.0f, 1.0f);
-
-		mesh->vertices[1].position = v3(0.0f, 0.0f, 50.0f);
-		mesh->vertices[1].normal = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[1].texCoords = v2(1.0f, 1.0f);
-
-		mesh->verticeCount = verticeCount;
-		mesh->indiceCount = 0;
-		mesh->type = RenderType::Debug;
-		MonGL::UploadOpenGLMesh(mesh);
-	}
-
 	
 	void InitTextureAtlas(TextureAtlas* atlas, int assetIndex, int atlasSize, int tileSize)
 	{

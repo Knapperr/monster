@@ -23,6 +23,19 @@ in VS_OUT {
 } fs_in;
 
 
+layout (std140) uniform CameraBlock
+{
+	mat4 projection; // 0   
+	mat4 view; // 64
+	vec3 lightDirection; // 0
+	vec3 lightColour; // 16
+};
+
+layout (std140) uniform ModelBlock
+{
+	mat4 model;
+	vec4 colour; // offset 64 (64 bytes from mat4) -- size16 (alligned vec3)
+};
 
 uniform vec3 viewPos;
 uniform Material material;
@@ -49,6 +62,9 @@ float sharpen(float pix_coord) {
 
 void main()
 {
+    vec3 col = vec3(0.4, 0.5, 0.5);
+    FragColor = vec4(col, 1.0);
+    return;
     if (useTexture)
     {
         // Remove white pixels on texture

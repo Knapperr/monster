@@ -316,12 +316,27 @@ namespace MonGL
 		MonGL::LoadShader(&gl->cubemapProgram, "res/shaders/vert_cubemap.glsl", "res/shaders/frag_cubemap.glsl", NULL);
 		
 
+		/*
+		IMPORTANT(ck): I think I needed this so I could actually set the ModelBlock
+		render doc can't see it without doing this?
+		
+
+		You need to bind the block indexes so that glBindBufferRange gets the correct index
+		Camera works without binding but it is at index 0 for some reason...
+		*/
+		unsigned int cameraMatricesBlockIndex = glGetUniformBlockIndex(gl->program.handle, "CameraBlock");
+		glUniformBlockBinding(gl->program.handle, cameraMatricesBlockIndex, 0);
+		unsigned int modelMatricesBlockIndex = glGetUniformBlockIndex(gl->program.handle, "ModelBlock");
+		glUniformBlockBinding(gl->program.handle, modelMatricesBlockIndex, 1);
+
 		gl->ubo = {};
 		int blockSize;
 		glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &blockSize);
 		// TODO(ck): Max entity size? not entity count we don't want this tied to our entity count inside because we will have to reallocate 
 		// the ubo each time
-		int totalBlocks = entityCount + 1;
+		int actualDrawnModelCount = 5;
+		int totalBlocks = actualDrawnModelCount + 1;
+		//int totalBlocks = entityCount + 1;
 		InitUniformObject(&gl->ubo, blockSize, totalBlocks);
 		if (gl->ubo.buffer == nullptr)
 		{
@@ -657,32 +672,9 @@ namespace MonGL
 
 	void BeginRender(OpenGL* gl, Config* config, mat4 projection, mat4 view, int shaderID)
 	{
-		//glBindFramebuffer(GL_FRAMEBUFFER, gl->buffer.handle);
-		
-
-		// glDisable(GL_CULL_FACE); --- might need to turn off for cube map
-
-		/////glEnable(GL_CULL_FACE);
-		/////glDepthFunc(GL_ALWAYS);
-
-		// Remove clear color from BeginRender... this is something we need to control while we are drawing
-		// so that we can clear the render target
-
-		// TODO(ck): Platform->Renderer->clearColor 
-		glClearColor(0.126f, 0.113f, 0.165f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(view));
-
-		MonGL::ViewPort(&config->viewPort);
+		// only call glViewPort when the size changes
+		//MonGL::ViewPort(&config->viewPort);
 		globalDrawCalls = 0;
-
-
-		// set up lights 
-		// make a uniform buffer of the lights and send it to the shader
-
-
 	}
 
 	///
@@ -693,63 +685,7 @@ namespace MonGL
 	/// [BEGIN] Debug Drawing
 	///
 
-	void InitLine(Line* line)
-	{
-		// TODO(ck): Memory Allocation
-		line->data.meshIndex = 6;
-		line->data.color = v3(0.1f, 0.5f, 1.0f);
-		line->data.visible = true;
-	}
 
-	void DrawLine(OpenGL* gl, Line* line)
-	{
-		Mesh* mesh = GetMesh(g_Assets, line->data.meshIndex);
-		unsigned int shaderID = gl->program.handle;
-
-
-		line->data.worldMatrix = mat4(1.0f);
-		line->data.worldMatrix = glm::translate(line->data.worldMatrix, line->pos);
-
-		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(line->data.worldMatrix));
-
-		// Use for now
-		glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &line->data.color[0]);
-		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), false);
-		glUniform1i(glGetUniformLocation(shaderID, "pixelTexture"), false);
-		glUniform1i(glGetUniformLocation(shaderID, "collider"), true);
-
-		//glBindVertexArray(mesh->VAO);
-		glDrawArrays(GL_LINES, 0, 2);
-
-		globalDrawCalls++;
-	}
-
-
-	void DrawBoundingBox(OpenGL* gl, RenderData* data, Camera* camera)
-	{
-		if (!data->visible)
-			return;
-
-		Mesh* mesh = GetMesh(g_Assets, data->meshIndex);
-		unsigned int shaderID = gl->program.handle;
-		glUseProgram(shaderID);
-
-		glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camera->pos[0]);
-
-		glUniform1i(glGetUniformLocation(shaderID, "useTexture"), false);
-		glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
-		glUniform1i(glGetUniformLocation(shaderID, "collider"), true);
-
-		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(data->worldMatrix));
-		glBindVertexArray(mesh->VAO);
-
-		glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, 0);
-
-		glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, (GLvoid*)(4 * sizeof(GLushort)));
-		glDrawElements(GL_LINES, 8, GL_UNSIGNED_SHORT, (GLvoid*)(8 * sizeof(GLushort)));
-
-		globalDrawCalls++;
-	}
 
 	///
 	/// [END] Debug Drawing 
@@ -862,17 +798,93 @@ namespace MonGL
 	}
 
 	//
-	// Public Draw Calls
+	// Main Render
 	//
+
+	bool BackToFrontByViewSpace(const RenderItem& left, const RenderItem& right)
+	{
+		return left.viewZ < right.viewZ;
+	}
+
+	bool FrontToBackByViewSpace(const RenderItem& left, const RenderItem& right)
+	{
+		return left.viewZ > right.viewZ;
+	}
+
+	void SortTransparentItems(std::vector<RenderItem>& items)
+	{
+		std::sort(items.begin(), items.end(), BackToFrontByViewSpace);
+
+		return;
+	}
+
+	void SortOpaqueItems(std::vector<RenderItem>& items)
+	{
+		std::sort(items.begin(), items.end(), FrontToBackByViewSpace);
+
+		return;
+	}
 
 	void Render(OpenGL* gl)
 	{
-		// Draw the transparent items
+		int camBlockIndex = 0; // these are the indexes into the ubo such as CamBlock{}; ModelBlock{};
+		int modelBlockIndex = 1;
+
+		// BeginRender 
+		glNamedBufferSubData(gl->ubo.gl_handle, 0, gl->ubo.totalSize, gl->ubo.buffer);
+		
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_CULL_FACE);
+		//glClearColor(state.clearColour.r, state.clearColour.g, state.clearColour.b, 1.0f);
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		unsigned int vec3AlignSize = 16;
+		unsigned int camBlockSize = (sizeof(glm::mat4) * 2) + (vec3AlignSize * 2);
+		glBindBufferRange(GL_UNIFORM_BUFFER, camBlockIndex, gl->ubo.gl_handle, 0, camBlockSize);
+
+		for (int i = 0; i < gl->opaqueItems.size(); ++i)
+		{
+			Mesh mesh = g_Assets->meshes[gl->opaqueItems[i].meshIndex];
+			Texture* texture = GetTexture(gl, gl->opaqueItems[i].textureIndex);
+			glBindVertexArray(mesh.VAO);
+			//glUniform1i(glGetUniformLocation(gl->program.handle, "texture_diffuse1"), 0);
+			glBindTexture(GL_TEXTURE_2D, texture->id);
+			// Indexing into textures with a shuffled array of indexes going 0 - 10
+			
+			//glBindTextureUnit(0, textures[state.opaqueItems[i].textureIndex].gl_handle);
+
+			glBindBufferRange(GL_UNIFORM_BUFFER, modelBlockIndex, gl->ubo.gl_handle, gl->ubo.blockSize * gl->opaqueItems[i].uniformBufferOffset, sizeof(glm::mat4) + sizeof(glm::vec4));
+			glDrawElements(GL_TRIANGLES, mesh.indiceCount, GL_UNSIGNED_SHORT, nullptr);
+
+			//state.drawCount++;
+		}
+		glBindVertexArray(0);
+
+
+		// sort opaque items
+		// sort transparent items
+		// sort batch items???? <--- how do i combine with transparent items
+
+		// bindFrameBuffer(fbo)
+
 		// Draw the opaque items
+		// gl->opaqueItems 
+		
+		// Draw the transparent items
+		//gl->transparentItems
 
+		// Draw the batch items
+		// gl->batchItems
 
+		// bindFramebuffer(0) // back to default buffer
+
+		// RenderDebug()
+		// draw the lineBuffer for debug items
 
 		// Reset the buffers and other things like debug drawing
+
+
+
 	}
 
 	// TODO(ck): Maybe pass OpenGL to this then we have all the data?
@@ -916,11 +928,6 @@ namespace MonGL
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 
-		// TODO(ck): This is bugging us out
-		// Always good practice to set everything back to defaults once configured
-		// NOTE(CK): bind texture must be AFTER glActiveTexture or it will not unbind properly
-		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_2D, 0);
 		globalDrawCalls++;
 	}
 
@@ -989,7 +996,7 @@ namespace MonGL
 
 	void DrawTerrain(OpenGL* gl, RenderData* data, Camera* camera)
 	{
-		Mesh* mesh = GetMesh(g_Assets, data->meshIndex);
+		Mesh* mesh = GetMesh(g_Assets, 3);
 		Texture* texture = GetTexture(gl, data->textureIndex);
 		unsigned int shaderID = gl->program.handle;
 		

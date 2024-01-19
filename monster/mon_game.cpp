@@ -291,15 +291,25 @@ namespace Mon
 		mat4 viewMatrix = ViewMatrix(cam);
 	 
 
-		// TODO(ck): UseProgram should be called only one time before switching shaders
-		//			 DO NOT CALL every time you draw an entity glUseProgram is expensive
-		MonGL::UseProgram(&state->renderer->program, state->setup);
 
-		MonGL::BeginRender(state->renderer, &state->config, projection, viewMatrix, state->renderer->program.handle);
-		state->setup.projection = projection;
-		state->setup.viewMatrix = viewMatrix;
-		state->setup.time = time;
+
+		//glUniformMatrix4fv(glGetUniformLocation(state->renderer->program.handle, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		//glUniformMatrix4fv(glGetUniformLocation(state->renderer->program.handle, "view"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
 		
+		memcpy(state->renderer->ubo.buffer + 0, &projection, sizeof(glm::mat4));
+		memcpy(state->renderer->ubo.buffer + sizeof(glm::mat4), &viewMatrix, sizeof(glm::mat4));
+
+		// Lighting data so the models will always be i+1 are the lights i+2 because we skip over the first 3?
+		// i think its 3 because we need to take into account the first camera block?
+		unsigned int vec3AlignSize = 16;
+		// write 16 bytes for vec3 .. already two mat4 in buffer 
+		v3 lightDir = v3(0.0f, 1.0f, 0.0f);
+		v3 lightColour = v3(1.0f,1.0f,1.0f);
+
+		memcpy(state->renderer->ubo.buffer + sizeof(glm::mat4) * 2, &lightDir, vec3AlignSize);
+		memcpy(state->renderer->ubo.buffer + (sizeof(glm::mat4) * 2) + vec3AlignSize, &lightColour, vec3AlignSize);
+
+
 		//
 		// TERRAIN
 		//
@@ -308,29 +318,35 @@ namespace Mon
 		// 1. grid/terrain needs its own shader anyways
 		// 2. using cubemap program inside here 
 		// 3. start using main obj shader here go back to main shader
-		
-		// 1. grid/terrain needs its own shader anyways
-		MonGL::DrawTerrain(state->renderer, &state->grid->data, cam);
+
+
+
+
+		//MonGL::DrawTerrain(state->renderer, &state->grid->data, cam);
 		// 2. using cubemap program inside here
-		MonGL::DrawCubeMap(state->renderer, state->setup);
 		// 3. start using main obj shader here go back to main shader
- 		MonGL::UseProgram(&state->renderer->program, state->setup);
 
 
 		//
 		// PRE RENDER go through entities
 		// 
 
+		int renderItemOffset = 0;
 		for (unsigned int i = 1; i < state->world->entityCount; ++i)
 		{
 			Entity e = state->world->entities[i];
 
-			if (state->drawCollisions)
+			//if (state->drawCollisions)
 				// Insert into the line buffer
 				//MonGL::DrawBoundingBox(state->renderer, &e.collider.data, cam);
 			
 			// Cull the entity regardless of sprite or model
+			// sprite bbox needs to be in world space... probably use a -1 to 1 bounding box
+			// add in the translation as usual
 
+			MonGL::RenderItem item = {};
+			glm::vec3 entityViewPos = glm::vec3(viewMatrix * glm::vec4(e.rb.worldPos, 1.0f));
+			item.viewZ = entityViewPos.z;
 
 			if(e.flags & EntityRenderFlag::Sprite)
 			{
@@ -350,6 +366,25 @@ namespace Mon
 			{
 				// init and add render data
 				state->renderer->renderItems_.push_back(e.data);
+
+
+
+				int blockOffset = renderItemOffset + 1;
+				item.uniformBufferOffset = blockOffset;
+				glm::mat4 model = glm::mat4(1.0f);
+				model = glm::translate(model, e.rb.worldPos);
+				//model = glm::rotate(model, glm::radians(e.spriteAngleDegrees), glm::vec3(1.0f, 0.0f, 0.0f));
+				//model = glm::scale(model, v3(1.0f));
+				v4 colour = v4(1.0f,1.0f,1.0f,1.0f);
+			
+				memcpy(state->renderer->ubo.buffer + (state->renderer->ubo.blockSize * blockOffset), &model, sizeof(glm::mat4)); // inserted at right at 256 beginning of block. then we add 64 which means we go form 
+				memcpy(state->renderer->ubo.buffer + ((state->renderer->ubo.blockSize * blockOffset) + sizeof(glm::mat4)), &colour, sizeof(glm::vec4)); // alligned vec3 is 16
+				
+				item.textureIndex = e.data.textureIndex;
+				item.meshIndex = e.data.meshIndex;
+				state->renderer->opaqueItems.push_back(item);
+
+				renderItemOffset++;
 			}
 		}
 
@@ -358,6 +393,9 @@ namespace Mon
 		*	
 			Cull and submit to lists - memcpy into the ubo buffer - this is like a pre-render step
 			Upload to line buffer for bboxes on mesh and entities
+
+			no more thinking about draw call as a single thing or fbo as an object
+			we have a set of draw calls and a set of render targets
 
 			Then in Draw()
 				Sort all items from camera
@@ -427,11 +465,33 @@ namespace Mon
 
 		// TODO(ck): 
 		// Stop looping through here do it inside of the render layer...
-		for (int i = 0; i < state->renderer->renderItems_.size(); ++i)
-		{
-			MonGL::RenderData data = state->renderer->renderItems_[i];
-			MonGL::Draw(state->renderer, &state->config, state->setup, data.angleDegrees, &data, data.pos, cam);
-		}
+		//for (int i = 0; i < state->renderer->renderItems_.size(); ++i)
+		//{
+		//	MonGL::RenderData data = state->renderer->renderItems_[i];
+		//	MonGL::Draw(state->renderer, &state->config, state->setup, data.angleDegrees, &data, data.pos, cam);
+		//}
+
+		// TODO(ck): UseProgram should be called only one time before switching shaders
+		// DO NOT CALL every time you draw an entity glUseProgram is expensive
+		MonGL::UseProgram(&state->renderer->program, state->setup);
+
+		MonGL::BeginRender(state->renderer, &state->config, projection, viewMatrix, state->renderer->program.handle);
+		state->setup.projection = projection;
+		state->setup.viewMatrix = viewMatrix;
+		state->setup.time = time;
+
+
+		glClearColor(0.126f, 0.113f, 0.165f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		MonGL::DrawCubeMap(state->renderer, state->setup);
+		// 1. grid/terrain needs its own shader anyways
+
+
+		MonGL::UseProgram(&state->renderer->program, state->setup);
+
+
+		MonGL::Render(state->renderer);
 		// 
 		// end common shader rendering
 		//
@@ -477,8 +537,6 @@ namespace Mon
 		//
 		// DEBUG TOOLS
 		// 
-		MonGL::DrawLine(state->renderer, &state->lineOne);
-		//MonGL::DrawLine(&state->renderer, &state->lineTwo);
 		//DrawDebugInfo(); //MonGL:: calls inside 
 		MonGL::UseProgram(&state->renderer->program, state->setup);
 		MonGL::DrawLights(state->renderer);

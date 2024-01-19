@@ -131,9 +131,6 @@ namespace MonGL
 		int meshIndex;
 		int textureIndex;
 
-		glm::vec3 pos;
-		glm::vec4 colour;
-		glm::vec3 scale;
 
 		float angleDegrees;
 
@@ -314,6 +311,8 @@ namespace MonGL
 		std::vector<RenderData> renderItems_;
 
 		std::vector<BatchItem> batchItems_;
+
+		std::vector<RenderItem> batchItems;
 		std::vector<RenderItem> transparentItems;
 		std::vector<RenderItem> opaqueItems;
 		
@@ -367,11 +366,6 @@ namespace MonGL
 	void UseProgram(CommonProgram* program, RenderSetup setup);
 	void UseProgram(QuadBatchProgram* program, RenderSetup setup);
 	void UseProgram(WaterProgram* program, RenderSetup setup);
-
-	// Debug lines
-	void InitLineMesh(Mesh* mesh);
-	void InitLine(Line* data);
-	void DrawLine(OpenGL* gl, Line* data);
 
 	// Render data 
 	void SetModel(RenderData* data);
