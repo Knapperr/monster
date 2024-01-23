@@ -1010,7 +1010,6 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::GameMemory* memory)
 	{ 
 		LoadSceneFile(game); 
 		Mon::Log::print("Loaded saved scene");
-		Mon::Log::warn("Only one master save file active!!!");
 	}
 	ImGui::SameLine();
 

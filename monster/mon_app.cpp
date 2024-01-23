@@ -129,15 +129,14 @@ void App::run()
 	double dt = 1 / frameRate;
 	double deltaTime = 0.0;
 
-	// hires time in seconds
+	// high res time in seconds
 	// STUDY(ck): IMPORTANT(ck): idiot!! you can't have currentTime and newTime both set to SDL_GetPerformanceCounter()
 	// if you get the same time then you will subtract it to 0 and get no frametime then you will not call Update 
 	// before Render()
 	// I'm not sure why you do it this way? it seems to be 1 digit away but if they are the same
 	// value it crashes the frametime is 0 and i never get an update
 	
-	// Could just call one update here with a deltatime of 1 that way the batch is full if the
-	// first update is skipped for some reason?
+	// figure out how to deal with this.. is subtracting it a good idea? should it just be set to some value?
 	uint64_t currentTime = SDL_GetPerformanceCounter()-100;
 
 	while (running)

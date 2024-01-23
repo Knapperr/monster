@@ -307,12 +307,13 @@ namespace MonGL
 		Batch batches_[4];
 		BatchData batches[4];
 		//BatchItem batchItems[64]; 
-		//RenderData renderItems[64];
-		std::vector<RenderData> renderItems_;
 
 		std::vector<BatchItem> batchItems_;
 
 		std::vector<RenderItem> batchItems;
+		//RenderData transparentItems[512];
+		//RenderData opaqueItems[512]; 
+		// or dynamic buffer
 		std::vector<RenderItem> transparentItems;
 		std::vector<RenderItem> opaqueItems;
 		
@@ -352,14 +353,14 @@ namespace MonGL
 	// TODO(ck): Remove std::string
 	void LoadTexture(std::string name, Texture* texture, TextureType type, bool pixelArtTexture, Image* image);
 	void InitRenderer(OpenGL* gl, int entityCount);
+	void UploadGLMesh(Mesh* mesh);
+
 	void UploadOpenGLMesh(Mesh* mesh);
 	void UploadOpenGLMesh2D(Mesh2D* mesh);
 
 	void BeginRender(OpenGL* gl, Config* config, mat4 projection, mat4 view, int shaderID);
 	void ViewPort(Rect* port);
 
-	void LoadImpFile(RenderData* data);
-	// TODO(ck): Remove std::string
 	void LoadTextureFile(std::string name, Texture* texture, Image* image, TextureType type, bool linearFilter = false, bool pixelArtTexture = false);
 
 	void UseProgram(CommonProgram* program);
@@ -371,9 +372,7 @@ namespace MonGL
 	void SetModel(RenderData* data);
 	void SetBoundingBox(RenderData* data);
 
-	void Draw(OpenGL* gl, Config* config, RenderSetup setup, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera);
 	void Render(OpenGL* gl);
-	void DrawLights(OpenGL* gl);
 	void DrawCubeMap(OpenGL* gl, RenderSetup setup);
 
 	void DrawBoundingBox(OpenGL* gl, RenderData* data, Camera* camera);

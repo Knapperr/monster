@@ -38,7 +38,7 @@ namespace MonGL
 	};
 
 	// TODO(ck): Pass a texture config or flags instead of bools?
-	void Generate2DTexture(Texture* texture, int width, int height, int nrChannels, unsigned char* data);
+	void InitTexture(Texture* texture, int width, int height, int nrChannels, unsigned char* data);
 	void LoadFrameBufferTexture(Texture* texture, int screenWidth, int screenHeight);
 	void Load2DTextureArrayFile(Texture* texture, const char* file);
 

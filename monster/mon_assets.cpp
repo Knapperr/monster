@@ -33,7 +33,7 @@ namespace Mon
 		index = AddMesh(assets);
 		Mesh* grassMesh = GetMesh(assets, index);
 		//InitModelMesh(grassMesh, "test_grass.imp");
-		InitModelMesh(grassMesh, "res/models/cone.imp", true);
+		InitModelMesh(grassMesh, "res/models/cone.imp");
 
 		// This is for the terrain
 		//grid mesh #4 ??
@@ -50,28 +50,28 @@ namespace Mon
 		// plane_64 mesh 64x64 units
 		index = AddMesh(assets);
 		Mesh* plane64 = GetMesh(assets, index);
-		InitModelMesh(plane64, "res/models/cone.imp", true);
+		InitModelMesh(plane64, "res/models/cone.imp");
 
 		// gem mesh
 		index = AddMesh(assets);
 		Mesh* gem = GetMesh(assets, index);
-		InitModelMesh(gem, "res/models/cone.imp", true);
+		InitModelMesh(gem, "res/models/cone.imp");
 
 		index = AddMesh(assets);
 		Mesh* light = GetMesh(assets, index);
-		InitModelMesh(light, "res/models/cone.imp", true);
+		InitModelMesh(light, "res/models/cone.imp");
 
 		index = AddMesh(assets);
 		Mesh* house = GetMesh(assets, index);
-		InitModelMesh(house, "res/models/cone.imp", true);
+		InitModelMesh(house, "res/models/cone.imp");
 
 		index = AddMesh(assets);
 		Mesh* pumpkin = GetMesh(assets, index);
-		InitModelMesh(pumpkin, "res/models/cone.imp", true);
+		InitModelMesh(pumpkin, "res/models/cone.imp");
 
 		index = AddMesh(assets);
 		Mesh* tall_monster = GetMesh(assets, index);
-		InitModelMesh(tall_monster, "res/models/cone.imp", true);
+		InitModelMesh(tall_monster, "res/models/cone.imp");
 
 		// empty #0 for image
 		AddImage(assets);
@@ -176,7 +176,7 @@ namespace Mon
 	}
 
 
-	void LoadImpFile(Mesh* mesh, const char* filename, bool removethisparam)
+	void LoadImpFile(Mesh* mesh, const char* filename)
 	{
 		// ensure file can be loaded properly for the engine
 		// this keeps the test code out of the engine
@@ -215,107 +215,6 @@ namespace Mon
 
 		mesh->bbox.min = glm::vec3(minX, minY, minZ);
 		mesh->bbox.max = glm::vec3(maxX, maxY, maxZ);
-	}
-
-	void LoadImpFile(Mesh* mesh, const char* fileName)
-	{
-		std::ifstream file(fileName);
-		file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-		int index;
-		try
-		{
-			if (!file.is_open())
-			{
-				Mon::Log::print("Failure to open file");
-			}
-
-			std::string line;
-			while (file >> line)
-			{
-				std::string nameLine = line;
-				file >> mesh->verticeCount;
-				file >> mesh->indiceCount;
-				break;
-			}
-
-			Mon::Log::print("Loading model", fileName);
-			Mon::Log::print("with vertices/indices", mesh->verticeCount, mesh->indiceCount);
-			mesh->vertices = new MonGL::Vertex3D[mesh->verticeCount];
-			mesh->indices = new unsigned short int[mesh->indiceCount];
-
-
-			float minX = 0.0f;
-			float maxX = 0.0f;
-			float minY = 0.0f;
-			float maxY = 0.0f;
-			float minZ = 0.0f;
-			float maxZ = 0.0f;
-			while (file >> line)
-			{
-				for (int i = 0; i < mesh->verticeCount; ++i)
-				{
-					index = i;
-
-					if (i == 0)
-						mesh->vertices[i].position.x = std::stof(line);
-					else
-						file >> mesh->vertices[i].position.x;
-
-					file >> mesh->vertices[i].position.y;
-					file >> mesh->vertices[i].position.z;
-					file >> mesh->vertices[i].normal.x;
-					file >> mesh->vertices[i].normal.y;
-					file >> mesh->vertices[i].normal.z;
-					file >> mesh->vertices[i].texCoords.x;
-					file >> mesh->vertices[i].texCoords.y;
-					file >> mesh->vertices[i].tangent.x;
-					file >> mesh->vertices[i].tangent.y;
-					file >> mesh->vertices[i].tangent.z;
-					file >> mesh->vertices[i].bitangent.x;
-					file >> mesh->vertices[i].bitangent.y;
-					file >> mesh->vertices[i].bitangent.z;
-
-
-					if (mesh->vertices[i].position.x > maxX) maxX = mesh->vertices[i].position.x;
-					if (mesh->vertices[i].position.x < minX) minX = mesh->vertices[i].position.x;
-
-					if (mesh->vertices[i].position.y > maxY) maxY = mesh->vertices[i].position.y;
-					if (mesh->vertices[i].position.y < minY) minY = mesh->vertices[i].position.y;
-
-					if (mesh->vertices[i].position.z > maxZ) maxZ = mesh->vertices[i].position.z;
-					if (mesh->vertices[i].position.z < minZ) minZ = mesh->vertices[i].position.z;
-				}
-
-				for (int j = 0; j < mesh->indiceCount; ++j)
-				{
-					index = j;
-					file >> mesh->indices[j];
-				}
-				mesh->min = v3(minX, minY, minZ);
-				mesh->max = v3(maxX, maxY, maxZ);
-			/*
-				glm::vec3 size = glm::vec3(max_x-min_x, max_y-min_y, max_z-min_z);
-				glm::vec3 center = glm::vec3((min_x+max_x)/2, (min_y+max_y)/2, (min_z+max_z)/2);
-				glm::mat4 transform = glm::translate(glm::mat4(1), center) * glm::scale(glm::mat4(1), size);
-
-				Apply object's transformation matrix 
-				glm::mat4 m = mesh->object2world * transform;
-				glUniformMatrix4fv(uniform_m, 1, GL_FALSE, glm::value_ptr(m));
-
-			*/
-
-
-				// finished
-				break;
-			}
-		}
-		catch (std::ifstream::failure& ex)
-		{
-			Mon::Log::print("File read failed");
-			Mon::Log::print(ex.what());
-		}
-
-		file.close();
 	}
 
 	void InitImage(Image* image, const char* file, bool flip)
@@ -608,18 +507,18 @@ namespace Mon
 		MonGL::UploadOpenGLMesh(mesh);
 	}
 
-	void InitModelMesh(Mesh* mesh, const char* fileName, bool removeParam)
+	void InitModelMesh(Mesh* mesh, const char* fileName)
 	{
 		Mon::Log::print("Loading mesh");
 
 		mesh->id = fileName;
-		LoadImpFile(mesh, fileName, true);
+		LoadImpFile(mesh, fileName);
 		mesh->type = RenderType::Model;
 
 		// separate this out we don't need to do this in the asset layer
-		MonGL::UploadOpenGLMesh(mesh);
+		//MonGL::UploadOpenGLMesh(mesh);
+		MonGL::UploadGLMesh(mesh);
 	}
-
 
 	void InitGridMesh(Mesh* mesh, int xSize, int zSize)
 	{

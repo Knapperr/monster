@@ -365,9 +365,6 @@ namespace Mon
 			if (e.flags & EntityRenderFlag::Model)
 			{
 				// init and add render data
-				state->renderer->renderItems_.push_back(e.data);
-
-
 
 				int blockOffset = renderItemOffset + 1;
 				item.uniformBufferOffset = blockOffset;
@@ -538,8 +535,8 @@ namespace Mon
 		// DEBUG TOOLS
 		// 
 		//DrawDebugInfo(); //MonGL:: calls inside 
-		MonGL::UseProgram(&state->renderer->program, state->setup);
-		MonGL::DrawLights(state->renderer);
+		//MonGL::UseProgram(&state->renderer->program, state->setup);
+		
 
 		MonGL::EndRender(state->renderer);
 	}

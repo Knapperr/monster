@@ -80,6 +80,17 @@ namespace Mon
 		v3 max;
 	};
 
+	struct MeshAsset
+	{
+		const char* id;
+		std::string name;
+
+		// what other nice data can this have?
+		// like a colour...
+		// this is a nice small struct to save/load
+		// to a file
+	};
+
 	struct Mesh
 	{
 		const char* id;
@@ -94,6 +105,8 @@ namespace Mon
 		AABB bbox; // mesh bounding box for frustum culling
 		RenderType type;
 
+		// Should these be deleted after uploaded to the gpu?
+		// That might save us a lot of space
 		MonGL::Vertex3D* vertices;
 		unsigned short int* indices;
 	};
@@ -118,10 +131,8 @@ namespace Mon
 	void Init2DQuadMesh(Mesh2D* mesh);
 	void InitCubeMesh(Mesh* mesh);
 	void InitModelMesh(Mesh* mesh, const char* fileName);
-	void InitModelMesh(Mesh* mesh, const char* fileName, bool removeParam);
 	void InitGridMesh(Mesh* mesh, int xSize, int zSize);
 	void InitBoundingBoxMesh(Mesh* mesh);
-	void InitLineMesh(Mesh* mesh);
 
 	void InitImage(Image* image, const char* file, bool flip = true);
 	void FreeImage(Image* image);

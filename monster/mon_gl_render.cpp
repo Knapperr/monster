@@ -48,14 +48,68 @@ namespace MonGL
 
 		if (image->data)
 		{
-			Generate2DTexture(texture, image->width, image->height, image->nrChannels, image->data);
+			InitTexture(texture, image->width, image->height, image->nrChannels, image->data);
 		}
 		else
 		{
 			// TODO(ck): no strings
-			std::string msg = "failed to load texture";
+			std::string msg = "failed to load texture. the image data is not loaded...";
 			Mon::Log::warn(msg.c_str());
 		}
+	}
+
+	void UploadGLMesh(Mesh* mesh)
+	{
+		// set up vertex data (and buffer(s)) and configure vertex attributes
+// ------------------------------------------------------------------
+		glCreateBuffers(1, &mesh->VBO); // NOTE(ck): NOT 100% !!! "this is glGenBuffers and glBindBuffer in one call"
+		// from Jasper: glGenBuffers does not actually create the buffer, it just gives you the next free buffer ID
+		//	calling glBindBuffer for the first time is what actually allocates and creates the buffer under the hood
+		//  Thats the part of glBindBuffer that glCreateBuffers replaces. It allocates a buffer ID and then triggers the internal creation without
+		//	binding it
+		//glNamedBufferStorage(mesh->VBO, sizeof(Vertex) * (verticeCount), vertices, GL_DYNAMIC_STORAGE_BIT);
+		glNamedBufferStorage(mesh->VBO, sizeof(Vertex) * (mesh->verticeCount), mesh->vertices, GL_DYNAMIC_STORAGE_BIT);
+
+		glCreateBuffers(1, &mesh->IBO);
+		glNamedBufferStorage(mesh->IBO, sizeof(GLushort) * mesh->indiceCount, mesh->indices, GL_DYNAMIC_STORAGE_BIT);
+		//glNamedBufferStorage(mesh->IBO, sizeof(GLushort)*indiceCount, indices, GL_DYNAMIC_STORAGE_BIT);
+
+		glCreateVertexArrays(1, &mesh->VAO);
+
+		glVertexArrayVertexBuffer(mesh->VAO, 0, mesh->VBO, 0, sizeof(Vertex3D));
+		glVertexArrayElementBuffer(mesh->VAO, mesh->IBO);
+
+		glEnableVertexArrayAttrib(mesh->VAO, 0);
+		glVertexArrayAttribFormat(mesh->VAO, 0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex3D, position));
+		glVertexArrayAttribBinding(mesh->VAO, 0, 0);
+
+		glEnableVertexArrayAttrib(mesh->VAO, 1);
+		glVertexArrayAttribFormat(mesh->VAO, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex3D, normal));
+		glVertexArrayAttribBinding(mesh->VAO, 1, 0);
+
+		glEnableVertexArrayAttrib(mesh->VAO, 2);
+		glVertexArrayAttribFormat(mesh->VAO, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex3D, texCoords));
+		glVertexArrayAttribBinding(mesh->VAO, 2, 0);
+
+		// ADD REST OF ATTRIBUTES
+
+
+		glBindVertexArray(mesh->VAO);
+
+		std::string meshName = mesh->id;
+		std::string vaoName = meshName + " VAO";
+		std::string vboName = meshName + " VBO";
+		std::string iboName = meshName + " IBO";
+		glObjectLabel(GL_VERTEX_ARRAY, mesh->VAO, -1, vaoName.c_str());
+		glObjectLabel(GL_BUFFER, mesh->VBO, -1, vboName.c_str());
+		glObjectLabel(GL_BUFFER, mesh->IBO, -1, iboName.c_str());
+
+		glBindVertexArray(0);
+
+		delete[] mesh->vertices;
+		delete[] mesh->indices;
+		mesh->vertices = nullptr;
+		mesh->indices = nullptr;
 	}
 
 	void UploadOpenGLMesh(Mesh* mesh)
@@ -848,15 +902,15 @@ namespace MonGL
 			Texture* texture = GetTexture(gl, gl->opaqueItems[i].textureIndex);
 			glBindVertexArray(mesh.VAO);
 			//glUniform1i(glGetUniformLocation(gl->program.handle, "texture_diffuse1"), 0);
-			glBindTexture(GL_TEXTURE_2D, texture->id);
+			//glBindTexture(GL_TEXTURE_2D, texture->id);
 			// Indexing into textures with a shuffled array of indexes going 0 - 10
 			
-			//glBindTextureUnit(0, textures[state.opaqueItems[i].textureIndex].gl_handle);
+			glBindTextureUnit(0, texture->id);
 
 			glBindBufferRange(GL_UNIFORM_BUFFER, modelBlockIndex, gl->ubo.gl_handle, gl->ubo.blockSize * gl->opaqueItems[i].uniformBufferOffset, sizeof(glm::mat4) + sizeof(glm::vec4));
 			glDrawElements(GL_TRIANGLES, mesh.indiceCount, GL_UNSIGNED_SHORT, nullptr);
 
-			//state.drawCount++;
+			globalDrawCalls++;
 		}
 		glBindVertexArray(0);
 
@@ -885,80 +939,6 @@ namespace MonGL
 
 
 
-	}
-
-	// TODO(ck): Maybe pass OpenGL to this then we have all the data?
-	void Draw(OpenGL* gl, Config* config, RenderSetup setup, float spriteAngleDegrees, RenderData* data, v3 pos, Camera* camera)
-	{
-		if (!data->visible)
-			return;
-
-		Mesh* mesh = GetMesh(g_Assets, data->meshIndex);
-		Texture* texture = GetTexture(gl, data->textureIndex);
-
-		// if programType == water && first time hitting this? view pos as well
-		//		glUseProgram(water);
-		// TODO(ck): To get this working just call glUseProgram on the water because its the only entity that has it right now
-		 
-		int shaderHandle = ActivateUniforms(gl, data->programData, data->programType, setup, texture->id, camera->pos);
-
-		data->worldMatrix = mat4(1.0f);
-		data->worldMatrix = glm::translate(data->worldMatrix, pos);
-		if (mesh->indiceCount > 0)
-		{
-			data->worldMatrix = glm::rotate(data->worldMatrix, glm::radians(spriteAngleDegrees), v3{ 1.0f, 0.0f, 0.0f });
-		}
-		data->worldMatrix = glm::scale(data->worldMatrix, data->scale);
-		
-		// NOTE(ck): Need to get this with glGetUniformLocation because we are doing a shader switch in this
-		// 
-		//glUniformMatrix4fv(gl->program.model, 1, GL_FALSE, glm::value_ptr(data->worldMatrix));
-		glUniformMatrix4fv(glGetUniformLocation(shaderHandle, "model"), 1, GL_FALSE, glm::value_ptr(data->worldMatrix));
-
-		int polygonMode = data->wireFrame ? GL_LINE : GL_FILL;
-		glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
-
-		glBindVertexArray(mesh->VAO);
-		if (mesh->indiceCount > 0)
-		{
-			glDrawElements(GL_TRIANGLES, mesh->indiceCount, GL_UNSIGNED_SHORT, 0);
-		}
-		else
-		{
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
-
-		globalDrawCalls++;
-	}
-
-	void DrawLights(OpenGL* gl)
-	{
-		Mesh* mesh = GetMesh(g_Assets, 9);
-		Texture* texture = GetTexture(gl, 5);
-		mat4 worldMatrix = mat4(1.0f);
-
-		for (int i = 1; i < gl->lightCount; ++i)
-		{
-			worldMatrix = mat4(1.0f);
-			worldMatrix = glm::translate(worldMatrix, gl->lights[i].pos);
-			glUniformMatrix4fv(glGetUniformLocation(gl->program.handle , "model"), 1, GL_FALSE, glm::value_ptr(worldMatrix));
-
-			int polygonMode = GL_LINE; // GL_FILL
-			glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
-			
-			glBindVertexArray(mesh->VAO);
-			if (mesh->indiceCount > 0)
-			{
-				glDrawElements(GL_TRIANGLES, mesh->indiceCount, GL_UNSIGNED_INT, 0);
-			}
-			else
-			{
-				glDrawArrays(GL_TRIANGLES, 0, 36);
-			}
-
-			glBindVertexArray(0);
-			globalDrawCalls++;
-		}
 	}
 
 	void DrawCubeMap(OpenGL* gl, RenderSetup setup)
@@ -1165,6 +1145,11 @@ namespace MonGL
 		//	v3(1.0f, 1.0f, 1.0f),
 		//	subTexture->texCoords[3]
 		//};
+
+		/*
+		* rotating the vertices before sending to gpu so we do not have to have a unique batch shader?
+			https://stackoverflow.com/questions/63205847/c-opengl-im-trying-to-rotate-a-group-of-vertices-which-itll-simulate-a
+		*/
 
 		BatchVertex3D batchvec0 = {
 			v3(posX, posY, posZ),
@@ -1426,15 +1411,10 @@ namespace MonGL
 		
 		// We don't even need these we can use a raw array and clear it out each frame?
 		// just set everything to 0 
-		gl->batchItems_.clear();
 		gl->transparentItems.clear();
 		gl->opaqueItems.clear();
+		gl->batchItems_.clear();
 		
-
-
-		gl->renderItems_.clear();
-
-
 
 
 		gl->batchItems2D.clear();

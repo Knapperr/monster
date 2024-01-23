@@ -89,6 +89,9 @@ void main()
 	//
 
 	// Add our world position the model matrix
+
+	// Rotate the vertices on the cpu before sending
+	// https://stackoverflow.com/questions/63205847/c-opengl-im-trying-to-rotate-a-group-of-vertices-which-itll-simulate-a
 	mat4 modelMat = mat4(1.0);
 	if (rotateBatch)
 	{
