@@ -310,9 +310,6 @@ namespace Mon
 		memcpy(state->renderer->ubo.buffer + (sizeof(glm::mat4) * 2) + vec3AlignSize, &lightColour, vec3AlignSize);
 
 
-		//
-		// TERRAIN
-		//
 
 		// TODO(ck): shader fixes
 		// 1. grid/terrain needs its own shader anyways
@@ -320,18 +317,23 @@ namespace Mon
 		// 3. start using main obj shader here go back to main shader
 
 
-
-
-		//MonGL::DrawTerrain(state->renderer, &state->grid->data, cam);
-		// 2. using cubemap program inside here
-		// 3. start using main obj shader here go back to main shader
-
-
 		//
 		// PRE RENDER go through entities
 		// 
 
-		int renderItemOffset = 0;
+		// Start at offset of 1 after the camera/light block
+		int beginOffset = 1;
+		mat4 defaultModel = mat4(1.0f);
+		v4 defaultColour = v4(1.0f);
+		memcpy(state->renderer->ubo.buffer + (state->renderer->ubo.blockSize * beginOffset), &defaultModel, sizeof(glm::mat4)); // inserted at right at 256 beginning of block. then we add 64 which means we go form 
+		memcpy(state->renderer->ubo.buffer + ((state->renderer->ubo.blockSize * beginOffset) + sizeof(glm::mat4)), &defaultColour, sizeof(glm::vec4)); // alligned vec3 is 16
+
+
+		// IMPORTANT(ck): Start this at one. We wil have a "default" model matrix of 1.0f that sits at the front of the list
+		// We will bind do this for things like terrain?
+
+		// Offset after the camera block at 0 then the default model block at 1
+		int renderItemOffset = 1;
 		for (unsigned int i = 1; i < state->world->entityCount; ++i)
 		{
 			Entity e = state->world->entities[i];
@@ -490,7 +492,7 @@ namespace Mon
 		glUseProgram(state->renderer->program.handle);
 
 
-		MonGL::Render(state->renderer);
+		MonGL::Render(state->renderer, cam, &state->grid->data);
 		// 
 		// end common shader rendering
 		//

@@ -367,7 +367,7 @@ namespace MonGL
 	void SetModel(RenderData* data);
 	void SetBoundingBox(RenderData* data);
 
-	void Render(OpenGL* gl);
+	void Render(OpenGL* gl, Camera* camera, RenderData* gridData);
 	void DrawCubeMap(OpenGL* gl, RenderSetup setup);
 
 	void DrawBoundingBox(OpenGL* gl, RenderData* data, Camera* camera);

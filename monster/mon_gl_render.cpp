@@ -394,7 +394,7 @@ namespace MonGL
 		// TODO(ck): Max entity size? not entity count we don't want this tied to our entity count inside because we will have to reallocate 
 		// the ubo each time
 		int actualDrawnModelCount = 5;
-		int totalBlocks = actualDrawnModelCount + 1;
+		int totalBlocks = actualDrawnModelCount + 2; // + 2 for the camera block and the extra model block at the front
 		//int totalBlocks = entityCount + 1;
 		InitUniformObject(&gl->ubo, blockSize, totalBlocks);
 		if (gl->ubo.buffer == nullptr)
@@ -825,7 +825,7 @@ namespace MonGL
 		return;
 	}
 
-	void Render(OpenGL* gl)
+	void Render(OpenGL* gl, Camera* camera, RenderData* gridData)
 	{
 		int camBlockIndex = 0; // these are the indexes into the ubo such as CamBlock{}; ModelBlock{};
 		int modelBlockIndex = 1;
@@ -834,7 +834,7 @@ namespace MonGL
 		glNamedBufferSubData(gl->ubo.gl_handle, 0, gl->ubo.totalSize, gl->ubo.buffer);
 		
 		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_CULL_FACE);
+		//glEnable(GL_CULL_FACE);
 		//glClearColor(state.clearColour.r, state.clearColour.g, state.clearColour.b, 1.0f);
 		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -842,6 +842,16 @@ namespace MonGL
 		unsigned int camBlockSize = (sizeof(glm::mat4) * 2) + (vec3AlignSize * 2);
 		glBindBufferRange(GL_UNIFORM_BUFFER, camBlockIndex, gl->ubo.gl_handle, 0, camBlockSize);
 
+
+		// Draw terrain
+		// Refactor the terrain after shaders next ground task?
+		
+		// Bind the "default" model matrix
+		int defaultModelBlockOffset = 1;
+		glBindBufferRange(GL_UNIFORM_BUFFER, modelBlockIndex, gl->ubo.gl_handle, gl->ubo.blockSize * defaultModelBlockOffset, sizeof(glm::mat4) + sizeof(glm::vec4));
+		MonGL::DrawTerrain(gl, gridData, camera);
+
+		// Draw models
 		for (int i = 0; i < gl->opaqueItems.size(); ++i)
 		{
 			Mesh mesh = g_Assets->meshes[gl->opaqueItems[i].meshIndex];
@@ -935,9 +945,12 @@ namespace MonGL
 		glUniform3fv(glGetUniformLocation(shaderID, "light.diffuse"), 1, &light->diffuse[0]);
 		glUniform3fv(glGetUniformLocation(shaderID, "light.specular"), 1, &light->specular[0]);
 
-		//glUniform3fv(glGetUniformLocation(shaderID, "material.ambient"), 1, &data->mat.ambient[0]);
-		//glUniform3fv(glGetUniformLocation(shaderID, "material.diffuse"), 1, &data->mat.diffuse[0]);
-		//glUniform3fv(glGetUniformLocation(shaderID, "material.specular"), 1, &data->mat.specular[0]);
+		v3 ambient = v3(0.1f);
+		v3 diffuse = v3(1.0f);
+		v3 specular = v3(0.2f);
+		glUniform3fv(glGetUniformLocation(shaderID, "material.ambient"), 1, &ambient[0]);
+		glUniform3fv(glGetUniformLocation(shaderID, "material.diffuse"), 1, &diffuse[0]);
+		glUniform3fv(glGetUniformLocation(shaderID, "material.specular"), 1, &specular[0]);
 		//glUniform1f(glGetUniformLocation(shaderID, "material.shininess"), data->mat.shininess);
 
 		glUniform3fv(glGetUniformLocation(shaderID, "viewPos"), 1, &camera->pos[0]);
@@ -953,8 +966,8 @@ namespace MonGL
 		glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
 		glBindTexture(GL_TEXTURE_2D, texture->id);
 
-		mat4 matModel = mat4(1.0f);
-		glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
+		//mat4 matModel = mat4(1.0f);
+		//glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
 		glBindVertexArray(mesh->VAO);
 
 		int polygonMode = data->wireFrame ? GL_LINE : GL_FILL;

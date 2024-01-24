@@ -29,7 +29,7 @@ namespace Mon
 		//Mesh* cubeMesh = GetMesh(assets, index);
 		//InitCubeMesh(cubeMesh);
 
-		//grass mesh #3 
+		//grass mesh #2
 		index = AddMesh(assets);
 		Mesh* grassMesh = GetMesh(assets, index);
 		//InitModelMesh(grassMesh, "test_grass.imp");

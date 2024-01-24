@@ -63,8 +63,8 @@ float sharpen(float pix_coord) {
 void main()
 {
     vec3 col = vec3(0.4, 0.5, 0.5);
-    FragColor = vec4(col, 1.0);
-    return;
+    //FragColor = vec4(col, 1.0);
+    //return;
     if (useTexture)
     {
         // Remove white pixels on texture
@@ -94,37 +94,68 @@ void main()
             // ambient
             // material.diffuse = texture_diffuse1 
             // NOTE(ck): diffuse map is part of the material on learnopengl.
-            vec3 ambient = light.ambient * texture(texture_diffuse1, modifiedTextCoordinate).rgb;
+            //vec3 ambient = light.ambient * texture(texture_diffuse1, modifiedTextCoordinate).rgb;
             
+            // NOTE(ck): ambient from jaspers tasks
+            vec3 lightAmbient = vec3(0.35, 0.35, 0.35);
+            vec3 lightColour = vec3(1.0,1.0,1.0);
+            vec3 ambient = lightAmbient * texture(texture_diffuse1, modifiedTextCoordinate).rgb * lightColour;
+
             // diffuse 
+            /*
             vec3 norm = normalize(fs_in.Normal);
             vec3 lightDir = normalize(light.pos - fs_in.FragPos);
             float diff = max(dot(norm, lightDir), 0.0);
             vec3 diffuse = light.diffuse * diff * texture(texture_diffuse1, modifiedTextCoordinate).rgb;  
+            */
+            // NOTE(ck): diffuse from jaspers tasks
+            vec3 norm = normalize(fs_in.Normal);
+            // vec3 lightDir = normalize(light.position - FragPos);
+            vec3 lightDir = normalize(-lightDirection);
+            float diff = max(dot(norm, lightDir), 0.0);
+
+            vec3 lightDiffuse = vec3(0.3,0.3,0.3);
+            vec3 diffuse = lightDiffuse * diff * texture(texture_diffuse1, fs_in.TexCoords).rgb * lightColour;
+            //vec3 diffuse = lightDiffuse * diff * lightColour;
             
-            // specular
+            
+            // specular only need camera position for the speucular
+            /*
             vec3 viewDir = normalize(viewPos - fs_in.FragPos);
-            vec3 reflectDir = reflect(-lightDir, norm);  
+            vec3 reflectDir = reflect(-lightDir, norm);
+            vec3 materialShininess = vec3(0.2, 0.2, 0.2);
+            float spec = pow(max(dot(viewDir, reflectDir), 0.0), materialShininess);
+            vec3 lightSpecular = vec3(0.1,0.1,0.1);
+            vec3 materialSpecular = vec3(0.2,0.2,0.2);
+            vec3 specular = lightSpecular * spec * texture(texture_diffuse1, fs_in.TexCoords).rgb;  // material texture
+    */
+
+
+            // specular
+            /*
+            vec3 viewDir = normalize(viewPos - fs_in.FragPos);
+            vec3 reflectDir = reflect(-lightDir, norm);
             float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
             // fix specular to use material.specular 
             // https://learnopengl.com/code_viewer_gh.php?code=src/2.lighting/4.1.lighting_maps_diffuse_map/4.1.lighting_maps.fs
             // the material uses sampler2D for diffuse and specular earlier version uses vec3 instead
             vec3 specular = light.specular * spec * texture(texture_diffuse1, modifiedTextCoordinate).rgb;  
-                
-            vec3 result = ambient + diffuse + specular;
-            FragColor = vec4(result, texture(texture_diffuse1, modifiedTextCoordinate).a);
+            */   
             
+            vec3 result = ambient + diffuse; //+ specular;
+            FragColor = vec4(result, colour.a);
+            //FragColor = vec4(result, texture(texture_diffuse1, modifiedTextCoordinate).a);
             return;
         }
         
         return;
     }
 
-    if (collider)
-    {
-        FragColor = vec4(colliderColor, 1.0);
-        return;
-    }
+    // if (collider)
+    // {
+    //     //FragColor = vec4(colliderColor, 1.0);
+    //     //return;
+    // }
 
     vec3 ambient = light.ambient * material.ambient;
 
