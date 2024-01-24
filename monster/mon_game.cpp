@@ -470,7 +470,8 @@ namespace Mon
 
 		// TODO(ck): UseProgram should be called only one time before switching shaders
 		// DO NOT CALL every time you draw an entity glUseProgram is expensive
-		MonGL::UseProgram(&state->renderer->program, state->setup);
+		//MonGL::UseProgram(&state->renderer->program, state->setup);
+		glUseProgram(state->renderer->program.handle);
 
 		MonGL::BeginRender(state->renderer, &state->config, projection, viewMatrix, state->renderer->program.handle);
 		state->setup.projection = projection;
@@ -485,7 +486,8 @@ namespace Mon
 		// 1. grid/terrain needs its own shader anyways
 
 
-		MonGL::UseProgram(&state->renderer->program, state->setup);
+		//MonGL::UseProgram(&state->renderer->program, state->setup);
+		glUseProgram(state->renderer->program.handle);
 
 
 		MonGL::Render(state->renderer);
@@ -496,7 +498,12 @@ namespace Mon
 		// 
 		// SPRITE BATCH
 		//
-		MonGL::UseProgram(&state->renderer->quadProgram, state->setup);
+		
+
+		//MonGL::UseProgram(&state->renderer->quadProgram, state->setup);
+		glUseProgram(state->renderer->quadProgram.common.handle);
+		glUniformMatrix4fv(state->renderer->quadProgram.common.projection, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(state->renderer->quadProgram.common.view, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 		
 		MonGL::Batch* batch = MonGL::GetBatch(state->renderer, 1);
 

@@ -363,11 +363,6 @@ namespace MonGL
 
 	void LoadTextureFile(std::string name, Texture* texture, Image* image, TextureType type, bool linearFilter = false, bool pixelArtTexture = false);
 
-	void UseProgram(CommonProgram* program);
-	void UseProgram(CommonProgram* program, RenderSetup setup);
-	void UseProgram(QuadBatchProgram* program, RenderSetup setup);
-	void UseProgram(WaterProgram* program, RenderSetup setup);
-
 	// Render data 
 	void SetModel(RenderData* data);
 	void SetBoundingBox(RenderData* data);

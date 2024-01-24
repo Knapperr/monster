@@ -33,6 +33,7 @@ sub projects? the main project requires the dll to be elsewhere.. could be some 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <assimp/version.h>
 
 #include <glm/glm.hpp>
 //#include <glm/gtc/matrix_transform.hpp>
@@ -102,12 +103,13 @@ Mesh ProcessMesh(Model* model, aiMesh* mesh, const aiScene* scene)
 	std::vector<Vertex> vertices;
 	std::vector<unsigned short int> indices;
 	std::vector<Texture> textures;
-
+	
 	for (int i = 0; i < mesh->mNumVertices; ++i)
 	{
 		Vertex vertex;
 
 		// transfer assimp v3 to ours
+		// 
 		glm::vec3 vec;
 		vec.x = mesh->mVertices[i].x;
 		vec.y = mesh->mVertices[i].y;
@@ -464,6 +466,14 @@ void PrintLog(Log* log, const char* msg, bool printLabel = true)
 int main(int argc, char** argv)
 {
 
+	/*
+	Make this multi threaded?
+	yeah do this. its doable you just need to make sure
+	Assimp::Importer is used for each thread.
+	this would look GREAT on portfolio
+	
+	*/
+
 	// TODO(ck): LOG THIS keep a data file of all the asset changes and stuff?
 	time_t t = time(NULL);
 	tm dateTime;
@@ -482,6 +492,14 @@ int main(int argc, char** argv)
 
 	std::string dateLabel = "Current date: " + date.toString();
 	PrintLog(log, dateLabel.c_str());
+
+	std::string majorVersion = std::to_string(aiGetVersionMajor());
+	std::string minorVersion = std::to_string(aiGetVersionMinor()); 
+	std::string revVersion = std::to_string(aiGetVersionRevision()); // "point release", "subminor"
+	//std::string assimpLegal = aiGetLegalString();
+	std::string assimpVersion = "Current Assimp Version: " + majorVersion + "." + minorVersion + "." + revVersion;
+	PrintLog(log, assimpVersion.c_str());
+
 	/*
 	cmd commands 
 	f - "directory" export folder of files
@@ -489,6 +507,20 @@ int main(int argc, char** argv)
 	h - help show commands
 	*/
 	Model model = {};
+
+	// Batch 2-4 models on each thread?
+	/*
+	Refer to ck_notes for checklist
+	1. Read the folder location.
+	2. Choose how many models you want per thread... 
+	   perform some calculation to split up the work?
+	   obj files / 2 for now to split the work up in half
+	3. launch LoadModel tasks and output a model...
+	   not sure how to do this thread safe? is it okay to just output &model or
+	   do you
+	
+	
+	*/
 
 	// loop over models folder and export them out
 	LoadModel(&model, "models/cube/blender_cube.obj", false);
@@ -501,9 +533,23 @@ int main(int argc, char** argv)
 	model = {};
 	LoadModel(&model, "models/cone/cone.obj", false);
 	WriteBinaryModel(&model, "cone.imp");
+	
+	model = {};
+	LoadModel(&model, "models/waddledee_new/waddledee.obj", false);
+	WriteBinaryModel(&model, "waddle.imp");
+
+	model = {};
+	LoadModel(&model, "models/wolly/wolly.obj", false);
+	WriteBinaryModel(&model, "wolly.imp");
+	
+	
 	LoadBinaryModel("sphere.imp");
 	LoadBinaryModel("cone.imp");
 	LoadBinaryModel("cube.imp");
+	LoadBinaryModel("waddle.imp");
+	LoadBinaryModel("wolly.imp");
+
+
 	//model = {};
 	//LoadModel(&model, "models/cube/blender_cube.obj", false);
 

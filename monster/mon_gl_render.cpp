@@ -60,6 +60,11 @@ namespace MonGL
 
 	void UploadGLMesh(Mesh* mesh)
 	{
+		// NOTE(ck): 
+		// Could check for compatibility before using DSA... have legacy methods
+		// that init all resources and switch the draw call?
+
+
 		// set up vertex data (and buffer(s)) and configure vertex attributes
 // ------------------------------------------------------------------
 		glCreateBuffers(1, &mesh->VBO); // NOTE(ck): NOT 100% !!! "this is glGenBuffers and glBindBuffer in one call"
@@ -68,7 +73,7 @@ namespace MonGL
 		//  Thats the part of glBindBuffer that glCreateBuffers replaces. It allocates a buffer ID and then triggers the internal creation without
 		//	binding it
 		//glNamedBufferStorage(mesh->VBO, sizeof(Vertex) * (verticeCount), vertices, GL_DYNAMIC_STORAGE_BIT);
-		glNamedBufferStorage(mesh->VBO, sizeof(Vertex) * (mesh->verticeCount), mesh->vertices, GL_DYNAMIC_STORAGE_BIT);
+		glNamedBufferStorage(mesh->VBO, sizeof(Vertex3D) * (mesh->verticeCount), mesh->vertices, GL_DYNAMIC_STORAGE_BIT);
 
 		glCreateBuffers(1, &mesh->IBO);
 		glNamedBufferStorage(mesh->IBO, sizeof(GLushort) * mesh->indiceCount, mesh->indices, GL_DYNAMIC_STORAGE_BIT);
@@ -629,65 +634,6 @@ namespace MonGL
 	///
 	/// [END] 
 	///	
-
-	///
-	/// [BEGIN] Shader Programs
-	/// 
-
-	void UseProgram(CommonProgram* program)
-	{
-		glUseProgram(program->handle);
-	}
-
-	void UseProgram(CommonProgram* program, RenderSetup setup)
-	{
-		glUseProgram(program->handle);
-
-		//bool useTexture = (ArrayCount(data->textures) > 0);
-		//glUniform1i(glGetUniformLocation(shaderID, "useTexture"), useTexture);
-		//glUniform1i(glGetUniformLocation(shaderID, "pixelTexture"), useTexture);
-		//// bind textures on corresponding texture units
-		////glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_2D, data->textures[selectedTexture].id);
-
-		////glUniform3fv(glGetUniformLocation(shaderID, "colliderColor"), 1, &data->color[0]);
-		//glUniform1i(glGetUniformLocation(shaderID, "collider"), false);
-
-		//OpenGL->glUseProgram(Prog->ProgHandle);
-		// glUseProgram(program->handle);
-
-		//UseProgramBegin(OpenGL, &Prog->Common);
-
-		//OpenGL->glUniformMatrix4fv(Prog->TransformID, 1, GL_TRUE, Setup->Proj.E[0]);
-		//OpenGL->glUniform3fv(Prog->CameraP, 1, Setup->CameraP.E);
-		//OpenGL->glUniform3fv(Prog->FogDirection, 1, Setup->FogDirection.E);
-		//OpenGL->glUniform3fv(Prog->FogColor, 1, Setup->FogColor.E);
-		//OpenGL->glUniform1f(Prog->FogStartDistance, Setup->FogStartDistance);
-		//OpenGL->glUniform1f(Prog->FogEndDistance, Setup->FogEndDistance);
-		//OpenGL->glUniform1f(Prog->ClipAlphaStartDistance, Setup->ClipAlphaStartDistance);
-		//OpenGL->glUniform1f(Prog->ClipAlphaEndDistance, Setup->ClipAlphaEndDistance);
-		//OpenGL->glUniform1f(Prog->AlphaThreshold, AlphaThreshold);
-		//OpenGL->glUniform3fv(Prog->VoxelMinCorner, 1, Commands->LightingVoxelMinCorner.E);
-		//OpenGL->glUniform3fv(Prog->VoxelInvTotalDim, 1, Commands->LightingVoxelInvTotalDim.E);
-
-	}
-
-	void UseProgram(QuadBatchProgram* program, RenderSetup setup)
-	{
-		UseProgram(&program->common, setup);
-
-
-		// BEGIN RENDER UNIFORMS
-
-		glUniformMatrix4fv(program->common.projection, 1, GL_FALSE, glm::value_ptr(setup.projection));
-		glUniformMatrix4fv(program->common.view, 1, GL_FALSE, glm::value_ptr(setup.viewMatrix));
-	}
-
-	void UseProgram(WaterProgram* program, RenderSetup setup)
-	{
-		UseProgram(&program->common, setup);
-
-	}
 
 	///
 	/// [BEGIN] Init RenderData
