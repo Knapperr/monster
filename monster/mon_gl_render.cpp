@@ -111,45 +111,11 @@ namespace MonGL
 
 		glBindVertexArray(0);
 
-		delete[] mesh->vertices;
+		// NOTE(ck): Keep verts in memory for now
+		/*delete[] mesh->vertices;
 		delete[] mesh->indices;
 		mesh->vertices = nullptr;
-		mesh->indices = nullptr;
-	}
-
-	void UploadOpenGLMesh(Mesh* mesh)
-	{
-		glGenVertexArrays(1, &mesh->VAO);
-		glGenBuffers(1, &mesh->VBO);
-
-		glBindVertexArray(mesh->VAO);
-		glBindBuffer(GL_ARRAY_BUFFER, mesh->VBO);
-		glBufferData(GL_ARRAY_BUFFER, mesh->verticeCount * sizeof(Vertex3D), mesh->vertices, GL_STATIC_DRAW);
-
-		if (mesh->indiceCount > 0)
-		{
-			glGenBuffers(1, &mesh->IBO);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->IBO);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->indiceCount * sizeof(unsigned short int), mesh->indices, GL_STATIC_DRAW);
-		}
-
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)0);
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, normal));
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, texCoords));
-
-		if (mesh->type == RenderType::Model)
-		{
-			glEnableVertexAttribArray(3);
-			glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, tangent));
-
-			glEnableVertexAttribArray(4);
-			glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, bitangent));
-		}
-		// unbind
-		glBindVertexArray(0);
+		mesh->indices = nullptr;*/
 	}
 
 	void UploadBatchMesh(Batch* batch, int maxVertices, int indicesLength)
@@ -1731,81 +1697,6 @@ namespace MonGL
 		sprite->pos = {};
 	}
 
-	void InitQuad2D(Mesh2D* mesh, v2 pos)
-	{
-		mesh->id = "2D_QUAD";
-
-		int verticeCount = 4;
-		mesh->vertices = new MonGL::Vertex[verticeCount];
-
-		// 2 = 32pixels
-		
-		float size = 1.0f;
-		float tileSize = 32.0f;
-		//mesh->vertices[0].position = v3(0.0f, 0.0f, 0.0f);
-		mesh->vertices[0].position = v3(pos.x * tileSize, pos.y * tileSize, 0.0f);
-		mesh->vertices[0].color = v3(1.0f, 0.0f, 0.0f);
-		mesh->vertices[0].texCoords = v2(1.0f, 1.0f);
-
-		//mesh->vertices[1].position = v3((0.0f + 1.0f), (0.0f), 0.0f);
-		mesh->vertices[1].position = v3((pos.x + size) * tileSize, pos.y * tileSize, 0.0f);
-		mesh->vertices[1].color = v3(1.0f, 0.0, 0.0f);
-		mesh->vertices[1].texCoords = v2(1.0f, 0.0f);
-
-		//mesh->vertices[2].position = v3((0.0f + 1.0f), (0.0f + 1.0f), 0.0f);
-		mesh->vertices[2].position = v3((pos.x + size) * tileSize, (pos.y + size) * tileSize, 0.0f);
-		mesh->vertices[2].color = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[2].texCoords = v2(0.0f, 0.0f);
-
-		//mesh->vertices[3].position = v3((0.0f), (0.0f + 1.0f), 0.0f);
-		mesh->vertices[3].position = v3(pos.x * tileSize, (pos.y + size) * tileSize, 0.0f);
-		mesh->vertices[3].color = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[3].texCoords = v2(0.0f, 1.0f);
-
-		int indiceCount = 6;
-		mesh->indices = new unsigned int[indiceCount];
-		mesh->indices[0] = 0;
-		mesh->indices[1] = 1;
-		mesh->indices[2] = 3;
-		mesh->indices[3] = 1;
-		mesh->indices[4] = 2;
-		mesh->indices[5] = 3;
-
-		mesh->verticeCount = verticeCount;
-		mesh->indiceCount = indiceCount;
-		mesh->type = RenderType::Quad;
-		UploadOpenGLMesh2D(mesh);
-		
-		
-
-
-
-		//glGenVertexArrays(1, &mesh->VAO);
-		//glGenBuffers(1, &mesh->VBO);
-		//glGenBuffers(1, &EBO);
-
-		//glBindVertexArray(mesh->VAO);
-		//glBindBuffer(GL_ARRAY_BUFFER, mesh->VBO);
-
-		//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-		//glEnableVertexAttribArray(0);
-		//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
-
-		//glEnableVertexAttribArray(1);
-		//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
-
-		//glEnableVertexAttribArray(2);
-		//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
-
-		//glBindBuffer(GL_ARRAY_BUFFER, 0);
-		//glBindVertexArray(0);
-
-	}
-
 	void InitBatch(BatchData* batch, int tileAmount)
 	{
 		// TODO(ck): MEMORY - TEST 
@@ -2015,47 +1906,6 @@ namespace MonGL
 		batch->vertices.clear();
 
 		glPopDebugGroup();
-		globalDrawCalls++;
-	}
-	
-	// One draw call using the 2d quad mesh from assets
-	void DrawObject(CommonProgram* shader, RenderData2D* data, v2 cameraPos)
-	{
-		mat4 model = mat4(1.0f);
-		// tile position is in opengl object position -0.5 to 0.5 vertices
-		v3 tilePosition = v3(0.0f, 0.0f, 0.0f);
-		
-
-		// IMPORTANT(ck): Move position to camera space
-		//tilePosition.x = (data->pos.x - cameraPos.x);
-		//tilePosition.y = (data->pos.y - cameraPos.y);
-		tilePosition.x = (data->pos.x);
-		tilePosition.y = (data->pos.y);
-
-		model = glm::translate(model, tilePosition);
-		model = glm::scale(model, v3(1.0f));
-		//model = glm::translate(model, v3(0.5f * data->size.x, 0.0f * data->size.y, 0.0f));
-		//model = glm::rotate(model, obj->rotation, v3(0.0f, 0.0f, 1.0f));
-		//model = glm::translate(model, v3(-0.5f * data->size.x, -0.5f * data->size.y, 0.0f));
-
-		glUniformMatrix4fv(glGetUniformLocation(shader->handle, "model"), 1, GL_FALSE, glm::value_ptr(model));
-		
-		//glUniform3f(glGetUniformLocation(shader->handle, "spriteColor"), data->color.r, data->color.g, data->color.b);
-		Mesh2D* mesh = &g_Assets->quad2D;
-		Texture* texture = {};
-		//Texture* texture = GetTexture(gl, data->textureIndex);
-
-		glActiveTexture(GL_TEXTURE0);
-		glUniform1i(glGetUniformLocation(shader->handle, "image"), 0);
-		//glUniform1i(program->textureDiffuse1, 0);
-		glBindTexture(GL_TEXTURE_2D, data->textureIndex);
-
-		glBindVertexArray(mesh->VAO);
-
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		glDrawElements(GL_TRIANGLES, mesh->indiceCount, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
-
 		globalDrawCalls++;
 	}
 }

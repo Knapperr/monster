@@ -355,7 +355,6 @@ namespace MonGL
 	void InitRenderer(OpenGL* gl, int entityCount);
 	void UploadGLMesh(Mesh* mesh);
 
-	void UploadOpenGLMesh(Mesh* mesh);
 	void UploadOpenGLMesh2D(Mesh2D* mesh);
 
 	void BeginRender(OpenGL* gl, Config* config, mat4 projection, mat4 view, int shaderID);

@@ -127,13 +127,9 @@ namespace Mon
 		unsigned int* indices;
 	};
 
-	void InitQuadMesh(Mesh* mesh, bool tangents = false);
-	void Init2DQuadMesh(Mesh2D* mesh);
-	void InitCubeMesh(Mesh* mesh);
 	void InitModelMesh(Mesh* mesh, const char* fileName);
 	void InitGridMesh(Mesh* mesh, int xSize, int zSize);
-	void InitBoundingBoxMesh(Mesh* mesh);
-
+	
 	void InitImage(Image* image, const char* file, bool flip = true);
 	void FreeImage(Image* image);
 	void InitTextureAsset(TextureAsset* asset, std::string &name, MonGL::TextureType type, bool pixelArt, int imageIndex);
@@ -147,7 +143,6 @@ namespace Mon
 		TextureAsset textureAssets[32];
 		TextureAtlas atlases[8];
 
-		Mesh2D quad2D; // TODO(ck): Remove
 		int meshCount;
 		int imageCount;
 		int textureAssetCount;
