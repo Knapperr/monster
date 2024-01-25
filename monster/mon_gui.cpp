@@ -819,7 +819,7 @@ void AssetTab(Mon::GameState* game)
 		for (int i = 1; i < Mon::g_Assets->meshCount; ++i)
 		{
 			char label[128];
-			sprintf_s(label, "%s %d", Mon::g_Assets->meshes[i].id, i);
+			sprintf_s(label, "%s %d", Mon::g_Assets->meshes[i].name.c_str(), i);
 			if (ImGui::Selectable(label, selected == i))
 			{
 				selected = i;
@@ -832,7 +832,7 @@ void AssetTab(Mon::GameState* game)
 		ImGui::BeginGroup();
 		ImGui::BeginChild("mesh details", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
 
-		ImGui::Text("%s", Mon::g_Assets->meshes[selected].id);
+		ImGui::Text("%s", Mon::g_Assets->meshes[selected].name.c_str());
 		ImGui::Separator();
 		if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
 		{
@@ -879,8 +879,8 @@ void DebugWindow(bool* p_open, Mon::GameState* game)
 {
 	ImGui::Begin("Debug Info");
 
-	ImGui::DragFloat("line one x", &game->lineOne.pos.x, 0.01f, 1.0f, 2000.0f, "%.02f");
-	ImGui::DragFloat("line two z", &game->lineTwo.pos.z, 0.01f, 1.0f, 2000.0f, "%.02f");
+	//ImGui::DragFloat("line one x", &game->lineOne.pos.x, 0.01f, 1.0f, 2000.0f, "%.02f");
+	//ImGui::DragFloat("line two z", &game->lineTwo.pos.z, 0.01f, 1.0f, 2000.0f, "%.02f");
 
 	ImGui::Checkbox("draw collisions", &game->drawCollisions);
 	ImGui::Checkbox("Wireframe", &game->grid->data.wireFrame);

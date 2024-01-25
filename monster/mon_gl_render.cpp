@@ -101,10 +101,9 @@ namespace MonGL
 
 		glBindVertexArray(mesh->VAO);
 
-		std::string meshName = mesh->id;
-		std::string vaoName = meshName + " VAO";
-		std::string vboName = meshName + " VBO";
-		std::string iboName = meshName + " IBO";
+		std::string vaoName = mesh->name + " VAO";
+		std::string vboName = mesh->name + " VBO";
+		std::string iboName = mesh->name + " IBO";
 		glObjectLabel(GL_VERTEX_ARRAY, mesh->VAO, -1, vaoName.c_str());
 		glObjectLabel(GL_BUFFER, mesh->VBO, -1, vboName.c_str());
 		glObjectLabel(GL_BUFFER, mesh->IBO, -1, iboName.c_str());
@@ -1642,19 +1641,6 @@ namespace MonGL
 		// Set Blend Function
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}
-
-	void Renderer2DCleanUp()
-	{
-		// Clean up vaos, vbos all of that stuff Assets?
-
-		// textures?
-
-		// shaders?
-
-		// framebuffers?
-
-		
 	}
 
 	void InitOpenGLBatchMesh(BatchData* data)

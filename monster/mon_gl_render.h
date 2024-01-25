@@ -160,12 +160,6 @@ namespace MonGL
 		int sheetTextureIndex;
 	};
 
-	struct Line
-	{
-		v3 pos;
-		RenderData data;
-	};
-
 	struct FramebufferGL
 	{
 		unsigned int handle;
@@ -457,9 +451,6 @@ namespace MonGL
 	//
 	void InitRenderer2D(OpenGL* gl);
 	void InitOpenGLBatchMesh(Mesh* mesh);
-
-	void InitLine2D(RenderData2D* data);
-	void DrawLine2D(RenderData2D* data);
 
 	void InitRenderData2D(RenderData2D* sprite, int size);
 	

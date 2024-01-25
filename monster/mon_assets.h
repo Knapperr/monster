@@ -93,7 +93,7 @@ namespace Mon
 
 	struct Mesh
 	{
-		const char* id;
+		std::string name;
 
 		unsigned int VAO;
 		unsigned int VBO;

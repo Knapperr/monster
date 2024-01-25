@@ -77,6 +77,15 @@ namespace Mon
 		AddTextureAtlas(assets);
 
 		// TODO(ck): Move file reading to platform layer do not want this in the game
+		/*
+		TODO(ck): config_assets.mon will just be a description of where the assets are located?
+		maybe some extra editor configurations? the assets should all be loaded from their res
+		folder res/models res/images res/sound
+		
+		The config_assets.mon is more for the editor or saving some stuff to??
+		editor theme? things like that? audio levels? 
+		*/
+
 		std::ifstream file("config_assets.mon");
 		file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 		try
@@ -293,7 +302,7 @@ namespace Mon
 		std::string msg = "Loading mesh: " + std::string(fileName);
 		Mon::Log::print(msg.c_str());
 
-		mesh->id = fileName;
+		mesh->name = fileName;
 		LoadImpFile(mesh, fileName);
 		mesh->type = RenderType::Model;
 
@@ -306,7 +315,7 @@ namespace Mon
 	{
 		Mon::Log::print("Loading grid mesh");
 
-		mesh->id = "GRID";
+		mesh->name = std::string("GRID");
 		mesh->type = RenderType::Model;
 		int verticeCount = (xSize + 1) * (zSize + 1);
 		// TODO(ck): Memory allocation
@@ -357,7 +366,7 @@ namespace Mon
 	{
 		Mon::Log::print("Loading cube map");
 
-		mesh->id = "CUBEMAP";
+		mesh->name = "CUBEMAP";
 		mesh->type = RenderType::CubeMap;
 
 		// TODO(ck): Memory Allocation

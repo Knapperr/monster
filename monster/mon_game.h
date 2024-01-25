@@ -60,9 +60,6 @@ namespace Mon
 		MousePicker picker;
 		Input input;
 
-		MonGL::Line lineOne;
-		MonGL::Line lineTwo;
-
 		// TODO(ck): Camera Manager
 		Camera cameras[10];
 		int currCameraIndex = 0;
