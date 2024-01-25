@@ -32,41 +32,46 @@ namespace Mon
 		// res/models
 		// You need to add the * so it knows you want to look at the files?
 		HANDLE hFind = FindFirstFileW(L"res/models/*", &findFileData);
-		bool loadModels = true;
 		if (hFind == INVALID_HANDLE_VALUE)
 		{
 			Mon::Log::warn("unable to load model path");
-			loadModels = false;
 		}
 
-		if (loadModels)
+		Mon::Log::print("loading the models from res/models");
+		do
 		{
-			do
+			if (findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 			{
-				if (findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-				{
-					//Mon::Log::print("inside directory");
-					//if (wcscmp(findFileData.cFileName, L".") != 0 && wcscmp(findFileData.cFileName, L"..") != 0) 
-					//{
-					//	//std::wcout << L"Folder: " << findFileData.cFileName << std::endl;
-					//	
-					//}
-				}
-				else
-				{
-					int index = AddMesh(assets);
-					Mesh* mesh = GetMesh(assets, index);
-					// TODO(ck): Fix this absolute dog's breakfast of a mess
-					std::wstring wideFileName = findFileData.cFileName;
-					std::string fileName = std::string(wideFileName.begin(), wideFileName.end());
-					std::string meshPath = "res/models/" + fileName;
-					InitModelMesh(mesh, meshPath.c_str());
+				//Mon::Log::print("inside directory");
+				//if (wcscmp(findFileData.cFileName, L".") != 0 && wcscmp(findFileData.cFileName, L"..") != 0) 
+				//{
+				//	//std::wcout << L"Folder: " << findFileData.cFileName << std::endl;
+				//	
+				//}
+			}
+			else
+			{
+				int index = AddMesh(assets);
+				Mesh* mesh = GetMesh(assets, index);
+				// TODO(ck): Fix this absolute dog's breakfast of a mess
+				std::wstring wideFileName = findFileData.cFileName;
+				std::string fileName = std::string(wideFileName.begin(), wideFileName.end());
+				std::string meshPath = "res/models/" + fileName;
+				InitModelMesh(mesh, meshPath.c_str());
 
-				}
+			}
 
-			} while (FindNextFile(hFind, &findFileData) != 0);
+		} while (FindNextFile(hFind, &findFileData) != 0);
 
-		}
+		
+		//Mon::Log::print("loading the images from res/images");
+		// FindFirstFile (images)
+		// Assuming I can use the same hFind before closing it...?
+		// 
+		
+		// Will need to fix texture assets to say the name of the image file instead and look it up that way..
+		// I can't have image index because we don't know the order they will be loaded.. i do not want to rely on that
+
 		FindClose(hFind);
 
 		// empty #0 for image
@@ -84,6 +89,10 @@ namespace Mon
 		
 		The config_assets.mon is more for the editor or saving some stuff to??
 		editor theme? things like that? audio levels? 
+
+		might still need config_assets for textures? not sure how to deal with that
+		I can load images from the folder but the textures are more of a material???
+		Material asset?? something like that with image path in the file? or image index??
 		*/
 
 		std::ifstream file("config_assets.mon");

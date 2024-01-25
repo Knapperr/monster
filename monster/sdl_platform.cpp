@@ -358,6 +358,7 @@ namespace Mon
 			if (e.type == SDL_QUIT)
 			{
 				quit = true;
+				Mon::Log::print("SDL_QUIT request...");
 			}
 
 			// TODO(ck):

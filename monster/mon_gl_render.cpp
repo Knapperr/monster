@@ -602,37 +602,6 @@ namespace MonGL
 	/// [END] 
 	///	
 
-	///
-	/// [BEGIN] Init RenderData
-	///
-
-	void SetBoundingBox(RenderData* data)
-	{
-		data->lineWidth = 2;
-		data->color = v3(0.7f, 0.15f, 0.4f);
-		data->meshIndex = 5;
-		data->visible = true;
-	}
-
-	void SetCube(RenderData* data)
-	{
-		data->visible = true;
-		data->scale = v3(1.0f);
-		data->meshIndex = 2;
-	}
-
-	// TODO(ck): can remove this?
-	// NOTE(ck): Assume the vertices and indices have been loaded
-	void SetModel(RenderData* data)
-	{
-		data->scale = v3(1.0f);
-		data->visible = true;
-	}
-
-	/// 
-	/// [END] INIT 
-	/// 
-
 	/// 
 	/// [BEGIN] begin render 
 	/// 

@@ -24,7 +24,6 @@ namespace Mon {
 	void InitBoxCollider(Collider* c)
 	{
 		c->type = ColliderType::BoundingBox;
-		MonGL::SetBoundingBox(&c->data);
 
 		c->meshSize = v3(1.0f, 0.5f, 1.0f);
 		c->extents = c->meshSize * 0.5f;
@@ -33,8 +32,7 @@ namespace Mon {
 	void InitBoxCollider(Collider* c, v3 entityPos, v3 entityScale, v3 meshSize)
 	{
 		c->type = ColliderType::BoundingBox;
-		MonGL::SetBoundingBox(&c->data);
-
+	
 		//c->min = v3(-0.5f, -0.2f, -0.5f);
 		//c->max = v3(0.5f, 0.2f, 0.5f);
 		c->meshSize = meshSize;

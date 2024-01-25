@@ -356,9 +356,6 @@ namespace MonGL
 
 	void LoadTextureFile(std::string name, Texture* texture, Image* image, TextureType type, bool linearFilter = false, bool pixelArtTexture = false);
 
-	// Render data 
-	void SetModel(RenderData* data);
-	void SetBoundingBox(RenderData* data);
 
 	void Render(OpenGL* gl, Camera* camera, RenderData* gridData);
 	void DrawCubeMap(OpenGL* gl, RenderSetup setup);
