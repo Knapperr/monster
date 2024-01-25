@@ -215,6 +215,8 @@ namespace MonGL
 
 	void InitUniformObject(UniformObject* ubo, int blockSize, int blockCount)
 	{
+		// TODO(ck):
+		// Make this buffer larger and just keep track of the used size for sending to OpenGL.
 		SetBlockSize(ubo, blockSize, blockCount);
 		// TODO(ck): Memory management -- allocate with renderer arena
 		ubo->buffer = (GLubyte*)malloc(ubo->totalSize);
@@ -932,7 +934,7 @@ namespace MonGL
 
 	void DrawTerrain(OpenGL* gl, RenderData* data, Camera* camera)
 	{
-		Mesh* mesh = GetMesh(g_Assets, 3);
+		Mesh* mesh = GetMesh(g_Assets, data->meshIndex);
 		Texture* texture = GetTexture(gl, data->textureIndex);
 		unsigned int shaderID = gl->program.handle;
 		

@@ -9,69 +9,66 @@ namespace Mon
 	Assets* g_Assets = nullptr;
 
 // TODO(ck): Move to platform layer
+// Need to open files from the platform layer not in here
+// or get a file handle from the platform layer or directory iterator???
+
 #include <fstream>
 #include <string>
+#include <windows.h>
 	void InitAssets(Assets* assets)
 	{
 		Mon::Log::print("Init assets...");
-
 		// Go directly into the folder and load them
-
 		//empty mesh #0
 		int index = AddMesh(assets);
-		// quad mesh #1
-		index = AddMesh(assets);
-		Mesh* quadMesh = GetMesh(assets, index);
-		InitQuadMesh(quadMesh);
-
-		//cube mesh #2
-		//index = AddMesh(assets);
-		//Mesh* cubeMesh = GetMesh(assets, index);
-		//InitCubeMesh(cubeMesh);
-
-		//grass mesh #2
-		index = AddMesh(assets);
-		Mesh* grassMesh = GetMesh(assets, index);
-		//InitModelMesh(grassMesh, "test_grass.imp");
-		InitModelMesh(grassMesh, "res/models/cone.imp");
 
 		// This is for the terrain
-		//grid mesh #4 ??
 		index = AddMesh(assets);
 		Mesh* gridMesh = GetMesh(assets, index);
-		InitGridMesh(gridMesh, 64, 64); // 3
+		InitGridMesh(gridMesh, 64, 64);
+		
+		WIN32_FIND_DATA findFileData;
+		// D:/Programming/$$GameProjects/monster/monster/res/models
+		// res/models
+		// You need to add the * so it knows you want to look at the files?
+		HANDLE hFind = FindFirstFileW(L"res/models/*", &findFileData);
+		bool loadModels = true;
+		if (hFind == INVALID_HANDLE_VALUE)
+		{
+			Mon::Log::warn("unable to load model path");
+			loadModels = false;
+		}
 
-		// debug meshes
-		// collider mesh
-		index = AddMesh(assets);
-		Mesh* collider = GetMesh(assets, index);
-		InitBoundingBoxMesh(collider);
+		if (loadModels)
+		{
+			do
+			{
+				if (findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+				{
+					Mon::Log::print("inside directory");
+					//if (wcscmp(findFileData.cFileName, L".") != 0 && wcscmp(findFileData.cFileName, L"..") != 0) 
+					//{
+					//	//std::wcout << L"Folder: " << findFileData.cFileName << std::endl;
+					//	
+					//}
+				}
+				else
+				{
+					Mon::Log::print("inside file");
+					int index = AddMesh(assets);
+					Mesh* mesh = GetMesh(assets, index);
+					// TODO(ck): Fix this absolute dog's breakfast of a mess
+					std::wstring wideFileName = findFileData.cFileName;
+					std::string fileName = std::string(wideFileName.begin(), wideFileName.end());
+					std::string meshPath = "res/models/" + fileName;
+					InitModelMesh(mesh, meshPath.c_str());
 
-		// plane_64 mesh 64x64 units
-		index = AddMesh(assets);
-		Mesh* plane64 = GetMesh(assets, index);
-		InitModelMesh(plane64, "res/models/cone.imp");
+				}
 
-		// gem mesh
-		index = AddMesh(assets);
-		Mesh* gem = GetMesh(assets, index);
-		InitModelMesh(gem, "res/models/cone.imp");
+			} while (FindNextFile(hFind, &findFileData) != 0);
 
-		index = AddMesh(assets);
-		Mesh* light = GetMesh(assets, index);
-		InitModelMesh(light, "res/models/cone.imp");
-
-		index = AddMesh(assets);
-		Mesh* house = GetMesh(assets, index);
-		InitModelMesh(house, "res/models/cone.imp");
-
-		index = AddMesh(assets);
-		Mesh* pumpkin = GetMesh(assets, index);
-		InitModelMesh(pumpkin, "res/models/cone.imp");
-
-		index = AddMesh(assets);
-		Mesh* tall_monster = GetMesh(assets, index);
-		InitModelMesh(tall_monster, "res/models/cone.imp");
+		}
+		FindClose(hFind);
 
 		// empty #0 for image
 		AddImage(assets);
@@ -509,7 +506,8 @@ namespace Mon
 
 	void InitModelMesh(Mesh* mesh, const char* fileName)
 	{
-		Mon::Log::print("Loading mesh");
+		std::string msg = "Loading mesh: " + std::string(fileName);
+		Mon::Log::print(msg.c_str());
 
 		mesh->id = fileName;
 		LoadImpFile(mesh, fileName);

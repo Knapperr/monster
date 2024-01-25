@@ -372,8 +372,8 @@ namespace Mon
 				item.uniformBufferOffset = blockOffset;
 				glm::mat4 model = glm::mat4(1.0f);
 				model = glm::translate(model, e.rb.worldPos);
-				//model = glm::rotate(model, glm::radians(e.spriteAngleDegrees), glm::vec3(1.0f, 0.0f, 0.0f));
-				//model = glm::scale(model, v3(1.0f));
+				model = glm::rotate(model, glm::radians(e.spriteAngleDegrees), glm::vec3(1.0f, 0.0f, 0.0f));
+				model = glm::scale(model, v3(1.0f));
 				v4 colour = v4(1.0f,1.0f,1.0f,1.0f);
 			
 				memcpy(state->renderer->ubo.buffer + (state->renderer->ubo.blockSize * blockOffset), &model, sizeof(glm::mat4)); // inserted at right at 256 beginning of block. then we add 64 which means we go form 

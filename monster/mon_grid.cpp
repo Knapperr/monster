@@ -33,7 +33,7 @@ void InitGrid(Grid* grid)
 	// NOTE(ck): Power of 2 needs to be used for SIZE so that
 	//			texture coords to be proper on the cells
 	grid->data = {};
-	grid->data.meshIndex = 4; // data.meshIndex = GetMesh("grid");
+	grid->data.meshIndex = 1;
 	grid->data.textureIndex = 12;
 	grid->data.programData.texCoordScale = 8.0f;
 }
