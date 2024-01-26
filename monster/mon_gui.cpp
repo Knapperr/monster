@@ -697,6 +697,10 @@ void RendererTab(Mon::GameState* game)
 			ImGui::TreePop();
 		} // END LIGHTS
 
+		// TODO(ck): IMPORTANT(ck):
+		// Instead of doing this just have an image tab for the images...
+		// The textures are more of a material thing. Texture you select an image to build
+		// a material so make that menu instead
 		if (ImGui::TreeNode("Textures"))
 		{
 			static unsigned int selectedTexture = 1;

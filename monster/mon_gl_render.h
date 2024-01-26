@@ -295,7 +295,7 @@ namespace MonGL
 		
 		Batch batch;
 		Light lights[32];
-		Texture textures[32]; // NOTE(ck): These use images from the asset pipeline
+		Texture textures[64]; // NOTE(ck): These use images from the asset pipeline
 		GLSpriteAnimator spriteAnimators[32];
 
 		Batch batches_[4];

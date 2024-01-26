@@ -37,7 +37,7 @@ namespace Mon
 			Mon::Log::warn("unable to load model path");
 		}
 
-		Mon::Log::print("loading the models from res/models");
+		Mon::Log::print("loading the models from res/models\n=======================================");
 		do
 		{
 			if (findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
@@ -63,15 +63,41 @@ namespace Mon
 
 		} while (FindNextFile(hFind, &findFileData) != 0);
 
-		
-		//Mon::Log::print("loading the images from res/images");
-		// FindFirstFile (images)
-		// Assuming I can use the same hFind before closing it...?
-		// 
-		
-		// Will need to fix texture assets to say the name of the image file instead and look it up that way..
-		// I can't have image index because we don't know the order they will be loaded.. i do not want to rely on that
+		//FindFirstFileW(L"res/textures/*", &findFileData);
+		//Mon::Log::print("loading the models from res/models");
+		//do
+		//{
+		//	if (findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+		//	{
+		//		//Mon::Log::print("inside directory");
+		//		//if (wcscmp(findFileData.cFileName, L".") != 0 && wcscmp(findFileData.cFileName, L"..") != 0) 
+		//		//{
+		//		//	//std::wcout << L"Folder: " << findFileData.cFileName << std::endl;
+		//		//	
+		//		//}
+		//	}
+		//	else
+		//	{
 
+
+		//		int imgIndex = AddImage(assets);
+		//		Image* img = GetImage(assets, imgIndex);
+
+		//		InitImage(img, line.c_str(), flipImage);
+		//		int index = AddMesh(assets);
+		//		Mesh* mesh = GetMesh(assets, index);
+		//		// TODO(ck): Fix this absolute dog's breakfast of a mess
+		//		std::wstring wideFileName = findFileData.cFileName;
+		//		std::string fileName = std::string(wideFileName.begin(), wideFileName.end());
+		//		std::string meshPath = "res/models/" + fileName;
+		//		InitModelMesh(mesh, meshPath.c_str());
+
+		//	}
+
+		//} while (FindNextFile(hFind, &findFileData) != 0);
+
+
+		// Assuming I can use the same hFind before closing it...?
 		FindClose(hFind);
 
 		// empty #0 for image
@@ -95,6 +121,7 @@ namespace Mon
 		Material asset?? something like that with image path in the file? or image index??
 		*/
 
+		Mon::Log::print("Loading images\n=======================================");
 		std::ifstream file("config_assets.mon");
 		file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 		try
@@ -159,6 +186,8 @@ namespace Mon
 			int atlasSize = 0;
 			int tileSize = 0;
 			int textureAssetIndex = 0;
+			Mon::Log::print("Loading texture atlases\n=======================================");
+
 
 			file >> line; // category
 			file >> atlasCount;
@@ -180,6 +209,8 @@ namespace Mon
 		}
 		file.close();
 
+
+		Mon::Log::print("!!!!!!!! Loading assets complete !!!!!!!!");
 	}
 
 	void InitAssets2D(Assets* assets, const char* fileName)
@@ -230,7 +261,7 @@ namespace Mon
 
 	void InitImage(Image* image, const char* file, bool flip)
 	{
-		MonGL::Log::print("loading image", file);
+		MonGL::Log::print(file);
 
 		stbi_set_flip_vertically_on_load(flip);
 		image->data = stbi_load(file, &image->width, &image->height, &image->nrChannels, 0);
@@ -308,8 +339,7 @@ namespace Mon
 
 	void InitModelMesh(Mesh* mesh, const char* fileName)
 	{
-		std::string msg = "Loading mesh: " + std::string(fileName);
-		Mon::Log::print(msg.c_str());
+		Mon::Log::print(fileName);
 
 		mesh->name = fileName;
 		LoadImpFile(mesh, fileName);
@@ -386,7 +416,7 @@ namespace Mon
 	void InitTextureAtlas(TextureAtlas* atlas, int assetIndex, int atlasSize, int tileSize)
 	{
 		TextureAsset* t = GetTextureAsset(g_Assets, assetIndex);
-		Mon::Log::print("Loading texture atlas", t->name.c_str());
+		Mon::Log::print(t->name.c_str());
 
 		atlas->textureAssetIndex = assetIndex;
 

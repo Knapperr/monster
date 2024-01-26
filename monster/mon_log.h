@@ -16,6 +16,13 @@ namespace Mon
 		TRACE
 	};
 
+	enum class Layer
+	{
+		ASSETS,
+		GUI,
+
+	};
+
 	class Log
 	{
 	public:

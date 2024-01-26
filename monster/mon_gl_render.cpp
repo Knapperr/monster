@@ -270,7 +270,7 @@ namespace MonGL
 	void LoadCubeMapTexture(Texture* texture)
 	{
 		texture->type = TextureType::CubeMap;
-
+		texture->name = "Cubemap";
 		glGenTextures(1, &texture->id);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, texture->id);
 
@@ -325,7 +325,7 @@ namespace MonGL
 
 	void InitRenderer(OpenGL* gl, int entityCount)
 	{
-		Mon::Log::print("Init renderer...");
+		Mon::Log::print("Init renderer...\n===========================================");
 
 		/*
 		TODO(ck): Load from a configuration file
@@ -384,6 +384,7 @@ namespace MonGL
 		gl->waterProgram.textureIndexNormal1 = 6;
 		gl->waterProgram.textureIndexNormal2 = 15;
 		
+		Mon::Log::print("Loading textures\n=============================================");
 		// NOTE(ck): first index loaded
 		AddTexture(gl);	
 		unsigned int assetCount = g_Assets->textureAssetCount;
@@ -395,15 +396,15 @@ namespace MonGL
 			//std::string name = std::string(asset->name);
 			
 			// TODO(ck): remove std::string
-			Mon::Log::print("Loading texture", asset->name.c_str());
+			Mon::Log::print(asset->name.c_str());
 			LoadTexture(asset->name, t, asset->type, asset->isPixelArt, GetImage(g_Assets, asset->imageIndex));
 		}
 
 		// TODO(ck): IMPORTANT(ck): FIX THIS 
 		// NOTE(ck): using image indexes [24 to 29] need a better way to handle this
-		AddTexture(gl);
-		MonGL::Texture* t = GetTexture(gl, assetCount+1);
-		gl->cubemapProgram.skyboxTextureIndex = assetCount+1;
+		int newTextIndex = AddTexture(gl);
+		MonGL::Texture* t = GetTexture(gl, newTextIndex);
+		gl->cubemapProgram.skyboxTextureIndex = newTextIndex;
 		LoadCubeMapTexture(t);
 		gl->cubemap = {};
 		LoadCubemap(&gl->cubemap);
