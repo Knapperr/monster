@@ -73,6 +73,27 @@ namespace Mon {
 		STATIC
 	};
 
+	/*
+	PET BRAIN
+	enum Status ... better name
+	{
+		NONE,
+		OK,
+		LIKE,
+		CARE,
+		LOVE
+	}
+	then have a value associated
+	struct PetStatus
+	{
+		Status status;
+		float value; // 0-100 once it goes over 100 then the status increase
+		Status previousStatus; <--- do I need this.. in case we go up or down we know what the last status was... 
+	}
+
+
+	*/
+
 	struct Entity
 	{
 		const char* name;

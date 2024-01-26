@@ -318,11 +318,9 @@ namespace MonGL
 	//
 	struct OpenGL
 	{
-		// TODO(ck): keep the batches separated for now until
-		// we know that they work properly then we will combine for the grid
-		// and the 
 		UniformObject ubo;
-		
+		LineBuffer lineBuffer;
+
 		Batch batch;
 		Light lights[32];
 		Texture textures[64]; // NOTE(ck): These use images from the asset pipeline

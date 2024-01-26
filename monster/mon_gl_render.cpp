@@ -382,6 +382,12 @@ namespace MonGL
 		glNamedBufferSubData(gl->ubo.gl_handle, 0, gl->ubo.totalSize, nullptr);
 
 
+		// line buffer
+		int vertSize = 2048;
+		int indiceSize = 2048 * 4;
+		InitLineBuffer(&gl->lineBuffer, vertSize, indiceSize);
+		InitGLBuffer(&gl->lineBuffer);
+
 		// TODO(ck): MOVE TEXTURE IDS TO data... program can have its own textues too?? 
 		// a program can be like a material that can be applied to a mesh so it needs to have its own textures
 		gl->waterProgram.textureIndexNormal1 = 6;
@@ -833,6 +839,43 @@ namespace MonGL
 
 		// Reset the buffers and other things like debug drawing
 
+		bool drawDebug = true;
+		if (drawDebug)
+		{
+			// maybe i need to disable depth
+			//glEnable(GL_BLEND);
+			glUseProgram(debugProgram.handle);
+			glDisable(GL_DEPTH_TEST);
+			glDisable(GL_CULL_FACE);
+
+			//glClearColor(state.clearColour.r, state.clearColour.g, state.clearColour.b, 1.0f);
+			//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			//glEnable(GL_MULTISAMPLE);
+			//glm::mat4 comboMat = projection * view;
+			//glm::mat4 toWorldFromClip = glm::inverse(comboMat);
+			glm::mat4 projection;
+			glm::mat4 view;
+			glUniformMatrix4fv(glGetUniformLocation(debugProgram.handle, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+			glUniformMatrix4fv(glGetUniformLocation(debugProgram.handle, "view"), 1, GL_FALSE, glm::value_ptr(view));
+
+			//glUniform1i(glGetUniformLocation(debugProgram.handle, "isBox"), false);
+
+
+			//glUniform3fv(glGetUniformLocation(debugProgram.handle, "boxColour"), 1, &boxColour[0]);
+			//glUniform1i(glGetUniformLocation(debugProgram.handle, "isBox"), true);
+
+			// update the aabb batch
+			glBindVertexArray(gl->lineBuffer.VAO);
+
+			// upload the batch and reset its offsets and lastvertice and lastindice indexes
+			glNamedBufferSubData(gl->lineBuffer.VBO, 0, sizeof(DebugVertex) * (gl->lineBuffer.lastVerticeIndex), gl->lineBuffer.vertices);
+			glNamedBufferSubData(gl->lineBuffer.IBO, 0, sizeof(unsigned int short) * (gl->lineBuffer.lastIndiceIndex), gl->lineBuffer.indices);
+
+			glDrawElements(GL_LINES, gl->lineBuffer.usedIndices, GL_UNSIGNED_SHORT, nullptr);
+
+			glBindVertexArray(0);
+		}
 
 
 	}
@@ -1445,8 +1488,11 @@ namespace MonGL
 		
 		// We don't even need these we can use a raw array and clear it out each frame?
 		// just set everything to 0 
+		ResetBuffer(&gl->lineBuffer);
 		gl->transparentItems.clear();
 		gl->opaqueItems.clear();
+		
+
 		gl->batchItems_.clear();
 		
 

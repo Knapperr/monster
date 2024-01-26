@@ -350,6 +350,13 @@ namespace Mon
 			glm::vec3 entityViewPos = glm::vec3(viewMatrix * glm::vec4(e.rb.worldPos, 1.0f));
 			item.viewZ = entityViewPos.z;
 
+			glm::vec4 aabbVertColour = glm::vec4(1.0f, 0.0f, 0.1f, 0.50f);
+			AABB destAABB = {};
+			destAABB.min = v3(-0.5f);
+			destAABB.max = v3(0.5f);
+			DrawBox(&state->renderer->lineBuffer, destAABB.min, destAABB.max, aabbVertColour);
+
+
 			if(e.flags & EntityRenderFlag::Sprite)
 			{
 				//init batch item
@@ -379,6 +386,8 @@ namespace Mon
 				memcpy(state->renderer->ubo.buffer + (state->renderer->ubo.blockSize * blockOffset), &model, sizeof(glm::mat4)); // inserted at right at 256 beginning of block. then we add 64 which means we go form 
 				memcpy(state->renderer->ubo.buffer + ((state->renderer->ubo.blockSize * blockOffset) + sizeof(glm::mat4)), &colour, sizeof(glm::vec4)); // alligned vec3 is 16
 				
+
+				// Put the mesh index and texture index on the entity REMOVE RenderData no need for that
 				item.textureIndex = e.data.textureIndex;
 				item.meshIndex = e.data.meshIndex;
 				state->renderer->opaqueItems.push_back(item);
