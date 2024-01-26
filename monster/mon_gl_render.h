@@ -283,6 +283,36 @@ namespace MonGL
 		int totalSize;
 	};
 
+
+	// TODO(ck): Put into mon_gl_debug.h
+	struct DebugVertex
+	{
+		glm::vec4 pos;
+		glm::vec4 colour;
+	};
+
+	struct LineBuffer
+	{
+		DebugVertex* vertices;
+		unsigned int short* indices;
+		// We need this to expand... for now set a limit but eventually check this before adding more
+		// and then realloc the buffers??
+		int totalVerticeSize;
+		int totalIndiceSize;
+
+		int offset = 0;
+		int usedIndices = 0;
+		int lastVerticeIndex = 0;
+		int lastIndiceIndex = 0;
+
+		// probably want the vbo and ubo in here
+		unsigned int VAO;
+		unsigned int IBO;
+		unsigned int VBO;
+	};
+
+
+
 	//
 	// Main Renderer 
 	//
@@ -340,6 +370,15 @@ namespace MonGL
 	//
 	// Renderer 
 	//
+
+	// debug
+	void InitLineBuffer(LineBuffer* buffer, int totalVertSize, int totalIndiceSize);
+	void InitGLBuffer(LineBuffer* buffer);
+	void DrawLine(LineBuffer* buffer, glm::vec4 a, glm::vec4 b, glm::vec4 colour);
+	void DrawBox(LineBuffer* buffer, glm::vec3 min, glm::vec3 max, glm::vec4 colour);
+	void DrawFrustum(LineBuffer* buffer, glm::vec4 vertices[]);
+	void ResetBuffer(LineBuffer* buffer);
+
 
 	void SetBlockSize(UniformObject* ubo, int blockSize, int blockCount);
 	void InitUniformObject(UniformObject* ubo, int blockSize, int blockCount);

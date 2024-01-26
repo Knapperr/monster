@@ -172,6 +172,9 @@ namespace MonGL
 
 	}
 
+
+
+
 	void SetBlockSize(UniformObject* ubo, int blockSize, int blockCount)
 	{
 		ubo->blockSize = blockSize;
@@ -1300,6 +1303,141 @@ namespace MonGL
 	///
 	///	[BEGIN] End Rendering
 	///
+
+
+	///
+	/// DEBUG RENDERING MOVE
+	/// 
+	void InitLineBuffer(LineBuffer* buffer, int totalVertSize, int totalIndiceSize)
+	{
+		// IMPORTANT(ck): Make sure to always malloc an array with sizeof(DebugVertex) if its a struct was not allocating arrays of structs properly before
+		buffer->vertices = (DebugVertex*)malloc(totalVertSize * sizeof(DebugVertex));
+		buffer->indices = (unsigned int short*)malloc(totalIndiceSize * sizeof(unsigned int short*));
+		buffer->totalVerticeSize = totalVertSize;
+		buffer->totalIndiceSize = totalIndiceSize;
+
+	}
+
+	void InitGLBuffer(LineBuffer* buffer)
+	{
+		//int aabbCount = 4096; // 4096
+		//int maxVertices = aabbCount * 8;
+		//int indicesLength = aabbCount * 16; // or 15??
+
+		glCreateBuffers(1, &buffer->VBO);
+		glNamedBufferStorage(buffer->VBO, sizeof(DebugVertex) * buffer->totalVerticeSize, nullptr, GL_DYNAMIC_STORAGE_BIT);
+
+		glCreateBuffers(1, &buffer->IBO);
+		glNamedBufferStorage(buffer->IBO, sizeof(GLushort) * buffer->totalIndiceSize, nullptr, GL_DYNAMIC_STORAGE_BIT);
+
+		glCreateVertexArrays(1, &buffer->VAO);
+		glVertexArrayVertexBuffer(buffer->VAO, 0, buffer->VBO, 0, sizeof(DebugVertex));
+		glVertexArrayElementBuffer(buffer->VAO, buffer->IBO);
+
+		glEnableVertexArrayAttrib(buffer->VAO, 0);
+		glVertexArrayAttribFormat(buffer->VAO, 0, 4, GL_FLOAT, GL_FALSE, offsetof(DebugVertex, pos));
+		glVertexArrayAttribBinding(buffer->VAO, 0, 0);
+
+		glEnableVertexArrayAttrib(buffer->VAO, 1);
+		glVertexArrayAttribFormat(buffer->VAO, 1, 4, GL_FLOAT, GL_FALSE, offsetof(DebugVertex, colour));
+		glVertexArrayAttribBinding(buffer->VAO, 1, 0);
+	}
+
+	void DrawLine(LineBuffer* buffer, glm::vec4 a, glm::vec4 b, glm::vec4 colour)
+	{
+
+		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ a, colour };
+		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ b, colour };
+
+		buffer->indices[buffer->lastIndiceIndex++] = 0 + (buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = 1 + (buffer->offset);
+
+		buffer->offset += 2;
+		buffer->usedIndices += 2;
+	}
+
+	void DrawFrustum(LineBuffer* buffer, glm::vec4 vertices[])
+	{
+		glm::vec4 colour = glm::vec4(0.10f, 0.10f, 0.65f, 1.0f);
+		DrawLine(buffer, vertices[0], vertices[1], colour); // near top
+		DrawLine(buffer, vertices[1], vertices[3], colour); // near right
+		DrawLine(buffer, vertices[3], vertices[2], colour); // near bottom
+		DrawLine(buffer, vertices[2], vertices[0], colour); // near left
+
+		DrawLine(buffer, vertices[4], vertices[5], colour); // far top
+		DrawLine(buffer, vertices[5], vertices[7], colour); // far right
+		DrawLine(buffer, vertices[7], vertices[6], colour); // far bottom
+		DrawLine(buffer, vertices[6], vertices[4], colour); // far left
+
+		DrawLine(buffer, vertices[0], vertices[4], colour); // left top
+		DrawLine(buffer, vertices[2], vertices[6], colour); // left bottom
+
+		DrawLine(buffer, vertices[1], vertices[5], colour); // right top
+		DrawLine(buffer, vertices[3], vertices[7], colour); // right bottom
+	}
+
+	//
+	// DEBUG DRAW METHODS
+	//
+	void DrawBox(LineBuffer* buffer, glm::vec3 min, glm::vec3 max, glm::vec4 colour)
+	{
+		//int entOffset = 0; // TODO(ck): DEBUGGING LINE INDICE UPLOAD TO BOUNDING BOX
+
+		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(min.x, min.y, min.z, 1.0f), colour };
+		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(max.x, min.y, min.z, 1.0f), colour };
+		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(min.x, max.y, min.z, 1.0f), colour };
+		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(max.x, max.y, min.z, 1.0f), colour };
+
+		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(min.x, min.y, max.z, 1.0f), colour };
+		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(max.x, min.y, max.z, 1.0f), colour };
+		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(min.x, max.y, max.z, 1.0f), colour };
+		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(max.x, max.y, max.z, 1.0f), colour };
+
+		// first rect of lines
+		buffer->indices[buffer->lastIndiceIndex++] = (0 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (1 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (1 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (3 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (3 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (2 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (2 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (0 + buffer->offset);
+
+
+		// second rect of lines
+		buffer->indices[buffer->lastIndiceIndex++] = (4 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (5 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (5 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (7 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (7 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (6 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (6 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (4 + buffer->offset);
+
+		// connecting lines top and bottom
+		buffer->indices[buffer->lastIndiceIndex++] = (0 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (4 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (1 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (5 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (2 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (6 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (3 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (7 + buffer->offset);
+
+
+		buffer->offset += 8;
+		buffer->usedIndices += 24;
+	}
+
+	void ResetBuffer(LineBuffer* buffer)
+	{
+		buffer->usedIndices = 0;
+		buffer->offset = 0;
+		buffer->lastVerticeIndex = 0;
+		buffer->lastIndiceIndex = 0;
+	}
+
+
 
 	void EndRender(OpenGL* gl)
 	{

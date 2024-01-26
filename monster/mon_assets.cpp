@@ -213,12 +213,6 @@ namespace Mon
 		Mon::Log::print("!!!!!!!! Loading assets complete !!!!!!!!");
 	}
 
-	void InitAssets2D(Assets* assets, const char* fileName)
-	{
-		return;
-	}
-
-
 	void LoadImpFile(Mesh* mesh, const char* filename)
 	{
 		// ensure file can be loaded properly for the engine
