@@ -1318,7 +1318,7 @@ void AssetTab(Mon::Game2D* game)
 		for (int i = 1; i < Mon::g_Assets->meshCount; ++i)
 		{
 			char label[128];
-			sprintf_s(label, "%s %d", Mon::g_Assets->meshes[i].id, i);
+			sprintf_s(label, "%s %d", Mon::g_Assets->meshes[i].name, i);
 			if (ImGui::Selectable(label, selected == i))
 			{
 				selected = i;
@@ -1331,7 +1331,7 @@ void AssetTab(Mon::Game2D* game)
 		ImGui::BeginGroup();
 		ImGui::BeginChild("mesh details", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
 
-		ImGui::Text("%s", Mon::g_Assets->meshes[selected].id);
+		ImGui::Text("%s", Mon::g_Assets->meshes[selected].name);
 		ImGui::Separator();
 		if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
 		{

@@ -839,12 +839,13 @@ namespace MonGL
 
 		// Reset the buffers and other things like debug drawing
 
-		bool drawDebug = true;
+		bool drawDebug = false;
 		if (drawDebug)
 		{
 			// maybe i need to disable depth
 			//glEnable(GL_BLEND);
-			glUseProgram(debugProgram.handle);
+			// debugProgram.handle;
+			glUseProgram(1);
 			glDisable(GL_DEPTH_TEST);
 			glDisable(GL_CULL_FACE);
 
@@ -856,8 +857,9 @@ namespace MonGL
 			//glm::mat4 toWorldFromClip = glm::inverse(comboMat);
 			glm::mat4 projection;
 			glm::mat4 view;
-			glUniformMatrix4fv(glGetUniformLocation(debugProgram.handle, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-			glUniformMatrix4fv(glGetUniformLocation(debugProgram.handle, "view"), 1, GL_FALSE, glm::value_ptr(view));
+			// debugPRogram.handle
+			glUniformMatrix4fv(glGetUniformLocation(1, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+			glUniformMatrix4fv(glGetUniformLocation(1, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
 			//glUniform1i(glGetUniformLocation(debugProgram.handle, "isBox"), false);
 
