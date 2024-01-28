@@ -179,11 +179,6 @@ void App::run()
 		}
 
 #ifdef _3D_
-#else
-		glClear(GL_COLOR_BUFFER_BIT);
-#endif
-
-#ifdef _3D_
 		// TODO(ck): PASS DELTA TIME TO RENDERER
 		float time = float(SDL_GetTicks() / 1000.0f);
 		Mon::Render(&memory, time, deltaTime);

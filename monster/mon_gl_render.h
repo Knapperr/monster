@@ -311,8 +311,6 @@ namespace MonGL
 		unsigned int VBO;
 	};
 
-
-
 	//
 	// Main Renderer 
 	//
@@ -500,6 +498,7 @@ namespace MonGL
 	void DrawObject(CommonProgram* shader, RenderData2D* data, v2 cameraPos);
 	void DrawBatch(BatchData* batch, CommonProgram* shader, unsigned int textureID, bool wireFrame);
 
+	void Draw2DLine(LineBuffer* buffer, v4 a, v4 b, v4 colour);
 
 	static BatchData* GetBatch2D(OpenGL* gl, unsigned int index)
 	{

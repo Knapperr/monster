@@ -32,8 +32,6 @@ namespace MonGL
 			// Linear for pixel art smoothing
 			if (linearFilter)
 			{
-				texture->wrapS = GL_REPEAT; // TODO(ck): Not sure if necessary
-				texture->wrapT = GL_REPEAT; // TODO(ck): Not sure if necessary
 				texture->filterMin = GL_LINEAR;
 				texture->filterMax = GL_LINEAR;
 			}
@@ -1381,6 +1379,25 @@ namespace MonGL
 		glVertexArrayAttribBinding(buffer->VAO, 1, 0);
 	}
 
+	void Draw2DLine(LineBuffer* buffer, v4 a, v4 b, v4 colour)
+	{
+		// Move to pixel space before rendering
+		a.x *= 16.0f;
+		a.y *= 16.0f;
+		b.x *= 16.0f;
+		b.y *= 16.0f;
+
+		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ a, colour };
+		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ b, colour };
+
+		buffer->indices[buffer->lastIndiceIndex++] = 0 + (buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = 1 + (buffer->offset);
+
+		buffer->offset += 2;
+		buffer->usedIndices += 2;
+	}
+
+
 	void DrawLine(LineBuffer* buffer, glm::vec4 a, glm::vec4 b, glm::vec4 colour)
 	{
 
@@ -1414,10 +1431,57 @@ namespace MonGL
 		DrawLine(buffer, vertices[3], vertices[7], colour); // right bottom
 	}
 
-	//
-	// DEBUG DRAW METHODS
-	//
 	void DrawBox(LineBuffer* buffer, glm::vec3 min, glm::vec3 max, glm::vec4 colour)
+	{
+		//int entOffset = 0; // TODO(ck): DEBUGGING LINE INDICE UPLOAD TO BOUNDING BOX
+
+		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(min.x, min.y, min.z, 1.0f), colour };
+		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(max.x, min.y, min.z, 1.0f), colour };
+		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(min.x, max.y, min.z, 1.0f), colour };
+		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(max.x, max.y, min.z, 1.0f), colour };
+
+		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(min.x, min.y, max.z, 1.0f), colour };
+		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(max.x, min.y, max.z, 1.0f), colour };
+		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(min.x, max.y, max.z, 1.0f), colour };
+		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(max.x, max.y, max.z, 1.0f), colour };
+
+		// first rect of lines
+		buffer->indices[buffer->lastIndiceIndex++] = (0 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (1 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (1 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (3 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (3 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (2 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (2 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (0 + buffer->offset);
+
+
+		// second rect of lines
+		buffer->indices[buffer->lastIndiceIndex++] = (4 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (5 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (5 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (7 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (7 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (6 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (6 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (4 + buffer->offset);
+
+		// connecting lines top and bottom
+		buffer->indices[buffer->lastIndiceIndex++] = (0 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (4 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (1 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (5 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (2 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (6 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (3 + buffer->offset);
+		buffer->indices[buffer->lastIndiceIndex++] = (7 + buffer->offset);
+
+
+		buffer->offset += 8;
+		buffer->usedIndices += 24;
+	}
+
+	void DrawBox2D(LineBuffer* buffer, glm::vec3 min, glm::vec3 max, glm::vec4 colour)
 	{
 		//int entOffset = 0; // TODO(ck): DEBUGGING LINE INDICE UPLOAD TO BOUNDING BOX
 
@@ -1475,6 +1539,10 @@ namespace MonGL
 		buffer->lastIndiceIndex = 0;
 	}
 
+	void Draw2DBox(LineBuffer* buffer, glm::vec3 min, glm::vec3 max)
+	{
+
+	}
 
 
 	void EndRender(OpenGL* gl)
@@ -1555,6 +1623,7 @@ namespace MonGL
 		gl->program = {};
 		gl->waterProgram = {};
 		MonGL::LoadShader(&gl->program, "res/shaders/vert_sprite.glsl", "res/shaders/frag_sprite.glsl", NULL);
+		MonGL::LoadShader(&gl->debugProgram, "res/shaders/vert_debug.glsl", "res/shaders/frag_debug.glsl", NULL);
 		MonGL::LoadShader(&gl->waterProgram.common, "res/shaders/vert_water.glsl", "res/shaders/frag_water.glsl", NULL);
 		// TODO(ck): Do not need this now?
 		//state->mainShaderID = state->shader.handle;
@@ -1786,6 +1855,11 @@ namespace MonGL
 		InitBatch(gl, batchIndex, 1000);		
 
 
+		// line buffer
+		int vertSize = 2048;
+		int indiceSize = 2048 * 4;
+		InitLineBuffer(&gl->lineBuffer, vertSize, indiceSize);
+		InitGLBuffer(&gl->lineBuffer);
 
 		// Set Blend Function
 		glEnable(GL_BLEND);

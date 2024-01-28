@@ -55,7 +55,6 @@ namespace Mon {
 
 	void Update(game_memory* memory, double dt, Input* input)
 	{
-
 		Game2D *game = (Game2D*)memory->permanentStorage;
 		//if (dt > deltaTime || dt < deltaTime)
 		//printf("dt: %f\n", dt);
@@ -83,20 +82,6 @@ namespace Mon {
 			Mon::MovePlayer(p, &velocity, (float)dt);
 			Update(&game->cameras[game->currentCameraIndex], p->pos, (float)dt);
 
-			for (unsigned int i = 1; i < game->world->entityCount; ++i)
-			{
-				Entity2D* e = &game->world->entities[i];
-				MonGL::BatchItem2D batchItem;
-				if (e->isPlayer)
-					batchItem.isPlayer = e->isPlayer;
-
-				batchItem.worldPos = e->pos;
-				batchItem.tileSize = 16;
-				batchItem.spriteSize = 2.0f;
-				batchItem.animationIndex = 1;
-				game->renderer->batchItems2D.push_back(batchItem);
-			}
-
 		}
 		else
 		{
@@ -111,6 +96,22 @@ namespace Mon {
 		Game2D* game = (Game2D*)memory->permanentStorage;
 
 		MonGL::ViewPort(&game->config->viewPort);
+
+
+		for (unsigned int i = 1; i < game->world->entityCount; ++i)
+		{
+			Entity2D* e = &game->world->entities[i];
+			MonGL::BatchItem2D batchItem;
+			if (e->isPlayer)
+				batchItem.isPlayer = e->isPlayer;
+
+			batchItem.worldPos = e->pos;
+			batchItem.tileSize = 16;
+			batchItem.spriteSize = 2.0f;
+			batchItem.animationIndex = 1;
+			game->renderer->batchItems2D.push_back(batchItem);
+		}
+
 
 		int shaderID = game->renderer->program.handle;
 		glUseProgram(shaderID);
@@ -137,6 +138,14 @@ namespace Mon {
 							 textOffset,
 							 game->cameras[game->currentCameraIndex].pos);
 		}
+
+		v4 colour = v4(1.0f);
+		// 0 - 1 is world space or model space??? i think my world space is technically the 
+		// i want my world space to go 0 1 2 or at least tile space?
+		// draw or pixel would be 0.0 then 16.0f for the 
+		MonGL::Draw2DLine(&game->renderer->lineBuffer, v4(0.0f, 0.0f, 0.0f, 1.0f), v4(1.0f, 0.0f, 0.0f, 1.0f), colour);
+		MonGL::Draw2DLine(&game->renderer->lineBuffer, v4(2.0f, 0.0f, 0.0f, 1.0f), v4(4.0f, 0.0f, 0.0f, 1.0f), colour);
+		MonGL::Draw2DLine(&game->renderer->lineBuffer, v4(0.0f, 5.0f, 0.0f, 1.0f), v4(0.0f, 8.0f, 0.0f, 1.0f), colour);
 
 
 		MonGL::BatchData* spriteBatch = MonGL::GetBatch2D(game->renderer, 2);
@@ -171,7 +180,8 @@ namespace Mon {
 
 		
 		// TODO(ck): Pull Texture out of sheet
-		
+		glClear(GL_COLOR_BUFFER_BIT);
+
 		// Loop through batches 
 		// batch needs its own shader id and texture id for the sheet
 		MonGL::Texture* tilemapAtlas = MonGL::GetTexture(game->renderer, 19);
@@ -180,6 +190,37 @@ namespace Mon {
 		MonGL::Texture* spriteAtlas = MonGL::GetTexture(game->renderer, 17);
 		DrawBatch(spriteBatch, &game->renderer->program, spriteAtlas->id, false);
 	
+		bool drawDebug = true;
+		if (drawDebug)
+		{
+			// maybe i need to disable depth
+			//glEnable(GL_BLEND);
+			// debugProgram.handle;
+			glUseProgram(game->renderer->debugProgram.handle);
+			glDisable(GL_DEPTH_TEST);
+			glDisable(GL_CULL_FACE);
+
+			//glClearColor(state.clearColour.r, state.clearColour.g, state.clearColour.b, 1.0f);
+			//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			//glEnable(GL_MULTISAMPLE);
+			//glm::mat4 comboMat = projection * view;
+			//glm::mat4 toWorldFromClip = glm::inverse(comboMat);
+			glUniformMatrix4fv(glGetUniformLocation(game->renderer->debugProgram.handle, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+			glUniformMatrix4fv(glGetUniformLocation(game->renderer->debugProgram.handle, "view"), 1, GL_FALSE, glm::value_ptr(view));
+
+			// update the aabb batch
+			glBindVertexArray(game->renderer->lineBuffer.VAO);
+
+			// upload the batch and reset its offsets and lastvertice and lastindice indexes
+			glNamedBufferSubData(game->renderer->lineBuffer.VBO, 0, sizeof(MonGL::DebugVertex) * (game->renderer->lineBuffer.lastVerticeIndex), game->renderer->lineBuffer.vertices);
+			glNamedBufferSubData(game->renderer->lineBuffer.IBO, 0, sizeof(unsigned int short) * (game->renderer->lineBuffer.lastIndiceIndex), game->renderer->lineBuffer.indices);
+
+			glDrawElements(GL_LINES, game->renderer->lineBuffer.usedIndices, GL_UNSIGNED_SHORT, nullptr);
+
+			glBindVertexArray(0);
+		}
+
 		EndRender(game->renderer);
 	}
 

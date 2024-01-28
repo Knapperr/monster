@@ -28,11 +28,9 @@ namespace Mon
 
 	void Update(Camera2D* camera, v2 target, float dt)
 	{
-		// target position in world space and center of screen
-		/*camera->pos.x = (target.x * 16.0f) - camera->resolution.w / 2.0f;
-		camera->pos.y = (target.y * 16.0f) - camera->resolution.h / 2.0f;*/
-		camera->pos.x = (target.x * 16.0f); // camera pos in world space (target*16)
-		camera->pos.y = (target.y * 16.0f);
+		// Locks onto the target and keeps them in the center of the screen
+		camera->pos = target;
+		
 		// Smooth camera will not work with coordinate system 1:1 pixels and screen space
 		//v2 targetPos = target;
 		// 
@@ -58,10 +56,9 @@ namespace Mon
 	mat4 ViewMatrix(Camera2D* camera)
 	{
 		mat4 view = mat4(1.0f);
-		v3 cameraPos = v3(camera->pos, 0.0f);
-		v3 cameraUp = v3(0.0f, 1.0f, 0.0f);
-		//view = glm::translate(view, v3(-cameraPos.x, -cameraPos.y, 0.0f));
-		view = glm::translate(view, v3(-(cameraPos.x - camera->resolution.w / 2.0f), -(cameraPos.y - camera->resolution.h / 2.0f), 1.0f));
+		v3 cameraPosToPixelPos = v3(camera->pos * 16.0f, 0.0f);
+		// Center of the screen
+		view = glm::translate(view, v3(-(cameraPosToPixelPos.x - camera->resolution.w / 2.0f), -(cameraPosToPixelPos.y - camera->resolution.h / 2.0f), 1.0f));
 		//view = glm::lookAt(cameraPos, cameraPos, cameraUp);
 		return view;
 	}
