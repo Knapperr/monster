@@ -29,7 +29,7 @@ namespace MonGL
 			texture->filterMin = GL_NEAREST;
 			texture->filterMax = GL_NEAREST;
 
-			// Linear for 3D
+			// Linear for pixel art smoothing
 			if (linearFilter)
 			{
 				texture->wrapS = GL_REPEAT; // TODO(ck): Not sure if necessary
@@ -335,11 +335,13 @@ namespace MonGL
 		should only load meshses in current chunk or level
 		*/
 		gl->program = {};
+		gl->debugProgram = {};
 		gl->waterProgram = {};
 		gl->cubemapProgram = {};
-
+		
 		// TODO(ck): Remove 
 		MonGL::LoadShader(&gl->program, "res/shaders/vert_colors.glsl", "res/shaders/frag_colors.glsl", NULL);
+		MonGL::LoadShader(&gl->debugProgram, "res/shaders/vert_debug.glsl", "res/shaders/frag_debug.glsl", NULL);
 		MonGL::LoadShader(&gl->quadProgram, "res/shaders/vert_quad_batch.glsl", "res/shaders/frag_quad_batch.glsl", NULL);
 		MonGL::LoadShader(&gl->waterProgram, "res/shaders/vert_water.glsl", "res/shaders/frag_water.glsl", NULL);
 		MonGL::LoadShader(&gl->cubemapProgram, "res/shaders/vert_cubemap.glsl", "res/shaders/frag_cubemap.glsl", NULL);
@@ -771,7 +773,7 @@ namespace MonGL
 		return;
 	}
 
-	void Render(OpenGL* gl, Camera* camera, RenderData* gridData)
+	void Render(OpenGL* gl, Camera* camera, RenderData* gridData, mat4 projection, mat4 view)
 	{
 		int camBlockIndex = 0; // these are the indexes into the ubo such as CamBlock{}; ModelBlock{};
 		int modelBlockIndex = 1;
@@ -839,13 +841,13 @@ namespace MonGL
 
 		// Reset the buffers and other things like debug drawing
 
-		bool drawDebug = false;
+		bool drawDebug = true;
 		if (drawDebug)
 		{
 			// maybe i need to disable depth
 			//glEnable(GL_BLEND);
 			// debugProgram.handle;
-			glUseProgram(1);
+			glUseProgram(gl->debugProgram.handle);
 			glDisable(GL_DEPTH_TEST);
 			glDisable(GL_CULL_FACE);
 
@@ -855,17 +857,8 @@ namespace MonGL
 			//glEnable(GL_MULTISAMPLE);
 			//glm::mat4 comboMat = projection * view;
 			//glm::mat4 toWorldFromClip = glm::inverse(comboMat);
-			glm::mat4 projection;
-			glm::mat4 view;
-			// debugPRogram.handle
-			glUniformMatrix4fv(glGetUniformLocation(1, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-			glUniformMatrix4fv(glGetUniformLocation(1, "view"), 1, GL_FALSE, glm::value_ptr(view));
-
-			//glUniform1i(glGetUniformLocation(debugProgram.handle, "isBox"), false);
-
-
-			//glUniform3fv(glGetUniformLocation(debugProgram.handle, "boxColour"), 1, &boxColour[0]);
-			//glUniform1i(glGetUniformLocation(debugProgram.handle, "isBox"), true);
+			glUniformMatrix4fv(glGetUniformLocation(gl->debugProgram.handle, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+			glUniformMatrix4fv(glGetUniformLocation(gl->debugProgram.handle, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
 			// update the aabb batch
 			glBindVertexArray(gl->lineBuffer.VAO);

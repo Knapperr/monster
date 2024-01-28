@@ -501,7 +501,7 @@ namespace Mon
 		glUseProgram(state->renderer->program.handle);
 
 
-		MonGL::Render(state->renderer, cam, &state->grid->data);
+		MonGL::Render(state->renderer, cam, &state->grid->data, projection, viewMatrix);
 		// 
 		// end common shader rendering
 		//

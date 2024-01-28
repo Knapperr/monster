@@ -351,6 +351,7 @@ namespace MonGL
 		Cubemap cubemap;
 
 		CommonProgram program;
+		CommonProgram debugProgram;
 		QuadBatchProgram quadProgram;
 		WaterProgram waterProgram;
 		CubemapProgram cubemapProgram;
@@ -394,7 +395,7 @@ namespace MonGL
 	void LoadTextureFile(std::string name, Texture* texture, Image* image, TextureType type, bool linearFilter = false, bool pixelArtTexture = false);
 
 
-	void Render(OpenGL* gl, Camera* camera, RenderData* gridData);
+	void Render(OpenGL* gl, Camera* camera, RenderData* gridData, mat4 projection, mat4 view);
 	void DrawCubeMap(OpenGL* gl, RenderSetup setup);
 
 	void DrawBoundingBox(OpenGL* gl, RenderData* data, Camera* camera);
