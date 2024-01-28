@@ -372,7 +372,10 @@ namespace MonGL
 	void InitLineBuffer(LineBuffer* buffer, int totalVertSize, int totalIndiceSize);
 	void InitGLBuffer(LineBuffer* buffer);
 	void DrawLine(LineBuffer* buffer, glm::vec4 a, glm::vec4 b, glm::vec4 colour);
+	void DrawLine2D(LineBuffer* buffer, v4 a, v4 b, v4 colour);
 	void DrawBox(LineBuffer* buffer, glm::vec3 min, glm::vec3 max, glm::vec4 colour);
+	void DrawBox2D(LineBuffer* buffer, glm::vec3 min, glm::vec3 max, glm::vec4 colour);
+
 	void DrawFrustum(LineBuffer* buffer, glm::vec4 vertices[]);
 	void ResetBuffer(LineBuffer* buffer);
 
@@ -498,7 +501,7 @@ namespace MonGL
 	void DrawObject(CommonProgram* shader, RenderData2D* data, v2 cameraPos);
 	void DrawBatch(BatchData* batch, CommonProgram* shader, unsigned int textureID, bool wireFrame);
 
-	void Draw2DLine(LineBuffer* buffer, v4 a, v4 b, v4 colour);
+	
 
 	static BatchData* GetBatch2D(OpenGL* gl, unsigned int index)
 	{

@@ -1051,9 +1051,6 @@ namespace MonGL
 	{
 
 		float textureSheetSize = 256.0f;
-		posX = posX - 0.5f;
-		//posY = posY - 0.5f;
-		posZ = posZ + 0.5f;
 		float vertSize = 1.0f;
 
 #if 1
@@ -1379,7 +1376,7 @@ namespace MonGL
 		glVertexArrayAttribBinding(buffer->VAO, 1, 0);
 	}
 
-	void Draw2DLine(LineBuffer* buffer, v4 a, v4 b, v4 colour)
+	void DrawLine2D(LineBuffer* buffer, v4 a, v4 b, v4 colour)
 	{
 		// Move to pixel space before rendering
 		a.x *= 16.0f;
@@ -1484,16 +1481,11 @@ namespace MonGL
 	void DrawBox2D(LineBuffer* buffer, glm::vec3 min, glm::vec3 max, glm::vec4 colour)
 	{
 		//int entOffset = 0; // TODO(ck): DEBUGGING LINE INDICE UPLOAD TO BOUNDING BOX
-
-		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(min.x, min.y, min.z, 1.0f), colour };
-		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(max.x, min.y, min.z, 1.0f), colour };
-		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(min.x, max.y, min.z, 1.0f), colour };
-		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(max.x, max.y, min.z, 1.0f), colour };
-
-		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(min.x, min.y, max.z, 1.0f), colour };
-		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(max.x, min.y, max.z, 1.0f), colour };
-		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(min.x, max.y, max.z, 1.0f), colour };
-		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(max.x, max.y, max.z, 1.0f), colour };
+		float pixelSize = 16.0f;
+		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(min.x * pixelSize, min.y * pixelSize, min.z * pixelSize, 1.0f), colour };
+		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(max.x * pixelSize, min.y * pixelSize, min.z * pixelSize, 1.0f), colour };
+		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(min.x * pixelSize, max.y * pixelSize, min.z * pixelSize, 1.0f), colour };
+		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(max.x * pixelSize, max.y * pixelSize, min.z * pixelSize, 1.0f), colour };
 
 		// first rect of lines
 		buffer->indices[buffer->lastIndiceIndex++] = (0 + buffer->offset);
@@ -1506,29 +1498,8 @@ namespace MonGL
 		buffer->indices[buffer->lastIndiceIndex++] = (0 + buffer->offset);
 
 
-		// second rect of lines
-		buffer->indices[buffer->lastIndiceIndex++] = (4 + buffer->offset);
-		buffer->indices[buffer->lastIndiceIndex++] = (5 + buffer->offset);
-		buffer->indices[buffer->lastIndiceIndex++] = (5 + buffer->offset);
-		buffer->indices[buffer->lastIndiceIndex++] = (7 + buffer->offset);
-		buffer->indices[buffer->lastIndiceIndex++] = (7 + buffer->offset);
-		buffer->indices[buffer->lastIndiceIndex++] = (6 + buffer->offset);
-		buffer->indices[buffer->lastIndiceIndex++] = (6 + buffer->offset);
-		buffer->indices[buffer->lastIndiceIndex++] = (4 + buffer->offset);
-
-		// connecting lines top and bottom
-		buffer->indices[buffer->lastIndiceIndex++] = (0 + buffer->offset);
-		buffer->indices[buffer->lastIndiceIndex++] = (4 + buffer->offset);
-		buffer->indices[buffer->lastIndiceIndex++] = (1 + buffer->offset);
-		buffer->indices[buffer->lastIndiceIndex++] = (5 + buffer->offset);
-		buffer->indices[buffer->lastIndiceIndex++] = (2 + buffer->offset);
-		buffer->indices[buffer->lastIndiceIndex++] = (6 + buffer->offset);
-		buffer->indices[buffer->lastIndiceIndex++] = (3 + buffer->offset);
-		buffer->indices[buffer->lastIndiceIndex++] = (7 + buffer->offset);
-
-
-		buffer->offset += 8;
-		buffer->usedIndices += 24;
+		buffer->offset += 4;
+		buffer->usedIndices += 8;
 	}
 
 	void ResetBuffer(LineBuffer* buffer)
@@ -1538,12 +1509,6 @@ namespace MonGL
 		buffer->lastVerticeIndex = 0;
 		buffer->lastIndiceIndex = 0;
 	}
-
-	void Draw2DBox(LineBuffer* buffer, glm::vec3 min, glm::vec3 max)
-	{
-
-	}
-
 
 	void EndRender(OpenGL* gl)
 	{
@@ -1957,12 +1922,12 @@ namespace MonGL
 		v2 bottomLeft = v2((tileOffsetX * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize);
 
 		float size = spriteSize * 16.0f; // spriteSize * pixelsPerMeter
-		float pixelsPerMeter = 16.0f;
+		float pixelsPerMeter = size;
 
-		worldX *= pixelsPerMeter;
-		worldY *= pixelsPerMeter;
-		float x = worldX;
-		float y = worldY;
+		//worldX *= pixelsPerMeter;
+		//worldY *= pixelsPerMeter;
+		float x = worldX * pixelsPerMeter;
+		float y = worldY * pixelsPerMeter;
 
 		// tile coords to world coords
 		/*
@@ -2008,6 +1973,36 @@ namespace MonGL
 			topLeft
 		};
 
+		//Vertex vec0 = {
+		//v3(x,
+		//   y,
+		//   0.0f),
+		//v3(1.0f, 0.0f, 0.0f),
+		//bottomLeft
+		//};
+		//Vertex vec1 = {
+		//	v3((x*pixelsPerMeter),
+		//		y,
+		//		0.0f),
+		//	v3(0.0f, 1.0f, 0.0f),
+		//	bottomRight
+		//};
+		//Vertex vec2 = {
+		//	v3((x*pixelsPerMeter),
+		//		(y*pixelsPerMeter),
+		//		0.0f),
+		//	v3(0.0f, 0.0f, 1.0f),
+		//	topRight
+		//};
+		//Vertex vec3 = {
+		//	v3((x),
+		//		(y* pixelsPerMeter),
+		//		0.0f),
+		//	v3(1.0f, 1.0f, 0.0f),
+		//	topLeft
+		//};
+
+
 		batch->usedIndices += 6;
 		batch->vertices.push_back(vec0);
 		batch->vertices.push_back(vec1);
@@ -2019,13 +2014,19 @@ namespace MonGL
 	{
 		// 
 		float size = spriteSize * (float)tileSize;
-		
 		// tile coords to world coords
-		worldX *= (float)tileSize;
-		worldY *= (float)tileSize;
-		float x = worldX;
-		float y = worldY;
+		//worldX *= (float)tileSize;
+		//worldY *= (float)tileSize;
+		float pixelsPerMeter = 16.0f;
+		// modelSize is 2.0f;32pixels;
+		// Move the sprite into the middle of the bounding box... worldX - (modelSize/2.0f) * pixelsPerMeter
 
+		// x and y is pixel space?
+		float x = (worldX - 1.0f) * pixelsPerMeter;
+		float y = (worldY - 1.0f)* pixelsPerMeter;
+
+		//x -= 0.5f;
+		//y -= 0.5f;
 		// We do this in our shader by multiplying against the camera's view matrix
 		// world to screen position
 		//v2 cameraCoords = v2(worldX, worldY) - cameraPos;
@@ -2054,6 +2055,7 @@ namespace MonGL
 			v3(1.0f, 1.0f, 0.0f),
 			subTexture.texCoords[3]
 		};
+
 
 		batch->usedIndices += 6;
 		batch->vertices.push_back(vec0);

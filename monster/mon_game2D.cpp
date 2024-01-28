@@ -110,6 +110,11 @@ namespace Mon {
 			batchItem.spriteSize = 2.0f;
 			batchItem.animationIndex = 1;
 			game->renderer->batchItems2D.push_back(batchItem);
+
+			glm::vec4 col = v4(1.0f);
+			glm::vec4 min = v4(e->pos.x - 0.5f, e->pos.y - 0.5f, 0.0f, 1.0f);
+			glm::vec4 max = v4(e->pos.x + 0.5f, e->pos.y + 0.5f, 0.0f, 1.0f);;
+			MonGL::DrawBox2D(&game->renderer->lineBuffer, min, max,col);
 		}
 
 
@@ -143,9 +148,9 @@ namespace Mon {
 		// 0 - 1 is world space or model space??? i think my world space is technically the 
 		// i want my world space to go 0 1 2 or at least tile space?
 		// draw or pixel would be 0.0 then 16.0f for the 
-		MonGL::Draw2DLine(&game->renderer->lineBuffer, v4(0.0f, 0.0f, 0.0f, 1.0f), v4(1.0f, 0.0f, 0.0f, 1.0f), colour);
-		MonGL::Draw2DLine(&game->renderer->lineBuffer, v4(2.0f, 0.0f, 0.0f, 1.0f), v4(4.0f, 0.0f, 0.0f, 1.0f), colour);
-		MonGL::Draw2DLine(&game->renderer->lineBuffer, v4(0.0f, 5.0f, 0.0f, 1.0f), v4(0.0f, 8.0f, 0.0f, 1.0f), colour);
+		MonGL::DrawLine2D(&game->renderer->lineBuffer, v4(0.0f, 0.0f, 0.0f, 1.0f), v4(1.0f, 0.0f, 0.0f, 1.0f), colour);
+		MonGL::DrawLine2D(&game->renderer->lineBuffer, v4(2.0f, 0.0f, 0.0f, 1.0f), v4(4.0f, 0.0f, 0.0f, 1.0f), colour);
+		MonGL::DrawLine2D(&game->renderer->lineBuffer, v4(0.0f, 5.0f, 0.0f, 1.0f), v4(0.0f, 8.0f, 0.0f, 1.0f), colour);
 
 
 		MonGL::BatchData* spriteBatch = MonGL::GetBatch2D(game->renderer, 2);
