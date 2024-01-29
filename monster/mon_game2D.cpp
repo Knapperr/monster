@@ -79,7 +79,39 @@ namespace Mon {
 			}
 
 			//Mon::MovePlayer(game->world->map, p, &velocity, (float)dt);
-			Mon::MovePlayer(p, &velocity, (float)dt);
+			v3 aMin = v3(p->pos.x - 0.5f, p->pos.y - 0.5f, 0.0f);
+			v3 aMax = v3(p->pos.x + 0.5f, p->pos.y + 0.5f, 0.0f);
+			bool canMove = true;
+			p->colour = v4(1.0f);
+			for (unsigned int i = 1; i < game->world->entityCount; ++i)
+			{
+				// TODO(ck): Broad Phase Collision Check
+
+				// TODO(ck): Precise Collision check
+
+				if (i != 1) // 1 is player index
+				{
+					Entity2D* testEntity = GetEntity2D(game->world, i);
+					testEntity->colour = v4(1.0f);
+
+
+					v3 bMin = v3(testEntity->pos.x - 0.5f, testEntity->pos.y - 0.5f, 0.0f);
+					v3 bMax = v3(testEntity->pos.x + 0.5f, testEntity->pos.y + 0.5f, 0.0f);
+
+					if (Mon::TestAABB(aMin, aMax, bMin, bMax))
+					{
+						//newPos = player->rb.worldPos + 0.05f;
+						//newPos.y = 0.0f;
+						// 
+						//canMove = false;
+						testEntity->colour = v4(1.0f, 0.2f, 0.1f, 1.0f);
+						break;
+					}
+				}
+			}
+			if (canMove)
+				Mon::MovePlayer(p, &velocity, (float)dt);
+
 			Update(&game->cameras[game->currentCameraIndex], p->pos, (float)dt);
 
 		}
@@ -111,9 +143,10 @@ namespace Mon {
 			batchItem.animationIndex = 1;
 			game->renderer->batchItems2D.push_back(batchItem);
 
-			glm::vec4 col = v4(1.0f);
+			glm::vec4 col = e->colour;
 			glm::vec4 min = v4(e->pos.x - 0.5f, e->pos.y - 0.5f, 0.0f, 1.0f);
-			glm::vec4 max = v4(e->pos.x + 0.5f, e->pos.y + 0.5f, 0.0f, 1.0f);;
+			glm::vec4 max = v4(e->pos.x + 0.5f, e->pos.y + 0.5f, 0.0f, 1.0f);
+
 			MonGL::DrawBox2D(&game->renderer->lineBuffer, min, max,col);
 		}
 

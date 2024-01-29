@@ -25,6 +25,16 @@ namespace Mon
 
 	// TODO(ck): Should this param be pointer?
 	// should velocity be acceleration?
+	int TestAABB(v3 Amin, v3 Amax, v3 Bmin, v3 Bmax)
+	{
+		if (Amax.x < Bmin.x || Amin.x > Bmax.x) return 0;
+		//if (Amax.z < Bmin.z || Amin.z > Bmax.z) return 0;
+		// NOTE(ck): Check y last because it is the least likely collison
+		if (Amax.y < Bmin.y || Amin.y > Bmax.y) return 0;
+		// Overlapping on all axes means AABBs are intersecting
+		return 1;
+	}
+
 	void MovePlayer(TileMap* map, Entity2D* p, v2* velocity, float deltaTime)
 	{
 		// ddPLength
@@ -59,6 +69,7 @@ namespace Mon
 
 	void MovePlayer(Entity2D* p, v2* velocity, float deltaTime)
 	{
+
 		p->pos.x += (velocity->x * p->speed * deltaTime);
 		p->pos.y += (velocity->y * p->speed * deltaTime);
 

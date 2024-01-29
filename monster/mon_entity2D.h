@@ -24,6 +24,7 @@ namespace Mon
 		v2 pos; // currently screen space is used for world position and is sent to render data
 		
 		v2 velocity;
+		v4 colour = v4(1.0f);
 		float speed;
 		float weight;
 		float rotation;
@@ -37,6 +38,7 @@ namespace Mon
 	void InitMinion(Entity2D* e, const char* name, v2 position, int size);
 	// TODO(ck): Should this param be pointer?
 	// should velocity be acceleration?
+	int TestAABB(v3 Amin, v3 Amax, v3 Bmin, v3 Bmax);
 	void MovePlayer(TileMap* map, Entity2D* p, v2* velocity, float deltaTime);
 	void MovePlayer(Entity2D* p, v2* velocity, float deltaTime);
 

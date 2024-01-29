@@ -460,7 +460,7 @@ namespace MonGL
 			const int subTextureCount = 4;
 			float sheetSize = 256.0f;
 			int tileSize = 32;
-			int tileOffsetX = 3;
+			int tileOffsetX = 5;
 			int tileOffsetY = 7;
 
 			float uvPadding = 0.001f;
@@ -483,11 +483,11 @@ namespace MonGL
 
 					if (frameIndex == 1)
 					{
-						tileOffsetX = 2;
+						tileOffsetX = 5;
 					}
 					else if (frameIndex == 2)
 					{
-						tileOffsetX = 1;
+						tileOffsetX = 7;
 					}
 					else if (frameIndex == 3)
 					{
@@ -541,7 +541,6 @@ namespace MonGL
 					ani->frameCount++;
 
 					frame->subTexture = {};
-					frame->subTexture.height = 32;
 					frame->subTexture.height = 32;
 					frame->subTexture.tileSize = 32;
 
@@ -1720,7 +1719,7 @@ namespace MonGL
 			const int subTextureCount = 4;
 			float sheetSize = 256.0f;
 			int tileSize = 32;
-			int tileOffsetX = 3;
+			int tileOffsetX = 5;
 			int tileOffsetY = 7;
 
 			for (int i = 0; i < animationCount; ++i)
@@ -2018,8 +2017,9 @@ namespace MonGL
 		//worldX *= (float)tileSize;
 		//worldY *= (float)tileSize;
 		float pixelsPerMeter = 16.0f;
-		// modelSize is 2.0f;32pixels;
-		// Move the sprite into the middle of the bounding box... worldX - (modelSize/2.0f) * pixelsPerMeter
+		// worldSize is 2.0f; local(model) - 32pixels;
+		// TODO(ck): Ask Jasper about this??? is world size your 1m and then what is pixel size we dont call it world anymore?
+		// Move the sprite into the middle of the bounding box... worldX - (worldSize/2.0f) * pixelsPerMeter
 
 		// x and y is pixel space?
 		float x = (worldX - 1.0f) * pixelsPerMeter;
