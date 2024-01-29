@@ -484,6 +484,7 @@ namespace MonGL
 					if (frameIndex == 1)
 					{
 						tileOffsetX = 5;
+						tileOffsetY = 6;
 					}
 					else if (frameIndex == 2)
 					{
@@ -1684,22 +1685,22 @@ namespace MonGL
 
 		// 2D Texture Array 
 		// need this to use different textures in the same batch
-		AddTexture(gl);
-		MonGL::Texture* t20 = GetTexture(gl, 20);
-		Load2DTextureArrayFile(t20, "");
+		//AddTexture(gl);
+		//MonGL::Texture* t20 = GetTexture(gl, 20);
+		//Load2DTextureArrayFile(t20, "");
 
 
 		// Get textures loading from file like 3D
-// NOTE(ck): first index loaded
-//AddTexture(gl);
-//unsigned int assetCount = g_Assets->textureAssetCount;
-//for (unsigned int i = 1; i < assetCount; ++i)
-//{
-//	TextureAsset* asset = Mon::GetTextureAsset(g_Assets, i);
-//	AddTexture(gl);
-//	MonGL::Texture* t = GetTexture(gl, i);
-//	LoadTexture(t, asset->type, asset->isPixelArt, GetImage(g_Assets, asset->imageIndex));
-//}
+		// NOTE(ck): first index loaded
+		//AddTexture(gl);
+		//unsigned int assetCount = g_Assets->textureAssetCount;
+		//for (unsigned int i = 1; i < assetCount; ++i)
+		//{
+		//	TextureAsset* asset = Mon::GetTextureAsset(g_Assets, i);
+		//	AddTexture(gl);
+		//	MonGL::Texture* t = GetTexture(gl, i);
+		//	LoadTexture(t, asset->type, asset->isPixelArt, GetImage(g_Assets, asset->imageIndex));
+		//}
 
 		// Init Animations
 		{
@@ -1720,7 +1721,7 @@ namespace MonGL
 			float sheetSize = 256.0f;
 			int tileSize = 32;
 			int tileOffsetX = 5;
-			int tileOffsetY = 7;
+			int tileOffsetY = 6;
 
 			for (int i = 0; i < animationCount; ++i)
 			{

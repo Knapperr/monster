@@ -1715,6 +1715,8 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::game_memory* memory)
 	ImGui::Checkbox("Demo", &showDemoWindow);
 	ImGui::SameLine();
 	ImGui::Checkbox("stats", &showStatsWindow);
+	
+	ImGui::Checkbox("Draw Debug", &game2D->drawDebug);
 
 	// 2D
 	// -------------

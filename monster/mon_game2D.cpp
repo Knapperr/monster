@@ -228,8 +228,7 @@ namespace Mon {
 		MonGL::Texture* spriteAtlas = MonGL::GetTexture(game->renderer, 17);
 		DrawBatch(spriteBatch, &game->renderer->program, spriteAtlas->id, false);
 	
-		bool drawDebug = true;
-		if (drawDebug)
+		if (game->drawDebug)
 		{
 			// maybe i need to disable depth
 			//glEnable(GL_BLEND);

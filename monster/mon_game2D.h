@@ -61,6 +61,7 @@ namespace Mon {
 
 		// NOTE(ck): Current game state - State::Debug is default
 		int state;
+		bool drawDebug = true;
 	};
 
 	bool Init(game_memory* memory, int windowWidth, int windowHeight, float portWidth, float portHeight);
