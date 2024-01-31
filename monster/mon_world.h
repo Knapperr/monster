@@ -249,7 +249,7 @@ namespace Mon {
 
 
 // handmade hero method
-#if 1
+#if 0
 		// ddPLength
 		float velocityLength = lengthSq(*velocity);
 		if (velocityLength > 1.0f)
@@ -306,7 +306,10 @@ namespace Mon {
 		// I don't want to use casey's method. I want something that feels more tile
 		// game based
 		//player->rb.worldPos += (*velocity * player->rb.speed * dt);
-		player->rb.worldPos = newPos;
+		
+		//player->rb.worldPos = newPos;
+		player->rb.worldPos.x += (velocity->x * player->rb.speed * dt);
+		player->rb.worldPos.z += (velocity->z * player->rb.speed * dt);
 
 		SetFacingDirection(player);
 	}

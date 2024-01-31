@@ -484,7 +484,7 @@ namespace MonGL
 					if (frameIndex == 1)
 					{
 						tileOffsetX = 5;
-						tileOffsetY = 6;
+						tileOffsetY = 7;
 					}
 					else if (frameIndex == 2)
 					{
@@ -1721,7 +1721,7 @@ namespace MonGL
 			float sheetSize = 256.0f;
 			int tileSize = 32;
 			int tileOffsetX = 5;
-			int tileOffsetY = 6;
+			int tileOffsetY = 7;
 
 			for (int i = 0; i < animationCount; ++i)
 			{
@@ -1741,7 +1741,7 @@ namespace MonGL
 
 					if (frameIndex == 1)
 					{
-						tileOffsetX = 2;
+						tileOffsetX = 6;
 					}
 					else if (frameIndex == 2)
 					{

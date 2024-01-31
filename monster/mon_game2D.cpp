@@ -150,6 +150,13 @@ namespace Mon {
 			MonGL::DrawBox2D(&game->renderer->lineBuffer, min, max,col);
 		}
 
+		v4 minTest = v4(0.0f, 0.0f, 0.0f, 1.0f);
+		v4 maxTest = v4(1.0f, 1.0f, 0.0f, 1.0f);
+		v4 colTest = v4(1.0f);
+		
+		MonGL::DrawBox2D(&game->renderer->lineBuffer, minTest, maxTest, colTest);
+
+
 
 		int shaderID = game->renderer->program.handle;
 		glUseProgram(shaderID);
@@ -185,6 +192,8 @@ namespace Mon {
 		MonGL::DrawLine2D(&game->renderer->lineBuffer, v4(2.0f, 0.0f, 0.0f, 1.0f), v4(4.0f, 0.0f, 0.0f, 1.0f), colour);
 		MonGL::DrawLine2D(&game->renderer->lineBuffer, v4(0.0f, 5.0f, 0.0f, 1.0f), v4(0.0f, 8.0f, 0.0f, 1.0f), colour);
 
+
+		// IMPORTANT(ck): TODO(ck): Move all of this into Render2D() method
 
 		MonGL::BatchData* spriteBatch = MonGL::GetBatch2D(game->renderer, 2);
 
@@ -234,8 +243,8 @@ namespace Mon {
 			//glEnable(GL_BLEND);
 			// debugProgram.handle;
 			glUseProgram(game->renderer->debugProgram.handle);
-			glDisable(GL_DEPTH_TEST);
-			glDisable(GL_CULL_FACE);
+			//glDisable(GL_DEPTH_TEST);
+			//glDisable(GL_CULL_FACE);
 
 			//glClearColor(state.clearColour.r, state.clearColour.g, state.clearColour.b, 1.0f);
 			//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

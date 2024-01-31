@@ -170,6 +170,9 @@ void App::run()
 
 #ifdef _3D_
 			Mon::Update(&memory, deltaTime, newInput);
+			// TODO(ck): PASS DELTA TIME TO RENDERER
+			float time = float(SDL_GetTicks() / 1000.0f);
+			Mon::Render(&memory, time, deltaTime);
 #else
 			Mon::Update(&memory, deltaTime, newInput);
 #endif
@@ -179,9 +182,7 @@ void App::run()
 		}
 
 #ifdef _3D_
-		// TODO(ck): PASS DELTA TIME TO RENDERER
-		float time = float(SDL_GetTicks() / 1000.0f);
-		Mon::Render(&memory, time, deltaTime);
+		// Render in my frametime thing
 #else
 		// TODO(ck): PASS DELTA TIME TO RENDERER
 		Mon::Render(&memory, deltaTime);
