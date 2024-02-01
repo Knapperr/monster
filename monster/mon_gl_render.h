@@ -261,6 +261,29 @@ namespace MonGL
 		v2 worldPos;
 	};
 
+	struct BatchMesh
+	{
+		unsigned int VAO;
+		unsigned int VBO;
+		unsigned int IBO;
+
+		Vertex* vertices;
+		uint32_t* indices;
+
+		int offset = 0;
+		int usedIndices = 0;
+		int lastVerticeIndex = 0;
+		int lastIndiceIndex = 0;
+
+		int maxVertices;
+		int indicesLength;
+		int quadCount;
+
+		// sheet index
+		// this will be on the batch item
+		//int textureSheetIndex;
+	};
+
 	struct RenderData2D
 	{
 		unsigned int meshIndex;

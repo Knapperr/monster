@@ -1902,6 +1902,11 @@ namespace MonGL
 		InitOpenGLBatchMesh(batch);
 	}
 
+	void InitGLBatch(BatchMesh* batch)
+	{
+		// Design the same way as the LineBuffer object now that you ACTUALLY understand how this stuff works
+	}
+
 	void InitBatch(OpenGL* gl, int batchIndex, int tileAmount)
 	{
 		BatchData* batch = GetBatch2D(gl, batchIndex);

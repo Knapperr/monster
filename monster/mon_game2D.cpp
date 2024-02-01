@@ -192,6 +192,10 @@ namespace Mon {
 		MonGL::DrawLine2D(&game->renderer->lineBuffer, v4(2.0f, 0.0f, 0.0f, 1.0f), v4(4.0f, 0.0f, 0.0f, 1.0f), colour);
 		MonGL::DrawLine2D(&game->renderer->lineBuffer, v4(0.0f, 5.0f, 0.0f, 1.0f), v4(0.0f, 8.0f, 0.0f, 1.0f), colour);
 
+		colour = v4(0.5f, 0.2f, 0.1f, 1.0f);
+		MonGL::DrawLine2D(&game->renderer->lineBuffer, 
+						  v4(game->world->entities[1].pos.x, game->world->entities[1].pos.y, 0.0f, 1.0f),
+						  v4(game->world->entities[2].pos.x, game->world->entities[2].pos.y, 0.0f, 1.0f), colour);
 
 		// IMPORTANT(ck): TODO(ck): Move all of this into Render2D() method
 
