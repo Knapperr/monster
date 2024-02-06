@@ -1904,7 +1904,7 @@ namespace MonGL
 
 	void InitGLBatch(BatchMesh* batch)
 	{
-		// Design the same way as the LineBuffer object now that you ACTUALLY understand how this stuff works
+		// Design the same way as the LineBuffer object now that you ACTUALLY understand how this rendering "stuff" works
 	}
 
 	void InitBatch(OpenGL* gl, int batchIndex, int tileAmount)
@@ -1919,7 +1919,8 @@ namespace MonGL
 		int tileOffsetX = (int)textureOffset.x;
 		int tileOffsetY = (int)textureOffset.y;
 
-		// Update GLSubTexture textCoords here
+		// Do not update the animation inside of the batch 
+		// update the animation in the update and then get the data here.
 
 		v2 topRight = v2(((tileOffsetX + 1) * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize);
 		v2 topLeft = v2((tileOffsetX * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize);
@@ -2029,7 +2030,7 @@ namespace MonGL
 
 		// x and y is pixel space?
 		float x = (worldX - 1.0f) * pixelsPerMeter;
-		float y = (worldY - 1.0f)* pixelsPerMeter;
+		float y = (worldY - 1.0f) * pixelsPerMeter;
 
 		//x -= 0.5f;
 		//y -= 0.5f;
