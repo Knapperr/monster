@@ -1679,7 +1679,7 @@ namespace MonGL
 		MonGL::Texture* t18 = GetTexture(gl, 18);
 		AddTexture(gl);
 		MonGL::Texture* t19 = GetTexture(gl, 19);
-		LoadTextureFile((char*)"sprite_atlas", t17, GetImage(g_Assets, 31), TextureType::Diffuse, false, true);
+		LoadTextureFile((char*)"sprite_atlas", t17, GetImage(g_Assets, 31), TextureType::Diffuse, true, true);
 		LoadTextureFile((char*)"debug_icons", t18, GetImage(g_Assets, 32), TextureType::Diffuse, true, true);
 		LoadTextureFile((char*)"tilemap", t19, GetImage(g_Assets, 16), TextureType::Diffuse, true, true);
 
@@ -2019,7 +2019,9 @@ namespace MonGL
 	void FillBatch(BatchData* batch, float sheetSize, int tileSize, float spriteSize, float worldX, float worldY, GLSubTexture subTexture, v2 cameraPos)
 	{
 		// 
-		float size = spriteSize * (float)tileSize;
+//		float size = spriteSize * (float)tileSize;
+		float size = tileSize;
+
 		// tile coords to world coords
 		//worldX *= (float)tileSize;
 		//worldY *= (float)tileSize;
@@ -2029,8 +2031,11 @@ namespace MonGL
 		// Move the sprite into the middle of the bounding box... worldX - (worldSize/2.0f) * pixelsPerMeter
 
 		// x and y is pixel space?
-		float x = (worldX - 1.0f) * pixelsPerMeter;
-		float y = (worldY - 1.0f) * pixelsPerMeter;
+		float x = (worldX-0.5f) * pixelsPerMeter;
+		float y = (worldY-0.5f) * pixelsPerMeter;
+		
+		//float x = (worldX - 1.0f);
+		//float y = (worldY - 1.0f);
 
 		//x -= 0.5f;
 		//y -= 0.5f;

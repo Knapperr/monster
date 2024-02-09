@@ -105,12 +105,16 @@ namespace Mon {
 						// 
 						//canMove = false;
 						testEntity->colour = v4(1.0f, 0.2f, 0.1f, 1.0f);
-						break;
+						
+						
+						//break; // break on first seen collision but leave off for testing to see colour
 					}
 				}
 			}
 			if (canMove)
-				Mon::MovePlayer(p, &velocity, (float)dt);
+				Mon::MovePlayer(game->world->map, p, &velocity, (float)dt);
+				
+				//Mon::MovePlayer(p, &velocity, (float)dt);
 
 			Update(&game->cameras[game->currentCameraIndex], p->pos, (float)dt);
 

@@ -1716,7 +1716,6 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::game_memory* memory)
 	ImGui::SameLine();
 	ImGui::Checkbox("stats", &showStatsWindow);
 	
-	ImGui::Checkbox("Draw Debug", &game2D->drawDebug);
 
 	// 2D
 	// -------------
@@ -1742,6 +1741,7 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::game_memory* memory)
 	ImGui::DragFloat("speed", &game2D->world->entities[1].speed, 0.1f, 0.1f, 500.0f, "%.01f");
 
 	ImGui::Checkbox("Wireframe", &game2D->world->map->wireFrame);
+	ImGui::Checkbox("Draw Debug", &game2D->drawDebug);
 
 	ImGui::Separator();
 	if (ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None))

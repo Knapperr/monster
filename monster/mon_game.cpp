@@ -565,7 +565,9 @@ namespace Mon
 		// TODO(ck): clean up render data 
 		//glDeleteVertexArrays(1, &world->player->data.VAO);
 		//glDeleteBuffers(1, &world->player->data.VBO);
+		
 		delete state->grid;
+
 		MonGL::DeleteShader(&state->renderer->program);
 	}
 
