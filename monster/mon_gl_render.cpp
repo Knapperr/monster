@@ -1932,6 +1932,13 @@ namespace MonGL
 
 		//worldX *= pixelsPerMeter;
 		//worldY *= pixelsPerMeter;
+
+		// Should be able to just pass 0 + 1 where 1 = 16pixels...
+		// There has to be a way to make the projection and view reflect this..?
+		// Maybe I don't understand...
+		// multiplying the view matrix by 16 doesnt make sense to me...
+
+		// go from 0-1 to 0-16 this is because 1unit is equal to 16pixels
 		float x = worldX * pixelsPerMeter;
 		float y = worldY * pixelsPerMeter;
 
