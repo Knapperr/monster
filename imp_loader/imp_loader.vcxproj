@@ -84,9 +84,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\local\boost_1_68_0;$(IncludePath);$(ProjectDir)\include\;</IncludePath>
+    <IncludePath>C:\local\boost_1_68_0;$(IncludePath);$(ProjectDir)include\;</IncludePath>
     <ReferencePath>$(VC_ReferencesPath_x64)</ReferencePath>
-    <LibraryPath>C:\local\boost_1_68_0\lib64-msvc-14.1;$(LibraryPath);$(ProjectDir)lib\x64\Debug</LibraryPath>
+    <LibraryPath>C:\local\boost_1_68_0\lib64-msvc-14.1;$(LibraryPath);$(ProjectDir)lib\x64\Debug\</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>

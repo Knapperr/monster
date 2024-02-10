@@ -1927,7 +1927,7 @@ namespace MonGL
 		v2 bottomRight = v2(((tileOffsetX + 1) * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize);
 		v2 bottomLeft = v2((tileOffsetX * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize);
 
-		float size = spriteSize * 16.0f; // spriteSize * pixelsPerMeter
+		float size = tileSize; // spriteSize * pixelsPerMeter
 		float pixelsPerMeter = size;
 
 		//worldX *= pixelsPerMeter;
@@ -2026,8 +2026,7 @@ namespace MonGL
 	void FillBatch(BatchData* batch, float sheetSize, int tileSize, float spriteSize, float worldX, float worldY, GLSubTexture subTexture, v2 cameraPos)
 	{
 		// 
-//		float size = spriteSize * (float)tileSize;
-		float size = tileSize;
+		float size = spriteSize * (float)tileSize;
 
 		// tile coords to world coords
 		//worldX *= (float)tileSize;
@@ -2038,8 +2037,13 @@ namespace MonGL
 		// Move the sprite into the middle of the bounding box... worldX - (worldSize/2.0f) * pixelsPerMeter
 
 		// x and y is pixel space?
-		float x = (worldX-0.5f) * pixelsPerMeter;
-		float y = (worldY-0.5f) * pixelsPerMeter;
+
+		// I don't really have a local space in the pixel art?
+		// Its almost like everything starts in world then goes to pixels
+		// I guess local space would be "tile space" and then we go to world space then pixel space?
+
+		float x = (worldX-1.0f) * pixelsPerMeter;
+		float y = (worldY-1.0f) * pixelsPerMeter;
 		
 		//float x = (worldX - 1.0f);
 		//float y = (worldY - 1.0f);

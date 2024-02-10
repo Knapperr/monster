@@ -542,12 +542,16 @@ int main(int argc, char** argv)
 	LoadModel(&model, "models/wolly/wolly.obj", false);
 	WriteBinaryModel(&model, "wolly.imp");
 	
-	
+	model = {};
+	LoadModel(&model, "models/pixel_terrain/pixel_terrain.obj", false);
+	WriteBinaryModel(&model, "pixel_terrain.imp");
+
 	LoadBinaryModel("sphere.imp");
 	LoadBinaryModel("cone.imp");
 	LoadBinaryModel("cube.imp");
 	LoadBinaryModel("waddle.imp");
 	LoadBinaryModel("wolly.imp");
+	LoadBinaryModel("pixel_terrain.imp");
 
 
 	//model = {};
