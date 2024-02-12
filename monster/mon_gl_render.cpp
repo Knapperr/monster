@@ -24,8 +24,10 @@ namespace MonGL
 		// set wrap and filter here for now same with internal formats
 		if (pixelArtTexture)
 		{
-			texture->wrapS = GL_REPEAT;// GL_CLAMP_TO_EDGE (clamp to edge not working in 2d. causes uvs to be completely wrong?)
-			texture->wrapT = GL_REPEAT;//GL_CLAMP_TO_EDGE
+			texture->wrapS = GL_REPEAT;
+			texture->wrapT = GL_REPEAT;
+			//texture->wrapS = GL_CLAMP_TO_EDGE;(clamp to edge not working in 2d. causes uvs to be completely wrong?)
+			//texture->wrapT = GL_CLAMP_TO_EDGE;
 			texture->filterMin = GL_NEAREST;
 			texture->filterMax = GL_NEAREST;
 
@@ -1927,94 +1929,32 @@ namespace MonGL
 		v2 bottomRight = v2(((tileOffsetX + 1) * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize);
 		v2 bottomLeft = v2((tileOffsetX * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize);
 
-		float size = tileSize; // spriteSize * pixelsPerMeter
+		float size = spriteSize * 16.0f; // spriteSize * pixelsPerMeter
 		float pixelsPerMeter = size;
-
-		//worldX *= pixelsPerMeter;
-		//worldY *= pixelsPerMeter;
-
-		// Should be able to just pass 0 + 1 where 1 = 16pixels...
-		// There has to be a way to make the projection and view reflect this..?
-		// Maybe I don't understand...
-		// multiplying the view matrix by 16 doesnt make sense to me...
-
-		// go from 0-1 to 0-16 this is because 1unit is equal to 16pixels
 		float x = worldX * pixelsPerMeter;
 		float y = worldY * pixelsPerMeter;
 
-		// tile coords to world coords
-		/*
-		worldX *= 16.0f;
-		worldY *= 16.0f;
-		float x = worldX;
-		float y = worldY;
-		*/
-		// world to screen position
-		//v2 cameraCoords = v2(worldX, worldY) - cameraPos;
-		//float screenW = 480.0f;
-		//float screenH = 270.0f;
-		//float x = cameraCoords.x + screenW / 2.0f;
-		//float y = cameraCoords.y + screenH / 2.0f;
-
 
 		Vertex vec0 = {
-				v3(x,
-				   y,
-				   0.0f),
+				v3(x, y, -1.0f),
 				v3(1.0f, 0.0f, 0.0f),
 				bottomLeft
 		};
 		Vertex vec1 = {
-			v3((x + size),
-				y,
-				0.0f),
+			v3((x + size), y, -1.0f),
 			v3(0.0f, 1.0f, 0.0f),
 			bottomRight
 		};
 		Vertex vec2 = {
-			v3((x + size),
-				(y + size),
-				0.0f),
+			v3((x + size), (y + size), -1.0f),
 			v3(0.0f, 0.0f, 1.0f),
 			topRight
 		};
 		Vertex vec3 = {
-			v3((x),
-				(y + size),
-				0.0f),
+			v3((x), (y + size), -1.0f),
 			v3(1.0f, 1.0f, 0.0f),
 			topLeft
 		};
-
-		//Vertex vec0 = {
-		//v3(x,
-		//   y,
-		//   0.0f),
-		//v3(1.0f, 0.0f, 0.0f),
-		//bottomLeft
-		//};
-		//Vertex vec1 = {
-		//	v3((x*pixelsPerMeter),
-		//		y,
-		//		0.0f),
-		//	v3(0.0f, 1.0f, 0.0f),
-		//	bottomRight
-		//};
-		//Vertex vec2 = {
-		//	v3((x*pixelsPerMeter),
-		//		(y*pixelsPerMeter),
-		//		0.0f),
-		//	v3(0.0f, 0.0f, 1.0f),
-		//	topRight
-		//};
-		//Vertex vec3 = {
-		//	v3((x),
-		//		(y* pixelsPerMeter),
-		//		0.0f),
-		//	v3(1.0f, 1.0f, 0.0f),
-		//	topLeft
-		//};
-
 
 		batch->usedIndices += 6;
 		batch->vertices.push_back(vec0);
@@ -2044,37 +1984,24 @@ namespace MonGL
 
 		float x = (worldX-1.0f) * pixelsPerMeter;
 		float y = (worldY-1.0f) * pixelsPerMeter;
-		
-		//float x = (worldX - 1.0f);
-		//float y = (worldY - 1.0f);
-
-		//x -= 0.5f;
-		//y -= 0.5f;
-		// We do this in our shader by multiplying against the camera's view matrix
-		// world to screen position
-		//v2 cameraCoords = v2(worldX, worldY) - cameraPos;
-		//float screenW = 480.0f;
-		//float screenH = 270.0f;
-		//float x = cameraCoords.x + screenW / 2.0f;
-		//float y = cameraCoords.y + screenH / 2.0f;
 
 		Vertex vec0 = {
-			v3(x, y, 0.0f),
+			v3(x, y, -1.0f),
 			v3(1.0f, 0.0f, 0.0f),
 			subTexture.texCoords[0]
 		};
 		Vertex vec1 = {
-			v3((x + size), y, 0.0f),
+			v3((x + size), y, -1.0f),
 			v3(0.0f, 1.0f, 0.0f),
 			subTexture.texCoords[1]
 		};
 		Vertex vec2 = {
-			v3((x + size), (y + size), 0.0f),
+			v3((x + size), (y + size), -1.0f),
 			v3(0.0f, 0.0f, 1.0f),
 			subTexture.texCoords[2]
 		};
 		Vertex vec3 = {
-			v3(x, (y + size), 0.0f),
+			v3(x, (y + size), -1.0f),
 			v3(1.0f, 1.0f, 0.0f),
 			subTexture.texCoords[3]
 		};

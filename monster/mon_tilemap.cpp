@@ -127,8 +127,8 @@ namespace Mon
 		sheet->tiles[2].textureOffsetY = 5;
 
 		sheet->tiles[3].id = 3; // field
-		sheet->tiles[3].textureOffsetX = 1;
-		sheet->tiles[3].textureOffsetY = 11;
+		sheet->tiles[3].textureOffsetX = 1;   // 1
+		sheet->tiles[3].textureOffsetY = 11;  // 11
 
 		sheet->tiles[4].id = 4; // bottom left
 		sheet->tiles[4].textureOffsetX = 0;
@@ -233,7 +233,7 @@ namespace Mon
 
 					Tile sheetTile = Tile();
 					sheetTile.id = 3;
-					sheetTile.textureOffsetX = 1;
+					sheetTile.textureOffsetX = 3; // 1
 					sheetTile.textureOffsetY = 11;
 					//Tile sheetTile = *sheet->createTile(testmap[y][x]);
 					// TODO(ck): Copy constructor - MEMORY MANAGEMENT

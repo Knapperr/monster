@@ -31,7 +31,9 @@ namespace MonGL
 		}
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &texture->id);
-		glGenerateMipmap(GL_TEXTURE_2D);
+
+		// ONLY TURN OFF FOR 2D
+		//glGenerateMipmap(GL_TEXTURE_2D);
 
 		glTextureParameteri(texture->id, GL_TEXTURE_WRAP_S, texture->wrapS);
 		glTextureParameteri(texture->id, GL_TEXTURE_WRAP_T, texture->wrapT);

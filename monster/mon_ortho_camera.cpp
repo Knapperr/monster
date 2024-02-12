@@ -29,25 +29,23 @@ namespace Mon
 
 	void Update(Camera2D* camera, v2 target, float dt)
 	{
-		// Locks onto the target and keeps them in the center of the screen
-		//camera->pos = target;
+
+
+		// clamp to world -- tilemap size
+		// viewport / 2 --- is how wide and tall our screen is
+		// s
+		// 16pixels/1 = 16pixels... so maybe our calculations are fine???
+		// so i am doing the same thing as handmade by using 16pixels i just dont have to do the conversion because 1=16... 
+		//  im skipping it and using the value directly
+		//  the only difference is he takes the screen center into account when drawing characters... believe we already do this by
+		// using the view matrix against our world position
 		
-		// Smooth camera will not work with coordinate system 1:1 pixels and screen space
-		//v2 targetPos = target;
-
-		// IMPORTANT(ck): Do I need this pixels to meters for the camera?
-		//float pixelsToMeters = 1.0f / 32.0f;
-
+		// so 16 tiles per unit?  39seems to be the end in world space 39*16=624  
 
 		/*
-		vectorInPixels.x = roundToInt(movevec.x * pixelsPerUnit (16??)
-		vectorInPixels.y = roundToInt(movevec.y * pixelsPerUnit (16??)
-
-		return vectorInPixels / pixelsPerUnit ... seems odd we are multiplying it in the round then
-		we are dividing the result by pixels per unit...?
-		
+		I think I see what people do now. They write to the buffer in like pixels or whatever so that they dont have to
+		multiply the vertices then when they do the read in their second pass they scale it up and make it bigger
 		*/
-
 
 		// IMPORTANT(ck): won't work with pixels and screen as 1:1 need to figure out meters to pixels
 		camera->pos.x = smoothDamp(camera->pos.x, (target.x), camera->vel.x, camera->smoothness, dt);
@@ -65,6 +63,7 @@ namespace Mon
 	mat4 Projection(Camera2D* camera)
 	{
 		//mat4 projection = glm::ortho(0.0f, camera->resolution.w, 0.0f, camera->resolution.h, -1.0f, 1.0f);
+
 		mat4 projection = glm::ortho(0.0f, camera->resolution.w, 0.0f, camera->resolution.h, -1.0f, 1.0f);
 		return projection;
 	}
@@ -72,14 +71,9 @@ namespace Mon
 	mat4 ViewMatrix(Camera2D* camera)
 	{
 		mat4 view = mat4(1.0f);
-
-		v3 cameraPosToPixelPos = v3(camera->pos*16.0f, 0.0f);
-		//v3 cameraPos = v3(camera->pos, 0.0f);
-		// Center of the screen
-		view = glm::translate(view, v3(-(cameraPosToPixelPos.x - camera->resolution.w / 2.0f), -(cameraPosToPixelPos.y - camera->resolution.h / 2.0f), 1.0f));
-		//view = glm::translate(view, v3(-(cameraPos.x - camera->resolution.w / 2.0f), -(cameraPos.y - camera->resolution.h / 2.0f), 1.0f));
-		
-		//view = glm::lookAt(cameraPos, cameraPos, cameraUp);
+		float screenCenterX = camera->resolution.w / 2.0f;
+		float screenCenterY = camera->resolution.h / 2.0f;
+		view = glm::translate(view, v3(screenCenterX - 16.0f*camera->pos.x, screenCenterY - 16.0f*camera->pos.y, 1.0f));
 		return view;
 	}
 }
