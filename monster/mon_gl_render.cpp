@@ -1835,31 +1835,41 @@ namespace MonGL
 
 	void InitOpenGLBatchMesh(BatchData* data)
 	{
-		int usedVertices = 0;
 		const int quadCount = 2000;
 		const int maxVertices = quadCount * 4;
 		const int indicesLength = quadCount * 6;
 
-		glGenVertexArrays(1, &data->VAO);
+		glCreateBuffers(1, &data->VBO);
+		glNamedBufferStorage(data->VBO, sizeof(Vertex) * maxVertices, nullptr, GL_DYNAMIC_STORAGE_BIT);
+
+		glCreateBuffers(1, &data->IBO);
+		glNamedBufferStorage(data->IBO, sizeof(data->indices) * indicesLength, data->indices, GL_DYNAMIC_STORAGE_BIT);
+
+		glCreateVertexArrays(1, &data->VAO);
+
+		glVertexArrayVertexBuffer(data->VAO, 0, data->VBO, 0, sizeof(Vertex));
+		glVertexArrayElementBuffer(data->VAO, data->IBO);
+
+		glEnableVertexArrayAttrib(data->VAO, 0);
+		glVertexArrayAttribFormat(data->VAO, 0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, position));
+		glVertexArrayAttribBinding(data->VAO, 0, 0);
+
+		glEnableVertexArrayAttrib(data->VAO, 1);
+		glVertexArrayAttribFormat(data->VAO, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, color));
+		glVertexArrayAttribBinding(data->VAO, 1, 0);
+
+		glEnableVertexArrayAttrib(data->VAO, 2);
+		glVertexArrayAttribFormat(data->VAO, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, texCoords));
+		glVertexArrayAttribBinding(data->VAO, 2, 0);
+
 		glBindVertexArray(data->VAO);
 
-		glGenBuffers(1, &data->VBO);
-		glBindBuffer(GL_ARRAY_BUFFER, data->VBO);
-		glBufferData(GL_ARRAY_BUFFER, maxVertices * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
-
-		glGenBuffers(1, &data->IBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, data->IBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesLength * sizeof(data->indices), data->indices, GL_DYNAMIC_DRAW);
-
-		// position attribute
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
-		// color attribute
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
-		// texture coord attribute
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
+		std::string vaoName = "Batch VAO";
+		std::string vboName = "Batch VBO";
+		std::string iboName = "Batch IBO";
+		glObjectLabel(GL_VERTEX_ARRAY, data->VAO, -1, vaoName.c_str());
+		glObjectLabel(GL_BUFFER, data->VBO, -1, vboName.c_str());
+		glObjectLabel(GL_BUFFER, data->IBO, -1, iboName.c_str());
 
 		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);

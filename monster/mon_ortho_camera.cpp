@@ -29,8 +29,6 @@ namespace Mon
 
 	void Update(Camera2D* camera, v2 target, float dt)
 	{
-
-
 		// clamp to world -- tilemap size
 		// viewport / 2 --- is how wide and tall our screen is
 		// s
