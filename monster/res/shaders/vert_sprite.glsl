@@ -30,10 +30,10 @@ void main()
 	//gl_Position = projection * vec4(aPos, 1.0);
 	
 	// using model matrix -- dont need?
-	//vec3 pos = vec3(model * vec4(aPos, 1.0));
+	vec3 pos = vec3(model * vec4(aPos, 1.0));
 	//vec2 tilePos = pixel2GL(vec2(pos.x, pos.y)); // Pixel to NDCPos
 	//vec3 finalPos = vec3(tilePos, aPos.z);
 	
 	//gl_Position = view * vec4(pos, 1.0);
-	gl_Position = projection * view * vec4(aPos, 1.0);
+	gl_Position = projection * view * vec4(pos, 1.0);
 }

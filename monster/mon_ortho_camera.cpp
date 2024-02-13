@@ -29,25 +29,10 @@ namespace Mon
 
 	void Update(Camera2D* camera, v2 target, float dt)
 	{
-		// clamp to world -- tilemap size
-		// viewport / 2 --- is how wide and tall our screen is
-		// s
-		// 16pixels/1 = 16pixels... so maybe our calculations are fine???
-		// so i am doing the same thing as handmade by using 16pixels i just dont have to do the conversion because 1=16... 
-		//  im skipping it and using the value directly
-		//  the only difference is he takes the screen center into account when drawing characters... believe we already do this by
-		// using the view matrix against our world position
-		
-		// so 16 tiles per unit?  39seems to be the end in world space 39*16=624  
-
-		/*
-		I think I see what people do now. They write to the buffer in like pixels or whatever so that they dont have to
-		multiply the vertices then when they do the read in their second pass they scale it up and make it bigger
-		*/
-
+		camera->pos = (target);
 		// IMPORTANT(ck): won't work with pixels and screen as 1:1 need to figure out meters to pixels
-		camera->pos.x = smoothDamp(camera->pos.x, (target.x), camera->vel.x, camera->smoothness, dt);
-		camera->pos.y = smoothDamp(camera->pos.y, (target.y), camera->vel.y, camera->smoothness, dt);
+		//camera->pos.x = smoothDamp(camera->pos.x, (target.x), camera->vel.x, camera->smoothness, dt);
+		//camera->pos.y = smoothDamp(camera->pos.y, (target.y), camera->vel.y, camera->smoothness, dt);
 	}
 
 	bool IsInBounds(Camera2D* camera, v2 pos)

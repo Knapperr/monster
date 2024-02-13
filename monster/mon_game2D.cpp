@@ -103,20 +103,32 @@ namespace Mon {
 						//newPos = player->rb.worldPos + 0.05f;
 						//newPos.y = 0.0f;
 						// 
-						//canMove = false;
+						canMove = false;
+						p->pos -= 0.25f;
 						testEntity->colour = v4(1.0f, 0.2f, 0.1f, 1.0f);
-						
-						
 						//break; // break on first seen collision but leave off for testing to see colour
 					}
 				}
 			}
 			if (canMove)
-				Mon::MovePlayer(game->world->map, p, &velocity, (float)dt);
+			{
+				// Mon::MovePlayer(game->world->map, p, &velocity, (float)dt);
 				
 				//Mon::MovePlayer(p, &velocity, (float)dt);
+				v2 oldPos = p->pos;
+
+				velocity = velocity * p->speed;
+				p->pos += velocity * v2(dt,dt);
+				//p->pos.x += (velocity.x * p->speed * dt);
+				//p->pos.y += (velocity.y * p->speed * dt);
+
+			}
+				
 
 			Update(&game->cameras[game->currentCameraIndex], p->pos, (float)dt);
+
+
+
 
 		}
 		else
@@ -134,6 +146,9 @@ namespace Mon {
 		MonGL::ViewPort(&game->config->viewPort);
 
 
+		// Can I do collision down here?
+		//game->renderer->batchItems2D.clear();
+		//ResetBuffer(&game->renderer->lineBuffer);
 		for (unsigned int i = 1; i < game->world->entityCount; ++i)
 		{
 			Entity2D* e = &game->world->entities[i];
@@ -151,13 +166,13 @@ namespace Mon {
 			glm::vec4 min = v4(e->pos.x - 0.5f, e->pos.y - 0.5f, 0.0f, 1.0f);
 			glm::vec4 max = v4(e->pos.x + 0.5f, e->pos.y + 0.5f, 0.0f, 1.0f);
 
-			MonGL::DrawBox2D(&game->renderer->lineBuffer, min, max,col);
+			MonGL::DrawBox2D(&game->renderer->lineBuffer, min, max, col);
 		}
 
 		v4 minTest = v4(0.0f, 0.0f, 0.0f, 1.0f);
 		v4 maxTest = v4(1.0f, 1.0f, 0.0f, 1.0f);
 		v4 colTest = v4(1.0f);
-		
+
 		MonGL::DrawBox2D(&game->renderer->lineBuffer, minTest, maxTest, colTest);
 
 
@@ -301,6 +316,23 @@ namespace Mon {
 	void CleanUp(Game2D *game)
 	{
 		// TODO(ck): Empty
+
+		/*
+		------------
+		 game world
+		------------
+		clean entities
+
+
+		------------
+		  renderer
+		------------
+		clean batches
+		opengl objects
+		
+
+		*/
+		
 		return;
 	}
 

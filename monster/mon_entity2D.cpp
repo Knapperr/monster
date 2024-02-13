@@ -57,8 +57,6 @@ namespace Mon
 		
 		v2 newPos = oldPos;
 		v2 delta = (0.5f * (*velocity) * square(deltaTime) + p->velocity * deltaTime);
-		// TODO(ck): need to set an offest like casey does
-		//newPlayerP.offset += delta;
 		newPos += delta;
 		
 		p->velocity.x = velocity->x * deltaTime + p->velocity.x;

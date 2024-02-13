@@ -1755,7 +1755,7 @@ namespace MonGL
 					}
 
 					frame->subTexture = {};
-					frame->subTexture.height = 32;
+					frame->subTexture.width = 32;
 					frame->subTexture.height = 32;
 					frame->subTexture.tileSize = 32;
 					frame->subTexture.texCoords[0] = v2((tileOffsetX * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize); // bottom left
@@ -1806,7 +1806,6 @@ namespace MonGL
 					frame->subTexture.texCoords[3] = v2((tileOffsetX * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize); // top left 
 
 					frame->duration = 0.2f;
-
 					tileOffsetX++;
 				}
 			}
