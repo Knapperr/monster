@@ -138,34 +138,36 @@ namespace MonGL
 			offset += 4;
 		}
 
-		glGenVertexArrays(1, &batch->VAO);
-		glBindVertexArray(batch->VAO);
+		glCreateBuffers(1, &batch->VBO);
+		glNamedBufferStorage(batch->VBO, sizeof(BatchVertex3D) * maxVertices, nullptr, GL_DYNAMIC_STORAGE_BIT);
 
-		glGenBuffers(1, &batch->VBO);
-		glBindBuffer(GL_ARRAY_BUFFER, batch->VBO);
-		//glBufferData(GL_ARRAY_BUFFER, maxVertices * sizeof(Vertex3D), nullptr, GL_DYNAMIC_DRAW);
-		glBufferData(GL_ARRAY_BUFFER, maxVertices * sizeof(BatchVertex3D), nullptr, GL_DYNAMIC_DRAW);
+		glCreateBuffers(1, &batch->IBO);
+		glNamedBufferStorage(batch->IBO, sizeof(uint32_t) * indicesLength, batch->indices, GL_DYNAMIC_STORAGE_BIT);
 
+		glCreateVertexArrays(1, &batch->VAO);
 
-		glGenBuffers(1, &batch->IBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, batch->IBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesLength * sizeof(batch->IBO), batch->indices, GL_DYNAMIC_DRAW);
+		glVertexArrayVertexBuffer(batch->VAO, 0, batch->VBO, 0, sizeof(BatchVertex3D));
+		glVertexArrayElementBuffer(batch->VAO, batch->IBO);
 
-		//glEnableVertexAttribArray(0);
-		//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, position));
-		//glEnableVertexAttribArray(1);
-		//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, normal));
-		//glEnableVertexAttribArray(2);
-		//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, texCoords));
+		glEnableVertexArrayAttrib(batch->VAO, 0);
+		glVertexArrayAttribFormat(batch->VAO, 0, 3, GL_FLOAT, GL_FALSE, offsetof(BatchVertex3D, position));
+		glVertexArrayAttribBinding(batch->VAO, 0, 0);
 
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(BatchVertex3D), (void*)offsetof(BatchVertex3D, position));
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(BatchVertex3D), (void*)offsetof(BatchVertex3D, normal));
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(BatchVertex3D), (void*)offsetof(BatchVertex3D, texCoords));
-		glEnableVertexAttribArray(3);
-		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(BatchVertex3D), (void*)offsetof(BatchVertex3D, worldPosition));
+		glEnableVertexArrayAttrib(batch->VAO, 1);
+		glVertexArrayAttribFormat(batch->VAO, 1, 3, GL_FLOAT, GL_FALSE, offsetof(BatchVertex3D, normal));
+		glVertexArrayAttribBinding(batch->VAO, 1, 0);
+
+		glEnableVertexArrayAttrib(batch->VAO, 2);
+		glVertexArrayAttribFormat(batch->VAO, 2, 2, GL_FLOAT, GL_FALSE, offsetof(BatchVertex3D, texCoords));
+		glVertexArrayAttribBinding(batch->VAO, 2, 0);
+
+		glEnableVertexArrayAttrib(batch->VAO, 3);
+		glVertexArrayAttribFormat(batch->VAO, 3, 3, GL_FLOAT, GL_FALSE, offsetof(BatchVertex3D, worldPosition));
+		glVertexArrayAttribBinding(batch->VAO, 3, 0);
+
+		
+		//glBindVertexArray(data->VAO);
+
 
 		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -974,7 +976,7 @@ namespace MonGL
 	void InitBatch(OpenGL* gl, int batchIndex)
 	{
 		// batch 
-		int quadCount = 4096;
+		int quadCount = 2000;
 		int maxVertices = quadCount * 4;
 		int indicesLength = quadCount * 6;
 
@@ -1836,13 +1838,13 @@ namespace MonGL
 	{
 		const int quadCount = 2000;
 		const int maxVertices = quadCount * 4;
-		const int indicesLength = quadCount * 6;
+		int indicesLength = quadCount * 6;
 
 		glCreateBuffers(1, &data->VBO);
 		glNamedBufferStorage(data->VBO, sizeof(Vertex) * maxVertices, nullptr, GL_DYNAMIC_STORAGE_BIT);
 
 		glCreateBuffers(1, &data->IBO);
-		glNamedBufferStorage(data->IBO, sizeof(data->indices) * indicesLength, data->indices, GL_DYNAMIC_STORAGE_BIT);
+		glNamedBufferStorage(data->IBO, sizeof(uint32_t) * indicesLength, data->indices, GL_DYNAMIC_STORAGE_BIT);
 
 		glCreateVertexArrays(1, &data->VAO);
 

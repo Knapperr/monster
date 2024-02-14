@@ -28,7 +28,6 @@ namespace MonGL
 		unsigned int internalFormat;
 		unsigned int imageFormat;
 		// texture configurations
-		// t & s axis
 		unsigned int wrapS;
 		unsigned int wrapT;
 		unsigned int filterMin;

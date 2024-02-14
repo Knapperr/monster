@@ -150,7 +150,7 @@ namespace MonGL
 		Vertex3D* vertices;
 		std::vector<Vertex3D> vertices_;
 		std::vector<BatchVertex3D> vertices__;
-		unsigned int* indices;
+		uint32_t* indices;
 		int usedIndices;
 
 		int verticeCount;
