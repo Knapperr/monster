@@ -744,7 +744,7 @@ namespace MonGL
 		return;
 	}
 
-	void Render(OpenGL* gl, Camera* camera, RenderData* gridData, mat4 projection, mat4 view)
+	void Render(OpenGL* gl, Camera* camera, int gridTexture, int gridMesh, mat4 projection, mat4 view, bool drawDebug)
 	{
 		int camBlockIndex = 0; // these are the indexes into the ubo such as CamBlock{}; ModelBlock{};
 		int modelBlockIndex = 1;
@@ -768,7 +768,7 @@ namespace MonGL
 		// Bind the "default" model matrix
 		int defaultModelBlockOffset = 1;
 		glBindBufferRange(GL_UNIFORM_BUFFER, modelBlockIndex, gl->ubo.gl_handle, gl->ubo.blockSize * defaultModelBlockOffset, sizeof(glm::mat4) + sizeof(glm::vec4));
-		MonGL::DrawTerrain(gl, gridData, camera);
+		MonGL::DrawTerrain(gl, gridTexture, gridMesh, camera);
 
 		// Draw models
 		for (int i = 0; i < gl->opaqueItems.size(); ++i)
@@ -812,15 +812,16 @@ namespace MonGL
 
 		// Reset the buffers and other things like debug drawing
 
-		bool drawDebug = true;
+		// must always disable depth and cull tests before drawing the batch
+		glDisable(GL_DEPTH_TEST);
+		glDisable(GL_CULL_FACE);
+
 		if (drawDebug)
 		{
 			// maybe i need to disable depth
 			//glEnable(GL_BLEND);
 			// debugProgram.handle;
 			glUseProgram(gl->debugProgram.handle);
-			glDisable(GL_DEPTH_TEST);
-			glDisable(GL_CULL_FACE);
 
 			//glClearColor(state.clearColour.r, state.clearColour.g, state.clearColour.b, 1.0f);
 			//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -879,15 +880,15 @@ namespace MonGL
 		globalDrawCalls++;
 	}
 
-	void DrawTerrain(OpenGL* gl, RenderData* data, Camera* camera)
+	void DrawTerrain(OpenGL* gl, int gridTexture, int gridMesh, Camera* camera)
 	{
-		Mesh* mesh = GetMesh(g_Assets, data->meshIndex);
-		Texture* texture = GetTexture(gl, data->textureIndex);
+		Mesh* mesh = GetMesh(g_Assets, gridMesh);
+		Texture* texture = GetTexture(gl, gridTexture);
 		unsigned int shaderID = gl->program.handle;
 		
 		Light* light = GetLight(gl, 1);
 
-		glUniform1f(glGetUniformLocation(shaderID, "texCoordScale"), data->programData.texCoordScale);
+		glUniform1f(glGetUniformLocation(shaderID, "texCoordScale"), 1.0f);
 
 		glUniform3fv(glGetUniformLocation(shaderID, "light.pos"), 1, &light->pos[0]);
 		glUniform3fv(glGetUniformLocation(shaderID, "light.ambient"), 1, &light->ambient[0]);
@@ -919,7 +920,8 @@ namespace MonGL
 		//glUniformMatrix4fv(glGetUniformLocation(shaderID, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
 		glBindVertexArray(mesh->VAO);
 
-		int polygonMode = data->wireFrame ? GL_LINE : GL_FILL;
+		//int polygonMode = data->wireFrame ? GL_LINE : GL_FILL;
+		int polygonMode = GL_FILL;
 		glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
 
 		glDrawElements(GL_TRIANGLES, mesh->indiceCount, GL_UNSIGNED_SHORT, 0);
@@ -1025,6 +1027,10 @@ namespace MonGL
 
 		float textureSheetSize = 256.0f;
 		float vertSize = 1.0f;
+
+		posX = posX - 0.5f;
+		posY = posY - 0.5f;
+		posZ = posZ + 0.5f;
 
 #if 1
 		//Vertex3D vec0 = {

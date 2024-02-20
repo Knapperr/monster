@@ -68,12 +68,12 @@ namespace Mon {
 		// TEXTURE INDEXES
 
 		// e->data.meshIndex = GetMesh("quad"); and GetTexture("nameFromParams")
-		e->data.meshIndex = meshIndex;
-		e->data.programType = MonGL::ProgramType::Common;
-		e->data.textureIndex = textureIndex;
-		e->data.scale = scale;
-		e->data.wireFrame = false;
-		e->data.visible = true;
+		e->meshIndex = meshIndex;
+		e->textureIndex = textureIndex;
+		//e->data.programType = MonGL::ProgramType::Common;
+		//e->data.scale = scale;
+		//e->data.wireFrame = false;
+		//e->data.visible = true;
 		e->rb.worldPos = pos;
 		e->follow = false;
 		e->spriteAnimationIndex = 0; // TODO(ck): Set sprite animation index for sprite entities
@@ -84,7 +84,7 @@ namespace Mon {
 		
 		e->spriteAngleDegrees = angleDegrees;
 		
-		e->data.programData.texCoordScale = 1.0f;
+		//e->data.programData.texCoordScale = 1.0f;
 
 		if (isModel)
 			e->flags = EntityRenderFlag::Model;
@@ -98,13 +98,13 @@ namespace Mon {
 		player->isPlayer = true;
 
 		player->setup = {};
-		player->data.meshIndex = 1;
-		player->data.textureIndex = 17;
-		player->data.wireFrame = false;
-		player->data.visible = true;
-		player->data.programData.texCoordScale = 1.0f;
 		player->facingDir = Direction::Forward;
-		player->data.programType = MonGL::ProgramType::Common;
+		player->meshIndex = 1;
+		player->textureIndex = 17;
+		//player->data.wireFrame = false;
+		//player->data.visible = true;
+		//player->data.programData.texCoordScale = 1.0f;
+		//player->data.programType = MonGL::ProgramType::Common;
 
 		player->rb.worldPos = v3(3.0f, 0.0f, 2.0);
 		player->rb.inverseMass = 10.0f;
@@ -130,29 +130,29 @@ namespace Mon {
 	{
 		e->name = "water";
 		e->setup = {};
-		e->data.meshIndex = 7;
-		e->data.textureIndex = 5;
-		e->data.programType = MonGL::ProgramType::Water;
+		e->meshIndex = 7;
+		e->textureIndex = 5;
+	/*	e->data.programType = MonGL::ProgramType::Water;
 		e->data.wireFrame = false;
-		e->data.visible = true;
+		e->data.visible = true;*/
 
 		
 		e->rb.worldPos = v3(15.00f, -0.40f, -19.95);
 		e->rb.speed = 40.0f;
-		e->data.scale = v3(18.0f, 1.0f, 18.0f);
+		//e->data.scale = v3(18.0f, 1.0f, 18.0f);
 
 		e->impPath = "none";
 		e->spriteAngleDegrees = 0.0f;
 
-		e->data.programData.tiling = 3.0f;
-		e->data.programData.flowOffset = -0.5f;
-		e->data.programData.flowStrength = 0.1f;
-		e->data.programData.heightScale = 0.1f;
-		e->data.programData.heightScaleModulated = 9.0f;
-		e->data.programData.speed = 0.5f;
-		e->data.programData.waveLength = 18.0f;
-		e->data.programData.uJump = 0.10f;
-		e->data.programData.vJump = 0.10f;
+		//e->data.programData.tiling = 3.0f;
+		//e->data.programData.flowOffset = -0.5f;
+		//e->data.programData.flowStrength = 0.1f;
+		//e->data.programData.heightScale = 0.1f;
+		//e->data.programData.heightScaleModulated = 9.0f;
+		//e->data.programData.speed = 0.5f;
+		//e->data.programData.waveLength = 18.0f;
+		//e->data.programData.uJump = 0.10f;
+		//e->data.programData.vJump = 0.10f;
 	}
 
 	static void PlayerAttack(Entity* player)
@@ -224,17 +224,17 @@ namespace Mon {
 		AddEntity(world);
 		Entity* plane64 = GetEntity(world, world->entityCount - 1);
 		InitEntity(plane64, "plane64", v3(6.0f, 0.0f, 6.0f), v3(1.0f), 0.0f, 8, 7, true);
-		plane64->data.meshIndex = 2;
+		plane64->meshIndex = 2;
 
 		AddEntity(world);
 		Entity* gem = GetEntity(world, world->entityCount - 1);
 		InitEntity(gem, "gem", v3(6.0f, 0.0f, 6.0f), v3(1.0f), 0.0f, 8, 8, true);
-		gem->data.meshIndex = 2;
+		gem->meshIndex = 2;
 
 		AddEntity(world);
 		Entity* house = GetEntity(world, world->entityCount - 1);
 		InitEntity(house, "house", v3(16.0f, 0.0f, 16.0f), v3(1.0f), 0.0f, 23, 10, true);
-		house->data.meshIndex = 2;
+		house->meshIndex = 2;
 
 	}
 	
@@ -277,8 +277,6 @@ namespace Mon {
 		player->rb.velocity.x = velocity->x * dt + player->rb.velocity.x;
 		player->rb.velocity.z = velocity->z * dt + player->rb.velocity.z;
 #endif
-
-
 
 
 		// TODO(ck): Update entity and then update entity collider right after

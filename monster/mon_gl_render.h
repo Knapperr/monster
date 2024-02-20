@@ -104,33 +104,10 @@ namespace MonGL
 		Water
 	};
 
-	// TODO(ck): Better name for this
-	// the mesh is inside that is technically the data to render
-	// is this more of a render command or something?
-	struct RenderData
-	{
-		// TODO(ck): Index for the mesh from g_Assets
-		int meshIndex;
-		int textureIndex;
-		ProgramType programType;
-		int lineWidth;
-		bool visible; // this goes onto entity
-		bool wireFrame;
-
-		ProgramData programData;
-
-		v3 color;
-		v3 scale = v3(1.0f);
-		v3 pos;
-		float angleDegrees;
-		mat4 worldMatrix;
-	};
-
 	struct RenderItem
 	{
 		int meshIndex;
 		int textureIndex;
-
 
 		float angleDegrees;
 
@@ -354,8 +331,6 @@ namespace MonGL
 		std::vector<BatchItem> batchItems_;
 
 		std::vector<RenderItem> batchItems;
-		//RenderData transparentItems[512];
-		//RenderData opaqueItems[512]; 
 		// or dynamic buffer
 		std::vector<RenderItem> transparentItems;
 		std::vector<RenderItem> opaqueItems;
@@ -417,11 +392,11 @@ namespace MonGL
 	void LoadTextureFile(std::string name, Texture* texture, Image* image, TextureType type, bool linearFilter = false, bool pixelArtTexture = false);
 
 
-	void Render(OpenGL* gl, Camera* camera, RenderData* gridData, mat4 projection, mat4 view);
+	void Render(OpenGL* gl, Camera* camera, int gridTexture, int gridMesh, mat4 projection, mat4 view, bool drawDebug);
+	void DrawTerrain(OpenGL* gl, int gridTexture, int gridMesh, Camera* camera);
 	void DrawCubeMap(OpenGL* gl, RenderSetup setup);
 
-	void DrawBoundingBox(OpenGL* gl, RenderData* data, Camera* camera);
-	void DrawTerrain(OpenGL* gl, RenderData* data, Camera* camera);
+	//void DrawBoundingBox(OpenGL* gl, RenderData* data, Camera* camera);
 	
 	// Batching
 	// TODO(ck): Batch manager to deal with these...

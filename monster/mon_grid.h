@@ -1,7 +1,9 @@
 #ifndef MON_GRID_H
 #define MON_GRID_H
 
-#include "mon_collider.h"
+#include "mon_math.h"
+#include "mon_gl_render.h"
+
 
 struct CellPosition
 {
@@ -38,7 +40,8 @@ struct Grid
 	float z;
 	int selectedTextureIndex;
 	
-	MonGL::RenderData data;
+	int meshIndex;
+	int textureIndex;
 };
 
 struct Grid_

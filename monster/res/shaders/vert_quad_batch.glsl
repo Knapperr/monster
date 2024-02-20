@@ -95,6 +95,10 @@ void main()
 	mat4 modelMat = mat4(1.0);
 	if (rotateBatch)
 	{
+		// I should be able to rotate the full batch once with this logic...
+		// I might as well just calculate this once on the CPU to the batch
+		// and rotate the whole mesh by 45degrees before sending it to gpu..
+
 		mat4 translationMatrix = mat4(1.0);
 		translationMatrix[3] = vec4(worldPos, 1.0);
 		modelMat = modelMat * translationMatrix;

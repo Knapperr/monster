@@ -70,10 +70,6 @@ namespace Mon
 
 			// TODO(ck): Precise Collision check
 
-			// Remove this we don't need to set render data in the update we simply just
-			// use the rb.worldPos
-			world->entities[i].data.pos = world->entities[i].rb.worldPos;
-			world->entities[i].data.angleDegrees = world->entities[i].spriteAngleDegrees;
 		}
 	}
 
@@ -274,7 +270,7 @@ namespace Mon
 		// MOUSE PICKER
 		//
 		// TODO(ck): Only update the picker if we are in "picking" mode
-		MonGL::Mesh* grid = MonGL::GetMesh(g_Assets, state->grid->data.meshIndex);
+		MonGL::Mesh* grid = MonGL::GetMesh(g_Assets, state->grid->meshIndex);
 		UpdatePicker(&state->picker, grid, newInput->mouseScreen, ViewMatrix(cam), Projection(cam), cam->pos);
 		//
 		// DEBUG 
@@ -356,7 +352,7 @@ namespace Mon
 			// STUDY(ck): Important need to reverse angle degrees to get correct rotation??
 			//modelForAABB = glm::rotate(modelForAABB, glm::radians(-e.spriteAngleDegrees), glm::vec3(1.0f, 0.0f, 0.0f));
 			//modelForAABB = glm::scale(modelForAABB, 1.0f);
-			Mesh mesh = g_Assets->meshes[e.data.meshIndex];
+			Mesh mesh = g_Assets->meshes[e.meshIndex];
 			AABB sourceAABB = mesh.bbox;
 			AABB destAABB = {};
 		
@@ -396,7 +392,7 @@ namespace Mon
 			//	{glm::vec4(destAABB.max.x, destAABB.max.y, destAABB.max.z, 1.0f)},
 			//};
 			
-			glm::vec4 aabbVertColour = glm::vec4(1.0f, 0.0f, 0.1f, 0.50f);
+			glm::vec4 aabbVertColour = glm::vec4(1.0f, 0.9f, 0.8f, 0.50f);
 			DrawBox(&state->renderer->lineBuffer, destAABB.min, destAABB.max, aabbVertColour);
 
 
@@ -431,8 +427,8 @@ namespace Mon
 				
 
 				// Put the mesh index and texture index on the entity REMOVE RenderData no need for that
-				item.textureIndex = e.data.textureIndex;
-				item.meshIndex = e.data.meshIndex;
+				item.textureIndex = e.textureIndex;
+				item.meshIndex = e.meshIndex;
 				state->renderer->opaqueItems.push_back(item);
 
 				renderItemOffset++;
@@ -544,7 +540,7 @@ namespace Mon
 		glUseProgram(state->renderer->program.handle);
 
 
-		MonGL::Render(state->renderer, cam, &state->grid->data, projection, viewMatrix);
+		MonGL::Render(state->renderer, cam, state->grid->textureIndex, state->grid->meshIndex, projection, viewMatrix, state->drawCollisions);
 		// 
 		// end common shader rendering
 		//

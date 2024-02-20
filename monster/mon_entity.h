@@ -120,10 +120,10 @@ namespace Mon {
 		// TODO(ck): Switch to index so that the render list can be sorted from camera
 		// and transparent objects need to be sorted... maybe build list of mesh indexes
 		// to send through and sort from camera
-		MonGL::RenderData data;
+		int meshIndex;
+		int textureIndex;
 		MonGL::RenderSetup setup;
 		// subtexture indexes?
-		Collider collider;
 
 		Direction facingDir;
 

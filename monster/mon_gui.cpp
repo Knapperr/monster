@@ -31,13 +31,16 @@ const char* RenderTypeText(Mon::RenderType type)
 #ifdef _3D_GUI_
 
 // TODO(ck): Write WORLD not entities
+
+// SERIALIZE ENTITIES INTO FILES OR A FILE WITH OFFSETS INTO IT????
+// LEVEL_ONE = a list of entities and objects with offsets into the file
 void WriteEntities(Mon::Entity* entities, unsigned int entityCount, int shaderID)
 {
 	std::ofstream file;
 	file.open("scene_1.txt");
 
 	file << entityCount << "\n";
-
+	/*
 	for (unsigned int i = 1; i < entityCount; ++i)
 	{
 		file << entities[i].name << "\n"
@@ -47,6 +50,7 @@ void WriteEntities(Mon::Entity* entities, unsigned int entityCount, int shaderID
 			<< entities[i].data.scale.x << "\n" << entities[i].data.scale.y << "\n" << entities[i].data.scale.z << "\n"
 			<< shaderID << "\n";
 	}
+	*/
 
 	// TODO(ck):
 	// Cube and Quad still use imp file because we still need their texture paths???
@@ -125,7 +129,7 @@ void LoadSceneFile(Mon::GameState* game)
 	// TODO(ck): Not shader index it just needs shader type
 	//Mon::Entity* e = Mon::GetPlayer(game->world);
 	//Mon::InitPlayer(e, game->renderer->program.handle);
-
+	/*
 	bool finished = false;
 	std::string tempName;
 	unsigned int index = 1;
@@ -167,9 +171,9 @@ void LoadSceneFile(Mon::GameState* game)
 			++index;
 		}
 	}
-
+	*/
 	// Set grid to use grass texture on load
-	game->grid->data.textureIndex = 12;
+	game->grid->textureIndex = 12;
 	// success
 	return;
 }
@@ -225,13 +229,13 @@ void InitGui(SDL_Window* window, SDL_GLContext* context)
 void AddNewEntity(Mon::GameState* game, int meshIndex, int texIndex = 18, Mon::v3 scale = Mon::v3(1.0f))
 {
 	// reset collider color 
-	game->world->entities[game->selectedIndex].collider.data.color = Mon::v3(0.7f, 0.15f, 0.4f);
+	//game->world->entities[game->selectedIndex].collider.data.color = Mon::v3(0.7f, 0.15f, 0.4f);
 
 	unsigned int entity = Mon::AddEntity(game->world);
 	Mon::Entity* e = Mon::GetEntity(game->world, game->world->entityCount - 1);
 	Mon::InitEntity(e, "new", Mon::v3(1.0f, 0.0f, 1.0f), scale, -45.0f, texIndex, meshIndex, true);
 
-	game->world->entities[entity].collider.data.color = Mon::v3(0.0f, 0.0f, 1.0f);
+	//game->world->entities[entity].collider.data.color = Mon::v3(0.0f, 0.0f, 1.0f);
 	game->selectedIndex = entity;
 }
 
@@ -248,21 +252,21 @@ void TerrainTab(Mon::GameState* game)
 	{
 		ImGui::Text("Texture");
 		ImGui::Separator();
-		if (ImGui::Button("UV")) { game->grid->data.textureIndex = 11; game->grid->data.programData.texCoordScale = 8.0f; }
+		//if (ImGui::Button("UV")) { game->grid->data.textureIndex = 11; game->grid->data.programData.texCoordScale = 8.0f; }
+		//ImGui::SameLine();
+		if (ImGui::Button("Grass")) { game->grid->textureIndex = 12; }
 		ImGui::SameLine();
-		if (ImGui::Button("Grass")) { game->grid->data.textureIndex = 12; }
+		if (ImGui::Button("Pixel Grass")) { game->grid->textureIndex = 13; }
 		ImGui::SameLine();
-		if (ImGui::Button("Pixel Grass")) { game->grid->data.textureIndex = 13; }
-		ImGui::SameLine();
-		if (ImGui::Button("Snow")) { game->grid->data.textureIndex = 14; }
+		if (ImGui::Button("Snow")) { game->grid->textureIndex = 14; }
 		ImGui::Separator();
-		if (ImGui::Button("1x1")) { game->grid->data.textureIndex = 16; }
+		if (ImGui::Button("1x1")) { game->grid->textureIndex = 16; }
 		ImGui::Separator();
 
-		ImGui::SliderFloat("Texcoord scale", &game->grid->data.programData.texCoordScale, 1, 100);
+		//ImGui::SliderFloat("Texcoord scale", &game->grid->data.programData.texCoordScale, 1, 100);
 
 		ImGui::Separator();
-		ImGui::Checkbox("Wireframe", &game->grid->data.wireFrame);
+		//ImGui::Checkbox("Wireframe", &game->grid->data.wireFrame);
 
 		ImGui::EndTabItem();
 	}
@@ -390,9 +394,9 @@ void EntityTab(Mon::GameState* game)
 			inputTimer = (float)game->deltaTime * 10.0f;
 			if (game->selectedIndex > 1)
 			{
-				game->world->entities[game->selectedIndex].collider.data.color = Mon::v3(0.7f, 0.15f, 0.4f);
+				//game->world->entities[game->selectedIndex].collider.data.color = Mon::v3(0.7f, 0.15f, 0.4f);
 				game->selectedIndex--;
-				game->world->entities[game->selectedIndex].collider.data.color = Mon::v3(0.0f, 0.0f, 1.0f);
+				//game->world->entities[game->selectedIndex].collider.data.color = Mon::v3(0.0f, 0.0f, 1.0f);
 			}
 		}
 		if (game->input.f.endedDown && inputTimer <= 0.0f)
@@ -401,9 +405,9 @@ void EntityTab(Mon::GameState* game)
 			if (game->selectedIndex < (game->world->entityCount - 1))
 			{
 				// reset collider color
-				game->world->entities[game->selectedIndex].collider.data.color = Mon::v3(0.7f, 0.15f, 0.4f);
+				//game->world->entities[game->selectedIndex].collider.data.color = Mon::v3(0.7f, 0.15f, 0.4f);
 				game->selectedIndex++;
-				game->world->entities[game->selectedIndex].collider.data.color = Mon::v3(0.0f, 0.0f, 1.0f);
+				//game->world->entities[game->selectedIndex].collider.data.color = Mon::v3(0.0f, 0.0f, 1.0f);
 			}
 		}
 #endif
@@ -415,11 +419,11 @@ void EntityTab(Mon::GameState* game)
 			if (ImGui::Selectable(label, game->selectedIndex == i))
 			{
 				// reset collider color
-				game->world->entities[game->selectedIndex].collider.data.color = Mon::v3(0.7f, 0.15f, 0.4f);
+				//game->world->entities[game->selectedIndex].collider.data.color = Mon::v3(0.7f, 0.15f, 0.4f);
 
 				// set color of collider to blue
 				game->selectedIndex = i;
-				game->world->entities[i].collider.data.color = Mon::v3(0.0f, 0.0f, 1.0f);
+				//game->world->entities[i].collider.data.color = Mon::v3(0.0f, 0.0f, 1.0f);
 
 			}
 		}
@@ -539,23 +543,23 @@ void EntityTab(Mon::GameState* game)
 					ImGui::SliderInt("Animation Index", &game->world->entities[selected].spriteAnimationIndex, 0, 10);
 
 
-					ImGui::SliderFloat3("scale", &game->world->entities[selected].data.scale[0], 1.0f, 20.0f, "%1.0f");
-					ImGui::SliderFloat3("Collider min", &game->world->entities[selected].collider.min[0], 0.0f, 100.0f, "%1.0f");
-					ImGui::SliderFloat3("Collider max", &game->world->entities[selected].collider.max[0], 0.0f, 100.0f, "%1.0f");
+					//ImGui::SliderFloat3("scale", &game->world->entities[selected].data.scale[0], 1.0f, 20.0f, "%1.0f");
+					//ImGui::SliderFloat3("Collider min", &game->world->entities[selected].collider.min[0], 0.0f, 100.0f, "%1.0f");
+					//ImGui::SliderFloat3("Collider max", &game->world->entities[selected].collider.max[0], 0.0f, 100.0f, "%1.0f");
 
 					ImGui::DragFloat("speed", &game->world->entities[selected].rb.speed, 0.10f, 0.0f, 200.0f, "%.10f");
 					ImGui::DragFloat("angle", &game->world->entities[selected].spriteAngleDegrees, 0.10f, -180.0f, 360.0f, "%.10f");
 
-					ImGui::SliderInt("Mesh index", &game->world->entities[selected].data.meshIndex, 1, Mon::g_Assets->meshCount - 1);
+					ImGui::SliderInt("Mesh index", &game->world->entities[selected].meshIndex, 1, Mon::g_Assets->meshCount - 1);
 					// NOTE(ck): game->renderer->textureCount-2 removes the cubemap texture from the selection
-					ImGui::SliderInt("Texture index", &game->world->entities[selected].data.textureIndex, 1, game->renderer->textureCount - 2);
+					ImGui::SliderInt("Texture index", &game->world->entities[selected].textureIndex, 1, game->renderer->textureCount - 2);
 
-					ImGui::Checkbox("Wireframe", &game->world->entities[selected].data.wireFrame);
-					ImGui::Checkbox("Visible", &game->world->entities[selected].data.visible);
+					//ImGui::Checkbox("Wireframe", &game->world->entities[selected].data.wireFrame);
+					//ImGui::Checkbox("Visible", &game->world->entities[selected].data.visible);
 					ImGui::SameLine();
-					ImGui::Checkbox("Show Collider", &game->world->entities[selected].collider.data.visible);
+					//ImGui::Checkbox("Show Collider", &game->world->entities[selected].collider.data.visible);
 					
-					ImGui::SliderFloat("Texcoord scale", &game->world->entities[selected].data.programData.texCoordScale, 1, 100);
+					//ImGui::SliderFloat("Texcoord scale", &game->world->entities[selected].data.programData.texCoordScale, 1, 100);
 
 					//ImGui::Checkbox("show normals", &game->objects[selected]->viewNormals);
 					//ImGui::DragFloat("rot x", &game->objects[selected]->orientation.x, 0.05f, -1000.0f, 1000.0f, "%.02f");
@@ -567,6 +571,7 @@ void EntityTab(Mon::GameState* game)
 
 
 				// Water render data
+				/*
 				if (game->world->entities[selected].data.programType == MonGL::ProgramType::Water)
 				{
 					if (ImGui::BeginTabItem("Water options"))
@@ -585,6 +590,7 @@ void EntityTab(Mon::GameState* game)
 						ImGui::EndTabItem();
 					}
 				}
+				*/
 				ImGui::EndTabBar();
 			}
 
@@ -887,7 +893,7 @@ void DebugWindow(bool* p_open, Mon::GameState* game)
 	//ImGui::DragFloat("line two z", &game->lineTwo.pos.z, 0.01f, 1.0f, 2000.0f, "%.02f");
 
 	ImGui::Checkbox("draw collisions", &game->drawCollisions);
-	ImGui::Checkbox("Wireframe", &game->grid->data.wireFrame);
+	//ImGui::Checkbox("Wireframe", &game->grid->data.wireFrame);
 
 	ImGui::End();
 }

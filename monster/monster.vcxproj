@@ -163,7 +163,6 @@
     <ClCompile Include="include\stb_image\stb_image.cpp" />
     <ClCompile Include="monster.cpp" />
     <ClCompile Include="mon_assets.cpp" />
-    <ClCompile Include="mon_collider.cpp" />
     <ClCompile Include="mon_entity.cpp" />
     <ClCompile Include="mon_game.cpp" />
     <ClCompile Include="mon_app.cpp" />
@@ -194,7 +193,6 @@
     <ClInclude Include="include\imgui\imstb_textedit.h" />
     <ClInclude Include="include\imgui\imstb_truetype.h" />
     <ClInclude Include="mon_assets.h" />
-    <ClInclude Include="mon_collider.h" />
     <ClInclude Include="mon_entity.h" />
     <ClInclude Include="mon_game.h" />
     <ClInclude Include="mon_app.h" />
