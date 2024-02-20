@@ -62,7 +62,6 @@ namespace Mon {
 
 	static void InitEntity(Entity* e, const char* name, v3 pos, v3 scale, float angleDegrees, int textureIndex, int meshIndex, bool isModel = false)
 	{
-		e->setup = {};
 		e->name = name;
 		e->impPath = "none";
 		// TEXTURE INDEXES
@@ -97,7 +96,6 @@ namespace Mon {
 		player->name = "player";
 		player->isPlayer = true;
 
-		player->setup = {};
 		player->facingDir = Direction::Forward;
 		player->meshIndex = 1;
 		player->textureIndex = 17;
@@ -129,7 +127,6 @@ namespace Mon {
 	static void InitWater(Entity* e, int shaderHandle)
 	{
 		e->name = "water";
-		e->setup = {};
 		e->meshIndex = 7;
 		e->textureIndex = 5;
 	/*	e->data.programType = MonGL::ProgramType::Water;

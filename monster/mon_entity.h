@@ -117,12 +117,9 @@ namespace Mon {
 		//int gridY; = rb.pos.y / chunk_size (grid_size) ?
 		// offsets?
 
-		// TODO(ck): Switch to index so that the render list can be sorted from camera
-		// and transparent objects need to be sorted... maybe build list of mesh indexes
-		// to send through and sort from camera
+		AABB bbox; // updated bounding box updated from source mesh bbox
 		int meshIndex;
 		int textureIndex;
-		MonGL::RenderSetup setup;
 		// subtexture indexes?
 
 		Direction facingDir;
@@ -132,7 +129,6 @@ namespace Mon {
 		// world matrix?
 		bool follow;
 		float spriteAngleDegrees;
-
 		int spriteAnimationIndex;
 	};
 

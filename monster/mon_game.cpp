@@ -70,6 +70,45 @@ namespace Mon
 
 			// TODO(ck): Precise Collision check
 
+
+			// TODO(ck): This was in the renderer.... move that up here..? should frustum culling happen in the update.. i think so?
+			// except then im doing things twice when i accidentally do a double update... ask jasper about this?
+			Entity* e = &world->entities[i];
+
+			glm::vec3 translation = e->rb.worldPos;
+			glm::mat4 modelForAABB = glm::mat4(1.0f);
+			modelForAABB = glm::translate(modelForAABB, e->rb.worldPos);
+			// STUDY(ck): Important need to reverse angle degrees to get correct rotation??
+			//modelForAABB = glm::rotate(modelForAABB, glm::radians(-e.spriteAngleDegrees), glm::vec3(1.0f, 0.0f, 0.0f));
+			//modelForAABB = glm::scale(modelForAABB, 1.0f);
+			Mesh mesh = g_Assets->meshes[e->meshIndex];
+			AABB sourceAABB = mesh.bbox;
+			AABB* destAABB = &e->bbox;
+
+			// all three axes 
+			for (int j = 0; j < 3; ++j)
+			{
+				// add in translation first -- sets translation to min and max?
+				destAABB->min[j] = destAABB->max[j] = translation[j];
+
+				// form extent by summing smaller and larger terms
+				for (int k = 0; k < 3; ++k)
+				{
+					float e = modelForAABB[j][k] * sourceAABB.min[k]; // jk jk ... 
+					float f = modelForAABB[j][k] * sourceAABB.max[k];
+					if (e < f)
+					{
+						destAABB->min[j] += e;
+						destAABB->max[j] += f;
+					}
+					else
+					{
+						destAABB->min[j] += f;
+						destAABB->max[j] += e;
+					}
+				}
+			}
+
 		}
 	}
 
@@ -306,13 +345,6 @@ namespace Mon
 		memcpy(state->renderer->ubo.buffer + (sizeof(glm::mat4) * 2) + vec3AlignSize, &lightColour, vec3AlignSize);
 
 
-
-		// TODO(ck): shader fixes
-		// 1. grid/terrain needs its own shader anyways
-		// 2. using cubemap program inside here 
-		// 3. start using main obj shader here go back to main shader
-
-
 		//
 		// PRE RENDER go through entities
 		// 
@@ -333,10 +365,6 @@ namespace Mon
 		for (unsigned int i = 1; i < state->world->entityCount; ++i)
 		{
 			Entity e = state->world->entities[i];
-
-			//if (state->drawCollisions)
-				// Insert into the line buffer
-				//MonGL::DrawBoundingBox(state->renderer, &e.collider.data, cam);
 			
 			// Cull the entity regardless of sprite or model
 			// sprite bbox needs to be in world space... probably use a -1 to 1 bounding box
@@ -346,39 +374,11 @@ namespace Mon
 			glm::vec3 entityViewPos = glm::vec3(viewMatrix * glm::vec4(e.rb.worldPos, 1.0f));
 			item.viewZ = entityViewPos.z;
 
-			glm::vec3 translation = e.rb.worldPos;
-			glm::mat4 modelForAABB = glm::mat4(1.0f);
-			modelForAABB = glm::translate(modelForAABB, e.rb.worldPos);
-			// STUDY(ck): Important need to reverse angle degrees to get correct rotation??
-			//modelForAABB = glm::rotate(modelForAABB, glm::radians(-e.spriteAngleDegrees), glm::vec3(1.0f, 0.0f, 0.0f));
-			//modelForAABB = glm::scale(modelForAABB, 1.0f);
-			Mesh mesh = g_Assets->meshes[e.meshIndex];
-			AABB sourceAABB = mesh.bbox;
-			AABB destAABB = {};
-		
-			// all three axes 
-			for (int j = 0; j < 3; ++j)
-			{
-				// add in translation first -- sets translation to min and max?
-				destAABB.min[j] = destAABB.max[j] = translation[j];
-
-				// form extent by summing smaller and larger terms
-				for (int k = 0; k < 3; ++k)
-				{
-					float e = modelForAABB[j][k] * sourceAABB.min[k]; // jk jk ... 
-					float f = modelForAABB[j][k] * sourceAABB.max[k];
-					if (e < f)
-					{
-						destAABB.min[j] += e;
-						destAABB.max[j] += f;
-					}
-					else
-					{
-						destAABB.min[j] += f;
-						destAABB.max[j] += e;
-					}
-				}
-			}
+			glm::vec4 aabbVertColour = glm::vec4(1.0f, 0.9f, 0.8f, 0.50f);
+			if (state->selectedIndex == i)
+				aabbVertColour = glm::vec4(0.9f, 0.3f, 0.1f, 1.0f);
+			//DrawBox(&state->renderer->lineBuffer, destAABB.min, destAABB.max, aabbVertColour);
+			DrawBox(&state->renderer->lineBuffer, e.bbox.min, e.bbox.max, aabbVertColour);
 
 			//std::vector<glm::vec4> aabbWorldSpaceVerts = {
 			//	{glm::vec4(destAABB.min.x, destAABB.min.y, destAABB.min.z, 1.0f)},
@@ -392,8 +392,9 @@ namespace Mon
 			//	{glm::vec4(destAABB.max.x, destAABB.max.y, destAABB.max.z, 1.0f)},
 			//};
 			
-			glm::vec4 aabbVertColour = glm::vec4(1.0f, 0.9f, 0.8f, 0.50f);
-			DrawBox(&state->renderer->lineBuffer, destAABB.min, destAABB.max, aabbVertColour);
+
+
+
 
 
 			if(e.flags & EntityRenderFlag::Sprite)
@@ -598,14 +599,39 @@ namespace Mon
 		MonGL::EndRender(state->renderer);
 	}
 
-	void CleanUp(GameState* state)
+	void CleanUp(GameMemory* memory)
 	{
+		GameState* state = (GameState*)memory->permanentStorage;
 		// IMPORTANT(ck):
 		// TODO(ck): clean up render data 
 		//glDeleteVertexArrays(1, &world->player->data.VAO);
 		//glDeleteBuffers(1, &world->player->data.VBO);
 		
 		delete state->grid;
+		state->grid = nullptr;
+
+		free(state->renderer->ubo.buffer);
+		free(state->renderer->lineBuffer.indices);
+		free(state->renderer->lineBuffer.vertices);
+
+		state->renderer->ubo.buffer = nullptr;
+		//state->entities = nullptr;
+		state->renderer->lineBuffer.indices = nullptr;
+		state->renderer->lineBuffer.vertices = nullptr;
+		/*
+		* 
+		* 
+		* 
+		delete state.terrain;
+		state.terrain = nullptr;
+
+		delete[] state.entities;
+		//free(state.entities); // not mallocing this yet
+
+
+		 // NEED TO FREE the initialized items in the array?
+
+	*/
 
 		MonGL::DeleteShader(&state->renderer->program);
 	}

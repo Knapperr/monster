@@ -208,7 +208,7 @@ void App::run()
 	Mon::Log::print("Shutting down...");
 	Mon::Log::shutdown();
 #ifdef _3D_
-	//Mon::CleanUp(gameState);
+	Mon::CleanUp(&memory);
 #else
 	Mon::CleanUp(game2D);
 #endif
