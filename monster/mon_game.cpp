@@ -350,10 +350,53 @@ namespace Mon
 			glm::vec3 entityViewPos = glm::vec3(viewMatrix * glm::vec4(e.rb.worldPos, 1.0f));
 			item.viewZ = entityViewPos.z;
 
-			glm::vec4 aabbVertColour = glm::vec4(1.0f, 0.0f, 0.1f, 0.50f);
+			glm::vec3 translation = e.rb.worldPos;
+			glm::mat4 modelForAABB = glm::mat4(1.0f);
+			modelForAABB = glm::translate(modelForAABB, e.rb.worldPos);
+			// STUDY(ck): Important need to reverse angle degrees to get correct rotation??
+			//modelForAABB = glm::rotate(modelForAABB, glm::radians(-e.spriteAngleDegrees), glm::vec3(1.0f, 0.0f, 0.0f));
+			//modelForAABB = glm::scale(modelForAABB, 1.0f);
+			Mesh mesh = g_Assets->meshes[e.data.meshIndex];
+			AABB sourceAABB = mesh.bbox;
 			AABB destAABB = {};
-			destAABB.min = v3(-0.5f);
-			destAABB.max = v3(0.5f);
+		
+			// all three axes 
+			for (int j = 0; j < 3; ++j)
+			{
+				// add in translation first -- sets translation to min and max?
+				destAABB.min[j] = destAABB.max[j] = translation[j];
+
+				// form extent by summing smaller and larger terms
+				for (int k = 0; k < 3; ++k)
+				{
+					float e = modelForAABB[j][k] * sourceAABB.min[k]; // jk jk ... 
+					float f = modelForAABB[j][k] * sourceAABB.max[k];
+					if (e < f)
+					{
+						destAABB.min[j] += e;
+						destAABB.max[j] += f;
+					}
+					else
+					{
+						destAABB.min[j] += f;
+						destAABB.max[j] += e;
+					}
+				}
+			}
+
+			//std::vector<glm::vec4> aabbWorldSpaceVerts = {
+			//	{glm::vec4(destAABB.min.x, destAABB.min.y, destAABB.min.z, 1.0f)},
+			//	{glm::vec4(destAABB.max.x, destAABB.min.y, destAABB.min.z, 1.0f)},
+			//	{glm::vec4(destAABB.min.x, destAABB.max.y, destAABB.min.z, 1.0f)},
+			//	{glm::vec4(destAABB.max.x, destAABB.max.y, destAABB.min.z, 1.0f)},
+
+			//	{glm::vec4(destAABB.min.x, destAABB.min.y, destAABB.max.z, 1.0f)},
+			//	{glm::vec4(destAABB.max.x, destAABB.min.y, destAABB.max.z, 1.0f)},
+			//	{glm::vec4(destAABB.min.x, destAABB.max.y, destAABB.max.z, 1.0f)},
+			//	{glm::vec4(destAABB.max.x, destAABB.max.y, destAABB.max.z, 1.0f)},
+			//};
+			
+			glm::vec4 aabbVertColour = glm::vec4(1.0f, 0.0f, 0.1f, 0.50f);
 			DrawBox(&state->renderer->lineBuffer, destAABB.min, destAABB.max, aabbVertColour);
 
 

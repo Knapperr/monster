@@ -56,7 +56,8 @@ uv /= size;
 	// Smooth the texture
     // https://handmade.network/forums/t/7883-pixel_art_fragment_shader
     // Make sure texture has bilinear sampling set, and does not have mipmaps
-	
+
+
 	vec2 texSize = textureSize(image, 0);
 	vec2 pixel = TexCoord * texSize;
 	vec2 seam = floor(pixel + 0.5);
@@ -66,6 +67,7 @@ uv /= size;
 	vec4 tex = texture(image, modifiedTextCoordinate);
 	//vec4 orange = vec4(1.0, 0.5, 0.2, 1.0); 
 	FragColor = tex;
+	//FragColor = texture(image, TexCoord);
 	return;
 	
 

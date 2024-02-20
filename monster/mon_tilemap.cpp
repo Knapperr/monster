@@ -20,10 +20,10 @@ namespace Mon
 		{1, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2},
 
 		{1, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2},
-		{1, 3, 3, 3, 3,  3, 3, 3, 11, 3, 3, 3, 3, 3, 3, 3, 9, 3, 3, 3, 3, 3, 18, 19, 3,  3, 9, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2},
-		{1, 3, 3, 3, 3,  3, 3, 3, 12, 3, 9, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 16, 17, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2},
-		{1, 3, 3, 3, 3,  3, 3, 3, 12, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 14, 15, 3,  3, 3, 3, 3, 3, 3, 10, 3, 3, 3, 3, 3, 3, 3, 2},
-		{1, 3, 3, 3, 3,  3, 3, 3, 13, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 10, 3, 3, 3, 3, 3, 3, 3, 2},
+		{1, 3, 3, 3, 3,  3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 3, 3, 18, 19, 3,  3, 9, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2},
+		{1, 3, 3, 3, 3,  3, 3, 3, 3, 3, 9, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 16, 17, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2},
+		{1, 3, 3, 3, 3,  3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 14, 15, 3,  3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 2},
+		{1, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 2},
 
 		{1, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2},
 		{1, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 9, 3, 3, 3, 9, 3, 3, 3, 18, 19, 3, 3, 3, 3,  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2},
@@ -182,11 +182,11 @@ namespace Mon
 
 		sheet->tiles[16].id = 16; // midleft tree
 		sheet->tiles[16].textureOffsetX = 7;
-		sheet->tiles[16].textureOffsetY = 12;
+		sheet->tiles[16].textureOffsetY = 11;
 
 		sheet->tiles[17].id = 17; // midright tree
 		sheet->tiles[17].textureOffsetX = 8;
-		sheet->tiles[17].textureOffsetY = 12;
+		sheet->tiles[17].textureOffsetY = 11;
 
 		sheet->tiles[18].id = 18; // bottomleft tree
 		sheet->tiles[18].textureOffsetX = 7;
@@ -232,9 +232,56 @@ namespace Mon
 				{
 
 					Tile sheetTile = Tile();
-					sheetTile.id = 3;
-					sheetTile.textureOffsetX = 3; // 1
-					sheetTile.textureOffsetY = 11;
+					int tileIndex = testmap[y][x];
+					sheetTile.id = testmap[y][x];
+					
+					if (testmap[y][x] == 1)
+					{
+						sheetTile.textureOffsetX = 3; // 3 - is grass
+						sheetTile.textureOffsetY = 11; // field,grass,
+
+					}
+					else if (testmap[y][x] == 3)
+					{
+						sheetTile.textureOffsetX = 1; // 1 - is field
+						sheetTile.textureOffsetY = 11; // field,grass,
+					}
+					else if (testmap[y][x] == 18) // top left tree
+					{
+						sheetTile.textureOffsetX = 7; 
+						sheetTile.textureOffsetY = 11;
+					}
+					else if (testmap[y][x] == 19) // top right tree
+					{
+						sheetTile.textureOffsetX = 8; 
+						sheetTile.textureOffsetY = 11;
+					}
+					else if (testmap[y][x] == 16) // mid left tree
+					{
+						sheetTile.textureOffsetX = 7; 
+						sheetTile.textureOffsetY = 12; 
+					}
+					else if (testmap[y][x] == 17) // mid right tree
+					{
+						sheetTile.textureOffsetX = 8; 
+						sheetTile.textureOffsetY = 12;
+					}
+					else if (testmap[y][x] == 14) // bot left tree
+					{
+						sheetTile.textureOffsetX = 7; 
+						sheetTile.textureOffsetY = 13;
+					}
+					else if (testmap[y][x] == 15) // bot right tree
+					{
+						sheetTile.textureOffsetX = 8; 
+						sheetTile.textureOffsetY = 13;
+					}
+					else
+					{
+						sheetTile.textureOffsetX = 1; // 1 - is field
+						sheetTile.textureOffsetY = 11; // field,grass,
+					}
+
 					//Tile sheetTile = *sheet->createTile(testmap[y][x]);
 					// TODO(ck): Copy constructor - MEMORY MANAGEMENT
 					Tile* newTile = new Tile();

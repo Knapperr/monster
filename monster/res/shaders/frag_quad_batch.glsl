@@ -49,6 +49,8 @@ void main()
     // NOTE(ck): this is to just use the texture no lighting
     vec4 tex = texture(texture_diffuse1, modifiedTextCoordinate);
     FragColor = tex;
+    //FragColor = texture(texture_diffuse1, fs_in.TexCoords);
+
 
     // ambient
     // material.diffuse = texture_diffuse1 

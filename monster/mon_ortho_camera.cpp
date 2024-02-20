@@ -29,10 +29,13 @@ namespace Mon
 
 	void Update(Camera2D* camera, v2 target, float dt)
 	{
-		camera->pos = (target);
+		//camera->pos = (target);
 		// IMPORTANT(ck): won't work with pixels and screen as 1:1 need to figure out meters to pixels
-		//camera->pos.x = smoothDamp(camera->pos.x, (target.x), camera->vel.x, camera->smoothness, dt);
-		//camera->pos.y = smoothDamp(camera->pos.y, (target.y), camera->vel.y, camera->smoothness, dt);
+		camera->pos.x = smoothDamp(camera->pos.x, (target.x), camera->vel.x, camera->smoothness, dt);
+		camera->pos.y = smoothDamp(camera->pos.y, (target.y), camera->vel.y, camera->smoothness, dt);
+
+
+
 	}
 
 	bool IsInBounds(Camera2D* camera, v2 pos)

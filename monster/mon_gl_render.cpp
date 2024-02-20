@@ -80,7 +80,7 @@ namespace MonGL
 		//glNamedBufferStorage(mesh->IBO, sizeof(GLushort)*indiceCount, indices, GL_DYNAMIC_STORAGE_BIT);
 
 		glCreateVertexArrays(1, &mesh->VAO);
-
+		                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
 		glVertexArrayVertexBuffer(mesh->VAO, 0, mesh->VBO, 0, sizeof(Vertex3D));
 		glVertexArrayElementBuffer(mesh->VAO, mesh->IBO);
 
@@ -174,9 +174,6 @@ namespace MonGL
 
 	}
 
-
-
-
 	void SetBlockSize(UniformObject* ubo, int blockSize, int blockCount)
 	{
 		ubo->blockSize = blockSize;
@@ -190,34 +187,6 @@ namespace MonGL
 		SetBlockSize(ubo, blockSize, blockCount);
 		// TODO(ck): Memory management -- allocate with renderer arena
 		ubo->buffer = (GLubyte*)malloc(ubo->totalSize);
-	}
-
-	void UploadOpenGLMesh2D(Mesh2D* mesh)
-	{
-		glGenVertexArrays(1, &mesh->VAO);
-		glBindVertexArray(mesh->VAO);
-
-		glGenBuffers(1, &mesh->VBO);
-		glBindBuffer(GL_ARRAY_BUFFER, mesh->VBO);
-		glBufferData(GL_ARRAY_BUFFER, mesh->verticeCount * sizeof(Vertex), mesh->vertices, GL_STATIC_DRAW);
-
-		glGenBuffers(1, &mesh->IBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->IBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->indiceCount * sizeof(unsigned int), mesh->indices, GL_STATIC_DRAW);
-
-		// position attribute
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
-		// color attribute
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
-		// texture coord attribute
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
-
-		glBindVertexArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
 	}
 
 	///

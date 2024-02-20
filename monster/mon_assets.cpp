@@ -276,61 +276,6 @@ namespace Mon
 		asset->imageIndex = imageIndex;
 	}
 
-	void Init2DQuadMesh(Mesh2D* mesh)
-	{
-		Mon::Log::print("Loading 2D quad mesh");
-		mesh->id = "2D_QUAD";
-
-		int verticeCount = 4;
-		mesh->vertices = new MonGL::Vertex[verticeCount];
-		
-		// 2 = 32pixels
-		//v2 size = v2(2.0f)
-		v2 pos = v2(1.0f, 1.0f);
-		float size = 2.0f; // vertice
-		float tileSize = 16.0f;
-		//mesh->vertices[0].position = v3(0.0f, 0.0f, 0.0f);
-		//mesh->vertices[0].position = v3((size.x / 2.0f) * pixelSize, (size.y / 2.0f) * pixelSize, 0.0f);
-		
-		// this one works but scaling is bad
-		mesh->vertices[0].position = v3(pos.x * tileSize, pos.y * tileSize, 0.0f);
-		//mesh->vertices[0].position = v3(pos.x, pos.y, 0.0f);
-		mesh->vertices[0].color = v3(1.0f, 0.0f, 0.0f);
-		mesh->vertices[0].texCoords = v2(0.0f, 0.0f);
-
-		//mesh->vertices[1].position = v3((0.0f + 1.0f), (0.0f), 0.0f);
-		//mesh->vertices[1].position = v3((size.x / 2.0f) * pixelSize, (-size.y / 2.0f) * pixelSize, 0.0f);
-		mesh->vertices[1].position = v3((pos.x + size) * tileSize, pos.y * tileSize, 0.0f);
-		mesh->vertices[1].color = v3(1.0f, 0.0, 0.0f);
-		mesh->vertices[1].texCoords = v2(1.0f, 0.0f);
-		
-		//mesh->vertices[2].position = v3((0.0f + 1.0f), (0.0f + 1.0f), 0.0f);
-		//mesh->vertices[2].position = v3((-size.x / 2.0f) * pixelSize, (-size.y / 2.0f) * pixelSize, 0.0f);
-		mesh->vertices[2].position = v3((pos.x + size) * tileSize, (pos.y + size) * tileSize, 0.0f);
-		mesh->vertices[2].color = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[2].texCoords = v2(1.0f, 1.0f);
-
-		//mesh->vertices[3].position = v3((0.0f), (0.0f + 1.0f), 0.0f);
-		//mesh->vertices[3].position = v3((-size.x / 2.0f) * pixelSize, (size.y / 2.0f) * pixelSize, 0.0f);
-		mesh->vertices[3].position = v3(pos.x * tileSize, (pos.y + size) * tileSize, 0.0f);
-		mesh->vertices[3].color = v3(1.0f, 1.0f, 1.0f);
-		mesh->vertices[3].texCoords = v2(0.0f, 1.0f);
-
-		int indiceCount = 6;
-		mesh->indices = new unsigned int[indiceCount];
-		mesh->indices[0] = 0;
-		mesh->indices[1] = 1;
-		mesh->indices[2] = 3;
-		mesh->indices[3] = 1;
-		mesh->indices[4] = 2;
-		mesh->indices[5] = 3;
-
-		mesh->verticeCount = verticeCount;
-		mesh->indiceCount = indiceCount;
-		mesh->type = RenderType::Quad;
-		MonGL::UploadOpenGLMesh2D(mesh);
-	}
-
 	void InitModelMesh(Mesh* mesh, const char* fileName)
 	{
 		Mon::Log::print(fileName);
@@ -392,6 +337,11 @@ namespace Mon
 
 		mesh->verticeCount = verticeCount;
 		mesh->indiceCount = indiceCount;
+
+		// HACK FOR NOW using GRID MESH BBOX FOR SPRITE AABBs
+		mesh->bbox.max = v3(0.5f);
+		mesh->bbox.min = v3(-0.5f);
+
 		MonGL::UploadGLMesh(mesh);
 	}
 

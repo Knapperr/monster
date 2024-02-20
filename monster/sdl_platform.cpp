@@ -49,13 +49,10 @@ namespace Mon
 		// TODO(ck): Do I want to double buffer here?
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-
 #ifdef _3D_
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 #endif
-
-		
 
 		int flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI;
 		window = SDL_CreateWindow(settings->title,
@@ -65,13 +62,10 @@ namespace Mon
 		if (window == nullptr)
 			return false;
 
-
-
 		// Window Icon
 		// https://wiki.libsdl.org/SDL_CreateRGBSurfaceFrom
 		// This example shows how to create a SDL_Surface* with the data loaded from an image
 		// file with the stb_image.h library (https://github.com/nothings/stb/)
-
 		unsigned char* pixels;
 		int width, height;
 		int originalFormat;
