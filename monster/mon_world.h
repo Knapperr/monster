@@ -275,6 +275,16 @@ namespace Mon {
 		player->rb.velocity.z = velocity->z * dt + player->rb.velocity.z;
 #endif
 
+		Entity otherEnt = world->entities[2];
+
+		
+		// if (testAABBAABB(a, b)
+		//{
+		//	tFirst = tLast = 0.0f;
+		//  return 1;
+		//
+		//}
+		
 
 		// TODO(ck): Update entity and then update entity collider right after
 		// instead of having two separate loops for entities and their colliders.

@@ -252,8 +252,8 @@ void TerrainTab(Mon::GameState* game)
 	{
 		ImGui::Text("Texture");
 		ImGui::Separator();
-		//if (ImGui::Button("UV")) { game->grid->data.textureIndex = 11; game->grid->data.programData.texCoordScale = 8.0f; }
-		//ImGui::SameLine();
+		if (ImGui::Button("UV")) { game->grid->textureIndex = 11; }
+		ImGui::SameLine();
 		if (ImGui::Button("Grass")) { game->grid->textureIndex = 12; }
 		ImGui::SameLine();
 		if (ImGui::Button("Pixel Grass")) { game->grid->textureIndex = 13; }
@@ -377,14 +377,6 @@ void EntityTab(Mon::GameState* game)
 		// this might not be a standard but it will make it quick for me and thats
 		// all that matters =)
 		// Need to set a timer on this so it cant fire
-	/*
-		TODO(ck): Make the input have a built in delay for menus specifically
-		maybe have separate up and downs that
-
-		because we need to use this same delay in the other menus as well
-		we will leave it here for now because we dont need quick select on
-		asset menus. the entity menu is used for building a scene or chunk
-	*/
 #if 1
 		if (inputTimer > 0.0f)
 			inputTimer -= (float)game->deltaTime;
@@ -543,10 +535,6 @@ void EntityTab(Mon::GameState* game)
 					ImGui::SliderInt("Animation Index", &game->world->entities[selected].spriteAnimationIndex, 0, 10);
 
 
-					//ImGui::SliderFloat3("scale", &game->world->entities[selected].data.scale[0], 1.0f, 20.0f, "%1.0f");
-					//ImGui::SliderFloat3("Collider min", &game->world->entities[selected].collider.min[0], 0.0f, 100.0f, "%1.0f");
-					//ImGui::SliderFloat3("Collider max", &game->world->entities[selected].collider.max[0], 0.0f, 100.0f, "%1.0f");
-
 					ImGui::DragFloat("speed", &game->world->entities[selected].rb.speed, 0.10f, 0.0f, 200.0f, "%.10f");
 					ImGui::DragFloat("angle", &game->world->entities[selected].spriteAngleDegrees, 0.10f, -180.0f, 360.0f, "%.10f");
 
@@ -558,7 +546,6 @@ void EntityTab(Mon::GameState* game)
 					//ImGui::Checkbox("Visible", &game->world->entities[selected].data.visible);
 					ImGui::SameLine();
 					//ImGui::Checkbox("Show Collider", &game->world->entities[selected].collider.data.visible);
-					
 					//ImGui::SliderFloat("Texcoord scale", &game->world->entities[selected].data.programData.texCoordScale, 1, 100);
 
 					//ImGui::Checkbox("show normals", &game->objects[selected]->viewNormals);
@@ -567,30 +554,6 @@ void EntityTab(Mon::GameState* game)
 					//ImGui::DragFloat("rot z", &game->objects[selected]->orientation.z, 0.05f, -1000.0f, 1000.0f, "%.02f");
 					ImGui::EndTabItem();
 				}
-
-
-
-				// Water render data
-				/*
-				if (game->world->entities[selected].data.programType == MonGL::ProgramType::Water)
-				{
-					if (ImGui::BeginTabItem("Water options"))
-					{
-						ImGui::DragFloat("uJump", &game->world->entities[selected].data.programData.uJump, 0.001f, 0.0f, 0.25f, "%.02f");
-						ImGui::DragFloat("vJump", &game->world->entities[selected].data.programData.vJump, 0.001f, 0.0f, 0.25f, "%.02f");
-						ImGui::DragFloat("tiling", &game->world->entities[selected].data.programData.tiling, 0.001f, 0.0f, 10.00f, "%.01f");
-						ImGui::DragFloat("speed", &game->world->entities[selected].data.programData.speed, 0.001f, 0.0f, 2.0f, "%.01f");
-						ImGui::DragFloat("flow strength", &game->world->entities[selected].data.programData.flowStrength, 0.001f, 0.0f, 0.5f, "%.02f");
-						ImGui::DragFloat("flow offset", &game->world->entities[selected].data.programData.flowOffset, 0.001f, -1.5f, 2.0f, "%.02f");
-						ImGui::SliderFloat("height scale", &game->world->entities[selected].data.programData.heightScale, 0.0f, 5.0f);
-						ImGui::SliderFloat("height scale modulated", &game->world->entities[selected].data.programData.heightScaleModulated, 0.0f, 20.0f);
-						ImGui::SliderFloat("wave length", &game->world->entities[selected].data.programData.waveLength, 0.0f, 100.0f);
-
-
-						ImGui::EndTabItem();
-					}
-				}
-				*/
 				ImGui::EndTabBar();
 			}
 

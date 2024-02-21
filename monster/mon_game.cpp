@@ -287,15 +287,12 @@ namespace Mon
 					jumped = true;
 
 			}
+
+			UpdateEntities(state->world, state->renderer, dt);
 			// PIPE velocity to function
 			MovePlayer(state->world, &velocity, jumped, dt);
-		}
 
-		//
-		//	ENTITIES UPDATE
-		//
-		UpdateEntities(state->world, state->renderer, dt);
-		
+		}
 		// 
 		// CAMERA UPDATE
 		//
@@ -345,23 +342,20 @@ namespace Mon
 		memcpy(state->renderer->ubo.buffer + (sizeof(glm::mat4) * 2) + vec3AlignSize, &lightColour, vec3AlignSize);
 
 
-		//
-		// PRE RENDER go through entities
-		// 
-
 		// Start at offset of 1 after the camera/light block
+		// This is for the terrain mesh
 		int beginOffset = 1;
 		mat4 defaultModel = mat4(1.0f);
 		v4 defaultColour = v4(1.0f);
 		memcpy(state->renderer->ubo.buffer + (state->renderer->ubo.blockSize * beginOffset), &defaultModel, sizeof(glm::mat4)); // inserted at right at 256 beginning of block. then we add 64 which means we go form 
-		memcpy(state->renderer->ubo.buffer + ((state->renderer->ubo.blockSize * beginOffset) + sizeof(glm::mat4)), &defaultColour, sizeof(glm::vec4)); // alligned vec3 is 16
+		memcpy(state->renderer->ubo.buffer + ((state->renderer->ubo.blockSize * static_cast<unsigned long long>(beginOffset)) + sizeof(glm::mat4)), &defaultColour, sizeof(glm::vec4)); // alligned vec3 is 16
 
 
 		// IMPORTANT(ck): Start this at one. We wil have a "default" model matrix of 1.0f that sits at the front of the list
 		// We will bind do this for things like terrain?
 
 		// Offset after the camera block at 0 then the default model block at 1
-		int renderItemOffset = 1;
+		int renderItemOffset = beginOffset; // We put the terrain at the offset of 1 in the ubo (which is the second block)...
 		for (unsigned int i = 1; i < state->world->entityCount; ++i)
 		{
 			Entity e = state->world->entities[i];
@@ -392,9 +386,6 @@ namespace Mon
 			//	{glm::vec4(destAABB.max.x, destAABB.max.y, destAABB.max.z, 1.0f)},
 			//};
 			
-
-
-
 
 
 			if(e.flags & EntityRenderFlag::Sprite)
@@ -610,6 +601,9 @@ namespace Mon
 		delete state->grid;
 		state->grid = nullptr;
 
+		//delete state->world;
+		//state->world = nullptr;
+
 		free(state->renderer->ubo.buffer);
 		free(state->renderer->lineBuffer.indices);
 		free(state->renderer->lineBuffer.vertices);
@@ -618,6 +612,12 @@ namespace Mon
 		//state->entities = nullptr;
 		state->renderer->lineBuffer.indices = nullptr;
 		state->renderer->lineBuffer.vertices = nullptr;
+
+
+		//delete state->renderer;
+		//state->renderer = nullptr;
+
+
 		/*
 		* 
 		* 
