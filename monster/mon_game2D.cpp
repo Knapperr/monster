@@ -103,7 +103,8 @@ namespace Mon {
 						//newPos = player->rb.worldPos + 0.05f;
 						//newPos.y = 0.0f;
 						// 
-						canMove = false;
+						
+						//canMove = false;
 						p->pos -= 0.25f;
 						testEntity->colour = v4(1.0f, 0.2f, 0.1f, 1.0f);
 						//break; // break on first seen collision but leave off for testing to see colour
@@ -250,7 +251,8 @@ namespace Mon {
 
 		
 		// TODO(ck): Pull Texture out of sheet
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glEnable(GL_BLEND);
 
 		// Loop through batches 
 		// batch needs its own shader id and texture id for the sheet
