@@ -76,12 +76,6 @@ namespace Mon
 		return 1;
 	}
 
-	int GetTileValue(TileMap* tileMap, TileMapPosition pos)
-	{
-		//int tileChunkValue = GetTileValue(tileMap, pos.absTileX, pos.absTileY, pos.absTileZ);
-		return 1;
-	}
-
 	void SetTile(Tile* tile, int tileId, int offsetX, int offsetY)
 	{
 		tile->id = tileId;

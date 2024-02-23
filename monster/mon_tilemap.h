@@ -17,42 +17,12 @@
 namespace Mon
 {
 #define TILE_SIZE 16
-	struct TileMapDifference
-	{
-		v2 dXY;
-		float dZ;
-	};
-
-	struct TileMapPosition
-	{
-		int32 absTileX;
-		int32 absTileY;
-		int32 absTileZ;
-		// NOTE(casey): These are the offsets from the tile center
-		v2 offset;
-	};
 	
-	struct TileChunkPosition
-	{
-		int32 tileChunkX;
-		int32 tileChunkY;
-		int32 tileChunkZ;
-		
-		int32 relTileX;
-		int32 relTileY;
-	};
-
-	struct TileChunk
-	{
-		uint32* tiles;
-	};
-
 	struct Tile
 	{
 		float x, y;
 		int height, width;
 		int textureOffsetX, textureOffsetY;
-
 
 		// TODO(ck): TILE_PART_ONE - this is linked to mon_world.cpp 
 		//file there is a render call using the old sprite method 
@@ -96,19 +66,6 @@ namespace Mon
 
 		Tile* createTile(int tileId);
 		Tile* getTile(int tileId);
-		// this is the tile and the ones that get created for
-		// everytthing else the tile sheet creates tiles for the
-		// map that way we can also manipulate the tile sheet
-		// 	in the gui for our loaded texture and info about the sheet like 
-		// 	   lengths of ids and 
-		// 
-		//Tile[] tiles;
-
-		//texture
-		//info
-		//	this is calculated by parsing the loaded texture
-		//	we get an id for each tile 
-		//	ids (1, 2, 3, 4 ,5 )
 	};
 
 	void InitTileSheet(TileSheet* sheet, const char* fileName);
@@ -133,33 +90,12 @@ namespace Mon
 		uint32 tileChunkCountY;
 		uint32 tileChunkCountZ;
 
-		TileChunk* chunks;
 	};
-
-	TileChunk* GetTileChunk(TileMap_* tileMap, int32 tileChunkX, int32 tileChunkY, int32 tileChunkZ);
-	uint32 GetTileValueUnchecked(TileMap_ *tileMap, TileChunk *tileChunk, int32 tileX, int32 tileY);
-	void SetTileValueUnchecked(TileMap_ *tileMap, TileChunk *tileChunk, int32 tileX, int32 tileY);
-	
-	void SetTileValue(TileMap_* tileMap, TileChunk* tileChunk, int32 testTileX, int32 testTileY, int32 tileValue);
-	void GetChunkPositionFor(TileMap_ *tileMap, int32 absTileX, int32 absTileY, int32 absTileZ);
-	uint32 GetTileValue(TileMap_ *tileMap, TileChunk *tileChunk, int32 testTileX, int32 testTileY);
-	uint32 GetTileValue(TileMap_ *tileMap, int32 absTileX, int32 absTileY, int32 absTileZ);
-	uint32 GetTileValue(TileMap_* tileMap, TileMapPosition pos);
-	bool IsTileValueEmpty(int32 tileValue);
-	bool IsTileMapPointEmpty(TileMap_* tileMap, TileMapPosition);
-	void SetTileValue(TileMap *tileMap,
-				int32 absTileX, int32 absTileY, int32 absTileZ,
-				int32 tileValue);
-	//void SetTileValue(MemoryArena *arena, TileMap *tileMap,
-	//				uint32 absTileX, uint32 absTileY, uint32 absTileZ,
-	//				uint32 tileValue);
 
 	// New tilemap methods
 	void InitTilemap_(TileMap_* map);
 
-
 	void InitTileMap(TileMap* map);
-	TileMapPosition RecanonicalizePosition(TileMap* tileMap, TileMapPosition pos);
 	void UpdateTile(TileMap* map, TileSheet* sheet, int tileIndex, int newTileId);
 }
 

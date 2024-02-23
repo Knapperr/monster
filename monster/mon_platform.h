@@ -30,8 +30,8 @@ namespace Mon
 		SDL_Joystick* joyStick;
 
 		PlatformState state;
-		bool quit;
-		bool cursorDisabled;
+		bool quit = false;
+		bool cursorDisabled = false;
 
 		virtual bool init(Settings* settings) = 0;
 		virtual void pollInput(Input* newInput, Input* oldInput) = 0;

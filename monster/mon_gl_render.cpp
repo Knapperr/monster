@@ -436,7 +436,7 @@ namespace MonGL
 			int tileOffsetX = 5;
 			int tileOffsetY = 7;
 
-			float uvPadding = 0.001f;
+			float uvPadding = 0.0f;
 
 			for (int i = 0; i < animationCount; ++i)
 			{
@@ -477,10 +477,10 @@ namespace MonGL
 					//frame->subTexture.texCoords[2] = v2((((tileOffsetX + 1) * tileSize) / sheetSize), (((tileOffsetY + 1) * tileSize) / sheetSize)); // top right
 					//frame->subTexture.texCoords[3] = v2(((tileOffsetX * tileSize) / sheetSize), (((tileOffsetY + 1) * tileSize) / sheetSize)); // top left 
 
-					frame->subTexture.texCoords[0] = v2(((tileOffsetX * tileSize) / sheetSize) + uvPadding, ((tileOffsetY * tileSize) / sheetSize)) + uvPadding; // bottom left
-					frame->subTexture.texCoords[1] = v2((((tileOffsetX + 1) * tileSize) / sheetSize) - uvPadding, ((tileOffsetY * tileSize) / sheetSize)) - uvPadding; // bottom right
-					frame->subTexture.texCoords[2] = v2((((tileOffsetX + 1) * tileSize) / sheetSize) - uvPadding, (((tileOffsetY + 1) * tileSize) / sheetSize)) - uvPadding; // top right
-					frame->subTexture.texCoords[3] = v2(((tileOffsetX * tileSize) / sheetSize) + uvPadding, (((tileOffsetY + 1) * tileSize) / sheetSize)) + uvPadding; // top left 
+					frame->subTexture.texCoords[0] = v2(((tileOffsetX * tileSize) / sheetSize), ((tileOffsetY * tileSize) / sheetSize)); // bottom left
+					frame->subTexture.texCoords[1] = v2((((tileOffsetX + 1) * tileSize) / sheetSize), ((tileOffsetY * tileSize) / sheetSize)); // bottom right
+					frame->subTexture.texCoords[2] = v2((((tileOffsetX + 1) * tileSize) / sheetSize), (((tileOffsetY + 1) * tileSize) / sheetSize)); // top right
+					frame->subTexture.texCoords[3] = v2(((tileOffsetX * tileSize) / sheetSize), (((tileOffsetY + 1) * tileSize) / sheetSize)); // top left 
 
 					frame->duration = 5.0f;
 				}
@@ -1698,9 +1698,14 @@ namespace MonGL
 
 			const int subTextureCount = 4;
 			float sheetSize = 256.0f;
-			int tileSize = 32;
-			int tileOffsetX = 5;
-			int tileOffsetY = 7;
+			float tileSize = 128.0f;
+
+			// 256sheetsize / 32 tilesize=8 -1 = 7 for offsets y=7 is top of sheet x=0is left of sheet 
+			// what if we our tile is a different size...
+			
+			// can we somehow add to 32 so say tileSize=32 objectSize=96 96/32=3 [objectSize/tileSize]=[offsets] 
+			int tileOffsetX = 0;
+			int tileOffsetY = 0;
 
 			for (int i = 0; i < animationCount; ++i)
 			{
@@ -1720,6 +1725,7 @@ namespace MonGL
 
 					if (frameIndex == 1)
 					{
+						//tileSize = 32;
 						tileOffsetX = 6;
 					}
 					else if (frameIndex == 2)
@@ -1734,7 +1740,8 @@ namespace MonGL
 					frame->subTexture = {};
 					frame->subTexture.width = 32;
 					frame->subTexture.height = 32;
-					frame->subTexture.tileSize = 32;
+					frame->subTexture.tileSize = 128;
+					frame->subTexture.sheetSize = 256.0f;
 					frame->subTexture.texCoords[0] = v2((tileOffsetX * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize); // bottom left
 					frame->subTexture.texCoords[1] = v2(((tileOffsetX + 1) * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize); // bottom right
 					frame->subTexture.texCoords[2] = v2(((tileOffsetX + 1) * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize); // top right
@@ -1753,7 +1760,7 @@ namespace MonGL
 			gl->spriteAnimatorCount++;
 
 			frameCount = 10;
-
+			tileSize = 32;
 			//sheet size 
 			for (int i = 0; i < animationCount; ++i)
 			{
@@ -1764,7 +1771,7 @@ namespace MonGL
 
 				ani->frameIndex = 0;
 				ani->frameCounter = 0;
-				tileOffsetY = 4;
+				tileOffsetY = 5;
 				tileOffsetX = 0;
 
 				for (int frameIndex = 0; frameIndex < frameCount; ++frameIndex)
@@ -1777,6 +1784,7 @@ namespace MonGL
 					frame->subTexture.height = 32;
 					frame->subTexture.height = 32;
 					frame->subTexture.tileSize = 32;
+					frame->subTexture.sheetSize = 256.0f;
 					frame->subTexture.texCoords[0] = v2((tileOffsetX * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize); // bottom left
 					frame->subTexture.texCoords[1] = v2(((tileOffsetX + 1) * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize); // bottom right
 					frame->subTexture.texCoords[2] = v2(((tileOffsetX + 1) * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize); // top right
@@ -1952,7 +1960,8 @@ namespace MonGL
 	void FillBatch(BatchData* batch, float sheetSize, int tileSize, float spriteSize, float worldX, float worldY, GLSubTexture subTexture, v2 cameraPos)
 	{
 		// 
-		float size = spriteSize * (float)tileSize;
+		//float size = spriteSize * (float)subTexture.tileSize;
+		float size = (float)subTexture.tileSize;
 
 		// tile coords to world coords
 		//worldX *= (float)tileSize;
