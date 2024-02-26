@@ -505,7 +505,7 @@ namespace MonGL
 
 				ani->frameIndex = 0;
 				ani->frameCounter = 0;
-				tileOffsetY = 4;
+				tileOffsetY = 5;
 				tileOffsetX = 0;
 
 				for (int frameIndex = 0; frameIndex < frameCount; ++frameIndex)
@@ -1880,6 +1880,7 @@ namespace MonGL
 		batch->indicesLength = batch->quadCount * 6;
 
 		// TODO(ck): Memory management
+		// do not prebuild indicies?
 		batch->indices = new uint32_t[batch->indicesLength];
 		int offset = 0;
 		for (int i = 0; i < batch->indicesLength; i += 6)

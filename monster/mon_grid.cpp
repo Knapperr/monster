@@ -10,6 +10,17 @@ https://www.reddit.com/r/opengl/comments/ujcaeh/best_way_to_handle_2d_grid_lines
 Grid lines
 separate shader so you can do effects with the grid
 
+
+
+Make a "GRID" or tilemap really that loads quads
+hopefully there aren't seams between but lets try
+
+can draw tiles around the player in the frustum view....
+how do we get that?
+
+To start just add all tiles to render list...
+
+
 */
 
 void InitGrid(Grid* grid)

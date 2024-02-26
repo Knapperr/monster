@@ -81,6 +81,9 @@ namespace Mon {
 			//Mon::MovePlayer(game->world->map, p, &velocity, (float)dt);
 			v3 aMin = v3(p->pos.x - 0.5f, p->pos.y - 0.5f, 0.0f);
 			v3 aMax = v3(p->pos.x + 0.5f, p->pos.y + 0.5f, 0.0f);
+			AABB a;
+			a.min = aMin;
+			a.max = aMax;
 			bool canMove = true;
 			p->colour = v4(1.0f);
 			for (unsigned int i = 1; i < game->world->entityCount; ++i)
@@ -94,32 +97,67 @@ namespace Mon {
 					Entity2D* testEntity = GetEntity2D(game->world, i);
 					testEntity->colour = v4(1.0f);
 
-
+					AABB b;
 					v3 bMin = v3(testEntity->pos.x - 0.5f, testEntity->pos.y - 0.5f, 0.0f);
 					v3 bMax = v3(testEntity->pos.x + 0.5f, testEntity->pos.y + 0.5f, 0.0f);
+					b.min = bMin;
+					b.max = bMax;
 
-					if (Mon::TestAABB(aMin, aMax, bMin, bMax))
+					float tFirst = 0.0f;
+					float tLast = 0.0f;
+					if (Mon::InterestMovingAABB(a, b, v3(1.0f), v3(0.0f), tFirst, tLast))
 					{
 						//newPos = player->rb.worldPos + 0.05f;
 						//newPos.y = 0.0f;
 						// 
-						
-						//canMove = false;
-						p->pos -= 0.25f;
+
+						canMove = false;
+						//p->pos -= 0.25f;
 						testEntity->colour = v4(1.0f, 0.2f, 0.1f, 1.0f);
 						//break; // break on first seen collision but leave off for testing to see colour
 					}
+					//if (Mon::TestAABB(aMin, aMax, bMin, bMax))
+					//{
+					//	//newPos = player->rb.worldPos + 0.05f;
+					//	//newPos.y = 0.0f;
+					//	// 
+					//	
+					//	//canMove = false;
+					//	//p->pos -= 0.25f;
+					//	testEntity->colour = v4(1.0f, 0.2f, 0.1f, 1.0f);
+					//	//break; // break on first seen collision but leave off for testing to see colour
+					//}
 				}
 			}
 			if (canMove)
 			{
-				// Mon::MovePlayer(game->world->map, p, &velocity, (float)dt);
+				Mon::MovePlayer(game->world->map, p, &velocity, (float)dt);
 				
-				//Mon::MovePlayer(p, &velocity, (float)dt);
-				v2 oldPos = p->pos;
+				// COLLISION TEST 
+				//Entity otherEnt = world->entities[3];
+				//float tFirst = 0.0f;
+				//float tLast = 0.0f;
 
-				velocity = velocity * p->speed;
-				p->pos += velocity * v2(dt,dt);
+				//AABB a = player->bbox;
+				//AABB b = otherEnt.bbox;
+				////otherEnt.rb.velocity = v3(1.0f);
+
+				////bool colliding = InterestMovingAABB(a, b, player->rb.velocity, otherEnt.rb.velocity, tFirst, tLast);
+				//bool colliding = InterestMovingAABB(a, b, player->rb.velocity, otherEnt.rb.velocity, tFirst, tLast);
+
+				////Mon::Log::print("tFirst:", tFirst);
+				////Mon::Log::print("tLast:", tLast);
+				//player->rb.velocity.x = velocity->x * dt + player->rb.velocity.x;
+				//player->rb.velocity.z = velocity->z * dt + player->rb.velocity.z;
+				//return 1;
+
+
+				//Mon::MovePlayer(p, &velocity, (float)dt);
+				//v2 oldPos = p->pos;
+
+				//velocity = velocity * p->speed;
+				//p->pos += velocity * v2(dt,dt);
+				
 				//p->pos.x += (velocity.x * p->speed * dt);
 				//p->pos.y += (velocity.y * p->speed * dt);
 

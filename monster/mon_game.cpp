@@ -52,7 +52,7 @@ namespace Mon
 		{	
 			e->facingDir = Direction::Left;
 		}
-		if(e->rb.worldPos.x <= -20.0f && e->facingDir == Direction::Left)
+		if (e->rb.worldPos.x <= -20.0f && e->facingDir == Direction::Left)
 		{
 			e->facingDir = Direction::Right;
 		}
@@ -288,9 +288,9 @@ namespace Mon
 
 			}
 
-			UpdateEntities(state->world, state->renderer, dt);
 			// PIPE velocity to function
 			MovePlayer(state->world, &velocity, jumped, dt);
+			UpdateEntities(state->world, state->renderer, dt);
 
 		}
 		// 

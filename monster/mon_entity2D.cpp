@@ -35,6 +35,42 @@ namespace Mon
 		return 1;
 	}
 
+	int InterestMovingAABB(AABB a, AABB b, v3 va, v3 vb, float& tFirst, float& tLast)
+	{
+		if (TestAABB(a.min, a.max, b.min, b.max))
+		{
+			tFirst = tLast = 0.0f;
+			return 1;
+		}
+
+		// constant velocities va, vb
+		// relative velocity. treat 'a' as stationary
+		v2 v = vb - va;
+		tFirst = 0.0f;
+		tLast = 1.0f;
+
+		for (int i = 0; i < 2; i++)
+		{
+			if (v[i] < 0.0f)
+			{
+				if (b.max[i] < a.min[i]) return 0;
+				// Nonintersecting and moving apart
+				if (a.max[i] < b.min[i]) tFirst = std::max((a.max[i] - b.min[i]) / v[i], tFirst);
+				if (b.max[i] > a.min[i]) tLast = std::min((a.min[i] - b.max[i]) / v[i], tLast);
+			}
+			if (v[i] > 0.0f)
+			{
+				if (b.min[i] > a.max[i]) return 0;
+				// Nonintersecting and moving apart
+				if (b.max[i] < a.min[i]) tFirst = std::max((a.min[i] - b.max[i]) / v[i], tFirst);
+				if (a.max[i] > b.min[i]) tLast = std::min((a.max[i] - b.min[i]) / v[i], tLast);
+			}
+			// No overlap possible if time of first contact occurs after time of last contact
+			if (tFirst > tLast) return 0;
+		}
+		return 1;
+	}
+
 	void MovePlayer(TileMap* map, Entity2D* p, v2* velocity, float deltaTime)
 	{
 		// ddPLength

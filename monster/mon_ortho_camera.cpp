@@ -34,13 +34,30 @@ namespace Mon
 		camera->pos.x = smoothDamp(camera->pos.x, (target.x), camera->vel.x, camera->smoothness, dt);
 		camera->pos.y = smoothDamp(camera->pos.y, (target.y), camera->vel.y, camera->smoothness, dt);
 
+		// need the map bounds in world space
+		// camera position 
+		// 40x40.. 
+	/*	if (camera->pos.x > 40.0f)
+			camera->pos.x = 40.0f;
+		if (camera->pos.y > 40.0f)
+			camera->pos.y = 40.0f;
 
-
+		if (camera->pos.x < 0.0f)
+			camera->pos.x = 0.0f;
+		if (camera->pos.y < 0.0f)
+			camera->pos.y = 0.0f;*/
 	}
 
 	bool IsInBounds(Camera2D* camera, v2 pos)
 	{
 		bool result = false;
+
+		// camera bounds
+		// get the width of the camera in world units
+		// we know this from 
+		// we need to do the width, height and then figure out the position??? ... position is the center
+		float cameraW = camera->resolution.w / 16.0f;
+		float cameraH = camera->resolution.h / 16.0f;
 
 
 		return result;

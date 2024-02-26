@@ -60,7 +60,6 @@ namespace Mon
 		MousePicker picker;
 		Input input;
 
-		// TODO(ck): Camera Manager
 		Camera cameras[10];
 		int currCameraIndex = 0;
 		int cameraCount = 0;

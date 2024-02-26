@@ -74,6 +74,7 @@ namespace Mon {
 		//e->data.wireFrame = false;
 		//e->data.visible = true;
 		e->rb.worldPos = pos;
+		e->rb.worldPos.y = 0.5f;
 		e->follow = false;
 		e->spriteAnimationIndex = 0; // TODO(ck): Set sprite animation index for sprite entities
 		Mesh* mesh = Mon::GetMesh(g_Assets, meshIndex);
@@ -104,7 +105,7 @@ namespace Mon {
 		//player->data.programData.texCoordScale = 1.0f;
 		//player->data.programType = MonGL::ProgramType::Common;
 
-		player->rb.worldPos = v3(3.0f, 0.0f, 2.0);
+		player->rb.worldPos = v3(3.0f, 0.5f, 2.0);
 		player->rb.inverseMass = 10.0f;
 		player->rb.velocity = v3(0.0f, 0.0f, 0.0f); // 35m/s
 		player->rb.gravity = 10.0f;
@@ -186,7 +187,7 @@ namespace Mon {
 		{
 			AddEntity(world);
 			Entity* tree = GetEntity(world, i);
-			v3 offset = v3(i * 4, 0.0f ,i * 4) + basePoint; 
+			v3 offset = v3(i * 4, 0.5f ,i * 4) + basePoint; 
 			InitEntity(tree, "tree", offset, v3(1.0f), angleDegrees, 7, 1);
 		}
 		
@@ -240,13 +241,59 @@ namespace Mon {
 		// move entity in here?
 	}
 
+	static int TestAABB(AABB a, AABB b)
+	{
+		if (a.max.x < b.min.x || a.min.x > b.max.x) return 0;
+		if (a.max.z < b.min.z || a.min.z > b.max.z) return 0;
+		// NOTE(ck): Check y last because it is the least likely collison
+		if (a.max.y < b.min.y || a.min.y > b.max.y) return 0;
+		// Overlapping on all axes means AABBs are intersecting
+		return 1;
+	}
+
+	static int InterestMovingAABB(AABB a, AABB b, v3 va, v3 vb, float& tFirst, float& tLast)
+	{
+		if (TestAABB(a, b))
+		{
+			tFirst = tLast = 0.0f;
+			return 1;
+		}
+
+		// constant velocities va, vb
+		// relative velocity. treat 'a' as stationary
+		v3 v = vb - va;
+		tFirst = 0.0f;
+		tLast = 1.0f;
+
+		for (int i = 0; i < 3; i++) 
+		{
+			if (v[i] < 0.0f) 
+			{
+				if (b.max[i] < a.min[i]) return 0;
+				// Nonintersecting and moving apart
+				if (a.max[i] < b.min[i]) tFirst = std::max((a.max[i] - b.min[i]) / v[i], tFirst);
+				if (b.max[i] > a.min[i]) tLast = std::min((a.min[i] - b.max[i]) / v[i], tLast);
+			}
+			if (v[i] > 0.0f) 
+			{
+				if (b.min[i] > a.max[i]) return 0;
+				// Nonintersecting and moving apart
+				if (b.max[i] < a.min[i]) tFirst = std::max((a.min[i] - b.max[i]) / v[i], tFirst);
+				if (a.max[i] > b.min[i]) tLast = std::min((a.max[i] - b.min[i]) / v[i], tLast);
+			}
+			// No overlap possible if time of first contact occurs after time of last contact
+			if (tFirst > tLast) return 0;
+		}
+		return 1;
+	}
+
 	static void MovePlayer(World* world, v3* velocity, bool jumped, float dt)
 	{
 		Entity* player = GetPlayer(world);
 
 
 // handmade hero method
-#if 0
+#if 1
 		// ddPLength
 		float velocityLength = lengthSq(*velocity);
 		if (velocityLength > 1.0f)
@@ -264,30 +311,34 @@ namespace Mon {
 		v3 oldPos = player->rb.worldPos;
 		
 		float deltaX = (0.5f * velocity->x * square(dt) + player->rb.velocity.x * dt);
-		float deltaY = player->rb.velocity.y * 0.5f;
+		float deltaY = player->rb.velocity.y;// *0.5f;
 		//float deltaY = velocity->y * square(deltaTime) + player.particle.velocity.y * deltaTime);
 		float deltaZ = (0.5f * velocity->z * square(dt) + player->rb.velocity.z * dt);
 		v3 delta = { deltaX, deltaY, deltaZ };
 
 		v3 newPos = oldPos + delta;
 
-		player->rb.velocity.x = velocity->x * dt + player->rb.velocity.x;
-		player->rb.velocity.z = velocity->z * dt + player->rb.velocity.z;
+
 #endif
 
-		Entity otherEnt = world->entities[2];
-
+		// COLLISION TEST 
+		Entity otherEnt = world->entities[3];
+		float tFirst = 0.0f; 
+		float tLast = 0.0f;
 		
-		// if (testAABBAABB(a, b)
-		//{
-		//	tFirst = tLast = 0.0f;
-		//  return 1;
-		//
-		//}
-		
+		AABB a = player->bbox;
+		AABB b = otherEnt.bbox;
+		//otherEnt.rb.velocity = v3(1.0f);
 
-		// TODO(ck): Update entity and then update entity collider right after
-		// instead of having two separate loops for entities and their colliders.
+		//bool colliding = InterestMovingAABB(a, b, player->rb.velocity, otherEnt.rb.velocity, tFirst, tLast);
+		bool colliding = InterestMovingAABB(a, b, player->rb.velocity, otherEnt.rb.velocity, tFirst, tLast);
+
+		//Mon::Log::print("tFirst:", tFirst);
+		//Mon::Log::print("tLast:", tLast);
+		player->rb.velocity.x = velocity->x * dt + player->rb.velocity.x;
+		player->rb.velocity.z = velocity->z * dt + player->rb.velocity.z;
+		//return 1;
+		
 		//for (unsigned int i = 1; i < world->entityCount; ++i)
 		//{
 		//	// TODO(ck): Broad Phase Collision Check
@@ -312,9 +363,15 @@ namespace Mon {
 		// game based
 		//player->rb.worldPos += (*velocity * player->rb.speed * dt);
 		
-		//player->rb.worldPos = newPos;
-		player->rb.worldPos.x += (velocity->x * player->rb.speed * dt);
-		player->rb.worldPos.z += (velocity->z * player->rb.speed * dt);
+		if (!colliding)
+			player->rb.worldPos = newPos;
+		else
+		{
+			player->rb.worldPos.x = oldPos.x;
+			player->rb.worldPos.z = oldPos.z;
+		}
+		//player->rb.worldPos.x += (velocity->x * player->rb.speed * dt);
+		//player->rb.worldPos.z += (velocity->z * player->rb.speed * dt);
 
 		SetFacingDirection(player);
 	}
