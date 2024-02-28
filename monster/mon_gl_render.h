@@ -488,8 +488,10 @@ namespace MonGL
 	
 	void InitBatch(BatchData* batch, int tileAmount);
 	void InitBatch(OpenGL* gl, int batchIndex, int tileAmount);
-	void FillBatch(BatchData* batch, float sheetSize, int tileSize, float spriteSize, float worldX, float worldY, v2 textureOffset, v2 cameraPos);	
-	void FillBatch(BatchData* batch, float sheetSize, int tileSize, float spriteSize, float worldX, float worldY, GLSubTexture subTexture, v2 cameraPos);
+	void FillBatch(BatchData* batch, float sheetSize, int tileSize, float worldX, float worldY, v2 textureOffset, v2 cameraPos);	
+	void FillBatch(BatchData* batch, float sheetSize, int tileSize, float worldX, float worldY, GLSubTexture subTexture);
+	void FillBatch(BatchData* batch, BatchItem2D item, GLSubTexture subTexture);
+
 	void BindVertices(BatchData* batch);
 	
 	void SortBatch2D(std::vector<BatchItem2D>& batchItems);

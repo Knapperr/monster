@@ -1461,6 +1461,7 @@ namespace MonGL
 	{
 		//int entOffset = 0; // TODO(ck): DEBUGGING LINE INDICE UPLOAD TO BOUNDING BOX
 		float pixelSize = 16.0f;
+		float thickness = 1.0f;
 		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(min.x * pixelSize, min.y * pixelSize, min.z * pixelSize, 1.0f), colour };
 		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(max.x * pixelSize, min.y * pixelSize, min.z * pixelSize, 1.0f), colour };
 		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(min.x * pixelSize, max.y * pixelSize, min.z * pixelSize, 1.0f), colour };
@@ -1734,7 +1735,7 @@ namespace MonGL
 					}
 					else if (frameIndex == 3)
 					{
-						tileOffsetX = 0;
+						tileOffsetX = 1;
 					}
 
 					frame->subTexture = {};
@@ -1910,7 +1911,7 @@ namespace MonGL
 		InitBatch(batch, tileAmount);
 	}
 
-	void FillBatch(BatchData* batch, float sheetSize, int tileSize, float spriteSize, float worldX, float worldY, v2 textureOffset, v2 cameraPos)
+	void FillBatch(BatchData* batch, float sheetSize, int tileSize, float worldX, float worldY, v2 textureOffset, v2 cameraPos)
 	{
 		// TODO(ck): Pass Point or integer Rect no floating points
 		int tileOffsetX = (int)textureOffset.x;
@@ -1924,7 +1925,7 @@ namespace MonGL
 		v2 bottomRight = v2(((tileOffsetX + 1) * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize);
 		v2 bottomLeft = v2((tileOffsetX * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize);
 
-		float size = spriteSize * 16.0f; // spriteSize * pixelsPerMeter
+		int size = 16.0f;
 		float pixelsPerMeter = size;
 		float x = worldX * pixelsPerMeter;
 		float y = worldY * pixelsPerMeter;
@@ -1958,11 +1959,12 @@ namespace MonGL
 		batch->vertices.push_back(vec3);
 	}
 
-	void FillBatch(BatchData* batch, float sheetSize, int tileSize, float spriteSize, float worldX, float worldY, GLSubTexture subTexture, v2 cameraPos)
+
+	void FillBatch(BatchData* batch, float sheetSize, int tileSize, float worldX, float worldY, GLSubTexture subTexture)
 	{
 		// 
 		//float size = spriteSize * (float)subTexture.tileSize;
-		float size = (float)subTexture.tileSize;
+		int size = subTexture.tileSize;
 
 		// tile coords to world coords
 		//worldX *= (float)tileSize;
@@ -2002,6 +2004,44 @@ namespace MonGL
 			subTexture.texCoords[3]
 		};
 
+		batch->usedIndices += 6;
+		batch->vertices.push_back(vec0);
+		batch->vertices.push_back(vec1);
+		batch->vertices.push_back(vec2);
+		batch->vertices.push_back(vec3);
+	}
+
+	void FillBatch(BatchData* batch, BatchItem2D item, GLSubTexture subTexture)
+	{
+		// 
+//float size = spriteSize * (float)subTexture.tileSize;
+		int size = subTexture.tileSize;
+
+
+		float pixelsPerMeter = 16.0f;
+		float x = (item.worldPos.x - 1.0f) * pixelsPerMeter;
+		float y = (item.worldPos.y - 1.0f) * pixelsPerMeter;
+
+		Vertex vec0 = {
+			v3(x, y, -1.0f),
+			v3(1.0f, 0.0f, 0.0f),
+			subTexture.texCoords[0]
+		};
+		Vertex vec1 = {
+			v3((x + size), y, -1.0f),
+			v3(0.0f, 1.0f, 0.0f),
+			subTexture.texCoords[1]
+		};
+		Vertex vec2 = {
+			v3((x + size), (y + size), -1.0f),
+			v3(0.0f, 0.0f, 1.0f),
+			subTexture.texCoords[2]
+		};
+		Vertex vec3 = {
+			v3(x, (y + size), -1.0f),
+			v3(1.0f, 1.0f, 0.0f),
+			subTexture.texCoords[3]
+		};
 
 		batch->usedIndices += 6;
 		batch->vertices.push_back(vec0);

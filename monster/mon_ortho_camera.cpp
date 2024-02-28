@@ -29,10 +29,14 @@ namespace Mon
 
 	void Update(Camera2D* camera, v2 target, float dt)
 	{
-		//camera->pos = (target);
 		// IMPORTANT(ck): won't work with pixels and screen as 1:1 need to figure out meters to pixels
-		camera->pos.x = smoothDamp(camera->pos.x, (target.x), camera->vel.x, camera->smoothness, dt);
-		camera->pos.y = smoothDamp(camera->pos.y, (target.y), camera->vel.y, camera->smoothness, dt);
+		
+		camera->pos = target;
+
+		// NOTE(ck): Smooth damp can be turned back on once pixel art shader problems are solved.
+		//			 I wonder if I can't have a smooth damp camera in pixel art? I guess once the smoothing is figured out that little jitter of 0.10 won't matter.
+		//camera->pos.x = smoothDamp(camera->pos.x, (target.x), camera->vel.x, camera->smoothness, dt);
+		//camera->pos.y = smoothDamp(camera->pos.y, (target.y), camera->vel.y, camera->smoothness, dt);
 
 		// need the map bounds in world space
 		// camera position 

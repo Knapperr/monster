@@ -105,13 +105,13 @@ namespace Mon {
 
 					float tFirst = 0.0f;
 					float tLast = 0.0f;
-					if (Mon::InterestMovingAABB(a, b, v3(1.0f), v3(0.0f), tFirst, tLast))
+					if (Mon::InterestMovingAABB(a, b, v3(-1.0f, 0.0f, 0.0f), v3(0.0f), tFirst, tLast))
 					{
 						//newPos = player->rb.worldPos + 0.05f;
 						//newPos.y = 0.0f;
 						// 
 
-						canMove = false;
+						//canMove = false;
 						//p->pos -= 0.25f;
 						testEntity->colour = v4(1.0f, 0.2f, 0.1f, 1.0f);
 						//break; // break on first seen collision but leave off for testing to see colour
@@ -131,7 +131,7 @@ namespace Mon {
 			}
 			if (canMove)
 			{
-				Mon::MovePlayer(game->world->map, p, &velocity, (float)dt);
+				//Mon::MovePlayer(game->world->map, p, &velocity, (float)dt);
 				
 				// COLLISION TEST 
 				//Entity otherEnt = world->entities[3];
@@ -160,7 +160,8 @@ namespace Mon {
 				
 				//p->pos.x += (velocity.x * p->speed * dt);
 				//p->pos.y += (velocity.y * p->speed * dt);
-
+				float speed = p->speed * dt;
+				p->pos += velocity * speed;
 			}
 				
 
@@ -237,7 +238,7 @@ namespace Mon {
 		for (int i = 0; i < game->world->map->tiles.size(); ++i)
 		{
 			v2 textOffset = v2(game->world->map->tiles[i]->textureOffsetX, game->world->map->tiles[i]->textureOffsetY);
-			MonGL::FillBatch(tileBatch, 256.0f, 16, 1.0f, game->world->map->tiles[i]->x, game->world->map->tiles[i]->y,
+			MonGL::FillBatch(tileBatch, 256.0f, 16, game->world->map->tiles[i]->x, game->world->map->tiles[i]->y,
 							 textOffset,
 							 game->cameras[game->currentCameraIndex].pos);
 		}
@@ -276,15 +277,14 @@ namespace Mon {
 				MonGL::UpdateSpriteAnimation(anim, 1, (float)dt);
 
 				MonGL::GLSubTexture* walkSubText = &anim->frames[anim->frameIndex].subTexture;//&animator->animations[item.animationIndex].frames[state->selectedSubTextureIndex].subTexture;
-				MonGL::FillBatch(spriteBatch, 256.0f, item.tileSize, item.spriteSize, item.worldPos.x, item.worldPos.y,
-								 *walkSubText,
-								 game->cameras[game->currentCameraIndex].pos);
+				MonGL::FillBatch(spriteBatch, 256.0f, item.tileSize, item.worldPos.x, item.worldPos.y, *walkSubText);
 				continue;
 			}
+			if (i == 3)
+				subTexture = &animation->frames[3].subTexture;
 
-			MonGL::FillBatch(spriteBatch, 256.0f, item.tileSize, item.spriteSize, item.worldPos.x, item.worldPos.y,
-							 *subTexture,
-							 game->cameras[game->currentCameraIndex].pos);
+			
+			MonGL::FillBatch(spriteBatch, 256.0f, item.tileSize, item.worldPos.x, item.worldPos.y, *subTexture);
 		}
 
 		
