@@ -49,12 +49,9 @@ namespace Mon {
 	struct Game2D
 	{
 		World2D* world;
-
 		Input input;
 		
-		Camera2D cameras[5];
-		int currentCameraIndex;
-		int cameraCount;
+		Camera2D camera;
 
 		MonGL::Config* config;
 		MonGL::OpenGL* renderer;
@@ -75,27 +72,5 @@ namespace Mon {
 	void DebugMode(Game2D* game);
 
 	void CleanUp(Game2D* game);
-
-	// TODO(ck): Camera manager
-	static unsigned int AddCamera(Game2D* state)
-	{
-		unsigned int cameraIndex = state->cameraCount++;
-
-		Camera2D* c = &state->cameras[cameraIndex];
-		c = {};
-
-		return cameraIndex;
-	}
-
-	// TODO(ck): Camera manager
-	static Camera2D* GetCamera(Game2D* state, unsigned int index)
-	{
-		Camera2D* c = 0;
-		if ((index > 0) && (index < ArrayCount(state->cameras)))
-		{
-			c = &state->cameras[index];
-		}
-		return c;
-	}
 }
 #endif

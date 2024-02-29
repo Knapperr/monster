@@ -1925,11 +1925,9 @@ namespace MonGL
 		v2 bottomRight = v2(((tileOffsetX + 1) * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize);
 		v2 bottomLeft = v2((tileOffsetX * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize);
 
-		int size = 16.0f;
-		float pixelsPerMeter = size;
-		float x = worldX * pixelsPerMeter;
-		float y = worldY * pixelsPerMeter;
-
+		float size = 16.0f;
+		float x = worldX * size;
+		float y = worldY * size;
 
 		Vertex vec0 = {
 				v3(x, y, -1.0f),

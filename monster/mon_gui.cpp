@@ -1629,8 +1629,8 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::game_memory* memory)
 		SDL_SetWindowSize(window, dm.w, dm.h);
 		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 		Mon::SetViewPort(game2D->config, dm.w, dm.h);
-		game2D->cameras[1].resolution.w = game2D->config->viewPort.w / 2.0f;
-		game2D->cameras[1].resolution.h = game2D->config->viewPort.h / 2.0f;
+		game2D->camera.resolution.w = game2D->config->viewPort.w / 2.0f;
+		game2D->camera.resolution.h = game2D->config->viewPort.h / 2.0f;
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Windowed"))
@@ -1638,8 +1638,8 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::game_memory* memory)
 		SDL_SetWindowSize(window, settings->windowWidth, settings->windowHeight);
 		SDL_SetWindowFullscreen(window, 0);
 		Mon::SetViewPort(game2D->config, 960.0f, 540.0f);
-		game2D->cameras[1].resolution.w = game2D->config->viewPort.w / 2.0f;
-		game2D->cameras[1].resolution.h = game2D->config->viewPort.h / 2.0f;
+		game2D->camera.resolution.w = game2D->config->viewPort.w / 2.0f;
+		game2D->camera.resolution.h = game2D->config->viewPort.h / 2.0f;
 	}
 
 	if (ImGui::Button("720"))
@@ -1692,8 +1692,8 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::game_memory* memory)
 
 
 	//ImGui::SliderFloat("Player Speed", &game2D->world->player->speed, 0.0f, 1000.0f);
-	ImGui::SliderFloat("camera lerp", &game2D->cameras[game2D->currentCameraIndex].lerpSpeed, 0.0f, 100.0f);
-	ImGui::SliderFloat("camera smooth", &game2D->cameras[game2D->currentCameraIndex].smoothness, 0.1f, 10.0f);
+	ImGui::SliderFloat("camera lerp", &game2D->camera.lerpSpeed, 0.0f, 100.0f);
+	ImGui::SliderFloat("camera smooth", &game2D->camera.smoothness, 0.1f, 10.0f);
 
 	{
 		//char buffer[64];
@@ -1702,11 +1702,11 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::game_memory* memory)
 		//snprintf(buffer, sizeof(buffer), "%f", game2D->world->player->pos.y);
 		//ImGui::LabelText("player y", buffer);
 	}
-	ImGui::SliderFloat2("offset", (float*)&game2D->cameras[game2D->currentCameraIndex].offset, 0.0f, 10.0f);
-	ImGui::DragFloat("cam zoom", &game2D->cameras[game2D->currentCameraIndex].zoom, 0.1f, 1.0f, 200.0f, "%.02f");
+	ImGui::SliderFloat2("offset", (float*)&game2D->camera.offset, 0.0f, 10.0f);
+	ImGui::DragFloat("cam zoom", &game2D->camera.zoom, 0.1f, 1.0f, 200.0f, "%.02f");
 	//ImGui::SliderInt("Tile 0 ID: ", &game->world2D->map->tiles[0].tileId, 0, 3, NULL);
-	ImGui::DragFloat("x", &game2D->cameras[game2D->currentCameraIndex].pos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");
-	ImGui::DragFloat("y", &game2D->cameras[game2D->currentCameraIndex].pos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
+	ImGui::DragFloat("x", &game2D->camera.pos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");
+	ImGui::DragFloat("y", &game2D->camera.pos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
 	ImGui::DragFloat("speed", &game2D->world->entities[1].speed, 0.1f, 0.1f, 500.0f, "%.01f");
 
 	ImGui::Checkbox("Wireframe", &game2D->world->map->wireFrame);

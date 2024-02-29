@@ -37,10 +37,9 @@ namespace Mon {
 		game->config->viewPort = { 0.0f , 0.0f, portWidth, portHeight };
 		MonGL::ViewPort(&game->config->viewPort);
 
-		AddCamera(game);
-		game->currentCameraIndex = AddCamera(game);
+		
 		// InitCamera
-		InitCamera(&game->cameras[game->currentCameraIndex], game->config->viewPort);
+		InitCamera(&game->camera, game->config->viewPort);
 
 
 		//Entity2D* player = GetPlayer(game->world);
@@ -81,7 +80,7 @@ namespace Mon {
 			//Mon::MovePlayer(game->world->map, p, &velocity, (float)dt);
 			v3 aMin = v3(p->pos.x - 0.5f, p->pos.y - 0.5f, 0.0f);
 			v3 aMax = v3(p->pos.x + 0.5f, p->pos.y + 0.5f, 0.0f);
-			AABB a;
+			AABB a = {};
 			a.min = aMin;
 			a.max = aMax;
 			bool canMove = true;
@@ -97,7 +96,7 @@ namespace Mon {
 					Entity2D* testEntity = GetEntity2D(game->world, i);
 					testEntity->colour = v4(1.0f);
 
-					AABB b;
+					AABB b = {};
 					v3 bMin = v3(testEntity->pos.x - 0.5f, testEntity->pos.y - 0.5f, 0.0f);
 					v3 bMax = v3(testEntity->pos.x + 0.5f, testEntity->pos.y + 0.5f, 0.0f);
 					b.min = bMin;
@@ -165,7 +164,7 @@ namespace Mon {
 			}
 				
 
-			Update(&game->cameras[game->currentCameraIndex], p->pos, (float)dt);
+			Update(&game->camera, p->pos, (float)dt);
 
 
 
@@ -221,10 +220,10 @@ namespace Mon {
 		glUseProgram(shaderID);
 
 
-		mat4 projection = Projection(&game->cameras[game->currentCameraIndex]);
+		mat4 projection = Projection(&game->camera);
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
-		mat4 view = ViewMatrix(&game->cameras[game->currentCameraIndex]);
+		mat4 view = ViewMatrix(&game->camera);
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(view));
 		
 		// TODO(ck): The batch should be internal to the renderer and not really in the game layer although
@@ -240,7 +239,7 @@ namespace Mon {
 			v2 textOffset = v2(game->world->map->tiles[i]->textureOffsetX, game->world->map->tiles[i]->textureOffsetY);
 			MonGL::FillBatch(tileBatch, 256.0f, 16, game->world->map->tiles[i]->x, game->world->map->tiles[i]->y,
 							 textOffset,
-							 game->cameras[game->currentCameraIndex].pos);
+							 game->camera.pos);
 		}
 
 		v4 colour = v4(1.0f);
