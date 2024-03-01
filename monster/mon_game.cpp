@@ -351,6 +351,9 @@ namespace Mon
 		memcpy(state->renderer->ubo.buffer + ((state->renderer->ubo.blockSize * static_cast<unsigned long long>(beginOffset)) + sizeof(glm::mat4)), &defaultColour, sizeof(glm::vec4)); // alligned vec3 is 16
 
 
+		v4 playerPos = v4(state->world->entities[1].rb.worldPos, 1.0f);
+		v4 otherPos = v4(state->world->entities[3].rb.worldPos, 1.0f);
+		MonGL::DrawLine(&state->renderer->lineBuffer, playerPos, otherPos, v4(1.0f));
 		// IMPORTANT(ck): Start this at one. We wil have a "default" model matrix of 1.0f that sits at the front of the list
 		// We will bind do this for things like terrain?
 

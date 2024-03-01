@@ -299,8 +299,7 @@ namespace Mon
 		// TODO(ck): Memory allocation
 		mesh->vertices = new MonGL::Vertex3D[verticeCount];
 
-		// TODO(ck): Try this
-		// https://stackoverflow.com/questions/58494179/how-to-create-a-grid-in-opengl-and-drawing-it-with-lines
+		// NOTE(ck): Terrain Mesh
 		for (int index = 0, z = -zSize/2; z <= zSize/2; z++)
 		{
 			for (int x = -xSize/2; x <= xSize/2; x++, index++)
