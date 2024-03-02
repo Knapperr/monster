@@ -312,6 +312,7 @@ namespace MonGL
 		
 		// TODO(ck): Remove 
 		MonGL::LoadShader(&gl->program, "res/shaders/vert_colors.glsl", "res/shaders/frag_colors.glsl", NULL);
+		MonGL::LoadShader(&gl->frameBufferProgram, "res/shaders/vert_screen.glsl", "res/shaders/frag_screen.glsl", NULL);
 		MonGL::LoadShader(&gl->debugProgram, "res/shaders/vert_debug.glsl", "res/shaders/frag_debug.glsl", NULL);
 		MonGL::LoadShader(&gl->quadProgram, "res/shaders/vert_quad_batch.glsl", "res/shaders/frag_quad_batch.glsl", NULL);
 		MonGL::LoadShader(&gl->waterProgram, "res/shaders/vert_water.glsl", "res/shaders/frag_water.glsl", NULL);
@@ -553,12 +554,12 @@ namespace MonGL
 		glGenFramebuffers(1, &gl->buffer.handle);
 		glBindFramebuffer(GL_FRAMEBUFFER, gl->buffer.handle);
 
-		glGenTextures(1, &gl->textureColorbuffer.handle);
-		glBindTexture(GL_TEXTURE_2D, gl->textureColorbuffer.handle);
+		glGenTextures(1, &gl->textureColourbuffer.handle);
+		glBindTexture(GL_TEXTURE_2D, gl->textureColourbuffer.handle);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, screenWidth, screenHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gl->textureColorbuffer.handle, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gl->textureColourbuffer.handle, 0);
 
 		/*
 		https://www.khronos.org/opengl/wiki/Renderbuffer_Object#:~:text=Renderbuffer%20Objects%20are%20OpenGL%20Objects,shader)%20from%20the%20produced%20image.
@@ -1568,6 +1569,7 @@ namespace MonGL
 		gl->program = {};
 		gl->waterProgram = {};
 		MonGL::LoadShader(&gl->program, "res/shaders/vert_sprite.glsl", "res/shaders/frag_sprite.glsl", NULL);
+		MonGL::LoadShader(&gl->frameBufferProgram, "res/shaders/vert_screen.glsl", "res/shaders/frag_screen.glsl", NULL);
 		MonGL::LoadShader(&gl->debugProgram, "res/shaders/vert_debug.glsl", "res/shaders/frag_debug.glsl", NULL);
 		MonGL::LoadShader(&gl->waterProgram.common, "res/shaders/vert_water.glsl", "res/shaders/frag_water.glsl", NULL);
 		// TODO(ck): Do not need this now?
@@ -1796,6 +1798,78 @@ namespace MonGL
 				}
 			}
 		} // Animations 
+
+
+		// Frame buffer
+		glCreateFramebuffers(1, &gl->fbo);
+		glCreateTextures(GL_TEXTURE_2D, 1, &gl->textureColorbuffer);
+		//glGenerateMipmap(GL_TEXTURE_2D); // DO I NEED THIS?
+
+		glTextureParameteri(gl->textureColorbuffer, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTextureParameteri(gl->textureColorbuffer, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		float viewPortW = 960.0f;
+		float viewPortH = 540.0f;
+		glTextureStorage2D( gl->textureColorbuffer, 1, GL_RGB16, (int)viewPortW, (int)viewPortH);
+		glTextureSubImage2D(gl->textureColorbuffer, 0, 0, 0, (int)viewPortW, (int)viewPortH, GL_RGB16, GL_UNSIGNED_BYTE, NULL);
+		glObjectLabel(GL_TEXTURE, gl->textureColorbuffer, -1, "fbo_screen_texture");
+
+		glNamedFramebufferTexture(gl->fbo, GL_COLOR_ATTACHMENT0, gl->textureColorbuffer, 0);
+
+		// depth texture
+		// Instead of using a render buffer (which is legacy) we use a depth texture which allows us to use 
+		// it in separate passes.
+		glCreateTextures(GL_TEXTURE_2D, 1, &gl->depthTexture);
+
+		glTextureParameteri(gl->depthTexture, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTextureParameteri(gl->depthTexture, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTextureParameteri(gl->depthTexture, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+		glTextureParameteri(gl->depthTexture, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+
+		glTextureStorage2D(gl->depthTexture, 1, GL_DEPTH_COMPONENT16, (int)viewPortW, (int)viewPortH);
+		glTextureSubImage2D(gl->depthTexture, 0, 0, 0, (int)viewPortW, (int)viewPortH, GL_DEPTH_COMPONENT16, GL_FLOAT, NULL);
+
+		glNamedFramebufferTexture(gl->fbo, GL_DEPTH_ATTACHMENT, gl->depthTexture, 0);
+
+
+		//if (glCheckNamedFramebufferStatus(fbo, GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+			//return false; // ERROR FRAMEBUFFER framebuffer is not complete 
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		//
+		// Frame buffer VAO
+		//
+		float quadVertices[] = {
+
+			// pos			tex coords
+			-1.0f, 1.0f,	0.0f, 1.0f,
+			-1.0f, -1.0f,	0.0f, 0.0f,
+			1.0f, -1.0f,	1.0f, 0.0f,
+
+			-1.0f, 1.0f,	0.0f, 1.0f,
+			1.0f, -1.0f,	1.0f, 0.0f,
+			1.0f, 1.0f,		1.0f, 1.0f,
+		};
+
+		
+		glCreateBuffers(1, &gl->screenVBO);
+		glNamedBufferStorage(gl->screenVBO, sizeof(quadVertices), &quadVertices, GL_DYNAMIC_STORAGE_BIT);
+
+		glCreateVertexArrays(1, &gl->screenVAO);
+		glVertexArrayVertexBuffer(gl->screenVAO, 0, gl->screenVBO, 0, sizeof(float) * 4);
+
+		glEnableVertexArrayAttrib(gl->screenVAO, 0);
+		//glVertexArrayAttribFormat(screenVAO, 0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+		glVertexArrayAttribFormat(gl->screenVAO, 0, 2, GL_FLOAT, GL_FALSE, 0);
+		glVertexArrayAttribBinding(gl->screenVAO, 0, 0);
+
+		glEnableVertexArrayAttrib(gl->screenVAO, 1);
+		//glVertexArrayAttribFormat(screenVAO, 1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+		glVertexArrayAttribFormat(gl->screenVAO, 1, 2, GL_FLOAT, GL_FALSE, (2 * sizeof(float)));
+		glVertexArrayAttribBinding(gl->screenVAO, 1, 0);
+
+		glUseProgram(gl->frameBufferProgram.handle);
+		glUniform1i(glGetUniformLocation(gl->frameBufferProgram.handle, "screenTexture"), 0);
 
 
 		// null at 0 index

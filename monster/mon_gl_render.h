@@ -337,6 +337,15 @@ namespace MonGL
 		
 		std::vector<BatchItem2D> batchItems2D;
 
+		// Framebuffer stuff
+		// ----------------------------
+		unsigned int fbo;
+		unsigned int textureColorbuffer;
+		unsigned int depthTexture;
+		unsigned int screenVAO;
+		unsigned int screenVBO;
+		// ----------------------------
+
 		int lightCount;
 		int textureCount;
 		int spriteAnimationCount;
@@ -346,15 +355,18 @@ namespace MonGL
 
 		Cubemap cubemap;
 
+		CommonProgram frameBufferProgram;
 		CommonProgram program;
 		CommonProgram debugProgram;
 		QuadBatchProgram quadProgram;
 		WaterProgram waterProgram;
 		CubemapProgram cubemapProgram;
 
+
+		// TODO(ck): Using in the 3D remove don't need framebufferGL struct either
 		// Separate this out from the renderer?
 		FramebufferGL buffer;
-		FramebufferGL textureColorbuffer;
+		FramebufferGL textureColourbuffer;
 	};
 
 

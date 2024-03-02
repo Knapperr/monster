@@ -215,10 +215,14 @@ namespace Mon {
 		MonGL::DrawBox2D(&game->renderer->lineBuffer, minTest, maxTest, colTest);
 
 
-
+		glBindFramebuffer(GL_FRAMEBUFFER, game->renderer->fbo);
 		int shaderID = game->renderer->program.handle;
 		glUseProgram(shaderID);
-
+		// TODO(ck): Pull Texture out of sheet
+		v3 clearColour = v3(0.1f, 0.8f, 0.8f);
+		glClearColor(clearColour.r, clearColour.g, clearColour.b, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glEnable(GL_BLEND);
 
 		mat4 projection = Projection(&game->camera);
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
@@ -286,10 +290,8 @@ namespace Mon {
 			MonGL::FillBatch(spriteBatch, 256.0f, item.tileSize, item.worldPos.x, item.worldPos.y, *subTexture);
 		}
 
-		
-		// TODO(ck): Pull Texture out of sheet
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glEnable(GL_BLEND);
+	
+
 
 		// Loop through batches 
 		// batch needs its own shader id and texture id for the sheet
@@ -299,6 +301,28 @@ namespace Mon {
 		MonGL::Texture* spriteAtlas = MonGL::GetTexture(game->renderer, 17);
 		DrawBatch(spriteBatch, &game->renderer->program, spriteAtlas->id, false);
 	
+
+		// Render framebuffer texture
+#if 1
+		// Bind the default frame buffer now
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glDisable(GL_DEPTH_TEST); // do not discard the screen quad
+		// clear colour to white but unecessary so why do it???? ASK JASPER
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // set clear color to white (not really necessary actually, since we won't be able to see behind the quad anyways)
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		glUseProgram(game->renderer->frameBufferProgram.handle);
+		//glUniform1f(glGetUniformLocation(game->renderer->frameBufferProgram.handle, "brightness"), state.framebufferBrightness);
+
+
+		glBindVertexArray(game->renderer->screenVAO);
+		glBindTexture(GL_TEXTURE_2D, game->renderer->textureColorbuffer);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glBindVertexArray(0);
+#endif
+
+
+
 		if (game->drawDebug)
 		{
 			// maybe i need to disable depth
