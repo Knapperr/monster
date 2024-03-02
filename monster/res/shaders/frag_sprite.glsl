@@ -59,7 +59,7 @@ uv /= size;
 
 
 	vec2 texSize = textureSize(image, 0);
-	vec2 pixel = TexCoord * texSize;
+	vec2 pixel = (TexCoord * texSize);
 	vec2 seam = floor(pixel + 0.5);
 	vec2 duDv = fwidth(pixel);
 	pixel = seam + clamp((pixel - seam)/duDv, -0.5, 0.5);

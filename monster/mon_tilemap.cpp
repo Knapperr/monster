@@ -294,15 +294,6 @@ namespace Mon
 		map->wireFrame = false;
 	}
 
-	void UpdateTile(TileMap* map, TileSheet* sheet, int tileIndex, int newTileId)
-	{
-		SetTile(map->tiles[tileIndex], sheet->getTile(newTileId));
-	}
-
-
-	///
-	/// New tile map methods
-	///
 
 	void InitTilemap_(TileMap_* map)
 	{

@@ -104,7 +104,7 @@ namespace Mon {
 
 					float tFirst = 0.0f;
 					float tLast = 0.0f;
-					if (Mon::InterestMovingAABB(a, b, v3(-1.0f, 0.0f, 0.0f), v3(0.0f), tFirst, tLast))
+					if (Mon::InterestMovingAABB(a, b, v3(velocity, 0.0f), v3(0.0f), tFirst, tLast))
 					{
 						//newPos = player->rb.worldPos + 0.05f;
 						//newPos.y = 0.0f;

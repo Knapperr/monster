@@ -34,6 +34,8 @@ namespace MonGL
 
 		// ONLY TURN OFF FOR 2D
 		//glGenerateMipmap(GL_TEXTURE_2D);
+		// USE THIS INSTEAD --- THIS IS FOR DSA
+		//glGenerateTextureMipmap(GLuint texture);
 
 		glTextureParameteri(texture->id, GL_TEXTURE_WRAP_S, texture->wrapS);
 		glTextureParameteri(texture->id, GL_TEXTURE_WRAP_T, texture->wrapT);

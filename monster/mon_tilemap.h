@@ -96,7 +96,6 @@ namespace Mon
 	void InitTilemap_(TileMap_* map);
 
 	void InitTileMap(TileMap* map);
-	void UpdateTile(TileMap* map, TileSheet* sheet, int tileIndex, int newTileId);
 }
 
 #endif

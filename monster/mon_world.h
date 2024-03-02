@@ -304,7 +304,7 @@ namespace Mon {
 		float speed = player->rb.speed;
 		//if (input.shift.endedDown)
 			//speed *= 1.5f;
-
+		v3 v = *velocity;
 		*velocity *= speed;
 		*velocity += -6.0f * player->rb.velocity;
 
@@ -331,7 +331,7 @@ namespace Mon {
 		//otherEnt.rb.velocity = v3(1.0f);
 
 		//bool colliding = InterestMovingAABB(a, b, player->rb.velocity, otherEnt.rb.velocity, tFirst, tLast);
-		bool colliding = InterestMovingAABB(a, b, player->rb.velocity, otherEnt.rb.velocity, tFirst, tLast);
+		bool colliding = InterestMovingAABB(a, b, v, otherEnt.rb.velocity, tFirst, tLast);
 
 		//Mon::Log::print("tFirst:", tFirst);
 		//Mon::Log::print("tLast:", tLast);
