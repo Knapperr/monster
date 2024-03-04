@@ -112,33 +112,6 @@ namespace Mon
 		}
 	}
 
-	void InitCameras(GameState* state)
-	{
-		// TODO(ck): Memory management
-		// reserve slot 0 for NULL camera
-		AddCamera(state);
-
-		int followCamIndex = AddCamera(state);
-		InitCamera(&state->cameras[followCamIndex], CameraType::Follow, "Follow", state->config.viewPort);
-
-		int debugCamIndex = AddCamera(state);
-		InitCamera(&state->cameras[debugCamIndex], CameraType::Fly, "Debug 1", state->config.viewPort);
-		int debugCamIndex2 = AddCamera(state);
-		InitCamera(&state->cameras[debugCamIndex2], CameraType::Fly, "Debug 2", state->config.viewPort);
-
-		int followCam2Index = AddCamera(state);
-		InitCamera(&state->cameras[followCam2Index], CameraType::Follow, "Follow 2 (better?)", state->config.viewPort);
-		state->cameras[followCam2Index].FOV = 17.0f;
-		state->cameras[followCam2Index].pitch = 45.0f;
-
-		int followCam3Index = AddCamera(state);
-		InitCamera(&state->cameras[followCam3Index], CameraType::Follow, "Really top down.. easier to see?", state->config.viewPort);
-		state->cameras[followCam3Index].FOV = 17.0f;
-		state->cameras[followCam3Index].pitch = 65.0f;
-
-		state->currCameraIndex = debugCamIndex;
-	}
-
 	bool InitGame(GameMemory* memory, int windowWidth, int windowHeight, float portWidth, float portHeight)
 	{
 		GameState* state = (GameState *)memory->permanentStorage;
@@ -204,7 +177,7 @@ namespace Mon
 
 		state->config.spriteAngleDegrees = -45.0f;
 
-		InitCameras(state);
+		InitCamera(&state->camera, CameraType::Fly, "main camera", state->config.viewPort);
 
 		state->selectedIndex = 1;
 		state->drawCollisions = true;
@@ -230,12 +203,10 @@ namespace Mon
 		{
 			if (state->mode == Mode::Debug)
 			{
-				state->currCameraIndex = 4;
 				PlayMode(state);
 			}
 			else if (state->mode == Mode::Play)
 			{
-				state->currCameraIndex = 2;
 				DebugMode(state);
 			}
 		}
@@ -243,24 +214,24 @@ namespace Mon
 		//
 		// CAMERA
 		//
+		// Update camera 
 		if (newInput->num1.endedDown)
 		{
-			state->currCameraIndex = 1;
-			PlayMode(state);
+			SetCamera(&state->camera, CameraType::Fly, 40.0f, -41.0f, -89.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+			DebugMode(state);
 		}
 		if (newInput->num2.endedDown)
 		{
-			state->currCameraIndex = 2;
-			DebugMode(state);
+			SetCamera(&state->camera, CameraType::Follow, 17.0f, 45.0f, 0.0f, 20.0f, 180.0f, 0.15f, 7.0f, 1.5f);
+			PlayMode(state);
 		}
 		if (newInput->num3.endedDown)
 		{
-			state->currCameraIndex = 3;
 			DebugMode(state);
 		}
 		if (newInput->num4.endedDown)
 		{
-			state->currCameraIndex = 4;
+			SetCamera(&state->camera, CameraType::Follow, 17.0f, 45.0f, 0.0f, 20.0f, 180.0f, 0.25f, 7.0f, 1.5f);
 			PlayMode(state);
 		}
 
@@ -297,7 +268,8 @@ namespace Mon
 		// CAMERA UPDATE
 		//
 		Entity* player = GetPlayer(state->world);
-		Camera* cam = GetCamera(state, state->currCameraIndex);
+		//Camera* cam = GetCamera(state, state->currCameraIndex);
+		Camera* cam = &state->camera;
 		Update(cam, dt, newInput, player->rb.worldPos, player->rb.orientation, true);
 		// sort the entities from the camera
 		//std::sort(world->entities, world->entities + world->entityCount, sortEntities);
@@ -318,7 +290,7 @@ namespace Mon
 	{
 		GameState* state = (GameState*)memory->permanentStorage;
 
-		Camera* cam = GetCamera(state, state->currCameraIndex);
+		Camera* cam = &state->camera;
 		mat4 projection = Projection(cam);
 		mat4 viewMatrix = ViewMatrix(cam);
 	 

@@ -61,9 +61,6 @@ namespace Mon
 		Input input;
 
 		Camera camera;
-		Camera cameras[10];
-		int currCameraIndex = 0;
-		int cameraCount = 0;
 
 		MonGL::Config config;
 
@@ -100,26 +97,5 @@ namespace Mon
 	void PlayMode(GameState* state);
 	void DebugMode(GameState* state);
 
-	// TODO(ck): Camera manager
-	static unsigned int AddCamera(GameState* state)
-	{
-		unsigned int cameraIndex = state->cameraCount++;
-
-		Camera* c = &state->cameras[cameraIndex];
-		c = {};
-
-		return cameraIndex;
-	}
-
-	// TODO(ck): Camera manager
-	static Camera* GetCamera(GameState* state, unsigned int index)
-	{
-		Camera* c = 0;
-		if ((index > 0) && (index < ArrayCount(state->cameras)))
-		{
-			c = &state->cameras[index];
-		}
-		return c;
-	}
 }
 #endif

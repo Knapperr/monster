@@ -276,56 +276,30 @@ void CameraTab(Mon::GameState* game)
 {
 	if (ImGui::BeginTabItem("Cammy"))
 	{
+		ImGui::DragFloat("x", &game->camera.pos.x, 0.01f, 1.0f, 200.0f, "%.02f");
+		ImGui::DragFloat("y", &game->camera.pos.y, 0.01f, 1.0f, 200.0f, "%.02f");
+		ImGui::DragFloat("z", &game->camera.pos.z, 0.01f, 1.0f, 200.0f, "%.02f");
 
-		ImGui::LabelText(game->cameras[game->currCameraIndex].name, "Current Camera");
-		if (ImGui::ArrowButton("##left", ImGuiDir_Left))
-		{
-			if (game->currCameraIndex > 1)
-				game->currCameraIndex--;
+		ImGui::DragFloat("cam speed", &game->camera.speed, 0.01f, 1.0f, 200.0f, "%.02f");
+		ImGui::DragFloat("FOV", &game->camera.FOV, 0.1f, -1000.0f, 1000.0f, "%.02f");
+		ImGui::DragFloat("near plane", &game->camera.nearPlane, 0.01f, 0.1f, 100.0f, "%.02f");
+		ImGui::DragFloat("far plane", &game->camera.farPlane, 0.5f, 100.0f, 1000.0f, "%.02f");
+		ImGui::DragFloat("offset z", &game->camera.offsetZ, 0.5f, -10.0f, 10.0f, "%.02f");
 
-			if (game->cameras[game->currCameraIndex].type == Mon::CameraType::Follow)
-				Mon::PlayMode(game);
-			else
-				Mon::DebugMode(game);
-		}
-		ImGui::SameLine();
-		if (ImGui::ArrowButton("##right", ImGuiDir_Right))
-		{
-			if (game->currCameraIndex < (game->cameraCount - 1))
-				game->currCameraIndex++;
-
-			if (game->cameras[game->currCameraIndex].type == Mon::CameraType::Follow)
-				Mon::PlayMode(game);
-			else
-				Mon::DebugMode(game);
-		}
-
-		ImGui::Separator();
-
-		ImGui::DragFloat("x", &game->cameras[game->currCameraIndex].pos.x, 0.01f, 1.0f, 200.0f, "%.02f");
-		ImGui::DragFloat("y", &game->cameras[game->currCameraIndex].pos.y, 0.01f, 1.0f, 200.0f, "%.02f");
-		ImGui::DragFloat("z", &game->cameras[game->currCameraIndex].pos.z, 0.01f, 1.0f, 200.0f, "%.02f");
-
-		ImGui::DragFloat("cam speed", &game->cameras[game->currCameraIndex].speed, 0.01f, 1.0f, 200.0f, "%.02f");
-		ImGui::DragFloat("FOV", &game->cameras[game->currCameraIndex].FOV, 0.1f, -1000.0f, 1000.0f, "%.02f");
-		ImGui::DragFloat("near plane", &game->cameras[game->currCameraIndex].nearPlane, 0.01f, 0.1f, 100.0f, "%.02f");
-		ImGui::DragFloat("far plane", &game->cameras[game->currCameraIndex].farPlane, 0.5f, 100.0f, 1000.0f, "%.02f");
-		ImGui::DragFloat("offset z", &game->cameras[game->currCameraIndex].offsetZ, -10.0f, 50.0f, 1000.0f, "%.02f");
-
-		ImGui::SliderFloat("pitch", &game->cameras[game->currCameraIndex].pitch, -1.10f, 100.0f, "%1.0f");
-		ImGui::SliderFloat("angle", &game->cameras[game->currCameraIndex].angleAroundTarget, -360.0f, 180.0f);
-		ImGui::SliderFloat("lerp", &game->cameras[game->currCameraIndex].lerpSpeed, 0.0f, 100.0f);
-		ImGui::SliderFloat("smooth", &game->cameras[game->currCameraIndex].smoothness, 0.1f, 10.0f);
+		ImGui::SliderFloat("pitch", &game->camera.pitch, -1.10f, 100.0f, "%1.0f");
+		ImGui::SliderFloat("angle", &game->camera.angleAroundTarget, -360.0f, 180.0f);
+		ImGui::SliderFloat("lerp", &game->camera.lerpSpeed, 0.0f, 100.0f);
+		ImGui::SliderFloat("smooth", &game->camera.smoothness, 0.1f, 10.0f);
 
 		if (ImGui::Button("Log"))
 		{
-			Mon::Log::print("FOV", game->cameras[game->currCameraIndex].FOV);
-			Mon::Log::print("near plane", game->cameras[game->currCameraIndex].nearPlane);
-			Mon::Log::print("far plane", game->cameras[game->currCameraIndex].farPlane);
-			Mon::Log::print("pitch", game->cameras[game->currCameraIndex].pitch);
-			Mon::Log::print("angle around target", game->cameras[game->currCameraIndex].angleAroundTarget);
-			Mon::Log::print("lerp speed", game->cameras[game->currCameraIndex].lerpSpeed);
-			Mon::Log::print("smoothness", game->cameras[game->currCameraIndex].smoothness);
+			Mon::Log::print("FOV", game->camera.FOV);
+			Mon::Log::print("near plane", game->camera.nearPlane);
+			Mon::Log::print("far plane", game->camera.farPlane);
+			Mon::Log::print("pitch", game->camera.pitch);
+			Mon::Log::print("angle around target", game->camera.angleAroundTarget);
+			Mon::Log::print("lerp speed", game->camera.lerpSpeed);
+			Mon::Log::print("smoothness", game->camera.smoothness);
 		}
 
 		ImGui::EndTabItem();

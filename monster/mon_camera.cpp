@@ -28,6 +28,27 @@ namespace Mon
 		}
 	}
 
+
+	void SetCamera(Camera* camera, CameraType type, float FOV, float pitch, float yaw, float distanceFromTarget, float angleAroundTarget, float smoothness, float lerpSpeed, float offsetZ)
+	{
+		camera->type = type;
+		camera->FOV = FOV;
+		camera->pitch = pitch;
+		camera->yaw = yaw;
+		camera->distanceFromTarget = distanceFromTarget;
+		camera->angleAroundTarget = angleAroundTarget;
+		camera->smoothness = smoothness;
+		camera->lerpSpeed = lerpSpeed;
+		camera->offsetZ = offsetZ;
+	}
+
+	void SetCamera(Camera* camera, CameraType type, float FOV, float pitch)
+	{
+		camera->type = type;
+		camera->FOV = FOV;
+		camera->pitch = pitch;
+	}
+
 	// TODO(ck): Do not like switch for retrieving view matrix
 	// IMPORTANT(ck): Can I use an update and viewmatrix function pointer? just set the func the 
 	// camera is going to use?
@@ -78,6 +99,7 @@ namespace Mon
 		camera->worldUp = v3(0.0f, 1.0f, 0.0f);
 		camera->pos = v3(-1.5f, 11.5f, 26.5f);
 		camera->front = v3(0.0f, 0.0f, -1.0f);
+		camera->velocity = v3(0.0f);
 
 		camera->speed = 30.0f;
 		camera->yaw = -89.0f;

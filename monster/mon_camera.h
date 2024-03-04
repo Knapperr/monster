@@ -43,6 +43,7 @@ namespace Mon
 	};
 	
 	void InitCamera(Camera* camera, CameraType type, const char* name, Rect viewPort);
+	void SetCamera(Camera* camera, CameraType type, float FOV, float pitch, float yaw, float distanceFromTarget, float angleAroundTarget, float smoothness, float lerpSpeed, float offsetZ);
 	mat4 ViewMatrix(Camera* camera);
 	void Update(Camera* camera, double dt, Input* input, v3 pos, v3 orientation, bool constrainPitch = true);
 
