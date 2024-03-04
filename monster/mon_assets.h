@@ -165,7 +165,7 @@ namespace Mon
 	static Mesh* GetMesh(Assets* assets, unsigned int index)
 	{
 		Mesh* mesh = 0;
-		if ((index > 0) && (index < ArrayCount(assets->meshes)))
+		if ((index >= 0) && (index < ArrayCount(assets->meshes)))
 		{
 			mesh = &assets->meshes[index];
 		}
@@ -185,7 +185,7 @@ namespace Mon
 	static Image* GetImage(Assets* assets, unsigned int index)
 	{
 		Image* img = 0;
-		if ((index > 0) && (index < ArrayCount(assets->images)))
+		if ((index >= 0) && (index < ArrayCount(assets->images)))
 		{
 			img = &assets->images[index];
 		}
@@ -235,7 +235,7 @@ namespace Mon
 	static AssetTile* GetTileAsset(Assets* assets, unsigned int atlasIndex, unsigned int tileIndex)
 	{
 		AssetTile* tile = 0;
-		if ((atlasIndex > 0) && (atlasIndex <ArrayCount(assets->atlases)))
+		if ((atlasIndex >= 0) && (atlasIndex <ArrayCount(assets->atlases)))
 		{
 			tile = &assets->atlases[atlasIndex].tiles[tileIndex];
 		}
@@ -243,7 +243,6 @@ namespace Mon
 	}
 
 	void InitAssets(Assets* assets);
-	void InitAssets2D(Assets* assets, const char* fileName);
 
 	extern Assets* g_Assets; // NULL
 };

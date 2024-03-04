@@ -98,7 +98,7 @@ namespace Mon {
 		player->isPlayer = true;
 
 		player->facingDir = Direction::Forward;
-		player->meshIndex = 1;
+		player->meshIndex = 0;
 		player->textureIndex = 16;
 		//player->data.wireFrame = false;
 		//player->data.visible = true;
@@ -128,7 +128,7 @@ namespace Mon {
 	static void InitWater(Entity* e, int shaderHandle)
 	{
 		e->name = "water";
-		e->meshIndex = 7;
+		e->meshIndex = 6;
 		e->textureIndex = 4;
 	/*	e->data.programType = MonGL::ProgramType::Water;
 		e->data.wireFrame = false;
@@ -222,17 +222,17 @@ namespace Mon {
 		AddEntity(world);
 		Entity* plane64 = GetEntity(world, world->entityCount - 1);
 		InitEntity(plane64, "plane64", v3(6.0f, 0.0f, 6.0f), v3(1.0f), 0.0f, 8, 7, true);
-		plane64->meshIndex = 2;
+		plane64->meshIndex = 1;
 
 		AddEntity(world);
 		Entity* gem = GetEntity(world, world->entityCount - 1);
 		InitEntity(gem, "gem", v3(6.0f, 0.0f, 6.0f), v3(1.0f), 0.0f, 8, 8, true);
-		gem->meshIndex = 2;
+		gem->meshIndex = 1;
 
 		AddEntity(world);
 		Entity* house = GetEntity(world, world->entityCount - 1);
 		InitEntity(house, "house", v3(16.0f, 0.0f, 16.0f), v3(1.0f), 0.0f, 23, 10, true);
-		house->meshIndex = 2;
+		house->meshIndex = 1;
 
 	}
 	

@@ -462,7 +462,7 @@ namespace MonGL
 	static Light* GetLight(OpenGL* gl, unsigned int index)
 	{
 		MonGL::Light* l = 0;
-		if ((index > 0) && (index < ArrayCount(gl->lights)))
+		if ((index >= 0) && (index < ArrayCount(gl->lights)))
 		{
 			l = &gl->lights[index];
 		}
@@ -473,7 +473,7 @@ namespace MonGL
 	static Batch* GetBatch(OpenGL* gl, unsigned int index)
 	{
 		MonGL::Batch* b = 0;
-		if ((index > 0) && (index < ArrayCount(gl->batches_)))
+		if ((index >= 0) && (index < ArrayCount(gl->batches_)))
 		{
 			b = &gl->batches_[index];
 		}

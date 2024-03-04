@@ -253,7 +253,7 @@ namespace MonGL
 			// TODO(ck): NEED TO LOOKUP CUBEMAP IMAGES
 			// HAVE A CUBEMAP ASSET THAT IS SET IN THE FILE??? THAT WAY THE GUI CAN SET THE 
 			// INDEX TO THE TEXTURE AND SAVE IT SO ITS NOT A BIG DEAL... JUST TAG IMAGES 
-			Image* img = GetImage(g_Assets, 24 + i);
+			Image* img = GetImage(g_Assets, 23 + i);
 
 			if (img->data)
 			{
@@ -416,6 +416,7 @@ namespace MonGL
 
 		// Init Animations
 		{
+			// TODO(ck): Remove this start it at 0 no need for empty space
 			// null at index 0
 			GLSpriteAnimator* glAnimator = &gl->spriteAnimators[0];
 			glAnimator = {};
@@ -441,7 +442,7 @@ namespace MonGL
 			{
 				// Add animation method
 				GLSpriteAnimation* ani = &gl->spriteAnimators[1].animations[i];
-				ani->textureAtlasIndex = 1;
+				ani->textureAtlasIndex = 0;
 				glAnimator1->animationCount++;
 
 				ani->frameIndex = 0;
@@ -499,7 +500,7 @@ namespace MonGL
 			{
 				// Add animation method
 				GLSpriteAnimation* ani = &gl->spriteAnimators[2].animations[i];
-				ani->textureAtlasIndex = 1;
+				ani->textureAtlasIndex = 0;
 				glAnimatorWalk->animationCount++;
 
 				ani->frameIndex = 0;
@@ -1712,7 +1713,7 @@ namespace MonGL
 			{
 				// Add animation method
 				GLSpriteAnimation* ani = &gl->spriteAnimators[1].animations[i];
-				ani->textureAtlasIndex = 1;
+				ani->textureAtlasIndex = 0;
 				glAnimator1->animationCount++;
 
 				ani->frameIndex = 0;
@@ -1767,7 +1768,7 @@ namespace MonGL
 			{
 				// Add animation method
 				GLSpriteAnimation* ani = &gl->spriteAnimators[2].animations[i];
-				ani->textureAtlasIndex = 1;
+				ani->textureAtlasIndex = 0;
 				glAnimatorWalk->animationCount++;
 
 				ani->frameIndex = 0;

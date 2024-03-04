@@ -538,9 +538,9 @@ void EntityTab(Mon::GameState* game)
 					ImGui::DragFloat("speed", &game->world->entities[selected].rb.speed, 0.10f, 0.0f, 200.0f, "%.10f");
 					ImGui::DragFloat("angle", &game->world->entities[selected].spriteAngleDegrees, 0.10f, -180.0f, 360.0f, "%.10f");
 
-					ImGui::SliderInt("Mesh index", &game->world->entities[selected].meshIndex, 1, Mon::g_Assets->meshCount - 1);
+					ImGui::SliderInt("Mesh index", &game->world->entities[selected].meshIndex, 0, Mon::g_Assets->meshCount - 1);
 					// NOTE(ck): game->renderer->textureCount-2 removes the cubemap texture from the selection
-					ImGui::SliderInt("Texture index", &game->world->entities[selected].textureIndex, 1, game->renderer->textureCount - 2);
+					ImGui::SliderInt("Texture index", &game->world->entities[selected].textureIndex, 0, game->renderer->textureCount - 2);
 
 					//ImGui::Checkbox("Wireframe", &game->world->entities[selected].data.wireFrame);
 					//ImGui::Checkbox("Visible", &game->world->entities[selected].data.visible);
@@ -788,7 +788,7 @@ void AssetTab(Mon::GameState* game)
 		static unsigned int selected = 1;
 		ImGui::BeginChild("left pane assets", ImVec2(150.0f, 0.0f), true);
 
-		for (int i = 1; i < Mon::g_Assets->meshCount; ++i)
+		for (int i = 0; i < Mon::g_Assets->meshCount; ++i)
 		{
 			char label[128];
 			sprintf_s(label, "%s %d", Mon::g_Assets->meshes[i].name.c_str(), i);

@@ -19,11 +19,9 @@ namespace Mon
 	{
 		Mon::Log::print("Init assets...");
 		// Go directly into the folder and load them
-		//empty mesh #0
-		int index = AddMesh(assets);
-
+		
 		// This is for the terrain
-		index = AddMesh(assets);
+		int index = AddMesh(assets);
 		Mesh* gridMesh = GetMesh(assets, index);
 		InitGridMesh(gridMesh, 64, 64);
 		
@@ -100,11 +98,6 @@ namespace Mon
 		// Assuming I can use the same hFind before closing it...?
 		FindClose(hFind);
 
-		// empty #0 for image
-		AddImage(assets);
-		// empty #0 for textureAtlas
-		AddTextureAtlas(assets);
-
 		// TODO(ck): Move file reading to platform layer do not want this in the game
 		/*
 		TODO(ck): config_assets.mon will just be a description of where the assets are located?
@@ -140,7 +133,7 @@ namespace Mon
 			bool flipImage = true;
 			while (file >> line)
 			{
-				for (int i = 1; i <= imageCount; ++i)
+				for (int i = 0; i < imageCount; ++i)
 				{
 					file >> flipImage;
 
@@ -189,7 +182,7 @@ namespace Mon
 
 			file >> line; // category
 			file >> atlasCount;
-			for (int i = 1; i <= atlasCount; ++i)
+			for (int i = 0; i < atlasCount; ++i)
 			{
 				file >> textureAssetIndex;
 				file >> atlasSize;
@@ -259,7 +252,6 @@ namespace Mon
 		image->data = stbi_load(file, &image->width, &image->height, &image->nrChannels, 0);
 	}
 
-	// If a texture is not using an image should it be freed?
 	void FreeImage(Image* image)
 	{
 		stbi_image_free(image->data);
