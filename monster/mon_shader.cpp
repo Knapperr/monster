@@ -69,7 +69,7 @@ namespace MonGL
 	{
 		int programID = program->common.handle;
 		program->skybox = glGetUniformLocation(programID, "skybox");
-		program->skyboxTextureIndex = 23;
+		program->skyboxTextureIndex = 22;
 	}
 
 	unsigned int CompileShader(const char* source, GLenum shaderType)
@@ -175,7 +175,7 @@ namespace MonGL
 		LoadShader(&program->common, vertexFile, fragmentFile, geometryFile);
 		LoadUniforms(program);
 
-		program->skyboxTextureIndex = 23;
+		program->skyboxTextureIndex = 22;
 	}
 	
 	void CheckCompileErrors(unsigned int object, ERROR_TYPE type)

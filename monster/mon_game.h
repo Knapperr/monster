@@ -60,6 +60,7 @@ namespace Mon
 		MousePicker picker;
 		Input input;
 
+		Camera camera;
 		Camera cameras[10];
 		int currCameraIndex = 0;
 		int cameraCount = 0;

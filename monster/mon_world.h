@@ -99,7 +99,7 @@ namespace Mon {
 
 		player->facingDir = Direction::Forward;
 		player->meshIndex = 1;
-		player->textureIndex = 17;
+		player->textureIndex = 16;
 		//player->data.wireFrame = false;
 		//player->data.visible = true;
 		//player->data.programData.texCoordScale = 1.0f;
@@ -129,7 +129,7 @@ namespace Mon {
 	{
 		e->name = "water";
 		e->meshIndex = 7;
-		e->textureIndex = 5;
+		e->textureIndex = 4;
 	/*	e->data.programType = MonGL::ProgramType::Water;
 		e->data.wireFrame = false;
 		e->data.visible = true;*/

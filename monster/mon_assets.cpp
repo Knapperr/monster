@@ -102,8 +102,6 @@ namespace Mon
 
 		// empty #0 for image
 		AddImage(assets);
-		// empty #0 for textureAssets
-		AddTextureAsset(assets);
 		// empty #0 for textureAtlas
 		AddTextureAtlas(assets);
 
@@ -168,14 +166,14 @@ namespace Mon
 			bool isPixelArt = true;
 			int imageIndex = 0;
 
-			for (int i = 1; i <= textureAssetCount; ++i)
+			for (int i = 0; i < textureAssetCount; ++i)
 			{
 				file >> textureName;
 				file >> type;
 				file >> isPixelArt;
 				file >> imageIndex;
 
-				AddTextureAsset(assets);
+				int textureAssetIndex = AddTextureAsset(assets);
 				TextureAsset* asset = GetTextureAsset(assets, i);
 			
 

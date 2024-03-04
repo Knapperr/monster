@@ -50,7 +50,7 @@ grass 0 0 12
 pixel_grass 0 1 13
 snow 0 0 14
 water_derivative 1 0 15
-1x1 0 1 17
+map_atlas 0 1 16
 hammer_head 0 1 18
 1m 0 0 19
 brick 0 0 20
@@ -62,6 +62,6 @@ hammer_head_walk 0 1 33
 debug_icons 0 1 32
 #ATLAStextureindex=0;atlasSize=1;tileSize=2
 3
-24 256 16
-25 256 32
-8 256 16
+23 256 16
+24 256 32
+7 256 16

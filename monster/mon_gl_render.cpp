@@ -120,7 +120,7 @@ namespace MonGL
 	void UploadBatchMesh(Batch* batch, int maxVertices, int indicesLength)
 	{
 		// TODO(ck): TEMP remove
-		batch->sheetTextureIndex = 8;
+		batch->sheetTextureIndex = 7;
 
 		batch->indices = new uint32_t[indicesLength];
 		int offset = 0;
@@ -368,10 +368,8 @@ namespace MonGL
 		gl->waterProgram.textureIndexNormal2 = 15;
 		
 		Mon::Log::print("Loading textures\n=============================================");
-		// NOTE(ck): first index loaded
-		AddTexture(gl);	
 		unsigned int assetCount = g_Assets->textureAssetCount;
-		for (unsigned int i = 1; i < assetCount; ++i)
+		for (unsigned int i = 0; i < assetCount; ++i)
 		{
 			TextureAsset* asset = Mon::GetTextureAsset(g_Assets, i);
 			AddTexture(gl);
@@ -470,7 +468,7 @@ namespace MonGL
 					}
 
 					frame->subTexture = {};
-					frame->subTexture.height = 32;
+					frame->subTexture.width = 32;
 					frame->subTexture.height = 32;
 					frame->subTexture.tileSize = 32;
 					//frame->subTexture.texCoords[0] = v2(((tileOffsetX * tileSize) / sheetSize), ((tileOffsetY * tileSize) / sheetSize)); // bottom left

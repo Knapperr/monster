@@ -442,7 +442,7 @@ namespace MonGL
 	static MonGL::Texture* GetTexture(OpenGL* gl, unsigned int index)
 	{
 		MonGL::Texture* t = 0;
-		if ((index > 0) && (index < ArrayCount(gl->textures)))
+		if ((index >= 0) && (index < ArrayCount(gl->textures)))
 		{
 			t = &gl->textures[index];
 		}

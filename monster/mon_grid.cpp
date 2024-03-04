@@ -44,7 +44,7 @@ void InitGrid(Grid* grid)
 	// NOTE(ck): Power of 2 needs to be used for SIZE so that
 	//			texture coords to be proper on the cells
 	grid->meshIndex = 1;
-	grid->textureIndex = 12;
+	grid->textureIndex = 11;
 	
 }
 

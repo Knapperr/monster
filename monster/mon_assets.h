@@ -205,7 +205,7 @@ namespace Mon
 	static TextureAsset* GetTextureAsset(Assets* assets, unsigned int index)
 	{
 		TextureAsset* t = 0;
-		if ((index > 0) && (index < ArrayCount(assets->textureAssets)))
+		if ((index >= 0) && (index < ArrayCount(assets->textureAssets)))
 		{
 			t = &assets->textureAssets[index];
 		}
@@ -225,7 +225,7 @@ namespace Mon
 	static TextureAtlas* GetTextureAtlas(Assets* assets, unsigned int index)
 	{
 		TextureAtlas* a = 0;
-		if ((index > 0) && (index < ArrayCount(assets->atlases)))
+		if ((index >= 0) && (index < ArrayCount(assets->atlases)))
 		{
 			a = &assets->atlases[index];
 		}

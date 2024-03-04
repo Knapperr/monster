@@ -544,12 +544,20 @@ namespace Mon
 		// SPRITE BATCH
 		//
 		
-
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_CULL_FACE);
 		//MonGL::UseProgram(&state->renderer->quadProgram, state->setup);
 		glUseProgram(state->renderer->quadProgram.common.handle);
 		glUniformMatrix4fv(state->renderer->quadProgram.common.projection, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(state->renderer->quadProgram.common.view, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 		
+
+		// Fill up another batch with tiles in it???
+		// or just add them to our current batch and only submit tiles 
+		// that are in view of the camera.. should i use frustum culling
+		// could just submit all tiles of the map to the batch... and use a bounding box as long as the
+		// checks camera position and gets the chunk 
+
 		MonGL::Batch* batch = MonGL::GetBatch(state->renderer, 1);
 
 		for (int i = 0; i < state->renderer->batchItems_.size(); ++i)

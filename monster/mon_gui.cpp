@@ -173,7 +173,7 @@ void LoadSceneFile(Mon::GameState* game)
 	}
 	*/
 	// Set grid to use grass texture on load
-	game->grid->textureIndex = 12;
+	game->grid->textureIndex = 11;
 	// success
 	return;
 }
@@ -252,15 +252,15 @@ void TerrainTab(Mon::GameState* game)
 	{
 		ImGui::Text("Texture");
 		ImGui::Separator();
-		if (ImGui::Button("UV")) { game->grid->textureIndex = 11; }
+		if (ImGui::Button("UV")) { game->grid->textureIndex = 10; }
 		ImGui::SameLine();
-		if (ImGui::Button("Grass")) { game->grid->textureIndex = 12; }
+		if (ImGui::Button("Grass")) { game->grid->textureIndex = 11; }
 		ImGui::SameLine();
-		if (ImGui::Button("Pixel Grass")) { game->grid->textureIndex = 13; }
+		if (ImGui::Button("Pixel Grass")) { game->grid->textureIndex = 12; }
 		ImGui::SameLine();
-		if (ImGui::Button("Snow")) { game->grid->textureIndex = 14; }
+		if (ImGui::Button("Snow")) { game->grid->textureIndex = 13; }
 		ImGui::Separator();
-		if (ImGui::Button("1x1")) { game->grid->textureIndex = 16; }
+		if (ImGui::Button("1x1")) { game->grid->textureIndex = 15; }
 		ImGui::Separator();
 
 		//ImGui::SliderFloat("Texcoord scale", &game->grid->data.programData.texCoordScale, 1, 100);
@@ -674,7 +674,7 @@ void RendererTab(Mon::GameState* game)
 		{
 			static unsigned int selectedTexture = 1;
 			ImGui::BeginChild("left pane textures", ImVec2(150.0f, 0.0f), true);
-			for (int i = 1; i < game->renderer->textureCount; ++i)
+			for (int i = 0; i < game->renderer->textureCount; ++i)
 			{
 				char label[128];
 				sprintf_s(label, "%s %d", game->renderer->textures[i].name.c_str(), i);
@@ -683,7 +683,6 @@ void RendererTab(Mon::GameState* game)
 					selectedTexture = i;
 				}
 
-				
 			}
 			ImGui::EndChild();
 			// Start Right Pane Details
