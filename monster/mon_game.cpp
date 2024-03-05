@@ -530,7 +530,7 @@ namespace Mon
 		// could just submit all tiles of the map to the batch... and use a bounding box as long as the
 		// checks camera position and gets the chunk 
 
-		MonGL::Batch* batch = MonGL::GetBatch(state->renderer, 1);
+		MonGL::Batch* batch = MonGL::GetBatch(state->renderer, 0);
 
 		for (int i = 0; i < state->renderer->batchItems_.size(); ++i)
 		{

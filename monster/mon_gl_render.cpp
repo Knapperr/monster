@@ -391,8 +391,6 @@ namespace MonGL
 		LoadCubemap(&gl->cubemap);
 
 
-		// #0 for the 
-		AddLight(gl);
 		int index = AddLight(gl);
 		gl->lights[index].id = "001";
 		gl->lights[index].pos = v3(24.0f, 64.0f, 26.0f);
@@ -410,7 +408,6 @@ namespace MonGL
 
 		// Init Batches
 		// 0 is null batch
-		AddBatch(gl);
 		int batchIndex = AddBatch(gl);
 		InitBatch(gl, batchIndex);
 
@@ -700,7 +697,7 @@ namespace MonGL
 		// like normally that way we don't need a switch everytime a new shader type comes in we just simply call glUseProgram and whatever other
 		// setup we need to do but if not we don't call it we just activate uniforms as normal
 
-		Light* light = GetLight(gl, 1);
+		Light* light = GetLight(gl, 0);
 		switch (type)
 		{
 		case ProgramType::Common:
@@ -886,7 +883,7 @@ namespace MonGL
 		Texture* texture = GetTexture(gl, gridTexture);
 		unsigned int shaderID = gl->program.handle;
 		
-		Light* light = GetLight(gl, 1);
+		Light* light = GetLight(gl, 0);
 
 		glUniform1f(glGetUniformLocation(shaderID, "texCoordScale"), 1.0f);
 
@@ -1612,22 +1609,22 @@ namespace MonGL
 		AddTexture(gl);
 		MonGL::Texture* t16 = GetTexture(gl, 16);
 
-		LoadTexture((char*)"temp1", t1, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 1));
-		LoadTexture((char*)"temp2", t2, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 2));
-		LoadTexture((char*)"temp3", t3, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 3));
-		LoadTexture((char*)"temp4", t4, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 4));
-		LoadTexture((char*)"temp5", t5, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 5));
-		LoadTexture((char*)"temp6", t6, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 6));
-		LoadTexture((char*)"temp7", t7, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 7));
-		LoadTexture((char*)"temp8", t8, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 8));
-		LoadTexture((char*)"temp9", t9, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 9));
-		LoadTexture((char*)"temp10", t10, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 10));
-		LoadTexture((char*)"temp11", t11, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 11));
-		LoadTexture((char*)"temp12", t12, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 12));
-		LoadTexture((char*)"temp13", t13, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 13));
-		LoadTexture((char*)"temp14", t14, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 14));
-		LoadTexture((char*)"temp15", t15, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 15));
-		LoadTexture((char*)"temp16", t16, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 18));
+		LoadTexture((char*)"temp1", t1, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 0));
+		LoadTexture((char*)"temp2", t2, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 1));
+		LoadTexture((char*)"temp3", t3, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 2));
+		LoadTexture((char*)"temp4", t4, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 3));
+		LoadTexture((char*)"temp5", t5, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 4));
+		LoadTexture((char*)"temp6", t6, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 5));
+		LoadTexture((char*)"temp7", t7, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 6));
+		LoadTexture((char*)"temp8", t8, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 7));
+		LoadTexture((char*)"temp9", t9, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 8));
+		LoadTexture((char*)"temp10", t10, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 9));
+		LoadTexture((char*)"temp11", t11, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 10));
+		LoadTexture((char*)"temp12", t12, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 11));
+		LoadTexture((char*)"temp13", t13, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 12));
+		LoadTexture((char*)"temp14", t14, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 13));
+		LoadTexture((char*)"temp15", t15, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 14));
+		LoadTexture((char*)"temp16", t16, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 17));
 		
 
 		/*
@@ -1660,9 +1657,9 @@ namespace MonGL
 		MonGL::Texture* t18 = GetTexture(gl, 18);
 		AddTexture(gl);
 		MonGL::Texture* t19 = GetTexture(gl, 19);
-		LoadTextureFile((char*)"sprite_atlas", t17, GetImage(g_Assets, 31), TextureType::Diffuse, true, true);
-		LoadTextureFile((char*)"debug_icons", t18, GetImage(g_Assets, 32), TextureType::Diffuse, true, true);
-		LoadTextureFile((char*)"tilemap", t19, GetImage(g_Assets, 16), TextureType::Diffuse, true, true);
+		LoadTextureFile((char*)"sprite_atlas", t17, GetImage(g_Assets, 30), TextureType::Diffuse, true, true);
+		LoadTextureFile((char*)"debug_icons", t18, GetImage(g_Assets, 31), TextureType::Diffuse, true, true);
+		LoadTextureFile((char*)"tilemap", t19, GetImage(g_Assets, 15), TextureType::Diffuse, true, true);
 
 		// 2D Texture Array 
 		// need this to use different textures in the same batch
@@ -1871,8 +1868,6 @@ namespace MonGL
 		glUniform1i(glGetUniformLocation(gl->frameBufferProgram.handle, "screenTexture"), 0);
 
 
-		// null at 0 index
-		AddBatch(gl);
 		// Tilemap and sprite batch
 		int batchIndex = AddBatch(gl);
 		InitBatch(gl, batchIndex, 1000);

@@ -516,7 +516,7 @@ namespace MonGL
 	static BatchData* GetBatch2D(OpenGL* gl, unsigned int index)
 	{
 		MonGL::BatchData* b = 0;
-		if ((index > 0) && (index < ArrayCount(gl->batches)))
+		if ((index >= 0) && (index < ArrayCount(gl->batches)))
 		{
 			b = &gl->batches[index];
 		}

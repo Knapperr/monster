@@ -237,7 +237,7 @@ namespace Mon {
 
 		// Pre-Render Fill sprite and tile batches
 
-		MonGL::BatchData* tileBatch = MonGL::GetBatch2D(game->renderer, 1);
+		MonGL::BatchData* tileBatch = MonGL::GetBatch2D(game->renderer, 0);
 		for (int i = 0; i < game->world->map->tiles.size(); ++i)
 		{
 			v2 textOffset = v2(game->world->map->tiles[i]->textureOffsetX, game->world->map->tiles[i]->textureOffsetY);
@@ -261,7 +261,7 @@ namespace Mon {
 
 		// IMPORTANT(ck): TODO(ck): Move all of this into Render2D() method
 
-		MonGL::BatchData* spriteBatch = MonGL::GetBatch2D(game->renderer, 2);
+		MonGL::BatchData* spriteBatch = MonGL::GetBatch2D(game->renderer, 1);
 
 		MonGL::SortBatch2D(game->renderer->batchItems2D);
 
