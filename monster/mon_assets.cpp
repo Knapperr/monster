@@ -257,7 +257,7 @@ namespace Mon
 		stbi_image_free(image->data);
 	}
 
-	void InitTextureAsset(TextureAsset* asset, std::string &name, MonGL::TextureType type, bool pixelArt, int imageIndex)
+	void InitTextureAsset(TextureAsset* asset, std::string& name, MonGL::TextureType type, bool pixelArt, int imageIndex)
 	{
 
 		asset->name = std::string(name);

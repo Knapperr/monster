@@ -65,7 +65,7 @@ uv /= size;
 	pixel = seam + clamp((pixel - seam)/duDv, -0.5, 0.5);
 	vec2 modifiedTextCoordinate = pixel / texSize;
 	vec4 tex = texture(image, modifiedTextCoordinate);
-	//vec4 orange = vec4(1.0, 0.5, 0.2, 1.0); 
+	//vec4 orange = vec4(1.0, 0.5, 0.2, 1.0);
 	FragColor = tex;
 	//FragColor = texture(image, TexCoord);
 	return;

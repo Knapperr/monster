@@ -1703,8 +1703,8 @@ namespace MonGL
 			// what if we our tile is a different size...
 			
 			// can we somehow add to 32 so say tileSize=32 objectSize=96 96/32=3 [objectSize/tileSize]=[offsets] 
-			int tileOffsetX = 0;
-			int tileOffsetY = 0;
+			float tileOffsetX = 0.0f;
+			float tileOffsetY = 0.0f;
 
 			for (int i = 0; i < animationCount; ++i)
 			{
@@ -1882,8 +1882,14 @@ namespace MonGL
 		InitGLBuffer(&gl->lineBuffer);
 
 		// Set Blend Function
+		//glDepthFunc(GL_LESS);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
+		
+		//glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
+		//glBlendFuncSeparate(GL_ONE, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
 	}
 
 	void InitOpenGLBatchMesh(BatchData* data)
@@ -1987,11 +1993,35 @@ namespace MonGL
 
 		// Do not update the animation inside of the batch 
 		// update the animation in the update and then get the data here.
+		float TSize = (float)tileSize;
+		float worldSize = 1.0f;
+		float spacing = 1.0f;
+		float cellSize = 16.0f; // pixels
+#if 1
+		v2 min = { (tileOffsetX * cellSize) / sheetSize, (tileOffsetY * cellSize) / sheetSize };
+		v2 max = { ((tileOffsetX + worldSize)* cellSize) / sheetSize, ((tileOffsetY + worldSize) * cellSize) / sheetSize };
 
-		v2 topRight = v2(((tileOffsetX + 1) * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize);
-		v2 topLeft = v2((tileOffsetX * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize);
-		v2 bottomRight = v2(((tileOffsetX + 1) * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize);
-		v2 bottomLeft = v2((tileOffsetX * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize);
+		v2 topRight = v2{max.x, max.y};
+		v2 topLeft = v2{min.x, max.y};
+		v2 bottomRight = v2{max.x, min.y};
+		v2 bottomLeft = v2{min.x, min.y};
+#endif
+#if 0
+		/*
+		v2 topRight = v2(((tileOffsetX + spriteSize) * TSize) / sheetSize, ((tileOffsetY + spriteSize) * TSize) / sheetSize);
+		v2 topLeft = v2((tileOffsetX * TSize) / sheetSize, ((tileOffsetY + spriteSize) * TSize) / sheetSize);
+		v2 bottomRight = v2(((tileOffsetX + spriteSize) * TSize) / sheetSize, (tileOffsetY * TSize) / sheetSize);
+		v2 bottomLeft = v2((tileOffsetX * TSize) / sheetSize, (tileOffsetY * TSize) / sheetSize);*/
+
+		v2 topRight = v2(((tileOffsetX + 1) * TSize - tileOffsetX) / sheetSize, 
+						 ((tileOffsetY + 1) * TSize - tileOffsetY) / sheetSize);
+		v2 topLeft = v2((tileOffsetX * TSize + tileOffsetX) / sheetSize, 
+						((tileOffsetY + 1) * TSize + tileOffsetY) / sheetSize);
+		v2 bottomRight = v2(((tileOffsetX + 1) * TSize - tileOffsetX) / sheetSize, 
+							(tileOffsetY * TSize - tileOffsetY) / sheetSize);
+		v2 bottomLeft = v2((tileOffsetX * TSize + tileOffsetX) / sheetSize, 
+						   (tileOffsetY * TSize + tileOffsetY) / sheetSize);
+#endif
 
 		float size = 16.0f;
 		float x = worldX * size;

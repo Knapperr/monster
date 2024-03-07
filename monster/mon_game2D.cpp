@@ -219,7 +219,7 @@ namespace Mon {
 		int shaderID = game->renderer->program.handle;
 		glUseProgram(shaderID);
 		// TODO(ck): Pull Texture out of sheet
-		v3 clearColour = v3(0.1f, 0.8f, 0.8f);
+		v3 clearColour = v3(0.0f, 0.0f, 0.0f);
 		glClearColor(clearColour.r, clearColour.g, clearColour.b, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_BLEND);

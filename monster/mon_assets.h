@@ -132,7 +132,7 @@ namespace Mon
 	
 	void InitImage(Image* image, const char* file, bool flip = true);
 	void FreeImage(Image* image);
-	void InitTextureAsset(TextureAsset* asset, std::string &name, MonGL::TextureType type, bool pixelArt, int imageIndex);
+	void InitTextureAsset(TextureAsset* asset, std::string& name, MonGL::TextureType type, bool pixelArt, int imageIndex);
 	void InitTextureAtlas(TextureAtlas* atlas, int assetIndex, int atlasSize, int tileSize);
 
 	// global struct for accessing assets
