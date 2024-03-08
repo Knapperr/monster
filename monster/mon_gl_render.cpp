@@ -1803,6 +1803,8 @@ namespace MonGL
 
 		glTextureParameteri(gl->textureColorbuffer, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTextureParameteri(gl->textureColorbuffer, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTextureParameteri(gl->textureColorbuffer, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTextureParameteri(gl->textureColorbuffer, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 		float viewPortW = 960.0f;
 		float viewPortH = 540.0f;
@@ -1884,9 +1886,11 @@ namespace MonGL
 		// Set Blend Function
 		//glDepthFunc(GL_LESS);
 		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
+		// https://www.adriancourreges.com/blog/2017/05/09/beware-of-transparent-pixels/ proper blend func for pre-multiplied alpha
+		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+		//glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
 		
+		glDisable(GL_MULTISAMPLE);
 		//glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
 		//glBlendFuncSeparate(GL_ONE, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -1996,16 +2000,32 @@ namespace MonGL
 		float TSize = (float)tileSize;
 		float worldSize = 1.0f;
 		float spacing = 1.0f;
-		float cellSize = 16.0f; // pixels
+		float cellSize = 17.0f; // pixels
 #if 1
-		v2 min = { (tileOffsetX * cellSize) / sheetSize, (tileOffsetY * cellSize) / sheetSize };
-		v2 max = { ((tileOffsetX + worldSize)* cellSize) / sheetSize, ((tileOffsetY + worldSize) * cellSize) / sheetSize };
+		v2 min = { ((tileOffsetX * cellSize)+spacing) / sheetSize, ((tileOffsetY * cellSize)+spacing) / sheetSize };
+		v2 max = { ((tileOffsetX + worldSize)* cellSize) / sheetSize, (((tileOffsetY + worldSize) * cellSize)) / sheetSize };
 
 		v2 topRight = v2{max.x, max.y};
 		v2 topLeft = v2{min.x, max.y};
 		v2 bottomRight = v2{max.x, min.y};
 		v2 bottomLeft = v2{min.x, min.y};
 #endif
+#if 0
+		float padding = 1.0f;
+		int startX = tileOffsetX * (tileSize + 2 * padding) + padding;
+		int startY = tileOffsetY * (tileSize + 2 * padding) + padding;
+		int endX = startX + tileSize;
+		int endY = startY + tileSize;
+
+		// Convert pixel coordinates to UV coordinates
+		v2 min = { (float)startX / sheetSize, (float)startY / sheetSize };
+		v2 max = { (float)endX / sheetSize, (float)endY / sheetSize };
+
+		v2 topRight = v2{ max.x, max.y };
+		v2 topLeft = v2{ min.x, max.y };
+		v2 bottomRight = v2{ max.x, min.y };
+		v2 bottomLeft = v2{ min.x, min.y };
+#endif 
 #if 0
 		/*
 		v2 topRight = v2(((tileOffsetX + spriteSize) * TSize) / sheetSize, ((tileOffsetY + spriteSize) * TSize) / sheetSize);
@@ -2028,22 +2048,22 @@ namespace MonGL
 		float y = worldY * size;
 
 		Vertex vec0 = {
-				v3(x, y, -1.0f),
-				v3(1.0f, 0.0f, 0.0f),
-				bottomLeft
+			v3(x, y, 0.0f),
+			v3(1.0f, 0.0f, 0.0f),
+			bottomLeft
 		};
 		Vertex vec1 = {
-			v3((x + size), y, -1.0f),
+			v3((x + size), y, 0.0f),
 			v3(0.0f, 1.0f, 0.0f),
 			bottomRight
 		};
 		Vertex vec2 = {
-			v3((x + size), (y + size), -1.0f),
+			v3((x + size), (y + size), 0.0f),
 			v3(0.0f, 0.0f, 1.0f),
 			topRight
 		};
 		Vertex vec3 = {
-			v3((x), (y + size), -1.0f),
+			v3((x), (y + size), 0.0f),
 			v3(1.0f, 1.0f, 0.0f),
 			topLeft
 		};
@@ -2188,7 +2208,8 @@ namespace MonGL
 		glBindVertexArray(batch->VAO);
 
 		//int polygonMode = textureID == 19 ? GL_LINE : GL_FILL;
-		//glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
+		/*int polygonMode = GL_LINE;
+		glPolygonMode(GL_FRONT_AND_BACK, polygonMode);*/
 		glDrawElements(GL_TRIANGLES, batch->usedIndices, GL_UNSIGNED_INT, (void*)(0));
 		glBindVertexArray(0);
 

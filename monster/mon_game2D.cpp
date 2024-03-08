@@ -300,6 +300,8 @@ namespace Mon {
 
 		MonGL::Texture* spriteAtlas = MonGL::GetTexture(game->renderer, 17);
 		DrawBatch(spriteBatch, &game->renderer->program, spriteAtlas->id, false);
+
+
 	
 
 		// Render framebuffer texture
