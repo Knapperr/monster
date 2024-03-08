@@ -66,6 +66,7 @@ uv /= size;
 	vec2 modifiedTextCoordinate = pixel / texSize;
 	vec4 tex = texture(image, modifiedTextCoordinate);
 	//vec4 orange = vec4(1.0, 0.5, 0.2, 1.0);
+	tex.rgb *= tex.a;
 	FragColor = tex;
 	//FragColor = texture(image, TexCoord);
 	return;

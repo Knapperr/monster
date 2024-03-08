@@ -42,7 +42,7 @@ namespace MonGL
 		glTextureParameteri(texture->id, GL_TEXTURE_MIN_FILTER, texture->filterMin);
 		glTextureParameteri(texture->id, GL_TEXTURE_MAG_FILTER, texture->filterMax);
 
-		glTextureStorage2D(texture->id, 1, GL_RGBA16, width, height);
+		glTextureStorage2D(texture->id, 1, GL_RGBA8, width, height);
 		glTextureSubImage2D(texture->id, 0, 0, 0, width, height, internalFormat, GL_UNSIGNED_BYTE, data);
 
 		

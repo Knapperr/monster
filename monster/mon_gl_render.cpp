@@ -1997,7 +1997,6 @@ namespace MonGL
 
 		// Do not update the animation inside of the batch 
 		// update the animation in the update and then get the data here.
-		float TSize = (float)tileSize;
 		float worldSize = 1.0f;
 		float spacing = 1.0f;
 		float cellSize = 17.0f; // pixels
@@ -2009,38 +2008,6 @@ namespace MonGL
 		v2 topLeft = v2{min.x, max.y};
 		v2 bottomRight = v2{max.x, min.y};
 		v2 bottomLeft = v2{min.x, min.y};
-#endif
-#if 0
-		float padding = 1.0f;
-		int startX = tileOffsetX * (tileSize + 2 * padding) + padding;
-		int startY = tileOffsetY * (tileSize + 2 * padding) + padding;
-		int endX = startX + tileSize;
-		int endY = startY + tileSize;
-
-		// Convert pixel coordinates to UV coordinates
-		v2 min = { (float)startX / sheetSize, (float)startY / sheetSize };
-		v2 max = { (float)endX / sheetSize, (float)endY / sheetSize };
-
-		v2 topRight = v2{ max.x, max.y };
-		v2 topLeft = v2{ min.x, max.y };
-		v2 bottomRight = v2{ max.x, min.y };
-		v2 bottomLeft = v2{ min.x, min.y };
-#endif 
-#if 0
-		/*
-		v2 topRight = v2(((tileOffsetX + spriteSize) * TSize) / sheetSize, ((tileOffsetY + spriteSize) * TSize) / sheetSize);
-		v2 topLeft = v2((tileOffsetX * TSize) / sheetSize, ((tileOffsetY + spriteSize) * TSize) / sheetSize);
-		v2 bottomRight = v2(((tileOffsetX + spriteSize) * TSize) / sheetSize, (tileOffsetY * TSize) / sheetSize);
-		v2 bottomLeft = v2((tileOffsetX * TSize) / sheetSize, (tileOffsetY * TSize) / sheetSize);*/
-
-		v2 topRight = v2(((tileOffsetX + 1) * TSize - tileOffsetX) / sheetSize, 
-						 ((tileOffsetY + 1) * TSize - tileOffsetY) / sheetSize);
-		v2 topLeft = v2((tileOffsetX * TSize + tileOffsetX) / sheetSize, 
-						((tileOffsetY + 1) * TSize + tileOffsetY) / sheetSize);
-		v2 bottomRight = v2(((tileOffsetX + 1) * TSize - tileOffsetX) / sheetSize, 
-							(tileOffsetY * TSize - tileOffsetY) / sheetSize);
-		v2 bottomLeft = v2((tileOffsetX * TSize + tileOffsetX) / sheetSize, 
-						   (tileOffsetY * TSize + tileOffsetY) / sheetSize);
 #endif
 
 		float size = 16.0f;
