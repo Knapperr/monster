@@ -1518,7 +1518,7 @@ namespace MonGL
 
 	void ViewPort(Rect* port)
 	{
-		glViewport((int)port->x, (int)port->y, (int)port->w, (int)port->h);
+		//glViewport((int)port->x, (int)port->y, (int)port->w, (int)port->h);
 		return;
 	}
 
@@ -1741,10 +1741,18 @@ namespace MonGL
 					frame->subTexture.height = 32;
 					frame->subTexture.tileSize = 128;
 					frame->subTexture.sheetSize = 256.0f;
-					frame->subTexture.texCoords[0] = v2((tileOffsetX * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize); // bottom left
-					frame->subTexture.texCoords[1] = v2(((tileOffsetX + 1) * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize); // bottom right
-					frame->subTexture.texCoords[2] = v2(((tileOffsetX + 1) * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize); // top right
-					frame->subTexture.texCoords[3] = v2((tileOffsetX * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize); // top left 
+					float cellSize = 128.0f;
+					float worldSize = 1.0f; // we don't need this always going to be 1 for us?
+					float spacing = 0.0f;
+					// if (spacing > 0) then add 1 to the tileOffsets and add 1 to the cell size so that we can get the math right for our padding
+					
+					v2 min = { ((tileOffsetX * cellSize) + spacing) / sheetSize, ((tileOffsetY * cellSize) + spacing) / sheetSize };
+					v2 max = { ((tileOffsetX + worldSize) * cellSize) / sheetSize, (((tileOffsetY + worldSize) * cellSize)) / sheetSize };
+					
+					frame->subTexture.texCoords[0] = v2{min.x, min.y}; // bottom left
+					frame->subTexture.texCoords[1] = v2{max.x, min.y}; // bottom right
+					frame->subTexture.texCoords[2] = v2{max.x, max.y}; // top right
+					frame->subTexture.texCoords[3] = v2{min.x, max.y}; // top left 
 
 					frame->duration = 0.2f;
 
@@ -1784,10 +1792,16 @@ namespace MonGL
 					frame->subTexture.height = 32;
 					frame->subTexture.tileSize = 32;
 					frame->subTexture.sheetSize = 256.0f;
-					frame->subTexture.texCoords[0] = v2((tileOffsetX * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize); // bottom left
-					frame->subTexture.texCoords[1] = v2(((tileOffsetX + 1) * tileSize) / sheetSize, (tileOffsetY * tileSize) / sheetSize); // bottom right
-					frame->subTexture.texCoords[2] = v2(((tileOffsetX + 1) * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize); // top right
-					frame->subTexture.texCoords[3] = v2((tileOffsetX * tileSize) / sheetSize, ((tileOffsetY + 1) * tileSize) / sheetSize); // top left 
+
+					float cellSize = 32.0f;
+					float spacing = 0.0f;
+					float worldSize = 1.0f; // bad name for this?
+					v2 min = { ((tileOffsetX * cellSize) + spacing) / sheetSize, ((tileOffsetY * cellSize) + spacing) / sheetSize };
+					v2 max = { ((tileOffsetX + worldSize) * cellSize) / sheetSize, (((tileOffsetY + worldSize) * cellSize)) / sheetSize };
+					frame->subTexture.texCoords[0] = v2{min.x, min.y}; // bottom left
+					frame->subTexture.texCoords[1] = v2{max.x, min.y}; // bottom right
+					frame->subTexture.texCoords[2] = v2{max.x, max.y}; // top right
+					frame->subTexture.texCoords[3] = v2{min.x, max.y}; // top left 
 
 					frame->duration = 0.2f;
 					tileOffsetX++;
@@ -1891,6 +1905,8 @@ namespace MonGL
 		//glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
 		
 		glDisable(GL_MULTISAMPLE);
+		// TODO(ck): Remove temp
+		glViewport(0, 0, 960, 540);
 		//glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
 		//glBlendFuncSeparate(GL_ONE, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -2000,7 +2016,7 @@ namespace MonGL
 		float worldSize = 1.0f;
 		float spacing = 1.0f;
 		float cellSize = 17.0f; // pixels
-#if 1
+
 		v2 min = { ((tileOffsetX * cellSize)+spacing) / sheetSize, ((tileOffsetY * cellSize)+spacing) / sheetSize };
 		v2 max = { ((tileOffsetX + worldSize)* cellSize) / sheetSize, (((tileOffsetY + worldSize) * cellSize)) / sheetSize };
 
@@ -2008,7 +2024,6 @@ namespace MonGL
 		v2 topLeft = v2{min.x, max.y};
 		v2 bottomRight = v2{max.x, min.y};
 		v2 bottomLeft = v2{min.x, min.y};
-#endif
 
 		float size = 16.0f;
 		float x = worldX * size;

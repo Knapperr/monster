@@ -182,7 +182,7 @@ namespace Mon {
 	{
 		Game2D* game = (Game2D*)memory->permanentStorage;
 
-		MonGL::ViewPort(&game->config->viewPort);
+		//MonGL::ViewPort(&game->config->viewPort);
 
 
 		// Can I do collision down here?
@@ -310,7 +310,7 @@ namespace Mon {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glDisable(GL_DEPTH_TEST); // do not discard the screen quad
 		// clear colour to white but unecessary so why do it???? ASK JASPER
-		glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // set clear color to white (not really necessary actually, since we won't be able to see behind the quad anyways)
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // set clear color to white (not really necessary actually, since we won't be able to see behind the quad anyways)
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glUseProgram(game->renderer->frameBufferProgram.handle);

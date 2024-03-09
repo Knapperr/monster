@@ -1630,6 +1630,10 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::game_memory* memory)
 	}
 
 	ImGui::SliderFloat2("port", (float*)&game2D->config->viewPort, 0.0f, 477.0f);
+	if (ImGui::Button("apply port"))
+	{
+		glViewport(game2D->config->viewPort.x, game2D->config->viewPort.y, game2D->config->viewPort.w, game2D->config->viewPort.h);
+	}
 	ImGui::Separator();
 
 	//ImGui::LabelText(std::to_string(game2D->dt).c_str(), "dt:");
