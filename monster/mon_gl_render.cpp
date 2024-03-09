@@ -2018,12 +2018,7 @@ namespace MonGL
 		float cellSize = 17.0f; // pixels
 
 		v2 min = { ((tileOffsetX * cellSize)+spacing) / sheetSize, ((tileOffsetY * cellSize)+spacing) / sheetSize };
-		v2 max = { ((tileOffsetX + worldSize)* cellSize) / sheetSize, (((tileOffsetY + worldSize) * cellSize)) / sheetSize };
-
-		v2 topRight = v2{max.x, max.y};
-		v2 topLeft = v2{min.x, max.y};
-		v2 bottomRight = v2{max.x, min.y};
-		v2 bottomLeft = v2{min.x, min.y};
+		v2 max = { (((tileOffsetX + worldSize)* cellSize)) / sheetSize, (((tileOffsetY + worldSize) * cellSize)) / sheetSize };
 
 		float size = 16.0f;
 		float x = worldX * size;
@@ -2032,22 +2027,22 @@ namespace MonGL
 		Vertex vec0 = {
 			v3(x, y, 0.0f),
 			v3(1.0f, 0.0f, 0.0f),
-			bottomLeft
+			v2{min.x, min.y} // bl
 		};
 		Vertex vec1 = {
 			v3((x + size), y, 0.0f),
 			v3(0.0f, 1.0f, 0.0f),
-			bottomRight
+			v2{max.x, min.y} // br
 		};
 		Vertex vec2 = {
 			v3((x + size), (y + size), 0.0f),
 			v3(0.0f, 0.0f, 1.0f),
-			topRight
+			v2{max.x, max.y} // tr
 		};
 		Vertex vec3 = {
 			v3((x), (y + size), 0.0f),
 			v3(1.0f, 1.0f, 0.0f),
-			topLeft
+			v2{min.x, max.y} // tl
 		};
 
 		batch->usedIndices += 6;
