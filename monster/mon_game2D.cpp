@@ -60,6 +60,7 @@ namespace Mon {
 		//game->deltaTime = dt;
 		game->input = *input;
 
+
 		if (game->state == State::Play)
 		{
 			Entity2D* p = GetPlayer(game->world);
@@ -166,6 +167,15 @@ namespace Mon {
 
 			Update(&game->camera, p->pos, (float)dt);
 
+			// Get the mouse position in tile coordinates after updating the camera
+
+			// Need camera
+			// Clamp the position to the inside of the tilemap...
+			// convert screen to world...
+			// world to tile???
+
+
+			game->mouseTilePos = v2{ (input->mouseScreen.x - (game->camera.pos.x*16.0f)), (input->mouseScreen.y - (game->camera.pos.y*16.0f)) };
 
 
 

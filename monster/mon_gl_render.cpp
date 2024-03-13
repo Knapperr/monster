@@ -1518,7 +1518,7 @@ namespace MonGL
 
 	void ViewPort(Rect* port)
 	{
-		//glViewport((int)port->x, (int)port->y, (int)port->w, (int)port->h);
+		glViewport((int)port->x, (int)port->y, (int)port->w, (int)port->h);
 		return;
 	}
 
@@ -1976,9 +1976,12 @@ namespace MonGL
 
 		// TODO(ck): Memory management
 		// do not prebuild indicies?
+
+		// Stop prebuilding
+
 		batch->indices = new uint32_t[batch->indicesLength];
 		int offset = 0;
-		for (int i = 0; i < batch->indicesLength; i += 6)
+		for (int i = 0; i < batch->indicesLength; i += 6) // 6 indices for each quad
 		{
 			batch->indices[i + 0] = 0 + offset;
 			batch->indices[i + 1] = 1 + offset;
@@ -1988,7 +1991,7 @@ namespace MonGL
 			batch->indices[i + 4] = 3 + offset;
 			batch->indices[i + 5] = 0 + offset;
 
-			offset += 4;
+			offset += 4; // indices for 4 vertices
 		}
 
 		InitOpenGLBatchMesh(batch);
@@ -2008,8 +2011,8 @@ namespace MonGL
 	void FillBatch(BatchData* batch, float sheetSize, int tileSize, float worldX, float worldY, v2 textureOffset, v2 cameraPos)
 	{
 		// TODO(ck): Pass Point or integer Rect no floating points
-		int tileOffsetX = (int)textureOffset.x;
-		int tileOffsetY = (int)textureOffset.y;
+		int tileOffsetX = (int)textureOffset.x; // There is not an extra small cell at the start of the x offset.
+		int tileOffsetY = (int)textureOffset.y - 1; // There is an extra small cell at the start of the y offset so subtract it
 
 		// Do not update the animation inside of the batch 
 		// update the animation in the update and then get the data here.

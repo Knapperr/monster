@@ -56,6 +56,8 @@ namespace Mon {
 		MonGL::Config* config;
 		MonGL::OpenGL* renderer;
 
+
+		v2 mouseTilePos = {};
 		// NOTE(ck): Current game state - State::Debug is default
 		int state;
 		bool drawDebug = true;

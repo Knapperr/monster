@@ -266,9 +266,9 @@ namespace Mon
 		float offsety = 2.0f;
 
 		// NOTE(ck): Smooth spring dampening
-		camera->pos.x = smoothDamp(camera->pos.x, pos.x - offsetx, camera->velocity.x, camera->smoothness, dt);
-		camera->pos.z = smoothDamp(camera->pos.z, pos.z - offsetz, camera->velocity.z, camera->smoothness, dt);
-		camera->pos.y = smoothDamp(camera->pos.y, (pos.y + verticalDistance) + offsety, camera->velocity.y, camera->smoothness, dt);
+		camera->pos.x = smoothDamp(camera->pos.x, pos.x - offsetx, camera->velocity.x, camera->smoothness, (float)dt);
+		camera->pos.z = smoothDamp(camera->pos.z, pos.z - offsetz, camera->velocity.z, camera->smoothness, (float)dt);
+		camera->pos.y = smoothDamp(camera->pos.y, (pos.y + verticalDistance) + offsety, camera->velocity.y, camera->smoothness, (float)dt);
 
 		//pos.x = tPos.x - offsetx;
 		//pos.z = tPos.z - offsetz;

@@ -260,8 +260,8 @@ namespace Mon
 			}
 
 			// PIPE velocity to function
-			MovePlayer(state->world, &velocity, jumped, dt);
-			UpdateEntities(state->world, state->renderer, dt);
+			MovePlayer(state->world, &velocity, jumped, (float)dt);
+			UpdateEntities(state->world, state->renderer, (float)dt);
 
 		}
 		// 

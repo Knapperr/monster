@@ -242,32 +242,32 @@ namespace Mon
 					}
 					else if (testmap[y][x] == 18) // top left tree
 					{
-						sheetTile.textureOffsetX = 7; 
+						sheetTile.textureOffsetX = 9; // 7 
 						sheetTile.textureOffsetY = 11;
 					}
 					else if (testmap[y][x] == 19) // top right tree
 					{
-						sheetTile.textureOffsetX = 8; 
-						sheetTile.textureOffsetY = 11;
+						sheetTile.textureOffsetX = 10;  // 8
+						sheetTile.textureOffsetY = 11; // 11
 					}
 					else if (testmap[y][x] == 16) // mid left tree
 					{
-						sheetTile.textureOffsetX = 7; 
+						sheetTile.textureOffsetX = 9; // 7
 						sheetTile.textureOffsetY = 12; 
 					}
 					else if (testmap[y][x] == 17) // mid right tree
 					{
-						sheetTile.textureOffsetX = 8; 
+						sheetTile.textureOffsetX = 10; // 8
 						sheetTile.textureOffsetY = 12;
 					}
 					else if (testmap[y][x] == 14) // bot left tree
 					{
-						sheetTile.textureOffsetX = 7; 
+						sheetTile.textureOffsetX = 9; // 7 
 						sheetTile.textureOffsetY = 13;
 					}
 					else if (testmap[y][x] == 15) // bot right tree
 					{
-						sheetTile.textureOffsetX = 8; 
+						sheetTile.textureOffsetX = 10; // 8
 						sheetTile.textureOffsetY = 13;
 					}
 					else

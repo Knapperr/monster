@@ -1332,6 +1332,11 @@ void StatsWindow(bool* p_open, Mon::Game2D* game)
 		snprintf(buffer, sizeof(buffer), "%f", game->input.mouseScreen.y);
 		ImGui::LabelText(buffer, "win y");
 
+		snprintf(buffer, sizeof(buffer), "%f", game->mouseTilePos.x);
+		ImGui::LabelText(buffer, "mouse tile x");
+		snprintf(buffer, sizeof(buffer), "%f", game->mouseTilePos.y);
+		ImGui::LabelText(buffer, "mouse tile y");
+
 		snprintf(buffer, sizeof(buffer), "%f", game->input.stickAverageX);
 		ImGui::LabelText(buffer, "stick average X:");
 		snprintf(buffer, sizeof(buffer), "%f", (float)game->input.stickAverageY);
