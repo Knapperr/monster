@@ -4,10 +4,7 @@ namespace Mon
 {
 	bool InitWorld(World2D* world)
 	{
-		world->selectedEntityIndex = 1;
-
-		// Reserve slot 0 for null entity
-		AddEntity2D(world);
+		world->selectedEntityIndex = 0;
 
 		// Reserve slot 1 for player entity
 		AddEntity2D(world);

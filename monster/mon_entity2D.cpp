@@ -84,9 +84,6 @@ namespace Mon
 
 		*velocity += -9.0f * p->velocity;
 
-		//TileMapPosition oldPlayerP = p->mapPos;
-		//TileMapPosition newPlayerP = oldPlayerP;
-
 		v2 oldPos = p->pos;
 		//oldPos.x = p->position.x;
 		//oldPos.y = p->position.y;

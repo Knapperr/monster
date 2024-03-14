@@ -29,7 +29,7 @@ namespace Mon
 	static Entity2D* GetEntity2D(World2D* world, unsigned int index)
 	{
 		Entity2D* entity = 0;
-		if ((index > 0) && (index < ArrayCount(world->entities)))
+		if ((index >= 0) && (index < ArrayCount(world->entities)))
 		{
 			entity = &world->entities[index];
 		}
@@ -39,7 +39,7 @@ namespace Mon
 	static Entity2D* GetPlayer(World2D* world)
 	{
 		Entity2D* entity = 0;
-		entity = &world->entities[1];
+		entity = &world->entities[0];
 		return entity;
 	}
 

@@ -84,13 +84,13 @@ namespace Mon {
 			a.max = aMax;
 			bool canMove = true;
 			p->colour = v4(1.0f);
-			for (unsigned int i = 1; i < game->world->entityCount; ++i)
+			for (unsigned int i = 0; i < game->world->entityCount; ++i)
 			{
 				// TODO(ck): Broad Phase Collision Check
 
 				// TODO(ck): Precise Collision check
 
-				if (i != 1) // 1 is player index
+				if (i != 0) // 0 is player index
 				{
 					Entity2D* testEntity = GetEntity2D(game->world, i);
 					testEntity->colour = v4(1.0f);
@@ -129,7 +129,7 @@ namespace Mon {
 			}
 			if (canMove)
 			{
-				//Mon::MovePlayer(game->world->map, p, &velocity, (float)dt);
+				Mon::MovePlayer(game->world->map, p, &velocity, (float)dt);
 				
 				// COLLISION TEST 
 				//Entity otherEnt = world->entities[3];
@@ -153,17 +153,11 @@ namespace Mon {
 				//Mon::MovePlayer(p, &velocity, (float)dt);
 				//v2 oldPos = p->pos;
 
-				//velocity = velocity * p->speed;
-				//p->pos += velocity * v2(dt,dt);
 				
-				//p->pos.x += (velocity.x * p->speed * dt);
-				//p->pos.y += (velocity.y * p->speed * dt);
-				float speed = p->speed * dt;
-				p->pos += velocity * speed;
+				/*float speed = p->speed * dt;
+				p->pos += velocity * speed;*/
 			}
 				
-			v2 ePos = game->world->entities[2].pos;
-				// p->pos
 			Update(&game->camera, p->pos, (float)dt);
 
 			// Get the mouse position in tile coordinates after updating the camera
@@ -217,7 +211,7 @@ namespace Mon {
 		// Can I do collision down here?
 		//game->renderer->batchItems2D.clear();
 		//ResetBuffer(&game->renderer->lineBuffer);
-		for (unsigned int i = 1; i < game->world->entityCount; ++i)
+		for (unsigned int i = 0; i < game->world->entityCount; ++i)
 		{
 			Entity2D* e = &game->world->entities[i];
 			MonGL::BatchItem2D batchItem;

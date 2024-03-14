@@ -1416,7 +1416,7 @@ void EntityTab(Mon::Game2D* game)
 		//}
 #endif
 
-		for (unsigned int i = 1; i < game->world->entityCount; ++i)
+		for (unsigned int i = 0; i < game->world->entityCount; ++i)
 		{
 			char label[128];
 			sprintf_s(label, "%s %d", game->world->entities[i].name, i);
@@ -1686,7 +1686,7 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::game_memory* memory)
 	//ImGui::SliderInt("Tile 0 ID: ", &game->world2D->map->tiles[0].tileId, 0, 3, NULL);
 	ImGui::DragFloat("x", &game2D->camera.pos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");
 	ImGui::DragFloat("y", &game2D->camera.pos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
-	ImGui::DragFloat("speed", &game2D->world->entities[1].speed, 0.1f, 0.1f, 500.0f, "%.01f");
+	ImGui::DragFloat("speed", &game2D->world->entities[0].speed, 0.1f, 0.1f, 500.0f, "%.01f");
 
 	ImGui::Checkbox("Wireframe", &game2D->world->map->wireFrame);
 	ImGui::Checkbox("Draw Debug", &game2D->drawDebug);
