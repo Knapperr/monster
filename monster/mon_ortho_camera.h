@@ -24,5 +24,6 @@ namespace Mon
 	bool IsInBounds(Camera2D* camera, v2 pos);
 	mat4 Projection(Camera2D* camera);
 	mat4 ViewMatrix(Camera2D* camera);
+	v3 CameraTranslation(Camera2D* camera);
 }
 #endif

@@ -15,8 +15,8 @@ namespace Mon
 		
 		// TODO(ck): Is this the right name? Should it be called camera size? camera viewport size?
 		// I guess orthoprojectionsize is the right name
-		camera->resolution.w = viewPort.w / 2.0f;
-		camera->resolution.h = viewPort.h / 2.0f;
+		camera->resolution.w = viewPort.w;
+		camera->resolution.h = viewPort.h;
 		
 		// BASED OFF OF screen size
 		//float metersToPixels = 16.0f / 1.4f;
@@ -32,7 +32,6 @@ namespace Mon
 		// IMPORTANT(ck): won't work with pixels and screen as 1:1 need to figure out meters to pixels
 		
 		camera->pos = target;
-
 		// NOTE(ck): Smooth damp can be turned back on once pixel art shader problems are solved.
 		//			 I wonder if I can't have a smooth damp camera in pixel art? I guess once the smoothing is figured out that little jitter of 0.10 won't matter.
 		//camera->pos.x = smoothDamp(camera->pos.x, (target.x), camera->vel.x, camera->smoothness, dt);
@@ -71,16 +70,26 @@ namespace Mon
 	{
 		//mat4 projection = glm::ortho(0.0f, camera->resolution.w, 0.0f, camera->resolution.h, -1.0f, 1.0f);
 
-		mat4 projection = glm::ortho(0.0f, camera->resolution.w, 0.0f, camera->resolution.h, -1.0f, 1.0f);
+		float aspectRatio = camera->resolution.w / camera->resolution.h;
+		mat4 projection = glm::ortho(-aspectRatio, aspectRatio, -1.0f, 1.0f, -1.0f, 1.0f);;
 		return projection;
 	}
 
 	mat4 ViewMatrix(Camera2D* camera)
 	{
 		mat4 view = mat4(1.0f);
+		//float screenCenterX = camera->resolution.w / 2.0f;
+		//float screenCenterY = camera->resolution.h / 2.0f;
+		//view = glm::translate(view, v3(screenCenterX - 16.0f*camera->pos.x, screenCenterY - 16.0f*camera->pos.y, 1.0f));
+
+		view = glm::lookAt(v3(camera->pos, 1.0f), v3(camera->pos, 0.0f), v3(0.0f, 1.0f, 0.0f));
+		return view;
+	}
+
+	v3 CameraTranslation(Camera2D* camera)
+	{
 		float screenCenterX = camera->resolution.w / 2.0f;
 		float screenCenterY = camera->resolution.h / 2.0f;
-		view = glm::translate(view, v3(screenCenterX - 16.0f*camera->pos.x, screenCenterY - 16.0f*camera->pos.y, 1.0f));
-		return view;
+		return v3(screenCenterX - 16.0f * camera->pos.x, screenCenterY - 16.0f * camera->pos.y, 1.0f);
 	}
 }

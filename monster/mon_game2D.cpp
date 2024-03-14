@@ -164,7 +164,8 @@ namespace Mon {
 				p->pos += velocity * speed;
 			}
 				
-
+			v2 ePos = game->world->entities[2].pos;
+				// p->pos
 			Update(&game->camera, p->pos, (float)dt);
 
 			// Get the mouse position in tile coordinates after updating the camera

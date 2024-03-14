@@ -1355,10 +1355,12 @@ namespace MonGL
 	void DrawLine2D(LineBuffer* buffer, v4 a, v4 b, v4 colour)
 	{
 		// Move to pixel space before rendering
+#if 0
 		a.x *= 16.0f;
 		a.y *= 16.0f;
 		b.x *= 16.0f;
 		b.y *= 16.0f;
+#endif
 
 		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ a, colour };
 		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ b, colour };
@@ -1457,7 +1459,7 @@ namespace MonGL
 	void DrawBox2D(LineBuffer* buffer, glm::vec3 min, glm::vec3 max, glm::vec4 colour)
 	{
 		//int entOffset = 0; // TODO(ck): DEBUGGING LINE INDICE UPLOAD TO BOUNDING BOX
-		float pixelSize = 16.0f;
+		float pixelSize = 1.0f;
 		float thickness = 1.0f;
 		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(min.x * pixelSize, min.y * pixelSize, min.z * pixelSize, 1.0f), colour };
 		buffer->vertices[buffer->lastVerticeIndex++] = DebugVertex{ glm::vec4(max.x * pixelSize, min.y * pixelSize, min.z * pixelSize, 1.0f), colour };
@@ -2023,9 +2025,9 @@ namespace MonGL
 		v2 min = { ((tileOffsetX * cellSize)+spacing) / sheetSize, ((tileOffsetY * cellSize)+spacing) / sheetSize };
 		v2 max = { (((tileOffsetX + worldSize)* cellSize)) / sheetSize, (((tileOffsetY + worldSize) * cellSize)) / sheetSize };
 
-		float size = 16.0f;
-		float x = worldX * size;
-		float y = worldY * size;
+		float size = 1.0f;
+		float x = worldX;
+		float y = worldY;
 
 		Vertex vec0 = {
 			v3(x, y, 0.0f),
@@ -2060,12 +2062,16 @@ namespace MonGL
 	{
 		// 
 		//float size = spriteSize * (float)subTexture.tileSize;
-		int size = subTexture.tileSize;
+		
+		//int size = subTexture.tileSize;
+		float size = 1.0f;
+		if (subTexture.tileSize == 128)
+			size = 3.0f;
 
 		// tile coords to world coords
 		//worldX *= (float)tileSize;
 		//worldY *= (float)tileSize;
-		float pixelsPerMeter = 16.0f;
+		float pixelsPerMeter = 1.0f;
 		// worldSize is 2.0f; local(model) - 32pixels;
 		// TODO(ck): Ask Jasper about this??? is world size your 1m and then what is pixel size we dont call it world anymore?
 		// Move the sprite into the middle of the bounding box... worldX - (worldSize/2.0f) * pixelsPerMeter
@@ -2076,26 +2082,28 @@ namespace MonGL
 		// Its almost like everything starts in world then goes to pixels
 		// I guess local space would be "tile space" and then we go to world space then pixel space?
 
-		float x = (worldX-1.0f) * pixelsPerMeter;
-		float y = (worldY-1.0f) * pixelsPerMeter;
+		//float x = (worldX-1.0f) * pixelsPerMeter;
+		//float y = (worldY-1.0f) * pixelsPerMeter;
+		float x = (worldX-0.5f);
+		float y = (worldY-0.5f);
 
 		Vertex vec0 = {
-			v3(x, y, -1.0f),
+			v3(x, y, 0.0f),
 			v3(1.0f, 0.0f, 0.0f),
 			subTexture.texCoords[0]
 		};
 		Vertex vec1 = {
-			v3((x + size), y, -1.0f),
+			v3((x + size), y, 0.0f),
 			v3(0.0f, 1.0f, 0.0f),
 			subTexture.texCoords[1]
 		};
 		Vertex vec2 = {
-			v3((x + size), (y + size), -1.0f),
+			v3((x + size), (y + size), 0.0f),
 			v3(0.0f, 0.0f, 1.0f),
 			subTexture.texCoords[2]
 		};
 		Vertex vec3 = {
-			v3(x, (y + size), -1.0f),
+			v3(x, (y + size), 0.0f),
 			v3(1.0f, 1.0f, 0.0f),
 			subTexture.texCoords[3]
 		};
