@@ -13,29 +13,19 @@ namespace Mon
 		camera->lerpSpeed = 7.0f;
 		camera->zoom = 64.0f;
 		
-		// TODO(ck): Is this the right name? Should it be called camera size? camera viewport size?
-		// I guess orthoprojectionsize is the right name
 		camera->resolution.w = viewPort.w;
 		camera->resolution.h = viewPort.h;
-		
-		// BASED OFF OF screen size
-		//float metersToPixels = 16.0f / 1.4f;
-		//float orthoSize = 480.0f / (2.0f * metersToPixels);
-		//// screenSizeInPixels / (orthoSize * 2.0f)
-		//camera->pixelsPerMeter = 480.0f / (orthoSize * 2.0f);
-		// 16 pixels = 1 meter
-		camera->pixelsPerMeter = 16.0f;
 	}
 
 	void Update(Camera2D* camera, v2 target, float dt)
 	{
 		// IMPORTANT(ck): won't work with pixels and screen as 1:1 need to figure out meters to pixels
 		
-		camera->pos = target;
+		//camera->pos = target;
 		// NOTE(ck): Smooth damp can be turned back on once pixel art shader problems are solved.
 		//			 I wonder if I can't have a smooth damp camera in pixel art? I guess once the smoothing is figured out that little jitter of 0.10 won't matter.
-		//camera->pos.x = smoothDamp(camera->pos.x, (target.x), camera->vel.x, camera->smoothness, dt);
-		//camera->pos.y = smoothDamp(camera->pos.y, (target.y), camera->vel.y, camera->smoothness, dt);
+		camera->pos.x = smoothDamp(camera->pos.x, (target.x), camera->vel.x, camera->smoothness, dt);
+		camera->pos.y = smoothDamp(camera->pos.y, (target.y), camera->vel.y, camera->smoothness, dt);
 
 		// need the map bounds in world space
 		// camera position 
@@ -69,10 +59,9 @@ namespace Mon
 	mat4 Projection(Camera2D* camera)
 	{
 		//mat4 projection = glm::ortho(0.0f, camera->resolution.w, 0.0f, camera->resolution.h, -1.0f, 1.0f);
-
 		float aspectRatio = camera->resolution.w / camera->resolution.h;
-		mat4 projection = glm::ortho(-aspectRatio, aspectRatio, -1.0f, 1.0f, -1.0f, 1.0f);;
-		return projection;
+		float zoom = 6.0f;
+		return glm::ortho(-aspectRatio * zoom, aspectRatio * zoom, -1.0f * zoom, 1.0f * zoom, -1.0f, 1.0f);
 	}
 
 	mat4 ViewMatrix(Camera2D* camera)

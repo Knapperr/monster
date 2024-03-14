@@ -2064,28 +2064,13 @@ namespace MonGL
 		//float size = spriteSize * (float)subTexture.tileSize;
 		
 		//int size = subTexture.tileSize;
-		float size = 1.0f;
+		float size = 2.0f;
+		// Testing house size
 		if (subTexture.tileSize == 128)
-			size = 3.0f;
+			size = 6.0f;
 
-		// tile coords to world coords
-		//worldX *= (float)tileSize;
-		//worldY *= (float)tileSize;
-		float pixelsPerMeter = 1.0f;
-		// worldSize is 2.0f; local(model) - 32pixels;
-		// TODO(ck): Ask Jasper about this??? is world size your 1m and then what is pixel size we dont call it world anymore?
-		// Move the sprite into the middle of the bounding box... worldX - (worldSize/2.0f) * pixelsPerMeter
-
-		// x and y is pixel space?
-
-		// I don't really have a local space in the pixel art?
-		// Its almost like everything starts in world then goes to pixels
-		// I guess local space would be "tile space" and then we go to world space then pixel space?
-
-		//float x = (worldX-1.0f) * pixelsPerMeter;
-		//float y = (worldY-1.0f) * pixelsPerMeter;
-		float x = (worldX-0.5f);
-		float y = (worldY-0.5f);
+		float x = (worldX-1.0f);
+		float y = (worldY-1.0f);
 
 		Vertex vec0 = {
 			v3(x, y, 0.0f),
