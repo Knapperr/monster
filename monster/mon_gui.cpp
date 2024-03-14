@@ -1673,8 +1673,6 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::game_memory* memory)
 	// TODO(CK): put player at the 0th index for now
 
 
-	//ImGui::SliderFloat("Player Speed", &game2D->world->player->speed, 0.0f, 1000.0f);
-	ImGui::SliderFloat("camera lerp", &game2D->camera.lerpSpeed, 0.0f, 100.0f);
 	ImGui::SliderFloat("camera smooth", &game2D->camera.smoothness, 0.1f, 10.0f);
 
 	{
@@ -1684,7 +1682,6 @@ void UpdateGui(SDL_Window* window, Settings* settings, Mon::game_memory* memory)
 		//snprintf(buffer, sizeof(buffer), "%f", game2D->world->player->pos.y);
 		//ImGui::LabelText("player y", buffer);
 	}
-	ImGui::SliderFloat2("offset", (float*)&game2D->camera.offset, 0.0f, 10.0f);
 	ImGui::DragFloat("cam zoom", &game2D->camera.zoom, 0.1f, 1.0f, 200.0f, "%.02f");
 	//ImGui::SliderInt("Tile 0 ID: ", &game->world2D->map->tiles[0].tileId, 0, 3, NULL);
 	ImGui::DragFloat("x", &game2D->camera.pos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");

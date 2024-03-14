@@ -7,14 +7,12 @@ namespace Mon
 	{
 		camera->pos = v2(1.0f);
 		camera->vel = v2(0.0f);
-		camera->offset = v2(0.0f);
-
+	
 		camera->smoothness = 0.10f;
-		camera->lerpSpeed = 7.0f;
-		camera->zoom = 64.0f;
-		
+		camera->zoom = 6.0f;		
 		camera->resolution.w = viewPort.w;
 		camera->resolution.h = viewPort.h;
+		camera->aspect = camera->resolution.w / camera->resolution.h;
 	}
 
 	void Update(Camera2D* camera, v2 target, float dt)
@@ -52,33 +50,17 @@ namespace Mon
 		float cameraW = camera->resolution.w / 16.0f;
 		float cameraH = camera->resolution.h / 16.0f;
 
-
 		return result;
 	}
 
 	mat4 Projection(Camera2D* camera)
 	{
-		//mat4 projection = glm::ortho(0.0f, camera->resolution.w, 0.0f, camera->resolution.h, -1.0f, 1.0f);
-		float aspectRatio = camera->resolution.w / camera->resolution.h;
-		float zoom = 6.0f;
-		return glm::ortho(-aspectRatio * zoom, aspectRatio * zoom, -1.0f * zoom, 1.0f * zoom, -1.0f, 1.0f);
+		return glm::ortho(-camera->aspect * camera->zoom, camera->aspect * camera->zoom, -1.0f * camera->zoom, 1.0f * camera->zoom, -1.0f, 1.0f);
 	}
 
 	mat4 ViewMatrix(Camera2D* camera)
 	{
-		mat4 view = mat4(1.0f);
-		//float screenCenterX = camera->resolution.w / 2.0f;
-		//float screenCenterY = camera->resolution.h / 2.0f;
-		//view = glm::translate(view, v3(screenCenterX - 16.0f*camera->pos.x, screenCenterY - 16.0f*camera->pos.y, 1.0f));
-
-		view = glm::lookAt(v3(camera->pos, 1.0f), v3(camera->pos, 0.0f), v3(0.0f, 1.0f, 0.0f));
+		mat4 view = glm::lookAt(v3(camera->pos, 1.0f), v3(camera->pos, 0.0f), v3(0.0f, 1.0f, 0.0f));
 		return view;
-	}
-
-	v3 CameraTranslation(Camera2D* camera)
-	{
-		float screenCenterX = camera->resolution.w / 2.0f;
-		float screenCenterY = camera->resolution.h / 2.0f;
-		return v3(screenCenterX - 16.0f * camera->pos.x, screenCenterY - 16.0f * camera->pos.y, 1.0f);
 	}
 }
