@@ -37,10 +37,8 @@ namespace Mon {
 		game->config->viewPort = { 0.0f , 0.0f, portWidth, portHeight };
 		MonGL::ViewPort(&game->config->viewPort);
 
-		
 		// InitCamera
 		InitCamera(&game->camera, game->config->viewPort);
-
 
 		//Entity2D* player = GetPlayer(game->world);
 		//game->camera = OrthoCamera(player->pos, &game->config->viewPort);
@@ -174,9 +172,29 @@ namespace Mon {
 			// Clamp the position to the inside of the tilemap...
 			// convert screen to world...
 			// world to tile???
+			Mon::v2 window = { 1440.0f, 900.0f };
+			Mon::v2 port = { 960.0f, 540.0f };
+			Mon::v2 offset = (window - port); // port.x & y = 5
 
+			// TODO(ck): Figure out offset. Working for y but not for x 
+			// STUDY(ck): 
+			// x only needs to account for the offset x position of the port but
+			// the y position needs to subtract the offset of the window and port as well
+			// but x doesn't seem to need this..?
+			float x = (2.0f * (input->mouseScreen.x)) / port.x - 1.0f;
+			float y = (2.0f * (input->mouseScreen.y - offset.y)) / port.y - 1.0f;
 
-			game->mouseTilePos = v2{ (input->mouseScreen.x - (game->camera.pos.x*16.0f)), (input->mouseScreen.y - (game->camera.pos.y*16.0f)) };
+			// NOTE(ck): Make sure to reverse the direction of y!
+			v2 normalizedCoords = {x, -y};
+			Mon::v4 clipCoords = Mon::v4(normalizedCoords.x, normalizedCoords.y, -1.0f, 1.0f);
+			Mon::v4 eyeCoords = glm::inverse(Mon::Projection(&game->camera)) * clipCoords;
+			Mon::v4 finalEyeCoords = Mon::v4(eyeCoords.x, eyeCoords.y, -1.0f, 0.0f);
+
+			Mon::v4 rayWorld = glm::inverse(Mon::ViewMatrix(&game->camera)) * eyeCoords;
+			Mon::v3 mouseRay = Mon::v3(rayWorld.x, rayWorld.y, rayWorld.z);
+			mouseRay = glm::normalize(mouseRay);
+
+			game->mouseTilePos = v2{ (mouseRay.x), (mouseRay.y) };
 
 
 
@@ -301,15 +319,13 @@ namespace Mon {
 			MonGL::FillBatch(spriteBatch, 256.0f, item.tileSize, item.worldPos.x, item.worldPos.y, *subTexture);
 		}
 
-	
-
 
 		// Loop through batches 
 		// batch needs its own shader id and texture id for the sheet
-		MonGL::Texture* tilemapAtlas = MonGL::GetTexture(game->renderer, 19);
+		MonGL::Texture* tilemapAtlas = MonGL::GetTexture(game->renderer, 18);
 		DrawBatch(tileBatch, &game->renderer->program, tilemapAtlas->id, false);
 
-		MonGL::Texture* spriteAtlas = MonGL::GetTexture(game->renderer, 17);
+		MonGL::Texture* spriteAtlas = MonGL::GetTexture(game->renderer, 16);
 		DrawBatch(spriteBatch, &game->renderer->program, spriteAtlas->id, false);
 
 

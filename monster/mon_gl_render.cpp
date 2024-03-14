@@ -407,14 +407,11 @@ namespace MonGL
 		gl->lights[index].attachedToEntity = false;
 
 		// Init Batches
-		// 0 is null batch
 		int batchIndex = AddBatch(gl);
 		InitBatch(gl, batchIndex);
 
 		// Init Animations
 		{
-			// TODO(ck): Remove this start it at 0 no need for empty space
-			// null at index 0
 			GLSpriteAnimator* glAnimator = &gl->spriteAnimators[0];
 			glAnimator = {};
 			gl->spriteAnimatorCount++;
@@ -1575,41 +1572,38 @@ namespace MonGL
 
 		// TODO(ck): Need a texture atlas rather than loading all of these
 		// textures for the entities
-		// index 0 
 		AddTexture(gl);
-
+		MonGL::Texture* t1 = GetTexture(gl, 0);
 		AddTexture(gl);
-		MonGL::Texture* t1 = GetTexture(gl, 1);
+		MonGL::Texture* t2 = GetTexture(gl, 1);
 		AddTexture(gl);
-		MonGL::Texture* t2 = GetTexture(gl, 2);
+		MonGL::Texture* t3 = GetTexture(gl, 2);
 		AddTexture(gl);
-		MonGL::Texture* t3 = GetTexture(gl, 3);
+		MonGL::Texture* t4 = GetTexture(gl, 3);
 		AddTexture(gl);
-		MonGL::Texture* t4 = GetTexture(gl, 4);
+		MonGL::Texture* t5 = GetTexture(gl, 4);
 		AddTexture(gl);
-		MonGL::Texture* t5 = GetTexture(gl, 5);
+		MonGL::Texture* t6 = GetTexture(gl, 5);
 		AddTexture(gl);
-		MonGL::Texture* t6 = GetTexture(gl, 6);
+		MonGL::Texture* t7 = GetTexture(gl, 6);
 		AddTexture(gl);
-		MonGL::Texture* t7 = GetTexture(gl, 7);
+		MonGL::Texture* t8 = GetTexture(gl, 7);
 		AddTexture(gl);
-		MonGL::Texture* t8 = GetTexture(gl, 8);
+		MonGL::Texture* t9 = GetTexture(gl, 8);
 		AddTexture(gl);
-		MonGL::Texture* t9 = GetTexture(gl, 9);
+		MonGL::Texture* t10 = GetTexture(gl, 9);
 		AddTexture(gl);
-		MonGL::Texture* t10 = GetTexture(gl, 10);
+		MonGL::Texture* t11 = GetTexture(gl, 10);
 		AddTexture(gl);
-		MonGL::Texture* t11 = GetTexture(gl, 11);
+		MonGL::Texture* t12 = GetTexture(gl, 11);
 		AddTexture(gl);
-		MonGL::Texture* t12 = GetTexture(gl, 12);
+		MonGL::Texture* t13 = GetTexture(gl, 12);
 		AddTexture(gl);
-		MonGL::Texture* t13 = GetTexture(gl, 13);
+		MonGL::Texture* t14 = GetTexture(gl, 13);
 		AddTexture(gl);
-		MonGL::Texture* t14 = GetTexture(gl, 14);
+		MonGL::Texture* t15 = GetTexture(gl, 14);
 		AddTexture(gl);
-		MonGL::Texture* t15 = GetTexture(gl, 15);
-		AddTexture(gl);
-		MonGL::Texture* t16 = GetTexture(gl, 16);
+		MonGL::Texture* t16 = GetTexture(gl, 15);
 
 		LoadTexture((char*)"temp1", t1, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 0));
 		LoadTexture((char*)"temp2", t2, MonGL::TextureType::Diffuse, true, GetImage(g_Assets, 1));
@@ -1654,11 +1648,11 @@ namespace MonGL
 
 		// Texture Atlases
 		AddTexture(gl);
-		MonGL::Texture* t17 = GetTexture(gl, 17);
+		MonGL::Texture* t17 = GetTexture(gl, 16);
 		AddTexture(gl);
-		MonGL::Texture* t18 = GetTexture(gl, 18);
+		MonGL::Texture* t18 = GetTexture(gl, 17);
 		AddTexture(gl);
-		MonGL::Texture* t19 = GetTexture(gl, 19);
+		MonGL::Texture* t19 = GetTexture(gl, 18);
 		LoadTextureFile((char*)"sprite_atlas", t17, GetImage(g_Assets, 30), TextureType::Diffuse, true, true);
 		LoadTextureFile((char*)"debug_icons", t18, GetImage(g_Assets, 31), TextureType::Diffuse, true, true);
 		LoadTextureFile((char*)"tilemap", t19, GetImage(g_Assets, 15), TextureType::Diffuse, true, true);
