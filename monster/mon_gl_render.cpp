@@ -2061,7 +2061,7 @@ namespace MonGL
 		float size = 2.0f;
 		// Testing house size
 		if (subTexture.tileSize == 128)
-			size = 6.0f;
+			size = 8.0f;
 
 		float x = (worldX-1.0f);
 		float y = (worldY-1.0f);

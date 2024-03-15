@@ -1436,7 +1436,7 @@ void EntityTab(Mon::Game2D* game)
 		ImGui::EndChild();
 		ImGui::SameLine();
 
-		if (game->world->entityCount > 1)
+		if (game->world->entityCount > 0)
 		{
 			ImGui::BeginGroup();
 			ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
