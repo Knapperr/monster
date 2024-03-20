@@ -242,16 +242,16 @@ namespace Mon {
 		int shaderID = game->renderer->program.handle;
 		glUseProgram(shaderID);
 		// TODO(ck): Pull Texture out of sheet
+		glEnable(GL_BLEND);
 		v3 clearColour = v3(0.0f, 0.0f, 0.0f);
 		glClearColor(clearColour.r, clearColour.g, clearColour.b, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glEnable(GL_BLEND);
 
 		mat4 projection = Projection(&game->camera);
-		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-
 		mat4 view = ViewMatrix(&game->camera);
+		glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(glGetUniformLocation(shaderID, "view"), 1, GL_FALSE, glm::value_ptr(view));
+
 		
 		// TODO(ck): The batch should be internal to the renderer and not really in the game layer although
 		// this does make it easier... i guess you should be able to access the batch functions but the batch itself
@@ -329,12 +329,21 @@ namespace Mon {
 #if 1
 		// Bind the default frame buffer now
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glDisable(GL_DEPTH_TEST); // do not discard the screen quad
+		//glEnable(GL_BLEND);
+		glDisable(GL_DEPTH_TEST); // do not discard the screen quad???
 		// clear colour to white but unecessary so why do it???? ASK JASPER
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // set clear color to white (not really necessary actually, since we won't be able to see behind the quad anyways)
+		glClearColor(clearColour.r, clearColour.g, clearColour.b, 1.0f);
+		//glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // set clear color to white (not really necessary actually, since we won't be able to see behind the quad anyways)
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glUseProgram(game->renderer->frameBufferProgram.handle);
+
+
+		
+		mat4 model = mat4(1.0f);
+		v2 worldScale = v2(10.0f);
+		model = glm::scale(model, v3(worldScale, 1.0f));
+		glUniformMatrix4fv(glGetUniformLocation(game->renderer->frameBufferProgram.handle, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		//glUniform1f(glGetUniformLocation(game->renderer->frameBufferProgram.handle, "brightness"), state.framebufferBrightness);
 
 
@@ -402,6 +411,32 @@ namespace Mon {
 	void CleanUp(Game2D *game)
 	{
 		// TODO(ck): Empty
+		/*
+		Game2D* game = (Game2D*)memory->permanentStorage;
+
+		// IMPORTANT(ck):
+		// TODO(ck): clean up render data 
+		//glDeleteVertexArrays(1, &world->player->data.VAO);
+		//glDeleteBuffers(1, &world->player->data.VBO);
+		
+		delete state->grid;
+		state->grid = nullptr;
+
+		//delete state->world;
+		//state->world = nullptr;
+
+		free(state->renderer->ubo.buffer);
+		free(state->renderer->lineBuffer.indices);
+		free(state->renderer->lineBuffer.vertices);
+
+		state->renderer->ubo.buffer = nullptr;
+		//state->entities = nullptr;
+		state->renderer->lineBuffer.indices = nullptr;
+		state->renderer->lineBuffer.vertices = nullptr;
+
+		
+		*/
+
 
 		/*
 		------------

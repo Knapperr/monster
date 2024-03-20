@@ -504,8 +504,6 @@ namespace MonGL
 	void FillBatch(BatchData* batch, float sheetSize, int tileSize, float worldX, float worldY, GLSubTexture subTexture);
 	void FillBatch(BatchData* batch, BatchItem2D item, GLSubTexture subTexture);
 
-	void BindVertices(BatchData* batch);
-	
 	void SortBatch2D(std::vector<BatchItem2D>& batchItems);
 
 	void DrawObject(CommonProgram* shader, RenderData2D* data, v2 cameraPos);

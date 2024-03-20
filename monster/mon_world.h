@@ -362,7 +362,8 @@ namespace Mon {
 		// I don't want to use casey's method. I want something that feels more tile
 		// game based
 		//player->rb.worldPos += (*velocity * player->rb.speed * dt);
-		
+		player->rb.worldPos = newPos;
+#if 0
 		if (!colliding)
 			player->rb.worldPos = newPos;
 		else
@@ -370,6 +371,7 @@ namespace Mon {
 			player->rb.worldPos.x = oldPos.x;
 			player->rb.worldPos.z = oldPos.z;
 		}
+#endif
 		//player->rb.worldPos.x += (velocity->x * player->rb.speed * dt);
 		//player->rb.worldPos.z += (velocity->z * player->rb.speed * dt);
 

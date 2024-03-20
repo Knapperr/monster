@@ -978,6 +978,21 @@ namespace MonGL
 		// Texture coords
 
 		// use SubTexture for texture coords
+		/*
+		int tileOffsetX = (int)textureOffset.x; // There is not an extra small cell at the start of the x offset.
+		int tileOffsetY = (int)textureOffset.y - 1; // There is an extra small cell at the start of the y offset so subtract it
+
+		// Do not update the animation inside of the batch 
+		// update the animation in the update and then get the data here.
+		float worldSize = 1.0f;
+		float spacing = 1.0f;
+		float cellSize = 17.0f; // pixels
+
+		v2 min = { ((tileOffsetX * cellSize)+spacing) / sheetSize, ((tileOffsetY * cellSize)+spacing) / sheetSize };
+		v2 max = { (((tileOffsetX + worldSize)* cellSize)) / sheetSize, (((tileOffsetY + worldSize) * cellSize)) / sheetSize };
+		
+		*/
+
 
 		v2 tr = v2(((texOffsetX + 1) * tileSize) / textureSheetSize, ((texOffsetY + 1) * tileSize) / textureSheetSize);
 		v2 tl = v2((texOffsetX * tileSize) / textureSheetSize, ((texOffsetY + 1) * tileSize) / textureSheetSize);
@@ -1818,8 +1833,10 @@ namespace MonGL
 
 		float viewPortW = 960.0f;
 		float viewPortH = 540.0f;
-		glTextureStorage2D( gl->textureColorbuffer, 1, GL_RGB16, (int)viewPortW, (int)viewPortH);
-		glTextureSubImage2D(gl->textureColorbuffer, 0, 0, 0, (int)viewPortW, (int)viewPortH, GL_RGB16, GL_UNSIGNED_BYTE, NULL);
+		//float viewPortW = 1440.0f;
+		//float viewPortH = 900.0f;
+		glTextureStorage2D( gl->textureColorbuffer, 1, GL_RGBA16, (int)viewPortW, (int)viewPortH);
+		glTextureSubImage2D(gl->textureColorbuffer, 0, 0, 0, (int)viewPortW, (int)viewPortH, GL_RGBA16, GL_UNSIGNED_BYTE, NULL);
 		glObjectLabel(GL_TEXTURE, gl->textureColorbuffer, -1, "fbo_screen_texture");
 
 		glNamedFramebufferTexture(gl->fbo, GL_COLOR_ATTACHMENT0, gl->textureColorbuffer, 0);
@@ -1894,13 +1911,22 @@ namespace MonGL
 		InitGLBuffer(&gl->lineBuffer);
 
 		// Set Blend Function
-		//glDepthFunc(GL_LESS);
+		glDepthFunc(GL_LESS);
 		glEnable(GL_BLEND);
+		glEnable(GL_DEPTH);
 		// https://www.adriancourreges.com/blog/2017/05/09/beware-of-transparent-pixels/ proper blend func for pre-multiplied alpha
-		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		//glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 		//glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
 		
-		glDisable(GL_MULTISAMPLE);
+		// these are from the articles
+		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
+		glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
+		glBlendFuncSeparate(GL_ONE, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
+		
+		glEnable(GL_MULTISAMPLE);
 		// TODO(ck): Remove temp
 		glViewport(0, 0, 960, 540);
 		//glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
@@ -2007,8 +2033,8 @@ namespace MonGL
 	void FillBatch(BatchData* batch, float sheetSize, int tileSize, float worldX, float worldY, v2 textureOffset, v2 cameraPos)
 	{
 		// TODO(ck): Pass Point or integer Rect no floating points
-		int tileOffsetX = (int)textureOffset.x; // There is not an extra small cell at the start of the x offset.
-		int tileOffsetY = (int)textureOffset.y - 1; // There is an extra small cell at the start of the y offset so subtract it
+		float tileOffsetX = textureOffset.x; // There is not an extra small cell at the start of the x offset.
+		float tileOffsetY = textureOffset.y - 1; // There is an extra small cell at the start of the y offset so subtract it
 
 		// Do not update the animation inside of the batch 
 		// update the animation in the update and then get the data here.
@@ -2016,7 +2042,7 @@ namespace MonGL
 		float spacing = 1.0f;
 		float cellSize = 17.0f; // pixels
 
-		v2 min = { ((tileOffsetX * cellSize)+spacing) / sheetSize, ((tileOffsetY * cellSize)+spacing) / sheetSize };
+		v2 min = { ((tileOffsetX * cellSize)+spacing) /sheetSize, ((tileOffsetY * cellSize)+spacing) / sheetSize };
 		v2 max = { (((tileOffsetX + worldSize)* cellSize)) / sheetSize, (((tileOffsetY + worldSize) * cellSize)) / sheetSize };
 
 		float size = 1.0f;
@@ -2054,7 +2080,6 @@ namespace MonGL
 
 	void FillBatch(BatchData* batch, float sheetSize, int tileSize, float worldX, float worldY, GLSubTexture subTexture)
 	{
-		// 
 		//float size = spriteSize * (float)subTexture.tileSize;
 		
 		//int size = subTexture.tileSize;
@@ -2096,10 +2121,8 @@ namespace MonGL
 
 	void FillBatch(BatchData* batch, BatchItem2D item, GLSubTexture subTexture)
 	{
-		// 
-//float size = spriteSize * (float)subTexture.tileSize;
+		//float size = spriteSize * (float)subTexture.tileSize;
 		int size = subTexture.tileSize;
-
 
 		float pixelsPerMeter = 16.0f;
 		float x = (item.worldPos.x - 1.0f) * pixelsPerMeter;
@@ -2133,17 +2156,6 @@ namespace MonGL
 		batch->vertices.push_back(vec3);
 	}
 
-	void BindVertices(BatchData* batch)
-	{
-		glBindVertexArray(batch->VAO);
-		glBindBuffer(GL_ARRAY_BUFFER, batch->VBO);
-		// Use glMapBuffer instead, if moving large chunks of data > 1MB 
-		glBufferSubData(GL_ARRAY_BUFFER, 0, batch->vertices.size() * sizeof(Vertex), &batch->vertices[0]);
-
-		glBindVertexArray(0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	}
-
 	bool SortBatchItems2D(BatchItem2D& left, BatchItem2D& right)
 	{
 		return (left.worldPos.y > right.worldPos.y);
@@ -2161,13 +2173,19 @@ namespace MonGL
 	{
 		glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 1, -1, "Batch Items");
 
-		BindVertices(batch);
 
-		v3 pos = {};
-		mat4 model = mat4(1.0f);
-		model = glm::translate(model, pos);
+		glBindVertexArray(batch->VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, batch->VBO);
+		// Use glMapBuffer instead, if moving large chunks of data > 1MB 
+		glBufferSubData(GL_ARRAY_BUFFER, 0, batch->vertices.size() * sizeof(Vertex), &batch->vertices[0]);
 
-		glUniformMatrix4fv(glGetUniformLocation(shader->handle, "model"), 1, GL_FALSE, glm::value_ptr(model));
+		glBindVertexArray(0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+		//v3 pos = {};
+		//mat4 model = mat4(1.0f);
+		//model = glm::translate(model, pos);
+		//glUniformMatrix4fv(glGetUniformLocation(shader->handle, "model"), 1, GL_FALSE, glm::value_ptr(model));
 
 		glActiveTexture(GL_TEXTURE0);
 		glUniform1i(glGetUniformLocation(shader->handle, "image"), 0);

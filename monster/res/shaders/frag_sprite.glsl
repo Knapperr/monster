@@ -69,28 +69,50 @@ vec4 texture2DAA(sampler2D tex, vec2 uv) {
     return texture(tex, uv_texspace/texsize);
 }
 */
-/*
- OLD ONE
+
+	// OLD ONE INQUIZO
 	vec2 texSize = textureSize(image, 0);
 	vec2 pixel = (TexCoord * texSize);
 	vec2 seam = floor(pixel + 0.5);
 	vec2 duDv = fwidth(pixel);
 	pixel = seam + clamp((pixel - seam)/duDv, -0.5, 0.5);
 	vec2 modifiedTextCoordinate = pixel / texSize;
-	vec4 tex = texture(image, modifiedTextCoordinate);
-	*/
+	
+	vec4 tex = texture(image, modifiedTextCoordinate.xy);
 
-	vec2 texSize = textureSize(image, 0);
-	vec2 uv_texspace = (TexCoord * texSize);
-	vec2 seam = floor(uv_texspace + 0.5);
-	uv_texspace = (uv_texspace - seam)/fwidth(uv_texspace)+seam;
-	uv_texspace = clamp(uv_texspace, seam - 0.5, seam + 0.5);
-	vec4 tex = texture(image, uv_texspace/texSize);
 
-	//vec4 orange = vec4(1.0, 0.5, 0.2, 1.0);
+	// MARTINS
+	// vec2 texSize = textureSize(image, 0);
+	// vec2 uv_texspace = (TexCoord * texSize);
+	// vec2 seam = floor(uv_texspace + 0.5);
+	// uv_texspace = (uv_texspace - seam)/fwidth(uv_texspace)+seam;
+	// uv_texspace = clamp(uv_texspace, seam - 0.5, seam + 0.5);
+	// vec4 tex = texture(image, uv_texspace/texSize);
 
+    // if(color.a > 0)
+    // {
+    //     color.xyz /= color.a;
+    //     color *= tint;
+    //     normal = vec4(frag_normal, 1);
+    // }
+    // else
+    // {
+    //     discard;
+    // }
+
+	
+    if (tex.a > 0.0) 
+	{
+        tex.rgb /= tex.a;
+    }
+	else 
+	{
+		discard;
+	}
+	// tex.rgb /= tex.a;
 	FragColor = tex;
 	//FragColor = texture(image, TexCoord);
+	//vec4 orange = vec4(1.0, 0.5, 0.2, 1.0);
 	return;
 	
 

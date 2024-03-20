@@ -56,6 +56,7 @@ namespace Mon
 	mat4 Projection(Camera2D* camera)
 	{
 		return glm::ortho(-camera->aspect * camera->zoom, camera->aspect * camera->zoom, -1.0f * camera->zoom, 1.0f * camera->zoom, -1.0f, 1.0f);
+		//return glm::ortho(0.0f, camera->resolution.w, 0.0f, camera->resolution.h, -1.0f, 1.0f);
 	}
 
 	mat4 ViewMatrix(Camera2D* camera)

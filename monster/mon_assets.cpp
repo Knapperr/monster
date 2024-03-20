@@ -249,7 +249,20 @@ namespace Mon
 		MonGL::Log::print(file);
 
 		stbi_set_flip_vertically_on_load(flip);
-		image->data = stbi_load(file, &image->width, &image->height, &image->nrChannels, 0);
+		image->data = stbi_load(file, &image->width, &image->height, &image->nrChannels, STBI_rgb_alpha);
+
+#if 1
+		if (image->nrChannels == 4)
+		{
+			for (int i = 0; i < image->width * image->height * 4; i+=4)
+			{
+				unsigned char alpha = image->data[i + 3] / 255;
+				image->data[i] *= alpha;
+				image->data[i + 1] *= alpha;
+				image->data[i + 2] *= alpha;
+			}
+		}
+#endif
 	}
 
 	void FreeImage(Image* image)

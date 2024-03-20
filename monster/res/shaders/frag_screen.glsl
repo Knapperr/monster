@@ -10,9 +10,21 @@ uniform float brightness = 1.0;
 void main()
 {
 	
-    vec3 col = texture(screenTexture, TexCoords).rgb * brightness;
-    col *= texture(screenTexture, TexCoords).a; 
-    FragColor = vec4(col, 1.0);
+    vec4 col = texture(screenTexture, TexCoords).rgba * brightness;
+
+    // col.rgb /= col.a;
+    // if (col.a < 0.1)
+		//   discard;
+    if (col.a > 0.1) 
+    {
+        col.rgb /= col.a;
+    }
+	  else 
+	  {
+		  discard;
+	  }
+
+    FragColor = col;
     // vec4 col = texture(screenTexture, TexCoords).rgba;
     // FragColor = col;
 } 
