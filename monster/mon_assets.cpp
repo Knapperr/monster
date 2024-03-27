@@ -249,9 +249,10 @@ namespace Mon
 		MonGL::Log::print(file);
 
 		stbi_set_flip_vertically_on_load(flip);
-		image->data = stbi_load(file, &image->width, &image->height, &image->nrChannels, STBI_rgb_alpha);
+		image->data = stbi_load(file, &image->width, &image->height, &image->nrChannels, 0);
 
-#if 1
+#if 0
+		image->data = stbi_load(file, &image->width, &image->height, &image->nrChannels, STBI_rgb_alpha);
 		if (image->nrChannels == 4)
 		{
 			for (int i = 0; i < image->width * image->height * 4; i+=4)

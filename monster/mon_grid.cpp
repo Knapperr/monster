@@ -180,11 +180,25 @@ Mon::v3 ToWorldCoords(Mon::v4 eyeCoords, Mon::mat4 viewMatrix)
 	return mouseRay;
 }
 
+
+// TODO(ck): Trying to understand how this works
+// I guess the break is GetPointOnRay which is when the count is greater than 200
+// The count grows each time but how does start and finish change?
+// I need to figure out what is altering half it doesnt make sense that its changing 
+// because start and finishd don't change?
+
+// It looks like start and half are swapped so... i guess they 
 Mon::v3 BinarySearch(MonGL::Mesh* mesh, int count, float start, float finish, Mon::v3 ray, Mon::v3 cameraPosition)
 {
 	float half = start + ((finish - start) / 2.0f);
+	
+#if 1
 	if (count >= RECURSION_COUNT)
 	{
+		//Mon::Log::print("distance: ", half);
+		//Mon::Log::print("count: ",count);
+		//Mon::Log::print("start: ", start);
+		//Mon::Log::print("finish: ", finish);
 		return GetPointOnRay(ray, half, cameraPosition);
 	}
 
@@ -196,6 +210,7 @@ Mon::v3 BinarySearch(MonGL::Mesh* mesh, int count, float start, float finish, Mo
 	{
 		return BinarySearch(mesh, count + 1, half, finish, ray, cameraPosition);
 	}
+#endif
 }
 
 Mon::v3 GetPointOnRay(Mon::v3 ray, float distance, Mon::v3 cameraPosition)

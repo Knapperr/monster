@@ -1911,7 +1911,7 @@ namespace MonGL
 		InitGLBuffer(&gl->lineBuffer);
 
 		// Set Blend Function
-		glDepthFunc(GL_LESS);
+		//glDepthFunc(GL_LESS);
 		glEnable(GL_BLEND);
 		glEnable(GL_DEPTH);
 		// https://www.adriancourreges.com/blog/2017/05/09/beware-of-transparent-pixels/ proper blend func for pre-multiplied alpha

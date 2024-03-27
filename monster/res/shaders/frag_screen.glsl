@@ -15,15 +15,18 @@ void main()
     // col.rgb /= col.a;
     // if (col.a < 0.1)
 		//   discard;
-    if (col.a > 0.1) 
-    {
-        col.rgb /= col.a;
-    }
-	  else 
-	  {
-		  discard;
-	  }
-
+    // if (col.a > 0.1) 
+    // {
+    //     col.rgb /= col.a;
+    // }
+	  // else 
+	  // {
+		//   discard;
+	  // }
+    // if (col.a == 0.0)
+		// discard;
+	
+	  // col.rgb /= col.a;
     FragColor = col;
     // vec4 col = texture(screenTexture, TexCoords).rgba;
     // FragColor = col;

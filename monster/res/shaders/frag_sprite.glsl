@@ -71,45 +71,33 @@ vec4 texture2DAA(sampler2D tex, vec2 uv) {
 */
 
 	// OLD ONE INQUIZO
-	vec2 texSize = textureSize(image, 0);
-	vec2 pixel = (TexCoord * texSize);
-	vec2 seam = floor(pixel + 0.5);
-	vec2 duDv = fwidth(pixel);
-	pixel = seam + clamp((pixel - seam)/duDv, -0.5, 0.5);
-	vec2 modifiedTextCoordinate = pixel / texSize;
 	
-	vec4 tex = texture(image, modifiedTextCoordinate.xy);
+	// vec2 texSize = textureSize(image, 0);
+	// vec2 pixel = (TexCoord * texSize);
+	// vec2 seam = floor(pixel + 0.5);
+	// vec2 duDv = fwidth(pixel);
+	// pixel = seam + clamp((pixel - seam)/duDv, -0.5, 0.5);
+	// vec2 modifiedTextCoordinate = pixel / texSize;
+	
+	// vec4 tex = texture(image, modifiedTextCoordinate.xy);
+	//vec4 tex = texture(image, TexCoord.xy);
+	
 
 
 	// MARTINS
-	// vec2 texSize = textureSize(image, 0);
-	// vec2 uv_texspace = (TexCoord * texSize);
-	// vec2 seam = floor(uv_texspace + 0.5);
-	// uv_texspace = (uv_texspace - seam)/fwidth(uv_texspace)+seam;
-	// uv_texspace = clamp(uv_texspace, seam - 0.5, seam + 0.5);
-	// vec4 tex = texture(image, uv_texspace/texSize);
+	vec2 texSize = textureSize(image, 0);
+	vec2 uv_texspace = (TexCoord * texSize);
+	vec2 seam = floor(uv_texspace + 0.5);
+	uv_texspace = (uv_texspace - seam)/fwidth(uv_texspace)+seam;
+	uv_texspace = clamp(uv_texspace, seam - 0.5, seam + 0.5);
+	vec4 tex = texture(image, uv_texspace/texSize);
 
-    // if(color.a > 0)
-    // {
-    //     color.xyz /= color.a;
-    //     color *= tint;
-    //     normal = vec4(frag_normal, 1);
-    // }
-    // else
-    // {
-    //     discard;
-    // }
 
-	
-    if (tex.a > 0.0) 
-	{
-        tex.rgb /= tex.a;
-    }
-	else 
-	{
+	if (tex.a == 0.0)
 		discard;
-	}
-	// tex.rgb /= tex.a;
+	
+	tex.rgb /= tex.a;
+
 	FragColor = tex;
 	//FragColor = texture(image, TexCoord);
 	//vec4 orange = vec4(1.0, 0.5, 0.2, 1.0);
